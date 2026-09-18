@@ -1,0 +1,654 @@
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, Trash2 } from 'lucide-react';
+import { Timestamp } from 'firebase/firestore';
+import { Seo } from '../../components/ui/Seo';
+import { Button } from '../../components/ui/Button';
+import { Alert } from '../../components/ui/Alert';
+import { Skeleton } from '../../components/ui/Skeleton';
+import { ErrorState } from '../../components/ui/ErrorState';
+import { Field, FieldSet } from '../../components/forms/Field';
+import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
+import { Checkbox, CheckboxGroup } from '../../components/forms/Choice';
+import { ListEditor, TableEditor } from '../../components/forms/ListEditor';
+import { ImageUploadField } from '../../components/forms/ImageUploadField';
+import { useProjectById } from '../../hooks/useProject';
+import { projectService } from '../../services/projectService';
+import { storageService } from '../../services/storageService';
+import { PROJECT_CATEGORIES } from '../../constants/categories';
+import {
+  PROJECT_DIFFICULTIES,
+  PROJECT_STATUSES,
+  TECHNOLOGY_OPTIONS,
+} from '../../constants/projectOptions';
+import { slugify } from '../../utils/slug';
+import { toDateInputValue } from '../../utils/formatting';
+import { toUserMessage } from '../../utils/errors';
+import type {
+  GalleryImage,
+  ProjectComponent,
+  ProjectDifficulty,
+  ProjectDraft,
+  ProjectSpecification,
+  ProjectStatus,
+} from '../../types/project';
+
+const EMPTY_DRAFT: ProjectDraft = {
+  title: '',
+  slug: '',
+  shortDescription: '',
+  description: '',
+  category: 'Arduino',
+  subcategory: null,
+  status: 'completed',
+  difficulty: 'intermediate',
+  technologies: [],
+  tags: [],
+  objectives: [],
+  features: [],
+  problemStatement: '',
+  solutionOverview: '',
+  howItWorks: '',
+  challenges: [],
+  results: '',
+  components: [],
+  specifications: [],
+  estimatedCost: { amount: null, currency: 'PKR' },
+  media: { thumbnailUrl: '', heroImageUrl: null, gallery: [], videoUrl: null },
+  externalLinks: { github: null, documentation: null, demo: null },
+  seo: { metaTitle: null, metaDescription: null, keywords: [] },
+  featured: false,
+  published: false,
+  completedAt: null,
+};
+
+const EMPTY_COMPONENT: ProjectComponent = { name: '', category: '', quantity: 1, notes: '' };
+const EMPTY_SPEC: ProjectSpecification = { label: '', value: '' };
+
+export default function ProjectForm() {
+  const { id } = useParams<{ id: string }>();
+  const isEdit = Boolean(id);
+  const navigate = useNavigate();
+  const existing = useProjectById(id);
+
+  const [draft, setDraft] = useState<ProjectDraft>(EMPTY_DRAFT);
+  const [completedDate, setCompletedDate] = useState('');
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  // A new project needs an id before images can be filed under projects/{id}/...
+  const [draftId] = useState(() => `draft-${Math.random().toString(36).slice(2, 10)}`);
+  const storageId = id ?? draftId;
+
+  useEffect(() => {
+    if (!isEdit || !existing.data) return;
+    const { id: _ignored, viewCount: _viewCount, createdAt: _c, updatedAt: _u, ...rest } = existing.data;
+    setDraft(rest);
+    setCompletedDate(toDateInputValue(existing.data.completedAt));
+    setSlugTouched(true);
+  }, [isEdit, existing.data]);
+
+  const update = <K extends keyof ProjectDraft>(key: K, value: ProjectDraft[K]) =>
+    setDraft((current) => ({ ...current, [key]: value }));
+
+  const updateTitle = (title: string) => {
+    setDraft((current) => ({
+      ...current,
+      title,
+      slug: slugTouched ? current.slug : slugify(title),
+    }));
+  };
+
+  const cleanList = (items: string[]) => items.map((item) => item.trim()).filter(Boolean);
+
+  const handleSave = async (publish?: boolean) => {
+    setError(null);
+
+    if (!draft.title.trim()) {
+      setError('A project needs a title before it can be saved.');
+      return;
+    }
+    if (!draft.shortDescription.trim()) {
+      setError('Add a short description — it is what appears on project cards.');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const payload: ProjectDraft = {
+        ...draft,
+        title: draft.title.trim(),
+        slug: slugify(draft.slug || draft.title),
+        technologies: cleanList(draft.technologies),
+        tags: cleanList(draft.tags),
+        objectives: cleanList(draft.objectives),
+        features: cleanList(draft.features),
+        challenges: cleanList(draft.challenges),
+        components: draft.components.filter((component) => component.name.trim()),
+        specifications: draft.specifications.filter((spec) => spec.label.trim()),
+        completedAt: completedDate ? Timestamp.fromDate(new Date(completedDate)) : null,
+        published: publish ?? draft.published,
+      };
+
+      if (isEdit && id) {
+        await projectService.updateProject(id, payload);
+      } else {
+        await projectService.createProject(payload);
+      }
+      navigate('/admin/projects');
+    } catch (caught) {
+      setError(toUserMessage(caught, 'The project could not be saved.'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (isEdit && existing.loading) {
+    return (
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (isEdit && existing.error) {
+    return <ErrorState message={existing.error} onRetry={existing.reload} />;
+  }
+
+  return (
+    <>
+      <Seo title={isEdit ? 'Edit project' : 'New project'} noIndex />
+
+      <Link
+        to="/admin/projects"
+        className="inline-flex items-center gap-2 rounded-md py-2 text-sm text-content-secondary transition-colors hover:text-content"
+      >
+        <ArrowLeft size={15} aria-hidden="true" />
+        All projects
+      </Link>
+
+      <header className="mt-4">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {isEdit ? 'Edit project' : 'New project'}
+        </h1>
+        <p className="mt-1.5 text-sm text-content-secondary">
+          Only the title and short description are required. Every other section is hidden on the
+          public page when left empty.
+        </p>
+      </header>
+
+      {error && (
+        <div className="mt-6">
+          <Alert tone="danger">{error}</Alert>
+        </div>
+      )}
+
+      <div className="mt-8 flex max-w-3xl flex-col gap-10">
+        <Group title="Basics">
+          <Field label="Title" htmlFor="title" required>
+            <TextInput
+              id="title"
+              value={draft.title}
+              onChange={(event) => updateTitle(event.target.value)}
+            />
+          </Field>
+
+          <Field
+            label="URL slug"
+            htmlFor="slug"
+            required
+            hint={`Public address: /projects/${draft.slug || 'your-project'}`}
+          >
+            <TextInput
+              id="slug"
+              value={draft.slug}
+              onChange={(event) => {
+                setSlugTouched(true);
+                update('slug', event.target.value);
+              }}
+              onBlur={(event) => update('slug', slugify(event.target.value))}
+            />
+          </Field>
+
+          <Field
+            label="Short description"
+            htmlFor="shortDescription"
+            required
+            hint="One or two sentences. Shown on project cards and in search results."
+          >
+            <TextArea
+              id="shortDescription"
+              rows={3}
+              value={draft.shortDescription}
+              onChange={(event) => update('shortDescription', event.target.value)}
+            />
+          </Field>
+
+          <div className="grid gap-5 sm:grid-cols-3">
+            <Field label="Category" htmlFor="category" required>
+              <Select
+                id="category"
+                options={PROJECT_CATEGORIES}
+                value={draft.category}
+                onChange={(event) => update('category', event.target.value)}
+              />
+            </Field>
+            <Field label="Status" htmlFor="status" required>
+              <Select
+                id="status"
+                options={PROJECT_STATUSES}
+                value={draft.status}
+                onChange={(event) => update('status', event.target.value as ProjectStatus)}
+              />
+            </Field>
+            <Field label="Difficulty" htmlFor="difficulty" required>
+              <Select
+                id="difficulty"
+                options={PROJECT_DIFFICULTIES}
+                value={draft.difficulty}
+                onChange={(event) => update('difficulty', event.target.value as ProjectDifficulty)}
+              />
+            </Field>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="Subcategory" htmlFor="subcategory">
+              <TextInput
+                id="subcategory"
+                value={draft.subcategory ?? ''}
+                onChange={(event) => update('subcategory', event.target.value || null)}
+              />
+            </Field>
+            <Field label="Completion date" htmlFor="completedAt">
+              <TextInput
+                id="completedAt"
+                type="date"
+                value={completedDate}
+                onChange={(event) => setCompletedDate(event.target.value)}
+              />
+            </Field>
+          </div>
+        </Group>
+
+        <Group title="Media">
+          <FieldSet legend="Thumbnail" hint="Shown on project cards. A 16:10 image works best.">
+            <ImageUploadField
+              label="Thumbnail"
+              value={draft.media.thumbnailUrl || null}
+              onUpload={async (file) => {
+                const uploaded = await storageService.uploadProjectThumbnail(storageId, file);
+                update('media', { ...draft.media, thumbnailUrl: uploaded.url });
+              }}
+              onClear={() => update('media', { ...draft.media, thumbnailUrl: '' })}
+            />
+          </FieldSet>
+
+          <FieldSet legend="Hero image" hint="Large image at the top of the project page.">
+            <ImageUploadField
+              label="Hero image"
+              value={draft.media.heroImageUrl}
+              onUpload={async (file) => {
+                const uploaded = await storageService.uploadProjectGalleryImage(storageId, file);
+                update('media', { ...draft.media, heroImageUrl: uploaded.url });
+              }}
+              onClear={() => update('media', { ...draft.media, heroImageUrl: null })}
+            />
+          </FieldSet>
+
+          <FieldSet legend="Gallery" hint="Extra photographs of the build.">
+            <GalleryEditor
+              gallery={draft.media.gallery}
+              storageId={storageId}
+              onChange={(gallery) => update('media', { ...draft.media, gallery })}
+            />
+          </FieldSet>
+
+          <Field label="Video URL" htmlFor="videoUrl" hint="A YouTube or Vimeo link to a demo.">
+            <TextInput
+              id="videoUrl"
+              type="url"
+              value={draft.media.videoUrl ?? ''}
+              onChange={(event) =>
+                update('media', { ...draft.media, videoUrl: event.target.value || null })
+              }
+            />
+          </Field>
+        </Group>
+
+        <Group title="The case study">
+          <Field label="Overview" htmlFor="description" hint="Blank lines create new paragraphs.">
+            <TextArea
+              id="description"
+              rows={6}
+              value={draft.description}
+              onChange={(event) => update('description', event.target.value)}
+            />
+          </Field>
+
+          <Field label="Problem statement" htmlFor="problemStatement">
+            <TextArea
+              id="problemStatement"
+              rows={4}
+              value={draft.problemStatement}
+              onChange={(event) => update('problemStatement', event.target.value)}
+            />
+          </Field>
+
+          <FieldSet legend="Objectives">
+            <ListEditor
+              label="Objective"
+              values={draft.objectives}
+              onChange={(values) => update('objectives', values)}
+              placeholder="What the project set out to achieve"
+            />
+          </FieldSet>
+
+          <Field label="Solution overview" htmlFor="solutionOverview">
+            <TextArea
+              id="solutionOverview"
+              rows={4}
+              value={draft.solutionOverview}
+              onChange={(event) => update('solutionOverview', event.target.value)}
+            />
+          </Field>
+
+          <Field label="How it works" htmlFor="howItWorks">
+            <TextArea
+              id="howItWorks"
+              rows={5}
+              value={draft.howItWorks}
+              onChange={(event) => update('howItWorks', event.target.value)}
+            />
+          </Field>
+
+          <FieldSet legend="Features">
+            <ListEditor
+              label="Feature"
+              values={draft.features}
+              onChange={(values) => update('features', values)}
+              placeholder="What the finished system does"
+            />
+          </FieldSet>
+
+          <FieldSet legend="Challenges">
+            <ListEditor
+              label="Challenge"
+              values={draft.challenges}
+              onChange={(values) => update('challenges', values)}
+              placeholder="What was difficult, and how it was resolved"
+            />
+          </FieldSet>
+
+          <Field label="Results" htmlFor="results">
+            <TextArea
+              id="results"
+              rows={4}
+              value={draft.results}
+              onChange={(event) => update('results', event.target.value)}
+            />
+          </Field>
+        </Group>
+
+        <Group title="Technical detail">
+          <FieldSet legend="Technologies" hint="Used for filtering on the projects page.">
+            <CheckboxGroup
+              name="technologies"
+              options={TECHNOLOGY_OPTIONS}
+              value={draft.technologies}
+              onChange={(values) => update('technologies', values)}
+            />
+          </FieldSet>
+
+          <FieldSet legend="Tags">
+            <ListEditor
+              label="Tag"
+              values={draft.tags}
+              onChange={(values) => update('tags', values)}
+              placeholder="e.g. water management"
+            />
+          </FieldSet>
+
+          <FieldSet legend="Components">
+            <TableEditor<ProjectComponent>
+              label="Component"
+              rows={draft.components}
+              emptyRow={EMPTY_COMPONENT}
+              onChange={(rows) => update('components', rows)}
+              columns={[
+                { key: 'name', label: 'Name' },
+                { key: 'category', label: 'Type' },
+                { key: 'quantity', label: 'Qty', type: 'number', width: 'w-20' },
+                { key: 'notes', label: 'Notes' },
+              ]}
+            />
+          </FieldSet>
+
+          <FieldSet legend="Specifications" hint="Shown in the sidebar of the project page.">
+            <TableEditor<ProjectSpecification>
+              label="Specification"
+              rows={draft.specifications}
+              emptyRow={EMPTY_SPEC}
+              onChange={(rows) => update('specifications', rows)}
+              columns={[
+                { key: 'label', label: 'Label' },
+                { key: 'value', label: 'Value' },
+              ]}
+            />
+          </FieldSet>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="Approximate cost" htmlFor="cost" hint="Leave blank to hide it publicly.">
+              <TextInput
+                id="cost"
+                type="number"
+                min={0}
+                value={draft.estimatedCost.amount ?? ''}
+                onChange={(event) =>
+                  update('estimatedCost', {
+                    ...draft.estimatedCost,
+                    amount: event.target.value === '' ? null : Number(event.target.value),
+                  })
+                }
+              />
+            </Field>
+            <Field label="Currency" htmlFor="currency">
+              <TextInput
+                id="currency"
+                value={draft.estimatedCost.currency}
+                onChange={(event) =>
+                  update('estimatedCost', { ...draft.estimatedCost, currency: event.target.value })
+                }
+              />
+            </Field>
+          </div>
+        </Group>
+
+        <Group title="Links and SEO">
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="GitHub" htmlFor="github">
+              <TextInput
+                id="github"
+                type="url"
+                value={draft.externalLinks.github ?? ''}
+                onChange={(event) =>
+                  update('externalLinks', {
+                    ...draft.externalLinks,
+                    github: event.target.value || null,
+                  })
+                }
+              />
+            </Field>
+            <Field label="Documentation" htmlFor="documentation">
+              <TextInput
+                id="documentation"
+                type="url"
+                value={draft.externalLinks.documentation ?? ''}
+                onChange={(event) =>
+                  update('externalLinks', {
+                    ...draft.externalLinks,
+                    documentation: event.target.value || null,
+                  })
+                }
+              />
+            </Field>
+            <Field label="Live demo" htmlFor="demo">
+              <TextInput
+                id="demo"
+                type="url"
+                value={draft.externalLinks.demo ?? ''}
+                onChange={(event) =>
+                  update('externalLinks', {
+                    ...draft.externalLinks,
+                    demo: event.target.value || null,
+                  })
+                }
+              />
+            </Field>
+          </div>
+
+          <Field label="Meta title" htmlFor="metaTitle" hint="Defaults to the project title.">
+            <TextInput
+              id="metaTitle"
+              value={draft.seo.metaTitle ?? ''}
+              onChange={(event) =>
+                update('seo', { ...draft.seo, metaTitle: event.target.value || null })
+              }
+            />
+          </Field>
+
+          <Field
+            label="Meta description"
+            htmlFor="metaDescription"
+            hint="Defaults to the short description. Around 155 characters works best."
+          >
+            <TextArea
+              id="metaDescription"
+              rows={2}
+              value={draft.seo.metaDescription ?? ''}
+              onChange={(event) =>
+                update('seo', { ...draft.seo, metaDescription: event.target.value || null })
+              }
+            />
+          </Field>
+        </Group>
+
+        <Group title="Visibility">
+          <div className="flex flex-col gap-3">
+            <Checkbox
+              id="published"
+              label="Published"
+              description="Visible to everyone on the public site."
+              checked={draft.published}
+              onChange={(event) => update('published', event.target.checked)}
+            />
+            <Checkbox
+              id="featured"
+              label="Featured"
+              description="Appears in the selected work section on the homepage."
+              checked={draft.featured}
+              onChange={(event) => update('featured', event.target.checked)}
+            />
+          </div>
+        </Group>
+
+        <div className="sticky bottom-0 -mx-5 flex flex-wrap gap-3 border-t border-line bg-bg/95 px-5 py-4 backdrop-blur sm:mx-0 sm:px-0">
+          <Button onClick={() => void handleSave()} loading={saving}>
+            {saving ? 'Saving…' : 'Save project'}
+          </Button>
+          {!draft.published && (
+            <Button variant="secondary" onClick={() => void handleSave(true)} disabled={saving}>
+              Save and publish
+            </Button>
+          )}
+          <Button variant="ghost" onClick={() => navigate('/admin/projects')} disabled={saving}>
+            Cancel
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function Group({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="border-t border-line pt-8 first:border-0 first:pt-0">
+      <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+      <div className="mt-5 flex flex-col gap-5">{children}</div>
+    </section>
+  );
+}
+
+function GalleryEditor({
+  gallery,
+  storageId,
+  onChange,
+}: {
+  gallery: GalleryImage[];
+  storageId: string;
+  onChange: (next: GalleryImage[]) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      {gallery.map((image, index) => (
+        <div key={image.url} className="flex flex-col gap-3 rounded-lg border border-line p-3 sm:flex-row">
+          <img
+            src={image.url}
+            alt=""
+            loading="lazy"
+            className="h-24 w-32 shrink-0 rounded object-cover"
+          />
+          <div className="flex flex-1 flex-col gap-2">
+            <TextInput
+              value={image.alt}
+              placeholder="Alt text — describe the image for screen readers"
+              aria-label={`Gallery image ${index + 1} alt text`}
+              onChange={(event) => {
+                const next = [...gallery];
+                next[index] = { ...image, alt: event.target.value };
+                onChange(next);
+              }}
+            />
+            <TextInput
+              value={image.caption ?? ''}
+              placeholder="Caption (optional)"
+              aria-label={`Gallery image ${index + 1} caption`}
+              onChange={(event) => {
+                const next = [...gallery];
+                next[index] = { ...image, caption: event.target.value || null };
+                onChange(next);
+              }}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange(gallery.filter((_, position) => position !== index))}
+            aria-label={`Remove gallery image ${index + 1}`}
+            className="shrink-0 self-start rounded-md p-2 text-content-muted transition-colors hover:text-state-danger"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      ))}
+
+      <ImageUploadField
+        label="Gallery image"
+        value={null}
+        onUpload={async (file) => {
+          const uploaded = await storageService.uploadProjectGalleryImage(storageId, file);
+          onChange([
+            ...gallery,
+            {
+              url: uploaded.url,
+              storagePath: uploaded.storagePath,
+              alt: '',
+              caption: null,
+              order: gallery.length,
+            },
+          ]);
+        }}
+        onClear={() => undefined}
+      />
+    </div>
+  );
+}

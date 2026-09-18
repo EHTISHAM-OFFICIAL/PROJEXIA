@@ -1,0 +1,202 @@
+import { Container } from '../../components/ui/Container';
+import { Seo } from '../../components/ui/Seo';
+import { Section, SectionHeading } from '../../components/ui/Section';
+import { ButtonLink } from '../../components/ui/Button';
+import { PROJECT_CATEGORIES } from '../../constants/categories';
+
+const CAPABILITIES = [
+  {
+    title: 'Hardware',
+    items: [
+      'Microcontroller selection and circuit design',
+      'Sensor interfacing — analog and digital',
+      'Relay, motor and actuator control',
+      'Power supply design and battery operation',
+      'Breadboard to stripboard to PCB',
+    ],
+  },
+  {
+    title: 'Firmware',
+    items: [
+      'C and C++ for Arduino, ESP32, ESP8266 and STM32',
+      'Python and MicroPython on Raspberry Pi',
+      'Interrupt and timer driven control loops',
+      'Data logging to SD card or cloud',
+      'Over-the-air updates where the hardware supports it',
+    ],
+  },
+  {
+    title: 'Connectivity and software',
+    items: [
+      'WiFi, Bluetooth, BLE, GSM and LoRa links',
+      'MQTT and HTTP device-to-server communication',
+      'Web dashboards for monitoring and control',
+      'Cloud databases and push notifications',
+    ],
+  },
+];
+
+export default function About() {
+  return (
+    <>
+      <Seo
+        title="About"
+        description="MECTEC is an electronics studio building embedded systems, IoT devices and automation projects from concept through to tested hardware."
+        path="/about"
+      />
+
+      <div className="relative overflow-hidden border-b border-line">
+        <div className="absolute inset-0 grid-backdrop" aria-hidden="true" />
+        <Container className="relative py-16 sm:py-24">
+          <h1 className="max-w-3xl text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
+            Electronics built to be understood, not just delivered.
+          </h1>
+          <p className="mt-6 max-w-prose text-lg leading-relaxed text-content-secondary">
+            MECTEC is an electronics design and development studio working on embedded systems, IoT
+            devices, automation and robotics.
+          </p>
+        </Container>
+      </div>
+
+      <Section className="border-b border-line">
+        <div className="grid gap-10 lg:grid-cols-[240px_1fr] lg:gap-16">
+          <h2 className="text-2xl font-semibold tracking-tight">The story</h2>
+          <div className="flex max-w-prose flex-col gap-4 text-base leading-relaxed text-content-secondary">
+            <p>
+              MECTEC started from a simple frustration: plenty of electronics projects exist online,
+              but very few are explained well enough to actually rebuild, adapt or trust. Wiring
+              diagrams are missing, code is half-posted, and nobody says what went wrong.
+            </p>
+            <p>
+              So MECTEC was set up to work the other way round. Every project is documented as a
+              case study — what the problem was, which components were chosen and why, what failed
+              during development, and what the finished system measurably does.
+            </p>
+            <p>
+              That same standard applies to client work. Whether it's a final year project or a
+              small automation system for a workshop, the handover includes the source, the
+              schematics and the reasoning.
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      <Section className="border-b border-line">
+        <div className="grid gap-10 lg:grid-cols-[240px_1fr] lg:gap-16">
+          <h2 className="text-2xl font-semibold tracking-tight">Mission</h2>
+          <p className="max-w-prose text-lg leading-relaxed text-content">
+            Make custom electronics accessible to people who have a clear idea but not the
+            engineering time — and leave them with something they can maintain themselves.
+          </p>
+        </div>
+      </Section>
+
+      <Section className="border-b border-line">
+        <SectionHeading
+          title="Technical capabilities"
+          description="The tools and techniques currently used on MECTEC projects."
+        />
+        <div className="mt-12 grid gap-10 md:grid-cols-3">
+          {CAPABILITIES.map((group) => (
+            <div key={group.title}>
+              <h3 className="text-base font-semibold tracking-tight">{group.title}</h3>
+              <ul className="mt-4 flex flex-col gap-2.5">
+                {group.items.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-2.5 text-sm leading-relaxed text-content-secondary"
+                  >
+                    <span
+                      className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent"
+                      aria-hidden="true"
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section className="border-b border-line">
+        <SectionHeading
+          title="What MECTEC works on"
+          description="Project categories currently covered. The list grows as new work comes in."
+        />
+        <ul className="mt-10 flex flex-wrap gap-2.5">
+          {PROJECT_CATEGORIES.map((category) => (
+            <li
+              key={category}
+              className="rounded-lg border border-line bg-surface px-4 py-2.5 text-sm text-content-secondary"
+            >
+              {category}
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section className="border-b border-line">
+        <div className="grid gap-10 lg:grid-cols-[240px_1fr] lg:gap-16">
+          <h2 className="text-2xl font-semibold tracking-tight">Development philosophy</h2>
+          <div className="flex max-w-prose flex-col gap-5 text-base leading-relaxed text-content-secondary">
+            <p>
+              <strong className="font-medium text-content">Simple beats clever.</strong> The right
+              solution is the least complicated one that meets the requirement. Extra features are
+              extra things that can fail in the field.
+            </p>
+            <p>
+              <strong className="font-medium text-content">Prototype before committing.</strong> A
+              breadboard version answers questions that no amount of planning will. Testing early
+              costs hours; finding out late costs the build.
+            </p>
+            <p>
+              <strong className="font-medium text-content">Document as you go.</strong> Notes written
+              during development are accurate. Notes written afterwards are a reconstruction.
+            </p>
+            <p>
+              <strong className="font-medium text-content">Hand over everything.</strong> Code,
+              schematics, component lists and known limitations. A project you cannot maintain is a
+              project you have rented.
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      <Section className="border-b border-line">
+        <div className="grid gap-10 lg:grid-cols-[240px_1fr] lg:gap-16">
+          <h2 className="text-2xl font-semibold tracking-tight">Where this is going</h2>
+          <div className="flex max-w-prose flex-col gap-4 text-base leading-relaxed text-content-secondary">
+            <p>
+              The near-term plan is to keep growing the public project archive so that anyone
+              starting a similar build has a real reference to work from.
+            </p>
+            <p>
+              Beyond that: build guides with full wiring and code, small-batch kits for the most
+              requested designs, and deeper documentation on the parts of embedded work that are
+              usually skipped — power budgeting, enclosure choice, field testing.
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      <Section>
+        <div className="rounded-card border border-line bg-surface p-8 sm:p-12">
+          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            Start a conversation
+          </h2>
+          <p className="mt-3 max-w-prose text-base leading-relaxed text-content-secondary">
+            If you have a project in mind, the request form is the fastest route to a useful reply.
+            If you just want to ask something first, that works too.
+          </p>
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <ButtonLink to="/request-project">Request a project</ButtonLink>
+            <ButtonLink to="/contact" variant="secondary">
+              Contact MECTEC
+            </ButtonLink>
+          </div>
+        </div>
+      </Section>
+    </>
+  );
+}

@@ -1,0 +1,162 @@
+rules_version = '2';
+
+// MECTEC Firestore security rules.
+//
+// Principle: the browser bundle is public and can be modified by anyone, so
+// nothing in the React app is a security control. These rules are the only real
+// boundary. Assume every request is hostile and allow the narrowest thing that
+// makes the site work.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
+    // Admin access is granted by the EXISTENCE of a document at admins/{uid}.
+    // Deliberately not an email comparison: emails can be changed by the user
+    // on their own account, and a hardcoded address cannot be revoked without
+    // a redeploy.
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isString(value, maxLength) {
+      return value is string && value.size() <= maxLength;
+    }
+
+    function isOptionalString(value, maxLength) {
+      return value == null || isString(value, maxLength);
+    }
+
+    // ---------------------------------------------------------------------
+    // projects
+    // ---------------------------------------------------------------------
+    match /projects/{projectId} {
+
+      // Anyone may read a published project. Drafts are admin-only, which is
+      // what makes "unpublish" actually hide something.
+      allow get, list: if resource.data.published == true || isAdmin();
+
+      allow create, delete: if isAdmin();
+
+      // Two separate update paths:
+      //  1. An admin may change anything.
+      //  2. The public may increment viewCount and nothing else. Without this,
+      //     the view counter on the project page would silently fail forever.
+      allow update: if isAdmin()
+        || (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount'])
+          && request.resource.data.viewCount is int
+          && request.resource.data.viewCount == resource.data.viewCount + 1
+        );
+    }
+
+    // ---------------------------------------------------------------------
+    // projectRequests
+    // ---------------------------------------------------------------------
+    match /projectRequests/{requestId} {
+
+      // Requests contain personal contact details. The public can submit one
+      // but can never read any request back, including their own — there is no
+      // account system, so there is no way to prove ownership.
+      allow read: if isAdmin();
+
+      allow create: if isValidNewRequest();
+
+      // Only an admin can change status, priority or the admin block. A
+      // submitted request is immutable from the public side, which is why the
+      // client generates the document id first and uploads attachments before
+      // writing (see requestService.createRequest).
+      allow update, delete: if isAdmin();
+
+      function isValidNewRequest() {
+        let incoming = request.resource.data;
+        return
+          // The workflow always begins at 'new'. A spammer cannot inject a
+          // request that already looks reviewed or accepted.
+          incoming.status == 'new'
+          && incoming.priority in ['low', 'normal', 'high', 'urgent']
+
+          // Consent is a legal requirement, not a UI nicety, so it is enforced here.
+          && incoming.consent.agreeToTerms == true
+          && incoming.consent.allowContact == true
+
+          // The admin block must be empty on create. Otherwise anyone could
+          // submit a request with a quoted amount or internal notes pre-filled.
+          && incoming.admin.notes == null
+          && incoming.admin.quotedAmount == null
+          && incoming.admin.assignedTo == null
+
+          // Timestamps must come from the server, never from the client clock.
+          && incoming.createdAt == request.time
+          && incoming.updatedAt == request.time
+
+          // Required fields, with length caps so one submission cannot be used
+          // to write megabytes into the database.
+          && isString(incoming.requestNumber, 40)
+          && isString(incoming.contact.fullName, 100)
+          && isString(incoming.contact.email, 200)
+          && incoming.contact.email.matches('.+@.+[.].+')
+          && isOptionalString(incoming.contact.phone, 30)
+          && isOptionalString(incoming.contact.whatsapp, 30)
+          && isString(incoming.project.title, 120)
+          && isString(incoming.project.description, 5000)
+          && isString(incoming.project.category, 60)
+
+          // Attachments are metadata only; the files themselves live in
+          // Storage and are size-checked by storage.rules.
+          && incoming.attachments.size() <= 5;
+      }
+    }
+
+    // ---------------------------------------------------------------------
+    // contactMessages
+    // ---------------------------------------------------------------------
+    match /contactMessages/{messageId} {
+      allow read, update, delete: if isAdmin();
+
+      allow create: if
+        request.resource.data.read == false
+        && request.resource.data.createdAt == request.time
+        && isString(request.resource.data.name, 100)
+        && isString(request.resource.data.email, 200)
+        && request.resource.data.email.matches('.+@.+[.].+')
+        && isString(request.resource.data.subject, 150)
+        && isString(request.resource.data.message, 3000);
+    }
+
+    // ---------------------------------------------------------------------
+    // admins
+    // ---------------------------------------------------------------------
+    match /admins/{uid} {
+      // A signed-in user may read ONLY their own admin document. This is what
+      // authService.isAdmin() calls to decide whether to show the dashboard.
+      // Listing the collection is not permitted, so the set of admins is not
+      // enumerable by anyone.
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list: if false;
+
+      // Never writable from the client. Add and remove admins in the Firebase
+      // Console — see README, "Creating an admin account".
+      allow write: if false;
+    }
+
+    // ---------------------------------------------------------------------
+    // settings — site-wide config, e.g. settings/banner
+    // ---------------------------------------------------------------------
+    match /settings/{docId} {
+      // Public read: the banner has to be visible to every visitor, not
+      // just admins. Listing isn't needed since documents are read by
+      // fixed, known id (e.g. bannerService always reads "banner" directly).
+      allow get: if true;
+      allow list: if false;
+
+      allow write: if isAdmin();
+    }
+
+    // Anything not matched above is denied. No catch-all rule by design.
+  }
+}

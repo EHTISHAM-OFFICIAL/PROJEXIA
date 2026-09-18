@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg text-content font-sans antialiased;
+  }
+
+  /* Headings use the display face everywhere, without touching every component. */
+  h1, h2, h3 {
+    font-family: 'Space Grotesk', Inter, system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-bg;
+  }
+
+  ::selection {
+    @apply bg-accent/30 text-content;
+  }
+
+  /* Firefox number input spinners removed for a calmer form UI */
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Dark-scheme date pickers */
+  input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  /* Circuit-plane grid used behind the hero and a few section headers.
+     Faint platinum hairlines on the instrument-panel dark, like an
+     oscilloscope graticule. */
+  .grid-backdrop {
+    background-image:
+      linear-gradient(to right, rgba(237, 239, 238, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(237, 239, 238, 0.06) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 85% 65% at 50% 0%, #000 35%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 0%, #000 35%, transparent 100%);
+  }
+
+  .card {
+    @apply rounded-card border border-line bg-surface;
+  }
+
+  .field-input {
+    @apply w-full rounded-lg border border-line bg-surface-raised px-3.5 py-2.5 text-[15px]
+           text-content placeholder:text-content-muted transition-colors
+           focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .field-input-error {
+    @apply border-state-danger focus:border-state-danger focus:ring-state-danger;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

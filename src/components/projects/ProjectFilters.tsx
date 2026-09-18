@@ -1,0 +1,113 @@
+import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { Select, TextInput } from '../forms/Inputs';
+import { PROJECT_CATEGORIES } from '../../constants/categories';
+import {
+  PROJECT_DIFFICULTIES,
+  PROJECT_SORT_OPTIONS,
+  PROJECT_STATUSES,
+} from '../../constants/projectOptions';
+import type { ProjectFilters as Filters, ProjectSortKey } from '../../types/project';
+import { EMPTY_FILTERS } from '../../hooks/useProjects';
+
+interface ProjectFiltersProps {
+  filters: Filters;
+  onChange: (filters: Filters) => void;
+  technologies: string[];
+  resultCount: number;
+}
+
+export function ProjectFilters({
+  filters,
+  onChange,
+  technologies,
+  resultCount,
+}: ProjectFiltersProps) {
+  const update = <K extends keyof Filters>(key: K, value: Filters[K]) =>
+    onChange({ ...filters, [key]: value });
+
+  const activeCount = [
+    filters.category,
+    filters.technology,
+    filters.difficulty,
+    filters.status,
+  ].filter(Boolean).length;
+
+  const hasAnyFilter = activeCount > 0 || filters.search !== '';
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="relative">
+        <Search
+          size={17}
+          aria-hidden="true"
+          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-content-muted"
+        />
+        <TextInput
+          type="search"
+          value={filters.search}
+          onChange={(event) => update('search', event.target.value)}
+          placeholder="Search projects by name, technology or tag"
+          aria-label="Search projects"
+          className="pl-11"
+        />
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <Select
+          options={PROJECT_CATEGORIES}
+          placeholder="All categories"
+          value={filters.category}
+          aria-label="Filter by category"
+          onChange={(event) => update('category', event.target.value)}
+        />
+        <Select
+          options={technologies}
+          placeholder="All technologies"
+          value={filters.technology}
+          aria-label="Filter by technology"
+          onChange={(event) => update('technology', event.target.value)}
+        />
+        <Select
+          options={PROJECT_DIFFICULTIES}
+          placeholder="Any difficulty"
+          value={filters.difficulty}
+          aria-label="Filter by difficulty"
+          onChange={(event) => update('difficulty', event.target.value)}
+        />
+        <Select
+          options={PROJECT_STATUSES}
+          placeholder="Any status"
+          value={filters.status}
+          aria-label="Filter by status"
+          onChange={(event) => update('status', event.target.value)}
+        />
+        <Select
+          options={PROJECT_SORT_OPTIONS}
+          value={filters.sort}
+          aria-label="Sort projects"
+          onChange={(event) => update('sort', event.target.value as ProjectSortKey)}
+        />
+      </div>
+
+      <div className="flex items-center justify-between gap-4">
+        <p className="flex items-center gap-2 text-sm text-content-secondary">
+          <SlidersHorizontal size={15} aria-hidden="true" className="text-content-muted" />
+          <span aria-live="polite">
+            {resultCount} {resultCount === 1 ? 'project' : 'projects'}
+            {activeCount > 0 && ` · ${activeCount} ${activeCount === 1 ? 'filter' : 'filters'}`}
+          </span>
+        </p>
+        {hasAnyFilter && (
+          <button
+            type="button"
+            onClick={() => onChange(EMPTY_FILTERS)}
+            className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-content-secondary transition-colors hover:text-content"
+          >
+            <X size={14} aria-hidden="true" />
+            Clear filters
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,291 @@
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CheckCircle2, Copy } from 'lucide-react';
+import { Container } from '../../components/ui/Container';
+import { Seo } from '../../components/ui/Seo';
+import { Button, ButtonLink } from '../../components/ui/Button';
+import { Alert } from '../../components/ui/Alert';
+import { SectionA } from './sections/SectionA';
+import { SectionB } from './sections/SectionB';
+import { SectionC } from './sections/SectionC';
+import { SectionD } from './sections/SectionD';
+import { SectionE } from './sections/SectionE';
+import { SectionF } from './sections/SectionF';
+import { SectionG } from './sections/SectionG';
+import { SectionH } from './sections/SectionH';
+import { SectionI } from './sections/SectionI';
+import { SectionJ } from './sections/SectionJ';
+import { requestService } from '../../services/requestService';
+import {
+  projectRequestSchema,
+  type ProjectRequestFormOutput,
+  type ProjectRequestFormValues,
+} from '../../utils/validation';
+import { toUserMessage } from '../../utils/errors';
+import { SITE } from '../../constants/site';
+
+const DEFAULT_VALUES: ProjectRequestFormValues = {
+  fullName: '',
+  email: '',
+  phone: '',
+  whatsapp: '',
+  country: '',
+  city: '',
+  preferredContactMethod: 'Email',
+
+  projectTitle: '',
+  projectCategory: 'Arduino',
+  projectType: 'Personal',
+  projectPurpose: '',
+  projectDescription: '',
+
+  preferredPlatform: [],
+  connectivity: [],
+  sensors: [],
+  outputs: [],
+  powerSource: '',
+  powerRequirements: '',
+
+  requiresMobileApp: false,
+  requiresWebDashboard: false,
+  requiresCloudDatabase: false,
+  requiresNotifications: false,
+  requiresRemoteControl: false,
+  softwareNotes: '',
+  possibleLanguages: [],
+
+  complexity: 'Not sure',
+  prototypeQuantity: '',
+  estimatedQuantity: '',
+  deploymentEnvironment: '',
+
+  budgetRange: '',
+  budgetNotes: '',
+
+  desiredStartDate: '',
+  desiredDeadline: '',
+  timelineFlexibility: '',
+  urgency: 'Normal',
+
+  referenceLinks: [''],
+  referenceDescription: '',
+
+  specialRequirements: '',
+  additionalNotes: '',
+  consultationRequired: false,
+  hasExistingHardware: false,
+  existingHardwareDescription: '',
+  hasExistingCode: false,
+  existingCodeDescription: '',
+
+  agreeToTerms: false as unknown as true,
+  allowContact: false as unknown as true,
+
+  website: '',
+};
+
+const SECTION_LINKS = [
+  { id: 'contact', label: 'Contact' },
+  { id: 'basics', label: 'The project' },
+  { id: 'technical', label: 'Technical' },
+  { id: 'software', label: 'Software' },
+  { id: 'scale', label: 'Scale' },
+  { id: 'budget', label: 'Budget' },
+  { id: 'timeline', label: 'Timeline' },
+  { id: 'references', label: 'References' },
+  { id: 'additional', label: 'Anything else' },
+  { id: 'consent', label: 'Send' },
+];
+
+export default function RequestProject() {
+  const [files, setFiles] = useState<File[]>([]);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ requestNumber: string } | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const form = useForm<ProjectRequestFormValues>({
+    resolver: zodResolver(projectRequestSchema),
+    defaultValues: DEFAULT_VALUES,
+    mode: 'onBlur',
+  });
+
+  const { handleSubmit, formState } = form;
+  const { isSubmitting, errors } = formState;
+  const errorCount = Object.keys(errors).length;
+
+  const onSubmit = async (values: ProjectRequestFormValues) => {
+    setSubmitError(null);
+
+    // Honeypot: hidden from real users, so a value here means an automated submission.
+    if (values.website) {
+      setResult({ requestNumber: 'MECTEC-0000-000000' });
+      return;
+    }
+
+    try {
+      const created = await requestService.createRequest(
+        values as ProjectRequestFormOutput,
+        files
+      );
+      setResult({ requestNumber: created.requestNumber });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      setSubmitError(
+        toUserMessage(error, 'Your request could not be sent. Please try again in a moment.')
+      );
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  if (result) {
+    return (
+      <>
+        <Seo title="Request received" path="/request-project" noIndex />
+        <Container className="py-20">
+          <div className="mx-auto max-w-xl rounded-card border border-state-success/25 bg-state-success/5 p-8 text-center sm:p-12">
+            <CheckCircle2
+              size={30}
+              className="mx-auto text-state-success"
+              aria-hidden="true"
+            />
+            <h1 className="mt-5 text-2xl font-semibold tracking-tight sm:text-3xl">
+              Request received
+            </h1>
+            <p className="mt-4 text-base leading-relaxed text-content-secondary">
+              MECTEC will review the details and reply {SITE.responseTime} to the contact method you
+              chose.
+            </p>
+
+            <div className="mt-8 rounded-lg border border-line bg-surface p-5">
+              <p className="text-sm text-content-muted">Your reference number</p>
+              <p className="mt-2 font-mono text-lg text-content">{result.requestNumber}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  void navigator.clipboard.writeText(result.requestNumber);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+                className="mt-3 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-accent transition-colors hover:text-accent-hover"
+              >
+                <Copy size={14} aria-hidden="true" />
+                {copied ? 'Copied' : 'Copy reference'}
+              </button>
+              <p className="mt-3 text-xs leading-relaxed text-content-muted">
+                Quote this if you follow up by email or WhatsApp.
+              </p>
+            </div>
+
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <ButtonLink to="/projects" variant="secondary">
+                Browse projects
+              </ButtonLink>
+              <ButtonLink to="/">Back to home</ButtonLink>
+            </div>
+          </div>
+        </Container>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Seo
+        title="Request a project"
+        description="Tell MECTEC what you want to build. This form covers the technical details, budget and timeline so the first reply is a real answer."
+        path="/request-project"
+      />
+
+      <div className="border-b border-line">
+        <Container className="py-14 sm:py-20">
+          <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+            Request a project
+          </h1>
+          <p className="mt-5 max-w-prose text-base leading-relaxed text-content-secondary">
+            Ten short sections. Only a handful of fields are required — skip anything technical you
+            aren't sure about, and MECTEC will fill in the gaps when replying. Expect a response{' '}
+            {SITE.responseTime}.
+          </p>
+        </Container>
+      </div>
+
+      <Container className="py-12">
+        <div className="grid gap-12 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-16">
+          <nav aria-label="Form sections" className="hidden lg:block">
+            <div className="sticky top-24">
+              <p className="text-sm font-medium text-content">Sections</p>
+              <ol className="mt-4 flex flex-col gap-1">
+                {SECTION_LINKS.map((section, index) => (
+                  <li key={section.id}>
+                    <a
+                      href={`#${section.id}`}
+                      className="flex items-baseline gap-2.5 rounded-md px-2 py-1.5 text-sm text-content-secondary transition-colors hover:bg-surface hover:text-content"
+                    >
+                      <span className="font-mono text-xs text-content-muted">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      {section.label}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </nav>
+
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex min-w-0 flex-col gap-14">
+            {submitError && <Alert tone="danger">{submitError}</Alert>}
+
+            <SectionA form={form} />
+            <SectionB form={form} />
+            <SectionC form={form} />
+            <SectionD form={form} />
+            <SectionE form={form} />
+            <SectionF form={form} />
+            <SectionG form={form} />
+            <SectionH
+              form={form}
+              files={files}
+              onFilesChange={setFiles}
+              uploading={isSubmitting}
+            />
+            <SectionI form={form} />
+            <SectionJ form={form} />
+
+            <input
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="absolute h-0 w-0 opacity-0"
+              {...form.register('website')}
+            />
+
+            <div className="border-t border-line pt-8">
+              {errorCount > 0 && (
+                <Alert tone="danger" className="mb-5">
+                  {errorCount === 1
+                    ? 'One field needs attention before this can be sent. It is marked in red above.'
+                    : `${errorCount} fields need attention before this can be sent. They are marked in red above.`}
+                </Alert>
+              )}
+
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <Button type="submit" size="lg" loading={isSubmitting}>
+                  {isSubmitting
+                    ? files.length
+                      ? 'Uploading and sending…'
+                      : 'Sending…'
+                    : 'Send project request'}
+                </Button>
+                <p className="text-sm text-content-secondary">
+                  You'll get a reference number as soon as this is sent.
+                </p>
+              </div>
+            </div>
+          </form>
+        </div>
+      </Container>
+    </>
+  );
+}

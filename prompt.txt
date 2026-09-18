@@ -1,0 +1,8 @@
+Lightbox for project galleries — full-screen image viewer instead of just swapping the thumbnail
+FAQ accordion on the About or Contact page
+A light/dark theme toggle — genuinely feasible now since both themes already exist as token sets from earlier rounds; would need a moderate refactor to make it runtime-switchable rather than build-time
+Testimonials section — only worth building once you have real client quotes to put in it, per your own "no fake stats" principle
+A build-log/blog section — good for SEO, shows ongoing activity between finished projects
+Make sure the banner remains visible; currently, it has a cross  button so the user can close it, but make sure there's no cross button, or add that option inside the admin panel so if the admin wants, then he can allow that cross button. Furthermore, the OFFER text should look more energetic and engaging so user can attract towards it. Also, make sure that the  banner text is moving, like kind of rotating, going from one side appearing from other; moreover, make the banner size a little bit bigger so it becomes more noticeable. Make all these things customizable, so the admin has full control directly through the admin panel.
+
+Add all these functionalities properly and nicely.
