@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { ButtonLink } from '../ui/Button';
 import { Wordmark } from './Wordmark';
+import { ThemeToggle } from './ThemeToggle';
 import { NAV_LINKS } from '../../constants/site';
 import { cn } from '../../utils/cn';
 
@@ -63,7 +64,8 @@ export function Navbar() {
             ))}
           </ul>
 
-          <div className="hidden md:block">
+          <div className="hidden items-center gap-2 md:flex">
+            <ThemeToggle />
             <ButtonLink to="/request-project" size="sm">
               Request a project
             </ButtonLink>
@@ -105,7 +107,11 @@ export function Navbar() {
                 </li>
               ))}
             </ul>
-            <ButtonLink to="/request-project" size="lg" className="mt-4 w-full">
+            <div className="mt-4 flex items-center justify-between rounded-lg border border-line px-3 py-2.5">
+              <span className="text-sm text-content-secondary">Theme</span>
+              <ThemeToggle />
+            </div>
+            <ButtonLink to="/request-project" size="lg" className="mt-3 w-full">
               Request a project
             </ButtonLink>
           </Container>

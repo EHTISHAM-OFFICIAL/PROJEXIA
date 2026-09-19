@@ -144,21 +144,17 @@ export const REQUEST_PRIORITY_TONE: Record<
   urgent: 'danger',
 };
 
-/** Attachment rules. Mirrored in storage.rules — the rules are the real enforcement. */
+/**
+ * Attachment rules. Images only — imgBB (which hosts all uploaded files in
+ * this app) only accepts image formats, not PDFs or documents. If someone
+ * needs to share a datasheet or document, the request form's "reference
+ * links" and description fields cover that instead.
+ */
 export const ATTACHMENT_RULES = {
   maxFiles: 5,
   maxSizeBytes: 5 * 1024 * 1024,
-  allowedMimeTypes: [
-    'image/jpeg',
-    'image/png',
-    'image/webp',
-    'image/gif',
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain',
-  ],
-  allowedExtensions: ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.pdf', '.doc', '.docx', '.txt'],
+  allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/bmp'],
+  allowedExtensions: ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp'],
 } as const;
 
 /** Project image rules, used by the admin media uploader. */

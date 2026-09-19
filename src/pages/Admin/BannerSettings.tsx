@@ -12,7 +12,7 @@ import { bannerService } from '../../services/bannerService';
 import { isBannerLive } from '../../utils/banner';
 import { toDateInputValue } from '../../utils/formatting';
 import { toUserMessage } from '../../utils/errors';
-import type { BannerTone } from '../../types/banner';
+import type { BannerSize, BannerTone } from '../../types/banner';
 
 const TONE_OPTIONS: { value: BannerTone; label: string }[] = [
   { value: 'accent', label: 'Offer — copper accent' },
@@ -22,12 +22,20 @@ const TONE_OPTIONS: { value: BannerTone; label: string }[] = [
   { value: 'danger', label: 'Urgent — red' },
 ];
 
+const SIZE_OPTIONS: { value: BannerSize; label: string }[] = [
+  { value: 'large', label: 'Large — more noticeable' },
+  { value: 'normal', label: 'Normal — compact' },
+];
+
 interface FormState {
   enabled: boolean;
   message: string;
   linkLabel: string;
   linkUrl: string;
   tone: BannerTone;
+  size: BannerSize;
+  dismissible: boolean;
+  scrolling: boolean;
 }
 
 const EMPTY_FORM: FormState = {
@@ -36,6 +44,9 @@ const EMPTY_FORM: FormState = {
   linkLabel: '',
   linkUrl: '',
   tone: 'accent',
+  size: 'large',
+  dismissible: false,
+  scrolling: true,
 };
 
 export default function BannerSettings() {
@@ -55,6 +66,9 @@ export default function BannerSettings() {
       linkLabel: data.linkLabel ?? '',
       linkUrl: data.linkUrl ?? '',
       tone: data.tone,
+      size: data.size,
+      dismissible: data.dismissible,
+      scrolling: data.scrolling,
     });
     setStartDate(toDateInputValue(data.startDate));
     setEndDate(toDateInputValue(data.endDate));
@@ -74,6 +88,9 @@ export default function BannerSettings() {
         linkLabel: form.linkLabel.trim() || null,
         linkUrl: form.linkUrl.trim() || null,
         tone: form.tone,
+        size: form.size,
+        dismissible: form.dismissible,
+        scrolling: form.scrolling,
         startDate: startDate ? Timestamp.fromDate(new Date(startDate)) : null,
         endDate: endDate ? Timestamp.fromDate(new Date(endDate)) : null,
       });
@@ -94,6 +111,9 @@ export default function BannerSettings() {
     linkLabel: form.linkLabel || null,
     linkUrl: form.linkUrl || null,
     tone: form.tone,
+    size: form.size,
+    dismissible: form.dismissible,
+    scrolling: form.scrolling,
     startDate: startDate ? Timestamp.fromDate(new Date(startDate)) : null,
     endDate: endDate ? Timestamp.fromDate(new Date(endDate)) : null,
     updatedAt: null,
@@ -160,6 +180,31 @@ export default function BannerSettings() {
             onChange={(event) => update('tone', event.target.value as BannerTone)}
           />
         </Field>
+
+        <Field label="Size" htmlFor="size">
+          <Select
+            id="size"
+            options={SIZE_OPTIONS}
+            value={form.size}
+            onChange={(event) => update('size', event.target.value as BannerSize)}
+          />
+        </Field>
+
+        <Checkbox
+          id="scrolling"
+          label="Scroll the message"
+          description="Text moves across the bar continuously, like a ticker — harder to miss than static text."
+          checked={form.scrolling}
+          onChange={(event) => update('scrolling', event.target.checked)}
+        />
+
+        <Checkbox
+          id="dismissible"
+          label="Let visitors close it"
+          description="Off by default, so it stays visible until you turn it off — not until someone clicks away."
+          checked={form.dismissible}
+          onChange={(event) => update('dismissible', event.target.checked)}
+        />
 
         <div className="grid gap-5 sm:grid-cols-2">
           <Field

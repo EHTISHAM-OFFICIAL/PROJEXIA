@@ -7,6 +7,8 @@ import Home from '../pages/Home/Home';
 import Projects from '../pages/Projects/Projects';
 import ProjectDetails from '../pages/ProjectDetails/ProjectDetails';
 import About from '../pages/About/About';
+import BlogIndex from '../pages/Blog/BlogIndex';
+import BlogPostPage from '../pages/Blog/BlogPost';
 import Contact from '../pages/Contact/Contact';
 import NotFound from '../pages/NotFound/NotFound';
 
@@ -24,6 +26,11 @@ const AdminProjectForm = lazy(() => import('../pages/Admin/ProjectForm'));
 const AdminRequestsList = lazy(() => import('../pages/Admin/RequestsList'));
 const AdminRequestDetail = lazy(() => import('../pages/Admin/RequestDetail'));
 const AdminBannerSettings = lazy(() => import('../pages/Admin/BannerSettings'));
+const AdminSettings = lazy(() => import('../pages/Admin/Settings'));
+const AdminTestimonialsList = lazy(() => import('../pages/Admin/TestimonialsList'));
+const AdminTestimonialForm = lazy(() => import('../pages/Admin/TestimonialForm'));
+const AdminBlogList = lazy(() => import('../pages/Admin/BlogList'));
+const AdminBlogForm = lazy(() => import('../pages/Admin/BlogForm'));
 
 function RouteFallback() {
   return (
@@ -42,6 +49,8 @@ export function AppRoutes() {
           <Route index element={<Home />} />
           <Route path="projects" element={<Projects />} />
           <Route path="projects/:slug" element={<ProjectDetails />} />
+          <Route path="blog" element={<BlogIndex />} />
+          <Route path="blog/:slug" element={<BlogPostPage />} />
           <Route path="request-project" element={<RequestProject />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
@@ -58,7 +67,14 @@ export function AppRoutes() {
             <Route path="projects/:id/edit" element={<AdminProjectForm />} />
             <Route path="requests" element={<AdminRequestsList />} />
             <Route path="requests/:id" element={<AdminRequestDetail />} />
+            <Route path="testimonials" element={<AdminTestimonialsList />} />
+            <Route path="testimonials/new" element={<AdminTestimonialForm />} />
+            <Route path="testimonials/:id/edit" element={<AdminTestimonialForm />} />
+            <Route path="blog" element={<AdminBlogList />} />
+            <Route path="blog/new" element={<AdminBlogForm />} />
+            <Route path="blog/:id/edit" element={<AdminBlogForm />} />
             <Route path="banner" element={<AdminBannerSettings />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
         </Route>
       </Routes>

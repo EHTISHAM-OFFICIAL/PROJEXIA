@@ -157,6 +157,22 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ---------------------------------------------------------------------
+    // posts — blog / build-log entries
+    // ---------------------------------------------------------------------
+    match /posts/{postId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // testimonials
+    // ---------------------------------------------------------------------
+    match /testimonials/{testimonialId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
     // Anything not matched above is denied. No catch-all rule by design.
   }
 }

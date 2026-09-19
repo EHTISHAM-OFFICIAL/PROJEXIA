@@ -1,6 +1,17 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { FolderKanban, Inbox, LayoutDashboard, LogOut, Megaphone, Menu, X } from 'lucide-react';
+import {
+  FolderKanban,
+  Inbox,
+  LayoutDashboard,
+  LogOut,
+  Megaphone,
+  Menu,
+  MessageSquareQuote,
+  Newspaper,
+  Settings,
+  X,
+} from 'lucide-react';
 import { Wordmark } from './Wordmark';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../utils/cn';
@@ -9,7 +20,10 @@ const ADMIN_LINKS = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/projects', label: 'Projects', icon: FolderKanban, end: false },
   { to: '/admin/requests', label: 'Requests', icon: Inbox, end: false },
+  { to: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote, end: false },
+  { to: '/admin/blog', label: 'Blog', icon: Newspaper, end: false },
   { to: '/admin/banner', label: 'Banner', icon: Megaphone, end: false },
+  { to: '/admin/settings', label: 'Settings', icon: Settings, end: false },
 ];
 
 export function AdminLayout() {

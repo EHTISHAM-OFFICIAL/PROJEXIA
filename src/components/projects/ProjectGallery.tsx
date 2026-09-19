@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { Maximize2 } from 'lucide-react';
 import { Image } from '../ui/Image';
+import { ImageLightbox } from '../ui/ImageLightbox';
 import type { GalleryImage } from '../../types/project';
 
 export function ProjectGallery({ images }: { images: GalleryImage[] }) {
   const ordered = [...images].sort((a, b) => a.order - b.order);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const active = ordered[activeIndex];
 
   if (ordered.length === 0) return null;
@@ -12,13 +15,22 @@ export function ProjectGallery({ images }: { images: GalleryImage[] }) {
   return (
     <div className="flex flex-col gap-4">
       <figure>
-        <div className="overflow-hidden rounded-card border border-line bg-surface-raised">
+        <button
+          type="button"
+          onClick={() => setLightboxOpen(true)}
+          aria-label="View full size"
+          className="group relative block w-full overflow-hidden rounded-card border border-line bg-surface-raised"
+        >
           <Image
             src={active.url}
             alt={active.alt || 'Project photograph'}
-            className="aspect-[16/10] w-full object-cover"
+            className="aspect-[16/10] w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
-        </div>
+          <span className="absolute right-3 top-3 flex items-center gap-1.5 rounded-md bg-bg/80 px-2.5 py-1.5 text-xs text-content opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+            <Maximize2 size={13} aria-hidden="true" />
+            View full size
+          </span>
+        </button>
         {active.caption && (
           <figcaption className="mt-3 text-sm text-content-secondary">{active.caption}</figcaption>
         )}
@@ -47,6 +59,15 @@ export function ProjectGallery({ images }: { images: GalleryImage[] }) {
             </button>
           ))}
         </div>
+      )}
+
+      {lightboxOpen && (
+        <ImageLightbox
+          images={ordered}
+          index={activeIndex}
+          onClose={() => setLightboxOpen(false)}
+          onNavigate={setActiveIndex}
+        />
       )}
     </div>
   );

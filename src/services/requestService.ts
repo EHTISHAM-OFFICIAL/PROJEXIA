@@ -14,7 +14,7 @@ import {
   type QueryDocumentSnapshot,
 } from 'firebase/firestore';
 import { COLLECTIONS, db } from '../firebase/firestore';
-import { storageService, type UploadedFile } from './storageService';
+import { imgbbService, type UploadedImage } from './imgbbService';
 import type {
   ProjectRequest,
   RequestAttachment,
@@ -48,12 +48,12 @@ function dateToTimestamp(value: string | undefined): Timestamp | null {
   return Number.isNaN(parsed.getTime()) ? null : Timestamp.fromDate(parsed);
 }
 
-function toAttachment(file: UploadedFile): RequestAttachment {
+function toAttachment(file: File, uploaded: UploadedImage): RequestAttachment {
   return {
     name: file.name,
-    url: file.url,
-    storagePath: file.storagePath,
-    contentType: file.contentType,
+    url: uploaded.url,
+    storagePath: uploaded.deleteUrl, // imgBB's delete link, kept for admin reference
+    contentType: file.type,
     size: file.size,
   };
 }
@@ -92,9 +92,10 @@ export const requestService = {
   /**
    * Creates one request document.
    *
-   * The document id is generated client-side first so attachments can be uploaded
-   * to their final path before the document is written. That keeps it to a single
-   * create — the public has no permission to update a request afterwards.
+   * Attachments upload to imgBB first (they don't need a Firestore id to
+   * exist), then the request document is written once, with the resulting
+   * URLs embedded. The public has no permission to update a request
+   * afterwards, so this has to be a single create.
    */
   async createRequest(
     values: ProjectRequestFormOutput,
@@ -103,9 +104,8 @@ export const requestService = {
     const requestRef = doc(requestsRef);
     const requestNumber = generateRequestNumber();
 
-    const uploads = files.length
-      ? await storageService.uploadRequestAttachments(requestRef.id, files)
-      : [];
+    const uploads = files.length ? await imgbbService.uploadMany(files) : [];
+    const attachments = uploads.map((uploaded, index) => toAttachment(files[index], uploaded));
 
     await setDoc(requestRef, {
       requestNumber,
@@ -173,7 +173,7 @@ export const requestService = {
         description: nullable(values.referenceDescription),
       },
 
-      attachments: uploads.map(toAttachment),
+      attachments,
 
       additionalRequirements: {
         specialRequirements: nullable(values.specialRequirements),

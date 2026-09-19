@@ -1,113 +1,42 @@
 # MECTEC
 
-**Electronics project showcase and client request platform**
-
-MECTEC is a React + TypeScript + Firebase platform designed to showcase electronics projects and allow clients to submit detailed project requests.
-
-The project is intentionally structured to be **secure, maintainable, and practical for a single developer**.
+Electronics project showcase and client request platform. React + TypeScript + Firebase, built to be run and maintained by one developer.
 
 ---
 
-## ✨ Features
-
-- 📁 Electronics project showcase
-- 🔎 Client-side project search and filtering
-- 📋 Detailed project case studies
-- 📨 Client project request system
-- 📬 Contact message system
-- 🔐 Firebase Authentication for administrators
-- 👤 UID-based admin authorization
-- 🖼️ Firebase Storage for project media
-- 📎 Private client attachment uploads
-- 📊 Project view counting
-- 🌐 SEO metadata and sitemap
-- 📱 Responsive React interface
-- 🛡️ Firestore and Storage security rules
-- ⚡ Firebase Hosting deployment
-- 🚫 No public account registration
-
----
-
-## 🛠️ Tech Stack
-
-| Technology              | Purpose                                  |
-| ----------------------- | ---------------------------------------- |
-| React                   | Frontend UI                              |
-| TypeScript              | Type-safe application code               |
-| Vite                    | Development and production build tooling |
-| Firebase Authentication | Admin authentication                     |
-| Cloud Firestore         | Application database                     |
-| Firebase Storage        | Images, videos, and attachments          |
-| Firebase Hosting        | Production hosting                       |
-
----
-
-# 🚀 Quick Start
-
-### 1. Install dependencies
+## Quick start
 
 ```bash
 npm install
-```
-
-### 2. Create your environment file
-
-```bash
-cp .env.example .env
-```
-
-Then fill in your Firebase configuration values.
-
-### 3. Start the development server
-
-```bash
+cp .env.example .env     # then fill in your Firebase values
 npm run dev
 ```
 
-Open:
+Open http://localhost:5173.
 
-```text
-http://localhost:5173
+The site will load, but the projects page will be empty until Firestore has data and the security rules are deployed. Work through **Firebase setup** below.
+
+### Commands
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Dev server with hot reload |
+| `npm run build` | Type-check, then build to `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | Type-check only, no build |
+| `npm run seed` | Add sample projects to Firestore |
+
+---
+
+## Firebase setup
+
+You need a Firebase project with Firestore, Authentication and Storage enabled.
+
+### 1. Environment variables
+
+Firebase Console → Project settings → General → Your apps → SDK setup and configuration. Copy the values into `.env`:
+
 ```
-
-> **Note:** The site will load, but the Projects page will remain empty until Firestore contains project data and the Firebase security rules have been deployed.
-
-Continue with the **Firebase Setup** section below.
-
----
-
-# 📜 Available Commands
-
-| Command           | Description                                           |
-| ----------------- | ----------------------------------------------------- |
-| `npm run dev`     | Start the development server with hot reload          |
-| `npm run build`   | Type-check and create the production build in `dist/` |
-| `npm run preview` | Preview the production build locally                  |
-| `npm run lint`    | Run TypeScript checks without creating a build        |
-| `npm run seed`    | Add sample projects to Firestore                      |
-
----
-
-# 🔥 Firebase Setup
-
-MECTEC requires a Firebase project with the following services enabled:
-
-- Firestore
-- Authentication
-- Storage
-- Firebase Hosting
-
----
-
-## 1. Configure Environment Variables
-
-Go to:
-
-**Firebase Console → Project settings → General → Your apps → SDK setup and configuration**
-
-Copy the Firebase configuration values into `.env`:
-
-```env
 VITE_FIREBASE_API_KEY=
 VITE_FIREBASE_AUTH_DOMAIN=
 VITE_FIREBASE_PROJECT_ID=
@@ -116,1027 +45,206 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
-> **Important:** Vite reads `.env` only when the development server starts. Restart the dev server after changing environment variables.
+Vite reads `.env` only at startup, so restart the dev server after editing it.
 
-### Are these Firebase values secret?
+**These values are not secrets.** They ship inside the JavaScript bundle by design — they identify your project, they do not authorise anything. All real security comes from `firestore.rules` and `storage.rules`. `.env` is gitignored for config hygiene (different values per environment), not secrecy.
 
-No.
+### 2. Enable the services
 
-Firebase's web configuration values are designed to be included in the browser bundle. They identify your Firebase project but do not grant unrestricted access to your database.
+- **Firestore** → Create database → start in **production mode** (the rules in this repo replace the defaults).
+- **Authentication** → Sign-in method → enable **Email/Password**. Nothing else is needed; there is no public sign-up.
+- **Storage** → Get started.
 
-Actual protection comes from:
-
-- `firestore.rules`
-- `storage.rules`
-- Firebase Authentication
-- Optional Firebase App Check
-
-The `.env` file is still gitignored because different environments may use different configuration values and keeping configuration out of version control is good practice.
-
----
-
-## 2. Enable Firebase Services
-
-### Firestore
-
-Go to:
-
-**Firebase Console → Firestore Database → Create database**
-
-Start in:
-
-**Production mode**
-
-The rules included in this repository should then be deployed.
-
-### Authentication
-
-Go to:
-
-**Firebase Console → Authentication → Sign-in method**
-
-Enable:
-
-**Email/Password**
-
-There is intentionally **no public registration system**.
-
-Only administrators are manually created.
-
-### Storage
-
-Go to:
-
-**Firebase Console → Storage → Get started**
-
----
-
-# 🔐 3. Deploy Firebase Rules and Indexes
-
-Install the Firebase CLI if necessary:
+### 3. Deploy the rules and indexes
 
 ```bash
 npm install -g firebase-tools
-```
-
-Log in:
-
-```bash
 firebase login
-```
-
-Connect the local project to your Firebase project:
-
-```bash
-firebase use --add
-```
-
-Select the appropriate Firebase project.
-
-Then deploy the security rules and indexes:
-
-```bash
+firebase use --add            # select your project
 firebase deploy --only firestore:rules,firestore:indexes,storage:rules
 ```
 
-> **Important:** Deploy the rules before putting the website online. The application's security depends on these rules, not on frontend code.
+Do this **before** putting the site online. Until the rules are deployed, Firestore's default rules apply and your data is either fully locked or fully open depending on the mode you chose.
 
----
+### 4. Creating an admin account
 
-# 👤 4. Create an Admin Account
+There is no sign-up page. Admin access is granted by hand, in two steps.
 
-MECTEC does not have a public sign-up page.
+**a. Create the user.** Firebase Console → Authentication → Users → Add user. Enter an email and password. Copy the **User UID** that appears in the table.
 
-Admin access is granted manually in two steps.
+**b. Grant admin.** Firestore → Start collection → Collection ID `admins`. Create a document whose **Document ID is exactly that UID**, with these fields:
 
-## Step A — Create the Firebase user
+| Field | Type | Value |
+|---|---|---|
+| `role` | string | `admin` |
+| `email` | string | your email |
+| `createdAt` | timestamp | now |
 
-Go to:
+Only the existence of the document matters; the fields are for your own reference.
 
-**Firebase Console → Authentication → Users → Add user**
+Now sign in at `/admin/login`.
 
-Enter the administrator's email and password.
+**Why a document instead of an email check?** A rule like `request.auth.token.email == "me@example.com"` looks simpler, but a user can change their own account email, and revoking access means editing and redeploying rules. A document can be deleted in one click, and multiple admins cost nothing. Firestore custom claims would be marginally better but require the Admin SDK or a Cloud Function, which this project deliberately avoids.
 
-After creating the user, copy the **User UID**.
-
----
-
-## Step B — Grant admin access
-
-Go to:
-
-**Firebase Console → Firestore Database → Data**
-
-Create a collection:
-
-```text
-admins
-```
-
-Create a document where the **Document ID is exactly the Firebase Authentication UID**.
-
-Example:
-
-```text
-admins/
-└── xxxxxxxxxxxxxxxxx
-```
-
-Recommended fields:
-
-| Field       | Type      | Value            |
-| ----------- | --------- | ---------------- |
-| `role`      | string    | `admin`          |
-| `email`     | string    | Your admin email |
-| `createdAt` | timestamp | Current time     |
-
-Only the existence of the document is required by the security rules.
-
-Once the document exists, the user can sign in at:
-
-```text
-/admin/login
-```
-
-### Why use an admin document?
-
-MECTEC deliberately does not rely on a hardcoded email address.
-
-The security rules check:
-
-```text
-admins/{authenticated-user-uid}
-```
-
-If the document exists, the user is an administrator.
-
-This makes access easy to revoke: simply remove the document.
-
-It also supports multiple administrators without requiring a rules redeployment.
-
-> **Security note:** Firebase custom claims can provide another robust authorization model, but they require the Admin SDK or a Cloud Function. MECTEC deliberately avoids that additional infrastructure.
-
----
-
-# 🌱 5. Optional Sample Data
-
-You can populate Firestore with sample projects using:
+### 5. Sample data (optional)
 
 ```bash
 SEED_EMAIL=you@example.com SEED_PASSWORD=yourpassword npm run seed
 ```
 
-The seed script creates five sample projects.
+Adds five sample projects, each marked `isSample: true` with a slug starting `sample-`. They have no images, so cards show a neutral placeholder — that is intentional, so they are never mistaken for real work.
 
-Each sample project:
-
-- Has `isSample: true`
-- Uses a slug beginning with `sample-`
-- Contains no images
-- Uses a neutral placeholder on project cards
-
-This prevents sample projects from being confused with real client work.
-
-### Remove sample projects
+Remove them once you have your own:
 
 ```bash
-SEED_EMAIL=you@example.com SEED_PASSWORD=yourpassword node scripts/seed.mjs --remove
+SEED_EMAIL=... SEED_PASSWORD=... node scripts/seed.mjs --remove
 ```
 
-After removing the samples, delete:
-
-```text
-scripts/seed.mjs
-```
+Then delete `scripts/seed.mjs`.
 
 ---
 
-# 📝 Before Going Live
+## Before you go live
 
-Before publishing MECTEC, replace all placeholder values in:
-
-```text
-src/constants/site.ts
-```
-
-Look for the `TODO` values.
-
-Example:
+Replace the placeholder values in **`src/constants/site.ts`**. Every one is marked `TODO`:
 
 ```ts
-email: 'contact@mectec.pk',
-whatsapp: '',
-phone: '',
+email: 'contact@mectec.pk',   // TODO — your real address
+whatsapp: '',                 // TODO — e.g. 923001234567 (no + or spaces)
+phone: '',                    // TODO
 ```
 
-Add your real:
-
-- Email address
-- WhatsApp number
-- Phone number
-- Social media links
-
-Empty WhatsApp, phone, and social links are automatically hidden rather than rendered as broken or inactive links.
-
----
-
-## Update the Site URL
-
-Update:
-
-```text
-SITE.url
-```
-
-inside:
-
-```text
-src/constants/site.ts
-```
-
-This value is used for:
-
-- Canonical URLs
-- Open Graph metadata
-- SEO-related information
-
----
-
-## Update SEO Files
+Empty WhatsApp, phone and social links are hidden automatically rather than rendering as dead links, so the site is presentable even before you fill them in.
 
 Also update:
-
-```text
-public/robots.txt
-public/sitemap.xml
-```
-
-Replace:
-
-```text
-https://mectec.pk
-```
-
-with your actual production domain if necessary.
+- `SITE.url` in `src/constants/site.ts` — used for canonical URLs and OG tags
+- `public/robots.txt` and `public/sitemap.xml` — replace `https://mectec.pk`
 
 ---
 
-# 🚀 Deployment
-
-## Build the project
-
-Before deploying, create a production build:
+## Deployment
 
 ```bash
 npm run build
-```
-
-If the build succeeds, deploy the website:
-
-```bash
 firebase deploy --only hosting
 ```
 
----
-
-## Deploy Everything
-
-To deploy Hosting, Firestore rules, Firestore indexes, and Storage rules together:
+Or everything at once:
 
 ```bash
 firebase deploy --only hosting,firestore:rules,firestore:indexes,storage:rules
 ```
 
-This is useful after making changes to both the website and Firebase configuration.
+`firebase.json` rewrites all routes to `index.html`, which is what makes deep links like `/projects/some-slug` work in a single-page app. Hashed assets get a one-year immutable cache; `index.html` is never cached, so a deploy takes effect immediately.
+
+Any static host works — Netlify, Vercel, Cloudflare Pages — as long as you configure the same SPA fallback. Firebase Hosting is simplest because it is already in the same project.
 
 ---
 
-# 🌐 Hosting Architecture
+## Data model
 
-MECTEC uses Firebase Hosting by default.
+### `projects/{autoId}`
 
-The project is configured as a single-page application.
+Public read when `published == true`. Admin write.
 
-`firebase.json` rewrites application routes to:
+Grouped roughly as: identity (`title`, `slug`, `shortDescription`), classification (`category`, `status`, `difficulty`, `technologies`, `tags`), case study (`description`, `problemStatement`, `objectives`, `solutionOverview`, `howItWorks`, `features`, `challenges`, `results`), technical (`components[]`, `specifications[]`, `estimatedCost`), media (`media.thumbnailUrl`, `media.heroImageUrl`, `media.gallery[]`, `media.videoUrl`), and control (`featured`, `published`, `viewCount`, `createdAt`, `updatedAt`, `completedAt`).
 
-```text
-index.html
-```
+Full field types are in `src/types/project.ts`. Every optional section disappears from the public page when empty — no blank headings.
 
-This allows routes such as:
+### `projectRequests/{autoId}`
 
-```text
-/projects/some-slug
-```
+Public **create only**. No public read, update or delete. Admin full access.
 
-to work correctly when accessed directly.
+Nested blocks mirror the ten form sections: `contact`, `project`, `technical`, `software`, `scale`, `budget`, `timeline`, `references`, `attachments[]`, `additionalRequirements`, `consent`, plus `admin` (internal notes and quote) and `metadata`.
 
-### Caching
+### `contactMessages/{autoId}`
 
-Hashed static assets use long-term immutable caching.
+Public create with field validation. Admin read.
 
-`index.html` is not cached aggressively, allowing new deployments to take effect immediately.
+### `admins/{uid}`
+
+A user can read only their own document. Not listable, not writable from the client.
 
 ---
 
-## Alternative Hosting
+## Storage layout
 
-MECTEC can also be hosted on platforms such as:
+```
+projects/{projectId}/thumbnail/{file}     public read, admin write
+projects/{projectId}/gallery/{file}       public read, admin write
+projects/{projectId}/videos/{file}        public read, admin write
+projectRequests/{requestId}/attachments/{file}   admin read, public create only
+```
 
-- Netlify
-- Vercel
-- Cloudflare Pages
-
-Any hosting provider used must support the application's SPA fallback configuration.
-
-Firebase Hosting is the simplest option because Firebase is already used for the application's backend services.
+Request attachments are **not** publicly readable — they can contain private drawings or specifications. Limits (5 files, 5 MB each, specific MIME types) are enforced in `storage.rules`; the same values in `src/constants/requestOptions.ts` exist only to give fast feedback in the browser.
 
 ---
 
-# 🗄️ Data Model
+## Request reference numbers
 
-## `projects/{autoId}`
+Requests get a reference like `MECTEC-2026-K4T9RQ`: the year plus six random characters from a 31-character alphabet with look-alikes (`I`, `L`, `O`, `0`, `1`) removed.
 
-Projects are publicly readable only when:
+**This is random, not sequential** — a deliberate change from the original plan. A true counter (`0001`, `0002`, …) needs a shared document that unauthenticated visitors can write to, which is an obvious target: one script can burn through your numbering or lock the document with contention. Six random characters give about 27 billion combinations per year, so collisions are not a practical concern, and an unguessable reference is a small privacy win.
 
-```text
-published == true
-```
+**If you later want sequential numbers**, that needs a Cloud Function (Blaze plan) so the counter lives server-side:
 
-Administrators can create, update, and delete projects.
+1. Write an `onDocumentCreated` trigger for `projectRequests/{id}`.
+2. Inside a transaction, read and increment `counters/projectRequests`.
+3. Write the formatted number back onto the request document.
+4. Remove `generateRequestNumber()` from `src/services/requestService.ts`.
 
-### Project fields
-
-Project data is organized into several logical groups.
-
-#### Identity
-
-```text
-title
-slug
-shortDescription
-```
-
-#### Classification
-
-```text
-category
-status
-difficulty
-technologies
-tags
-```
-
-#### Case Study
-
-```text
-description
-problemStatement
-objectives
-solutionOverview
-howItWorks
-features
-challenges
-results
-```
-
-#### Technical
-
-```text
-components[]
-specifications[]
-estimatedCost
-```
-
-#### Media
-
-```text
-media.thumbnailUrl
-media.heroImageUrl
-media.gallery[]
-media.videoUrl
-```
-
-#### Control
-
-```text
-featured
-published
-viewCount
-createdAt
-updatedAt
-completedAt
-```
-
-Full TypeScript definitions are available in:
-
-```text
-src/types/project.ts
-```
-
-Optional sections are automatically hidden from the public project page when they contain no data.
+Existing random references stay valid; nothing needs migrating.
 
 ---
 
-# 📩 `projectRequests/{autoId}`
+## How search works
 
-Project requests are designed as **public-create / admin-manage** documents.
+Firestore has no full-text search. The projects page fetches all published projects once and filters in memory (`useFilteredProjects` in `src/hooks/useProjects.ts`).
 
-### Public permissions
-
-Visitors can:
-
-- Create a request
-
-Visitors cannot:
-
-- Read requests
-- Update requests
-- Delete requests
-
-### Admin permissions
-
-Administrators can:
-
-- Read requests
-- Update requests
-- Delete requests
-
-### Request structure
-
-Requests contain:
-
-```text
-contact
-project
-technical
-software
-scale
-budget
-timeline
-references
-attachments[]
-additionalRequirements
-consent
-admin
-metadata
-```
-
-The `admin` section contains internal information such as:
-
-```text
-notes
-quotedAmount
-assignedTo
-```
-
-These fields are protected from public creation by Firestore rules.
+This is the right trade-off at this scale: instant filtering, no extra service, no cost. It stops being right somewhere in the low hundreds of projects, when the initial fetch gets slow. At that point, see `ARCHITECTURE.md` for the migration path to Algolia or Typesense — it is contained to the service and hook layer.
 
 ---
 
-# 📬 `contactMessages/{autoId}`
+## SEO
 
-Contact messages support:
+Meta tags are set on navigation by `src/components/ui/Seo.tsx`. Google executes JavaScript, so indexing works.
 
-- Public creation
-- Admin reading
-- Admin updating
-- Admin deletion
+**What does not work:** link-preview crawlers that do not run JavaScript — WhatsApp, Slack, Facebook, Twitter. A link shared there shows the tags from `index.html`, not the project-specific ones. If previews matter, pre-render with `vite-plugin-ssr` or move the project pages to a framework with static generation.
 
-Public users cannot read previously submitted messages.
-
-Firestore rules validate:
-
-- Name
-- Email
-- Subject
-- Message
-- Creation timestamp
+`public/sitemap.xml` lists the five static pages. Project URLs are not in it. To add them, write a small script that reads published projects and regenerates the file as part of your deploy.
 
 ---
 
-# 👤 `admins/{uid}`
+## Recommended: App Check
 
-Admin documents are identified by Firebase Authentication UID.
+The request and contact forms are open to the internet by necessity. They have honeypot fields, which stops naive bots, and the rules cap field lengths, which stops bulk abuse. Neither stops a determined attacker.
 
-A user can read only their own admin document.
-
-The collection:
-
-- Cannot be listed publicly
-- Cannot be modified from the client
-- Is used by Firestore security rules to determine administrator access
+[Firebase App Check](https://firebase.google.com/docs/app-check) with reCAPTCHA v3 rejects requests that do not come from your real site, at the infrastructure level. It is free and takes about fifteen minutes. Worth doing before you publicise the site.
 
 ---
 
-# ⚙️ `settings/{docId}`
+## Troubleshooting
 
-Site-wide configuration is stored under the `settings` collection.
+**"Missing Firebase environment variables"** — `.env` is missing or the dev server was started before it existed. Restart it.
 
-For example:
+**"The query requires an index"** — the console error contains a direct link to create it. Or deploy the ones in this repo: `firebase deploy --only firestore:indexes`.
 
-```text
-settings/banner
-```
+**Signed in but see "No admin access"** — the `admins/{uid}` document does not exist, or its ID does not exactly match the UID from Authentication → Users. It is easy to paste an email by mistake.
 
-The homepage banner can be publicly read while only administrators can modify it.
+**Projects page is empty but data exists in Firestore** — check `published` is `true` (boolean, not the string `"true"`), and that the rules are deployed.
 
-Typical structure:
+**Images do not appear after upload** — check the Storage rules are deployed and that you are signed in as an admin.
 
-```text
-settings/
-└── banner
-```
-
-Public visitors can read the banner.
-
-Only authenticated administrators can create, update, or delete it.
+**"Permission denied" when submitting a request** — the rules validate the payload. The most common causes are consent checkboxes not being `true`, or `status` not being `'new'`.
 
 ---
 
-# 📦 Storage Layout
+## Project structure
 
-Firebase Storage uses the following structure:
+See `ARCHITECTURE.md` for the layering rules and the reasoning behind each decision. The short version:
 
-```text
-projects/{projectId}/thumbnail/{file}
-projects/{projectId}/gallery/{file}
-projects/{projectId}/videos/{file}
-
-projectRequests/{requestId}/attachments/{file}
+```
+Component  →  Hook  →  Service  →  Firebase
 ```
 
-### Project media
-
-Project:
-
-```text
-thumbnail
-gallery
-videos
-```
-
-are publicly readable and administrator-writable.
-
-### Client attachments
-
-Request attachments are intentionally private:
-
-```text
-projectRequests/{requestId}/attachments/{file}
-```
-
-They may contain:
-
-- Drawings
-- Technical specifications
-- Reference files
-- Private project information
-
-Therefore, they are **not publicly readable**.
-
-Storage rules enforce:
-
-- Maximum 5 files
-- Maximum 5 MB per file
-- Allowed MIME types
-
-The same restrictions are also defined in:
-
-```text
-src/constants/requestOptions.ts
-```
-
-The frontend values provide fast user feedback, while the actual security enforcement happens in Firebase Storage rules.
-
----
-
-# 🔢 Request Reference Numbers
-
-Project requests receive references similar to:
-
-```text
-MECTEC-2026-K4T9RQ
-```
-
-The format contains:
-
-```text
-MECTEC
-YEAR
-6 RANDOM CHARACTERS
-```
-
-The random characters come from a 31-character alphabet that removes visually confusing characters such as:
-
-```text
-I
-L
-O
-0
-1
-```
-
-### Why random instead of sequential?
-
-References are intentionally **random rather than sequential**.
-
-A sequential system such as:
-
-```text
-MECTEC-2026-0001
-MECTEC-2026-0002
-MECTEC-2026-0003
-```
-
-would require a shared counter document.
-
-Because public visitors can create requests, that counter could become an abuse target through:
-
-- Excessive writes
-- Contention
-- Number burning
-- Denial-of-service-style write pressure
-
-Random six-character references provide approximately **27 billion possible combinations per year**, making accidental collisions extremely unlikely.
-
-They also provide a small privacy benefit because references cannot be easily guessed sequentially.
-
----
-
-## Future Sequential References
-
-If sequential numbering becomes necessary later, the recommended architecture is a server-side Cloud Function.
-
-This requires the Firebase Blaze plan.
-
-The implementation would:
-
-1. Create an `onDocumentCreated` trigger for `projectRequests/{id}`.
-2. Read `counters/projectRequests` inside a transaction.
-3. Increment the counter.
-4. Write the generated reference number back to the request.
-5. Remove `generateRequestNumber()` from `src/services/requestService.ts`.
-
-Existing random references can remain valid; no migration is required.
-
----
-
-# 🔎 Search Architecture
-
-Firestore does not provide traditional full-text search.
-
-MECTEC currently:
-
-1. Fetches all published projects.
-2. Stores them in the application.
-3. Filters them in memory using `useFilteredProjects`.
-
-The relevant hook is:
-
-```text
-src/hooks/useProjects.ts
-```
-
-This is intentionally simple and works well at the current scale.
-
-### When should this change?
-
-Once the project catalogue reaches the low hundreds of projects, fetching every published project on each load may become unnecessarily expensive or slow.
-
-At that point, consider moving search to a dedicated service such as:
-
-- Algolia
-- Typesense
-
-The existing service/hook architecture keeps this migration contained.
-
-See:
-
-```text
-ARCHITECTURE.md
-```
-
-for the planned migration approach.
-
----
-
-# 🔍 SEO
-
-SEO metadata is managed by:
-
-```text
-src/components/ui/Seo.tsx
-```
-
-The application updates metadata during navigation.
-
-Google can execute JavaScript, so normal indexing can work.
-
-### Social link previews
-
-Some link-preview crawlers do not execute JavaScript.
-
-Examples include:
-
-- WhatsApp
-- Slack
-- Facebook
-- X/Twitter
-
-When a project URL is shared on these platforms, the preview may use the metadata from:
-
-```text
-index.html
-```
-
-instead of the project-specific metadata generated by React.
-
-### Future solution
-
-If project-specific social previews become important, consider:
-
-- Pre-rendering
-- `vite-plugin-ssr`
-- Static generation
-- Moving project pages to a framework with server/static rendering
-
----
-
-# 🛡️ Recommended: Firebase App Check
-
-The project and contact request forms are intentionally exposed to the public internet.
-
-Current protection includes:
-
-- Honeypot fields
-- Firestore validation
-- Field length limits
-- Restricted database permissions
-
-These measures prevent basic automated abuse but cannot completely stop a determined attacker.
-
-For stronger protection, consider enabling **Firebase App Check** with reCAPTCHA v3.
-
-It can help reject requests that do not originate from your legitimate application.
-
-> **Recommendation:** Enable App Check before heavily publicising the website.
-
----
-
-# 🐛 Troubleshooting
-
-## "Missing Firebase environment variables"
-
-Check that:
-
-```text
-.env
-```
-
-exists and contains all required Firebase variables.
-
-Then restart:
-
-```bash
-npm run dev
-```
-
----
-
-## "The query requires an index"
-
-Firebase will normally provide a direct link in the console error to create the required index.
-
-Alternatively:
-
-```bash
-firebase deploy --only firestore:indexes
-```
-
----
-
-## "Signed in but see No admin access"
-
-Verify that:
-
-1. The user exists in Firebase Authentication.
-2. The UID was copied correctly.
-3. Firestore contains:
-
-```text
-admins/{UID}
-```
-
-The document ID must be the **UID**, not the email address.
-
----
-
-## Projects page is empty
-
-If project data exists but nothing appears:
-
-Check that:
-
-```text
-published
-```
-
-is:
-
-```text
-true
-```
-
-and not:
-
-```text
-"true"
-```
-
-The value must be a **boolean**, not a string.
-
-Also make sure the latest Firestore rules have been deployed:
-
-```bash
-firebase deploy --only firestore:rules
-```
-
----
-
-## Images do not appear after upload
-
-Check:
-
-1. Firebase Storage is enabled.
-2. Storage rules are deployed.
-3. The administrator is authenticated.
-4. The uploaded file path matches the Storage rules.
-5. The generated download URL is stored correctly.
-
-Deploy Storage rules with:
-
-```bash
-firebase deploy --only storage:rules
-```
-
----
-
-## "Permission denied" when submitting a request
-
-Firestore validates the request payload.
-
-Common causes include:
-
-- Consent checkbox not set to `true`
-- `status` is not `'new'`
-- Invalid or missing email
-- Invalid timestamp
-- Missing required fields
-- Attachment metadata exceeding limits
-
-Check the browser console for the exact Firebase error.
-
----
-
-# 🏗️ Project Architecture
-
-The project follows a simple layered architecture:
-
-```text
-Component
-    ↓
-Hook
-    ↓
-Service
-    ↓
-Firebase
-```
-
-### Components
-
-Responsible for:
-
-- UI
-- User interaction
-- Presentation
-
-### Hooks
-
-Responsible for:
-
-- Application state
-- Data loading
-- UI-facing data logic
-
-### Services
-
-Responsible for:
-
-- Firestore operations
-- Firebase Storage operations
-- Authentication operations
-
-### Firebase
-
-Responsible for:
-
-- Authentication
-- Database
-- Storage
-- Security enforcement
-
-> **Architecture rule:** Components should never import `firebase/firestore` directly.
-
-When new data functionality is required:
-
-```text
-Add service function
-        ↓
-Wrap it in a hook
-        ↓
-Use the hook in the component
-```
-
-This keeps the codebase organized and maintainable as MECTEC grows.
-
-For the full architecture documentation, see:
-
-```text
-ARCHITECTURE.md
-```
-
----
-
-# 📁 Project Structure
-
-A simplified structure:
-
-```text
-MECTEC/
-│
-├── public/
-│   ├── robots.txt
-│   └── sitemap.xml
-│
-├── scripts/
-│   └── seed.mjs
-│
-├── src/
-│   ├── components/
-│   ├── constants/
-│   ├── hooks/
-│   ├── services/
-│   ├── types/
-│   └── ...
-│
-├── .env.example
-├── .gitignore
-├── ARCHITECTURE.md
-├── firebase.json
-├── firestore.indexes.json
-├── firestore.rules
-├── storage.rules
-├── package.json
-├── tsconfig.json
-└── vite.config.ts
-```
-
----
-
-# 🔒 Security Philosophy
-
-MECTEC follows a simple security principle:
-
-> **The browser is not trusted.**
-
-Anything shipped to the browser can be modified by the user.
-
-Therefore:
-
-- React UI is not considered a security boundary.
-- Hidden buttons do not provide security.
-- Admin-only pages do not provide security.
-- Client-side validation does not provide security.
-
-The actual security boundary is Firebase:
-
-```text
-Firebase Authentication
-        +
-Firestore Rules
-        +
-Storage Rules
-        +
-Optional App Check
-```
-
-All sensitive operations must therefore be protected at the Firebase level.
-
----
-
-# 📄 License
-
-This project is currently maintained as a private MECTEC project.
-
-All rights reserved unless otherwise specified.
+No component imports `firebase/firestore` directly. If you need new data, add a service function, wrap it in a hook, then use the hook. That one rule is what keeps the codebase navigable as it grows.

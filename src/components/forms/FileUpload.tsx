@@ -71,7 +71,7 @@ export function FileUpload({ files, onChange, disabled = false }: FileUploadProp
         </label>
         <p className="mt-3 text-xs leading-relaxed text-content-muted">
           Drag files here, or browse. Up to {ATTACHMENT_RULES.maxFiles} files,{' '}
-          {formatFileSize(ATTACHMENT_RULES.maxSizeBytes)} each. Images, PDF, DOC, DOCX and TXT.
+          {formatFileSize(ATTACHMENT_RULES.maxSizeBytes)} each. Photos, screenshots or sketches — JPG, PNG, WebP, GIF or BMP.
         </p>
       </div>
 

@@ -4,6 +4,51 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Both themes live here as CSS variables (R G B space-separated, no commas,
+ * so Tailwind's color-opacity modifiers keep working — see withOpacity() in
+ * tailwind.config.js). Toggling [data-theme] on <html> is all it takes to
+ * switch instantly, no rebuild — see ThemeToggle.tsx and the anti-flash
+ * script in index.html.
+ */
+:root {
+  /* "Instrument Panel" — dark, the default */
+  --color-bg: 14 18 20;
+  --color-surface: 23 28 31;
+  --color-surface-raised: 32 38 42;
+  --color-line: 43 50 54;
+  --color-line-strong: 60 69 74;
+  --color-accent: 255 122 61;
+  --color-accent-hover: 255 146 96;
+  --color-accent-subtle: rgba(255, 122, 61, 0.12);
+  --color-content: 237 239 238;
+  --color-content-secondary: 166 174 178;
+  --color-content-muted: 107 116 120;
+  --color-state-success: 52 199 123;
+  --color-state-warning: 226 166 59;
+  --color-state-danger: 229 72 77;
+  --color-state-info: 78 161 217;
+}
+
+[data-theme='light'] {
+  /* "Schematic" — light technical paper */
+  --color-bg: 244 246 245;
+  --color-surface: 255 255 255;
+  --color-surface-raised: 236 239 238;
+  --color-line: 218 223 224;
+  --color-line-strong: 195 203 204;
+  --color-accent: 193 98 43;
+  --color-accent-hover: 166 83 31;
+  --color-accent-subtle: rgba(193, 98, 43, 0.08);
+  --color-content: 22 32 43;
+  --color-content-secondary: 76 91 107;
+  --color-content-muted: 130 144 160;
+  --color-state-success: 46 125 79;
+  --color-state-warning: 184 121 26;
+  --color-state-danger: 194 59 59;
+  --color-state-info: 74 122 156;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -46,12 +91,12 @@
 
 @layer components {
   /* Circuit-plane grid used behind the hero and a few section headers.
-     Faint platinum hairlines on the instrument-panel dark, like an
-     oscilloscope graticule. */
+     References the theme's own text color at low opacity, so it stays
+     legible in both the dark and light themes without a separate rule. */
   .grid-backdrop {
     background-image:
-      linear-gradient(to right, rgba(237, 239, 238, 0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(237, 239, 238, 0.06) 1px, transparent 1px);
+      linear-gradient(to right, rgb(var(--color-content) / 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--color-content) / 0.06) 1px, transparent 1px);
     background-size: 56px 56px;
     mask-image: radial-gradient(ellipse 85% 65% at 50% 0%, #000 35%, transparent 100%);
     -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 0%, #000 35%, transparent 100%);

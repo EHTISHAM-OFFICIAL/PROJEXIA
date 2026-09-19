@@ -6,7 +6,7 @@ export function Skeleton({ className }: { className?: string }) {
       className={cn('relative overflow-hidden rounded-lg bg-surface-raised', className)}
       aria-hidden="true"
     >
-      <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+      <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-content/10 to-transparent" />
     </div>
   );
 }

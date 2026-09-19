@@ -2,7 +2,9 @@ import { Container } from '../../components/ui/Container';
 import { Seo } from '../../components/ui/Seo';
 import { Section, SectionHeading } from '../../components/ui/Section';
 import { ButtonLink } from '../../components/ui/Button';
+import { Accordion } from '../../components/ui/Accordion';
 import { PROJECT_CATEGORIES } from '../../constants/categories';
+import { FAQ_ITEMS } from '../../constants/faq';
 
 const CAPABILITIES = [
   {
@@ -177,6 +179,16 @@ export default function About() {
               usually skipped — power budgeting, enclosure choice, field testing.
             </p>
           </div>
+        </div>
+      </Section>
+
+      <Section className="border-b border-line">
+        <SectionHeading
+          title="Frequently asked questions"
+          description="The questions that come up most before a request form gets filled in."
+        />
+        <div className="mx-auto mt-10 max-w-2xl">
+          <Accordion items={FAQ_ITEMS} />
         </div>
       </Section>
 

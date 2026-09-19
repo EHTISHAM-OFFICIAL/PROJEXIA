@@ -14,7 +14,7 @@ import { ListEditor, TableEditor } from '../../components/forms/ListEditor';
 import { ImageUploadField } from '../../components/forms/ImageUploadField';
 import { useProjectById } from '../../hooks/useProject';
 import { projectService } from '../../services/projectService';
-import { storageService } from '../../services/storageService';
+import { imgbbService } from '../../services/imgbbService';
 import { PROJECT_CATEGORIES } from '../../constants/categories';
 import {
   PROJECT_DIFFICULTIES,
@@ -76,9 +76,6 @@ export default function ProjectForm() {
   const [slugTouched, setSlugTouched] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // A new project needs an id before images can be filed under projects/{id}/...
-  const [draftId] = useState(() => `draft-${Math.random().toString(36).slice(2, 10)}`);
-  const storageId = id ?? draftId;
 
   useEffect(() => {
     if (!isEdit || !existing.data) return;
@@ -277,7 +274,7 @@ export default function ProjectForm() {
               label="Thumbnail"
               value={draft.media.thumbnailUrl || null}
               onUpload={async (file) => {
-                const uploaded = await storageService.uploadProjectThumbnail(storageId, file);
+                const uploaded = await imgbbService.upload(file);
                 update('media', { ...draft.media, thumbnailUrl: uploaded.url });
               }}
               onClear={() => update('media', { ...draft.media, thumbnailUrl: '' })}
@@ -289,7 +286,7 @@ export default function ProjectForm() {
               label="Hero image"
               value={draft.media.heroImageUrl}
               onUpload={async (file) => {
-                const uploaded = await storageService.uploadProjectGalleryImage(storageId, file);
+                const uploaded = await imgbbService.upload(file);
                 update('media', { ...draft.media, heroImageUrl: uploaded.url });
               }}
               onClear={() => update('media', { ...draft.media, heroImageUrl: null })}
@@ -299,7 +296,6 @@ export default function ProjectForm() {
           <FieldSet legend="Gallery" hint="Extra photographs of the build.">
             <GalleryEditor
               gallery={draft.media.gallery}
-              storageId={storageId}
               onChange={(gallery) => update('media', { ...draft.media, gallery })}
             />
           </FieldSet>
@@ -581,11 +577,9 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
 
 function GalleryEditor({
   gallery,
-  storageId,
   onChange,
 }: {
   gallery: GalleryImage[];
-  storageId: string;
   onChange: (next: GalleryImage[]) => void;
 }) {
   return (
@@ -635,12 +629,12 @@ function GalleryEditor({
         label="Gallery image"
         value={null}
         onUpload={async (file) => {
-          const uploaded = await storageService.uploadProjectGalleryImage(storageId, file);
+          const uploaded = await imgbbService.upload(file);
           onChange([
             ...gallery,
             {
               url: uploaded.url,
-              storagePath: uploaded.storagePath,
+              storagePath: uploaded.deleteUrl, // imgBB's delete link, for admin reference
               alt: '',
               caption: null,
               order: gallery.length,

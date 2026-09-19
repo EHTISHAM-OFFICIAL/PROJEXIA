@@ -12,6 +12,18 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script>
+      // Runs before anything paints, so there's no flash of the wrong theme.
+      // Defaults to dark (the site's primary theme) when nothing is saved yet.
+      (function () {
+        try {
+          var saved = localStorage.getItem('mectec-theme');
+          if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+        } catch (e) {
+          // Storage unavailable — falls back to the default dark theme.
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

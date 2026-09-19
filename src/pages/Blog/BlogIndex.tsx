@@ -1,0 +1,82 @@
+import { Link } from 'react-router-dom';
+import { Container } from '../../components/ui/Container';
+import { Seo } from '../../components/ui/Seo';
+import { Image } from '../../components/ui/Image';
+import { EmptyState } from '../../components/ui/EmptyState';
+import { ErrorState } from '../../components/ui/ErrorState';
+import { Skeleton } from '../../components/ui/Skeleton';
+import { usePublishedPosts } from '../../hooks/useBlog';
+import { formatDate } from '../../utils/formatting';
+
+export default function BlogIndex() {
+  const { data, loading, error, reload } = usePublishedPosts();
+
+  return (
+    <>
+      <Seo
+        title="Blog"
+        description="Build logs and notes from MECTEC — what's being worked on between finished projects."
+        path="/blog"
+      />
+
+      <div className="border-b border-line">
+        <Container className="py-14 sm:py-20">
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Blog</h1>
+          <p className="mt-4 max-w-prose text-base leading-relaxed text-content-secondary">
+            Build logs and notes on what's currently being worked on, between finished projects.
+          </p>
+        </Container>
+      </div>
+
+      <Container className="py-12">
+        {loading && (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }, (_, index) => (
+              <Skeleton key={index} className="aspect-[4/3] w-full" />
+            ))}
+          </div>
+        )}
+
+        {!loading && error && <ErrorState message={error} onRetry={reload} />}
+
+        {!loading && !error && data?.length === 0 && (
+          <EmptyState
+            title="No posts yet"
+            description="Build logs and notes will appear here once something is published."
+          />
+        )}
+
+        {!loading && !error && data && data.length > 0 && (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {data.map((post) => (
+              <Link
+                key={post.id}
+                to={`/blog/${post.slug}`}
+                className="card group overflow-hidden transition-colors hover:border-line-strong"
+              >
+                {post.coverImageUrl && (
+                  <div className="aspect-[16/10] overflow-hidden bg-surface-raised">
+                    <Image
+                      src={post.coverImageUrl}
+                      alt={post.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  </div>
+                )}
+                <div className="p-5">
+                  <p className="font-mono text-xs text-content-muted">{formatDate(post.createdAt)}</p>
+                  <h2 className="mt-2 text-lg font-semibold leading-snug tracking-tight">
+                    {post.title}
+                  </h2>
+                  <p className="mt-2 text-sm leading-relaxed text-content-secondary">
+                    {post.excerpt}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </Container>
+    </>
+  );
+}
