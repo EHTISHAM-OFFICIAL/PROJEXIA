@@ -19,7 +19,7 @@ export function Hero() {
             <h1 className="text-4xl font-semibold leading-[1.06] tracking-tight sm:text-5xl lg:text-[3.4rem]">
               Turning ideas into{' '}
               <span
-                className="bg-gradient-to-r from-accent via-accent-hover to-accent bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-pan"
+                className="bg-gradient-to-r from-accent via-accent2 to-accent bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-pan"
               >
                 working electronic systems
               </span>
@@ -85,6 +85,10 @@ export function Hero() {
                       className="text-content-muted/10"
                     />
                   </pattern>
+                  <linearGradient id="trace-gradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" style={{ stopColor: 'rgb(var(--color-accent))' }} />
+                    <stop offset="100%" style={{ stopColor: 'rgb(var(--color-accent2))' }} />
+                  </linearGradient>
                 </defs>
                 <rect width="400" height="220" fill="url(#scope-grid)" />
                 <path
@@ -92,13 +96,13 @@ export function Hero() {
                      L175,70 L190,150 L205,50 L220,170 L235,110 L280,110
                      L295,65 L310,155 L325,45 L340,175 L355,110 L400,110"
                   fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
+                  stroke="url(#trace-gradient)"
+                  strokeWidth="2.5"
                   strokeLinejoin="round"
                   strokeLinecap="round"
                   pathLength={1}
                   strokeDasharray={1}
-                  className="text-accent animate-trace-draw"
+                  className="animate-trace-draw"
                 />
               </svg>
 

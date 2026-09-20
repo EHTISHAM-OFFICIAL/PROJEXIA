@@ -1,52 +1,107 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /*
- * Both themes live here as CSS variables (R G B space-separated, no commas,
- * so Tailwind's color-opacity modifiers keep working — see withOpacity() in
- * tailwind.config.js). Toggling [data-theme] on <html> is all it takes to
- * switch instantly, no rebuild — see ThemeToggle.tsx and the anti-flash
- * script in index.html.
- */
+
+* MECTEC GLOBAL THEME
+*
+* Both themes are controlled entirely through CSS variables.
+* Tailwind's semantic color classes continue to work because the
+* values are consumed by tailwind.config.js through withOpacity().
+*
+* Dark theme:
+* Premium graphite / black foundation with copper-orange accents.
+*
+* Light theme:
+* Warm white / soft graphite foundation with the same copper identity.
+*
+* Changing [data-theme] on <html> switches the complete visual theme
+* instantly without requiring a rebuild.
+  */
+
 :root {
-  /* "Instrument Panel" — dark, the default */
-  --color-bg: 14 18 20;
-  --color-surface: 23 28 31;
-  --color-surface-raised: 32 38 42;
-  --color-line: 43 50 54;
-  --color-line-strong: 60 69 74;
-  --color-accent: 255 122 61;
-  --color-accent-hover: 255 146 96;
-  --color-accent-subtle: rgba(255, 122, 61, 0.12);
-  --color-content: 237 239 238;
-  --color-content-secondary: 166 174 178;
-  --color-content-muted: 107 116 120;
-  --color-state-success: 52 199 123;
-  --color-state-warning: 226 166 59;
-  --color-state-danger: 229 72 77;
-  --color-state-info: 78 161 217;
+  /* ================================================================
+MECTEC DARK THEME
+================================================================ */
+
+  /* Main surfaces */
+  --color-bg: 10 12 16;
+  --color-surface: 17 20 25;
+  --color-surface-raised: 25 29 36;
+
+  /* Borders */
+  --color-line: 42 46 54;
+  --color-line-strong: 65 70 80;
+
+  /* MECTEC primary copper accent */
+  --color-accent: 232 126 54;
+  --color-accent-hover: 248 148 72;
+  --color-accent-subtle: rgba(232, 126, 54, 0.14);
+
+  /* Secondary accent */
+  --color-accent2: 245 180 82;
+
+  /* Text displayed on accent backgrounds */
+  --color-on-accent: 15 12 9;
+
+  /* Typography */
+  --color-content: 245 246 248;
+  --color-content-secondary: 178 183 193;
+  --color-content-muted: 112 118 130;
+
+  /* Semantic states */
+  --color-state-success: 39 201 139;
+  --color-state-warning: 245 174 55;
+  --color-state-danger: 244 83 92;
+  --color-state-info: 66 173 232;
+
+  /* Shadows */
+  --shadow-resting: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-elevated: 0 20px 45px -18px rgba(0, 0, 0, 0.7);
 }
 
-[data-theme='light'] {
-  /* "Schematic" — light technical paper */
-  --color-bg: 244 246 245;
+[data-theme="light"] {
+  /* ================================================================
+MECTEC LIGHT THEME
+================================================================ */
+
+  /* Main surfaces */
+  --color-bg: 248 247 244;
   --color-surface: 255 255 255;
-  --color-surface-raised: 236 239 238;
-  --color-line: 218 223 224;
-  --color-line-strong: 195 203 204;
-  --color-accent: 193 98 43;
-  --color-accent-hover: 166 83 31;
-  --color-accent-subtle: rgba(193, 98, 43, 0.08);
-  --color-content: 22 32 43;
-  --color-content-secondary: 76 91 107;
-  --color-content-muted: 130 144 160;
-  --color-state-success: 46 125 79;
-  --color-state-warning: 184 121 26;
-  --color-state-danger: 194 59 59;
-  --color-state-info: 74 122 156;
+  --color-surface-raised: 244 242 238;
+
+  /* Borders */
+  --color-line: 224 221 215;
+  --color-line-strong: 196 191 182;
+
+  /* MECTEC primary copper accent */
+  --color-accent: 198 91 35;
+  --color-accent-hover: 171 72 25;
+  --color-accent-subtle: rgba(198, 91, 35, 0.1);
+
+  /* Secondary accent */
+  --color-accent2: 183 122 45;
+
+  /* Text displayed on accent backgrounds */
+  --color-on-accent: 255 255 255;
+
+  /* Typography */
+  --color-content: 25 27 31;
+  --color-content-secondary: 76 80 88;
+  --color-content-muted: 124 128 136;
+
+  /* Semantic states */
+  --color-state-success: 20 155 103;
+  --color-state-warning: 205 132 21;
+  --color-state-danger: 211 54 65;
+  --color-state-info: 21 137 196;
+
+  /* Shadows */
+  --shadow-resting: 0 1px 3px rgba(22, 20, 17, 0.08);
+  --shadow-elevated: 0 20px 45px -18px rgba(22, 20, 17, 0.18);
 }
 
 @layer base {
@@ -58,9 +113,10 @@
     @apply bg-bg text-content font-sans antialiased;
   }
 
-  /* Headings use the display face everywhere, without touching every component. */
-  h1, h2, h3 {
-    font-family: 'Space Grotesk', Inter, system-ui, sans-serif;
+  h1,
+  h2,
+  h3 {
+    font-family: "Chakra Petch", Inter, system-ui, sans-serif;
     letter-spacing: -0.01em;
   }
 
@@ -72,59 +128,139 @@
     @apply bg-accent/30 text-content;
   }
 
-  /* Firefox number input spinners removed for a calmer form UI */
-  input[type='number'] {
+  input[type="number"] {
     -moz-appearance: textfield;
   }
-  input[type='number']::-webkit-outer-spin-button,
-  input[type='number']::-webkit-inner-spin-button {
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
 
-  /* Dark-scheme date pickers */
-  input[type='date']::-webkit-calendar-picker-indicator {
+  input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(0.7);
     cursor: pointer;
   }
 }
 
 @layer components {
-  /* Circuit-plane grid used behind the hero and a few section headers.
-     References the theme's own text color at low opacity, so it stays
-     legible in both the dark and light themes without a separate rule. */
+  /* ================================================================
+CIRCUIT GRID BACKDROP
+================================================================ */
+
   .grid-backdrop {
     background-image:
-      linear-gradient(to right, rgb(var(--color-content) / 0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(var(--color-content) / 0.06) 1px, transparent 1px);
+      linear-gradient(
+        to right,
+        rgb(var(--color-content) / 0.055) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        rgb(var(--color-content) / 0.055) 1px,
+        transparent 1px
+      );
+
     background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse 85% 65% at 50% 0%, #000 35%, transparent 100%);
-    -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 0%, #000 35%, transparent 100%);
+
+    mask-image: radial-gradient(
+      ellipse 85% 65% at 50% 0%,
+      #000 35%,
+      transparent 100%
+    );
+
+    -webkit-mask-image: radial-gradient(
+      ellipse 85% 65% at 50% 0%,
+      #000 35%,
+      transparent 100%
+    );
   }
+
+  /* ================================================================
+GLOBAL CARD
+================================================================ */
 
   .card {
     @apply rounded-card border border-line bg-surface;
+    box-shadow: var(--shadow-resting);
   }
 
+  /* ================================================================
+GLOBAL FORM INPUT
+================================================================ */
+
   .field-input {
-    @apply w-full rounded-lg border border-line bg-surface-raised px-3.5 py-2.5 text-[15px]
-           text-content placeholder:text-content-muted transition-colors
-           focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent
-           disabled:cursor-not-allowed disabled:opacity-50;
+    @apply w-full rounded-lg border border-line bg-surface-raised px-3.5 py-2.5
+text-[15px] text-content placeholder:text-content-muted
+transition-colors
+focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent
+disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .field-input-error {
     @apply border-state-danger focus:border-state-danger focus:ring-state-danger;
   }
+
+  /* ================================================================
+MECTEC ANNOUNCEMENT MARQUEE
+================================================================ */
+
+  .mectec-marquee {
+    animation-name: mectec-marquee;
+    animation-duration: var(--mectec-marquee-duration, 40s);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-fill-mode: none;
+    animation-play-state: running;
+    will-change: transform;
+  }
+
+  .group:hover .mectec-marquee {
+    animation-play-state: paused;
+  }
 }
+
+/* ================================================================
+MECTEC ANNOUNCEMENT MARQUEE KEYFRAMES
+================================================================ */
+
+@keyframes mectec-marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* ================================================================
+REDUCED-MOTION HANDLING
+================================================================ */
 
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /*
+
+* The administrator explicitly controls whether the announcement
+* should scroll, so preserve the configured marquee behavior.
+  */
+  .mectec-marquee {
+    animation-name: mectec-marquee !important;
+    animation-duration: var(--mectec-marquee-duration, 40s) !important;
+    animation-timing-function: linear !important;
+    animation-iteration-count: infinite !important;
+    animation-play-state: running !important;
+  }
+
+  .group:hover .mectec-marquee {
+    animation-play-state: paused !important;
   }
 }

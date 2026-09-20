@@ -35,6 +35,8 @@ export default {
           hover: withOpacity('--color-accent-hover'),
           subtle: 'var(--color-accent-subtle)',
         },
+        accent2: withOpacity('--color-accent2'),
+        onAccent: withOpacity('--color-on-accent'),
         content: {
           DEFAULT: withOpacity('--color-content'),
           secondary: withOpacity('--color-content-secondary'),
@@ -49,7 +51,7 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['"Space Grotesk"', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['"Chakra Petch"', 'Inter', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       maxWidth: {
@@ -90,7 +92,7 @@ export default {
         'gradient-pan': 'gradient-pan 5s linear infinite',
         blink: 'blink 1.1s steps(1) infinite',
         'trace-draw': 'trace-draw 1.6s ease-out 0.3s both',
-        marquee: 'marquee 16s linear infinite',
+        marquee: 'marquee 9s linear infinite',
       },
     },
   },

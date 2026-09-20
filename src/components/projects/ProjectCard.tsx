@@ -11,7 +11,7 @@ export function ProjectCard({ project }: { project: Project }) {
   const hiddenTechCount = project.technologies.length - visibleTech.length;
 
   return (
-    <article className="group card relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-[0_20px_45px_-20px_rgba(0,0,0,0.6)]">
+    <article className="group card relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-[var(--shadow-elevated)]">
       <span
         className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-accent transition-transform duration-300 group-hover:scale-x-100"
         aria-hidden="true"
