@@ -11,6 +11,7 @@ import { ProjectFilters } from '../../components/projects/ProjectFilters';
 import { ProjectGrid } from '../../components/projects/ProjectGrid';
 import {
   EMPTY_FILTERS,
+  useCategoryCounts,
   useFilteredProjects,
   usePublishedProjects,
   useTechnologyOptions,
@@ -37,6 +38,7 @@ export default function Projects() {
 
   const filtered = useFilteredProjects(data, effectiveFilters);
   const technologies = useTechnologyOptions(data);
+  const categoryCounts = useCategoryCounts(data);
   const visible = filtered.slice(0, visibleCount);
   const hasMore = filtered.length > visibleCount;
 
@@ -73,6 +75,8 @@ export default function Projects() {
           filters={filters}
           onChange={setFilters}
           technologies={technologies}
+          categoryCounts={categoryCounts}
+          totalCount={data?.length ?? 0}
           resultCount={filtered.length}
         />
 

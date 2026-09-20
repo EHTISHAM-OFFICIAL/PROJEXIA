@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   CheckCircle2,
   ImageIcon,
+  Mail,
   Palette,
   RotateCcw,
   Save,
@@ -13,18 +14,21 @@ import {
 import { Seo } from "../../components/ui/Seo";
 import { Button } from "../../components/ui/Button";
 import { Alert } from "../../components/ui/Alert";
+import { Badge } from "../../components/ui/Badge";
 import { Field } from "../../components/forms/Field";
 import { TextInput } from "../../components/forms/Inputs";
 
 import { imgbbService } from "../../services/imgbbService";
+import { emailNotificationService } from "../../services/emailNotificationService";
 import { themeService, DEFAULT_THEME } from "../../services/themeService";
 import { useTheme } from "../../hooks/useTheme";
+
 import type { ThemeColors } from "../../types/theme";
 import { toUserMessage } from "../../utils/errors";
 
 /* ================================================================
    COLOR GROUPS
-   ================================================================ */
+   ================================================================= */
 
 const COLOR_GROUPS: {
   title: string;
@@ -145,7 +149,7 @@ const COLOR_GROUPS: {
 
 /* ================================================================
    COLOR CONTROL
-   ================================================================ */
+   ================================================================= */
 
 function ColorControl({
   label,
@@ -189,6 +193,7 @@ function ColorControl({
         {/* Label */}
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-content">{label}</p>
+
           <p className="mt-0.5 text-xs leading-relaxed text-content-muted">
             {description}
           </p>
@@ -213,7 +218,7 @@ function ColorControl({
 
 /* ================================================================
    COLOR EDITOR
-   ================================================================ */
+   ================================================================= */
 
 function ColorEditor({
   colors,
@@ -260,58 +265,130 @@ function ColorEditor({
 
 /* ================================================================
    SETTINGS
-   ================================================================ */
+   ================================================================= */
 
 export default function Settings() {
   const { theme, siteTheme, setSiteTheme, applyThemeColors } = useTheme();
 
+  /* ================================================================
+     IMGBB STATE
+     ================================================================= */
+
   const [apiKey, setApiKey] = useState("");
+  const [imgbbSaving, setImgbbSaving] = useState(false);
+  const [imgbbError, setImgbbError] = useState<string | null>(null);
+  const [imgbbSaved, setImgbbSaved] = useState(false);
 
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  /* ================================================================
+     EMAIL STATE
+     ================================================================= */
+
+  const [emailConfig, setEmailConfig] = useState({
+    serviceId: "",
+    templateId: "",
+    publicKey: "",
+    toEmail: "",
+  });
+
+  const [emailSaving, setEmailSaving] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [emailSaved, setEmailSaved] = useState(false);
+
+  /* ================================================================
+     THEME STATE
+     ================================================================= */
+
   const [themeSaving, setThemeSaving] = useState(false);
-
-  const [error, setError] = useState<string | null>(null);
   const [themeError, setThemeError] = useState<string | null>(null);
-
-  const [saved, setSaved] = useState(false);
   const [themeSaved, setThemeSaved] = useState(false);
 
   const [editingTheme, setEditingTheme] = useState<"dark" | "light">(theme);
+
+  /* ================================================================
+     GLOBAL LOADING
+     ================================================================= */
+
+  const [loading, setLoading] = useState(true);
+
+  /* ================================================================
+     SYNC CURRENT THEME
+     ================================================================= */
 
   useEffect(() => {
     setEditingTheme(theme);
   }, [theme]);
 
+  /* ================================================================
+     LOAD ALL SETTINGS
+     ================================================================= */
+
   useEffect(() => {
-    imgbbService
-      .getApiKeyOverride()
-      .then((override) => setApiKey(override ?? ""))
-      .finally(() => setLoading(false));
+    Promise.all([
+      imgbbService.getApiKeyOverride(),
+      emailNotificationService.getConfigOverride(),
+    ])
+      .then(([imgbbOverride, emailOverride]) => {
+        setApiKey(imgbbOverride ?? "");
+
+        setEmailConfig({
+          serviceId: emailOverride.serviceId ?? "",
+          templateId: emailOverride.templateId ?? "",
+          publicKey: emailOverride.publicKey ?? "",
+          toEmail: emailOverride.toEmail ?? "",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   /* ================================================================
      IMGBB
-     ================================================================ */
+     ================================================================= */
 
-  const handleSave = async () => {
-    setSaving(true);
-    setError(null);
-    setSaved(false);
+  const handleSaveImgbb = async () => {
+    setImgbbSaving(true);
+    setImgbbError(null);
+    setImgbbSaved(false);
 
     try {
       await imgbbService.saveApiKeyOverride(apiKey || null);
-      setSaved(true);
+      setImgbbSaved(true);
     } catch (caught) {
-      setError(toUserMessage(caught, "Could not save the API key."));
+      setImgbbError(toUserMessage(caught, "Could not save the API key."));
     } finally {
-      setSaving(false);
+      setImgbbSaving(false);
     }
   };
 
   /* ================================================================
+     EMAIL
+     ================================================================= */
+
+  const handleSaveEmail = async () => {
+    setEmailSaving(true);
+    setEmailError(null);
+    setEmailSaved(false);
+
+    try {
+      await emailNotificationService.saveConfigOverride(emailConfig);
+      setEmailSaved(true);
+    } catch (caught) {
+      setEmailError(
+        toUserMessage(caught, "Could not save the email settings."),
+      );
+    } finally {
+      setEmailSaving(false);
+    }
+  };
+
+  const emailIsConfigured =
+    (emailConfig.serviceId || emailNotificationService.isConfiguredViaEnv()) &&
+    (emailConfig.templateId || emailNotificationService.isConfiguredViaEnv());
+
+  /* ================================================================
      THEME
-     ================================================================ */
+     ================================================================= */
 
   const handleThemeChange = (mode: "dark" | "light", colors: ThemeColors) => {
     const nextTheme = {
@@ -376,9 +453,17 @@ export default function Settings() {
     setThemeSaved(false);
   };
 
+  /* ================================================================
+     LOADING
+     ================================================================= */
+
   if (loading) {
     return null;
   }
+
+  /* ================================================================
+     RENDER
+     ================================================================= */
 
   return (
     <>
@@ -401,7 +486,7 @@ export default function Settings() {
           IMGBB
           ============================================================ */}
 
-      <section className="mt-14 max-w-2xl border-t border-line pt-10">
+      <section className="mt-10 max-w-2xl">
         <div className="flex items-center gap-2.5">
           <ImageIcon
             size={17}
@@ -430,13 +515,13 @@ export default function Settings() {
           use a different account — without a redeploy.
         </p>
 
-        {error && (
+        {imgbbError && (
           <div className="mt-5">
-            <Alert tone="danger">{error}</Alert>
+            <Alert tone="danger">{imgbbError}</Alert>
           </div>
         )}
 
-        {saved && (
+        {imgbbSaved && (
           <div className="mt-5">
             <Alert tone="success">
               <span className="flex items-center gap-2">
@@ -466,8 +551,149 @@ export default function Settings() {
           </Field>
 
           <div>
-            <Button onClick={() => void handleSave()} loading={saving}>
-              {saving ? "Saving…" : "Save"}
+            <Button
+              onClick={() => void handleSaveImgbb()}
+              loading={imgbbSaving}
+            >
+              {imgbbSaving ? "Saving…" : "Save"}
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================
+          EMAIL NOTIFICATIONS
+          ============================================================ */}
+
+      <section className="mt-12 max-w-2xl border-t border-line pt-10">
+        <div className="flex items-center gap-2.5">
+          <Mail size={17} className="text-content-muted" aria-hidden="true" />
+
+          <h2 className="text-lg font-semibold tracking-tight">
+            Email notifications
+          </h2>
+
+          <Badge tone={emailIsConfigured ? "success" : "neutral"}>
+            {emailIsConfigured ? "Configured" : "Not set up"}
+          </Badge>
+        </div>
+
+        <p className="mt-2 text-sm leading-relaxed text-content-secondary">
+          Get an email the moment someone submits a project request or a contact
+          message, using{" "}
+          <a
+            href="https://www.emailjs.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent underline underline-offset-2 hover:text-accent-hover"
+          >
+            EmailJS
+          </a>{" "}
+          (free tier, sends straight from the browser — no backend, same idea as
+          imgBB).
+        </p>
+
+        <ol className="mt-4 flex flex-col gap-2 text-sm leading-relaxed text-content-secondary">
+          <li>
+            1. Create a free account at emailjs.com and connect an email
+            provider (Gmail, Outlook, etc.).
+          </li>
+
+          <li>
+            2. Create an Email Service and an Email Template. In the template,
+            use these variable names so this integration fills them in:{" "}
+            <code className="text-content">{"{{subject}}"}</code>,{" "}
+            <code className="text-content">{"{{message}}"}</code>,{" "}
+            <code className="text-content">{"{{reply_to}}"}</code>,{" "}
+            <code className="text-content">{"{{to_email}}"}</code>.
+          </li>
+
+          <li>
+            3. Copy the Service ID, Template ID and Public Key from your EmailJS
+            dashboard into the fields below.
+          </li>
+        </ol>
+
+        {emailError && (
+          <div className="mt-5">
+            <Alert tone="danger">{emailError}</Alert>
+          </div>
+        )}
+
+        {emailSaved && (
+          <div className="mt-5">
+            <Alert tone="success">
+              <span className="flex items-center gap-2">
+                <CheckCircle2 size={15} aria-hidden="true" />
+                Saved. New submissions will trigger an email from now on.
+              </span>
+            </Alert>
+          </div>
+        )}
+
+        <div className="mt-5 flex flex-col gap-5">
+          <Field label="Notify this email address" htmlFor="toEmail">
+            <TextInput
+              id="toEmail"
+              type="email"
+              value={emailConfig.toEmail}
+              onChange={(event) =>
+                setEmailConfig((current) => ({
+                  ...current,
+                  toEmail: event.target.value,
+                }))
+              }
+              placeholder="you@example.com"
+            />
+          </Field>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="Service ID" htmlFor="serviceId">
+              <TextInput
+                id="serviceId"
+                value={emailConfig.serviceId}
+                onChange={(event) =>
+                  setEmailConfig((current) => ({
+                    ...current,
+                    serviceId: event.target.value,
+                  }))
+                }
+              />
+            </Field>
+
+            <Field label="Template ID" htmlFor="templateId">
+              <TextInput
+                id="templateId"
+                value={emailConfig.templateId}
+                onChange={(event) =>
+                  setEmailConfig((current) => ({
+                    ...current,
+                    templateId: event.target.value,
+                  }))
+                }
+              />
+            </Field>
+          </div>
+
+          <Field label="Public Key" htmlFor="publicKey">
+            <TextInput
+              id="publicKey"
+              value={emailConfig.publicKey}
+              onChange={(event) =>
+                setEmailConfig((current) => ({
+                  ...current,
+                  publicKey: event.target.value,
+                }))
+              }
+            />
+          </Field>
+
+          <div>
+            <Button
+              onClick={() => void handleSaveEmail()}
+              loading={emailSaving}
+            >
+              {emailSaving ? "Saving…" : "Save"}
             </Button>
           </div>
         </div>
@@ -477,7 +703,7 @@ export default function Settings() {
           APPEARANCE
           ============================================================ */}
 
-      <section className="mt-10 max-w-6xl">
+      <section className="mt-14 max-w-6xl border-t border-line pt-10">
         {/* Section heading */}
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">

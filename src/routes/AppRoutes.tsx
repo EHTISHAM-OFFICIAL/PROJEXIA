@@ -10,6 +10,7 @@ import About from '../pages/About/About';
 import BlogIndex from '../pages/Blog/BlogIndex';
 import BlogPostPage from '../pages/Blog/BlogPost';
 import Contact from '../pages/Contact/Contact';
+import TrackRequest from '../pages/TrackRequest/TrackRequest';
 import NotFound from '../pages/NotFound/NotFound';
 
 // The request form pulls in the whole validation schema, and the admin area is
@@ -54,6 +55,7 @@ export function AppRoutes() {
           <Route path="request-project" element={<RequestProject />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="track-request" element={<TrackRequest />} />
           <Route path="*" element={<NotFound />} />
         </Route>
 

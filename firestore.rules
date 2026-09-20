@@ -113,6 +113,34 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------
+    // requestStatusLookup — the public "track my request" page reads only
+    // this narrow record, never the full projectRequests document, so an
+    // admin's internal notes and quoted amounts can never reach a visitor's
+    // browser, even via the network tab.
+    // ---------------------------------------------------------------------
+    match /requestStatusLookup/{requestNumber} {
+      // Doc id = requestNumber (~27 billion possible values), so a `get`
+      // here already requires knowing that unguessable value. There is no
+      // `list`, so the collection can never be enumerated.
+      allow get: if true;
+      allow list: if false;
+
+      // Written once, automatically, by requestService.createRequest at the
+      // same moment the real request is submitted — mirrors the validation
+      // on the main create above, minus fields this collection doesn't have.
+      allow create: if request.resource.data.requestNumber == requestNumber
+        && request.resource.data.status == 'new'
+        && isString(request.resource.data.projectTitle, 120)
+        && isString(request.resource.data.email, 200)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      // Only an admin changes status thereafter (via requestService keeping
+      // this in sync with the real request).
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
     // contactMessages
     // ---------------------------------------------------------------------
     match /contactMessages/{messageId} {

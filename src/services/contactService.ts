@@ -1,5 +1,6 @@
 import { addDoc, collection, orderBy, query, getDocs, serverTimestamp } from 'firebase/firestore';
 import { COLLECTIONS, db } from '../firebase/firestore';
+import { emailNotificationService } from './emailNotificationService';
 import type { ContactFormValues } from '../utils/validation';
 
 export interface ContactMessage {
@@ -23,6 +24,12 @@ export const contactService = {
       message: values.message,
       read: false,
       createdAt: serverTimestamp(),
+    });
+
+    void emailNotificationService.notify({
+      subject: `New contact message — ${values.subject}`,
+      message: `${values.name} (${values.email}) wrote:\n\n${values.message}`,
+      replyTo: values.email,
     });
   },
 

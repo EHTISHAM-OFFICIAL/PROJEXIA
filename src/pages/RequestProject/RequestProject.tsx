@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle2, Copy } from 'lucide-react';
@@ -173,7 +174,11 @@ export default function RequestProject() {
                 {copied ? 'Copied' : 'Copy reference'}
               </button>
               <p className="mt-3 text-xs leading-relaxed text-content-muted">
-                Quote this if you follow up by email or WhatsApp.
+                Quote this if you follow up by email or WhatsApp — or use it to{' '}
+                <Link to="/track-request" className="text-accent underline underline-offset-2 hover:text-accent-hover">
+                  check the status
+                </Link>{' '}
+                any time.
               </p>
             </div>
 

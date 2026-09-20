@@ -41,6 +41,14 @@ export function Footer() {
                     Request a project
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    to="/track-request"
+                    className="text-sm text-content-secondary transition-colors hover:text-content"
+                  >
+                    Track a request
+                  </Link>
+                </li>
               </ul>
             </nav>
 

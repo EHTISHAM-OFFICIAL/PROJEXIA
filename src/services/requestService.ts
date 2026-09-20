@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore';
 import { COLLECTIONS, db } from '../firebase/firestore';
 import { imgbbService, type UploadedImage } from './imgbbService';
+import { emailNotificationService } from './emailNotificationService';
 import type {
   ProjectRequest,
   RequestAttachment,
@@ -25,6 +26,16 @@ import type { ProjectRequestFormOutput } from '../utils/validation';
 import { nullable, nullableNumber } from '../utils/validation';
 
 const requestsRef = collection(db, COLLECTIONS.projectRequests);
+
+/**
+ * A separate, deliberately narrow collection for the public "track my
+ * request" page. It holds only what a visitor is allowed to see — never the
+ * full request document, which contains internal admin notes and quoted
+ * amounts. Document id = the human-readable requestNumber, so a visitor can
+ * look it up directly without a query (and without Firestore ever needing to
+ * expose a list of requests to the public).
+ */
+const statusLookupRef = (requestNumber: string) => doc(db, 'requestStatusLookup', requestNumber);
 
 /**
  * Human-readable reference, e.g. MECTEC-2026-K4T9RQ.
@@ -86,6 +97,15 @@ function toRequest(snapshot: QueryDocumentSnapshot<DocumentData>): ProjectReques
 export interface CreateRequestResult {
   id: string;
   requestNumber: string;
+}
+
+/** Deliberately minimal — the only fields a visitor is allowed to see. */
+export interface PublicRequestStatus {
+  requestNumber: string;
+  status: RequestStatus;
+  projectTitle: string;
+  createdAt: Timestamp | null;
+  updatedAt: Timestamp | null;
 }
 
 export const requestService = {
@@ -203,6 +223,34 @@ export const requestService = {
       updatedAt: serverTimestamp(),
     });
 
+    // Best-effort: the confirmation to the visitor must not fail just
+    // because this secondary, narrow record couldn't be written.
+    try {
+      await setDoc(statusLookupRef(requestNumber), {
+        requestNumber,
+        status: 'new' satisfies RequestStatus,
+        projectTitle: values.projectTitle,
+        email: values.email.trim().toLowerCase(),
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      if (import.meta.env.DEV) console.warn('Could not create status-lookup record', error);
+    }
+
+    // Fire-and-forget: never await this in a way that could block or fail
+    // the confirmation already shown to the visitor.
+    void emailNotificationService.notify({
+      subject: `New project request — ${values.projectTitle}`,
+      message:
+        `${values.fullName} (${values.email}) submitted a new request.\n\n` +
+        `Reference: ${requestNumber}\n` +
+        `Category: ${values.projectCategory}\n` +
+        `Urgency: ${values.urgency}\n\n` +
+        `${values.projectDescription.slice(0, 400)}`,
+      replyTo: values.email,
+    });
+
     return { id: requestRef.id, requestNumber };
   },
 
@@ -231,6 +279,23 @@ export const requestService = {
       status,
       updatedAt: serverTimestamp(),
     });
+
+    // Keep the public-facing status record in sync. Best-effort: a request
+    // created before this feature existed has no lookup doc yet, so this
+    // reads it first and just skips the sync if there's nothing to update.
+    try {
+      const snapshot = await getDoc(doc(db, COLLECTIONS.projectRequests, id));
+      const requestNumber = snapshot.data()?.requestNumber as string | undefined;
+      if (requestNumber) {
+        await setDoc(
+          statusLookupRef(requestNumber),
+          { status, updatedAt: serverTimestamp() },
+          { merge: true }
+        );
+      }
+    } catch (error) {
+      if (import.meta.env.DEV) console.warn('Could not sync status-lookup record', error);
+    }
   },
 
   async updateRequestPriority(id: string, priority: RequestPriority): Promise<void> {
@@ -249,5 +314,38 @@ export const requestService = {
     if (fields.quotedAmount !== undefined) updates['admin.quotedAmount'] = fields.quotedAmount;
     if (fields.assignedTo !== undefined) updates['admin.assignedTo'] = fields.assignedTo;
     await updateDoc(doc(db, COLLECTIONS.projectRequests, id), updates);
+  },
+
+  /**
+   * Public lookup for the "track my request" page. Only ever reads
+   * requestStatusLookup — never the full request document — so there is no
+   * way for this to leak internal admin notes or quoted amounts, even to
+   * someone inspecting network traffic.
+   *
+   * The email check happens here, client-side, after the fetch: Firestore
+   * `get` rules can't validate a second client-supplied value against the
+   * document's own field, so the real access control is the requestNumber
+   * itself (effectively an unguessable bearer token — ~27 billion
+   * combinations). The email match is a privacy courtesy on top of that, not
+   * an additional security boundary.
+   */
+  async lookupStatus(
+    requestNumber: string,
+    email: string
+  ): Promise<PublicRequestStatus | null> {
+    const normalizedNumber = requestNumber.trim().toUpperCase();
+    const snapshot = await getDoc(statusLookupRef(normalizedNumber));
+    if (!snapshot.exists()) return null;
+
+    const data = snapshot.data();
+    if ((data.email as string)?.toLowerCase() !== email.trim().toLowerCase()) return null;
+
+    return {
+      requestNumber: data.requestNumber ?? normalizedNumber,
+      status: data.status ?? 'new',
+      projectTitle: data.projectTitle ?? '',
+      createdAt: data.createdAt ?? null,
+      updatedAt: data.updatedAt ?? null,
+    };
   },
 };

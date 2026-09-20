@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Eye } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { Image } from '../ui/Image';
 import { DIFFICULTY_LABEL, STATUS_LABEL, STATUS_TONE } from '../../constants/projectOptions';
-import { formatShortDate, truncate } from '../../utils/formatting';
+import { formatCompactNumber, formatShortDate, truncate } from '../../utils/formatting';
 import type { Project } from '../../types/project';
 
 export function ProjectCard({ project }: { project: Project }) {
@@ -59,8 +59,14 @@ export function ProjectCard({ project }: { project: Project }) {
           )}
 
           <div className="mt-5 flex items-center justify-between border-t border-line pt-4">
-            <span className="font-mono text-xs text-content-muted">
+            <span className="flex items-center gap-3 font-mono text-xs text-content-muted">
               {formatShortDate(project.completedAt ?? project.createdAt)}
+              {project.viewCount > 0 && (
+                <span className="flex items-center gap-1">
+                  <Eye size={12} aria-hidden="true" />
+                  {formatCompactNumber(project.viewCount)}
+                </span>
+              )}
             </span>
             <span className="inline-flex items-center gap-1 text-sm font-medium text-accent">
               View project

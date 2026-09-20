@@ -27,131 +27,67 @@ import { POLICIES_HELP } from "./help/policies";
 export type { HelpEntry } from "./help/types";
 
 /**
- * Complete local knowledge base for the MECTEC Help Assistant.
+ * Convert readonly knowledge collections into normal arrays.
  *
- * The assistant does not use AI or an external API.
- * All answers are selected locally from these knowledge entries.
+ * Keeping this boundary here prevents TypeScript from constructing
+ * one enormous literal union from all knowledge modules.
+ */
+function normalizeHelp(entries: readonly HelpEntry[]): HelpEntry[] {
+  return entries.slice();
+}
+
+/* -------------------------------------------------------------------------- */
+/* KNOWLEDGE GROUPS                                                           */
+/* -------------------------------------------------------------------------- */
+
+const BASIC_KNOWLEDGE: HelpEntry[] = [
+  ...normalizeHelp(BASIC_HELP),
+  ...normalizeHelp(CASUAL_HELP),
+];
+
+const BUSINESS_KNOWLEDGE: HelpEntry[] = [
+  ...normalizeHelp(GENERAL_HELP),
+  ...normalizeHelp(REQUEST_HELP),
+  ...normalizeHelp(SERVICES_HELP),
+  ...normalizeHelp(PROJECT_HELP),
+  ...normalizeHelp(PRICING_HELP),
+  ...normalizeHelp(TIMELINE_HELP),
+  ...normalizeHelp(CONTACT_HELP),
+];
+
+const ELECTRONICS_KNOWLEDGE: HelpEntry[] = [
+  ...normalizeHelp(ELECTRONICS_HELP),
+  ...normalizeHelp(COMPONENT_HELP),
+  ...normalizeHelp(MICROCONTROLLER_HELP),
+  ...normalizeHelp(SENSOR_HELP),
+  ...normalizeHelp(MOTOR_HELP),
+];
+
+const EMBEDDED_KNOWLEDGE: HelpEntry[] = [
+  ...normalizeHelp(AUTOMATION_HELP),
+  ...normalizeHelp(IOT_HELP),
+  ...normalizeHelp(RFID_HELP),
+  ...normalizeHelp(TROUBLESHOOTING_HELP),
+  ...normalizeHelp(PCB_HELP),
+  ...normalizeHelp(FIRMWARE_HELP),
+];
+
+const WEBSITE_KNOWLEDGE: HelpEntry[] = [
+  ...normalizeHelp(PORTFOLIO_HELP),
+  ...normalizeHelp(WEBSITE_HELP),
+  ...normalizeHelp(POLICIES_HELP),
+];
+
+/**
+ * Complete local MECTEC knowledge base.
  *
- * IMPORTANT:
- * Keep business-specific information such as actual:
- * - opening hours
- * - address
- * - prices
- * - delivery charges
- * - warranty periods
- * - payment methods
- *
- * accurate before publishing those answers to customers.
+ * No external AI API, paid service, database, or network request
+ * is required by the chatbot.
  */
 export const HELP_KNOWLEDGE: HelpEntry[] = [
-  // ------------------------------------------------------------
-  // BASIC / CONVERSATIONAL
-  // ------------------------------------------------------------
-  ...BASIC_HELP,
-  ...CASUAL_HELP,
-
-  // ------------------------------------------------------------
-  // GENERAL MECTEC QUESTIONS
-  // ------------------------------------------------------------
-  ...GENERAL_HELP,
-
-  // ------------------------------------------------------------
-  // CUSTOMER REQUESTS
-  // ------------------------------------------------------------
-  ...REQUEST_HELP,
-
-  // ------------------------------------------------------------
-  // SERVICES
-  // ------------------------------------------------------------
-  ...SERVICES_HELP,
-
-  // ------------------------------------------------------------
-  // PROJECTS
-  // ------------------------------------------------------------
-  ...PROJECT_HELP,
-
-  // ------------------------------------------------------------
-  // PRICING
-  // ------------------------------------------------------------
-  ...PRICING_HELP,
-
-  // ------------------------------------------------------------
-  // PROJECT TIMELINES
-  // ------------------------------------------------------------
-  ...TIMELINE_HELP,
-
-  // ------------------------------------------------------------
-  // CONTACT / COMMUNICATION
-  // ------------------------------------------------------------
-  ...CONTACT_HELP,
-
-  // ------------------------------------------------------------
-  // GENERAL ELECTRONICS
-  // ------------------------------------------------------------
-  ...ELECTRONICS_HELP,
-
-  // ------------------------------------------------------------
-  // ELECTRONIC COMPONENTS
-  // ------------------------------------------------------------
-  ...COMPONENT_HELP,
-
-  // ------------------------------------------------------------
-  // MICROCONTROLLERS
-  // ------------------------------------------------------------
-  ...MICROCONTROLLER_HELP,
-
-  // ------------------------------------------------------------
-  // SENSORS
-  // ------------------------------------------------------------
-  ...SENSOR_HELP,
-
-  // ------------------------------------------------------------
-  // MOTORS / MOTOR CONTROL
-  // ------------------------------------------------------------
-  ...MOTOR_HELP,
-
-  // ------------------------------------------------------------
-  // AUTOMATION
-  // ------------------------------------------------------------
-  ...AUTOMATION_HELP,
-
-  // ------------------------------------------------------------
-  // INTERNET OF THINGS
-  // ------------------------------------------------------------
-  ...IOT_HELP,
-
-  // ------------------------------------------------------------
-  // RFID
-  // ------------------------------------------------------------
-  ...RFID_HELP,
-
-  // ------------------------------------------------------------
-  // TROUBLESHOOTING
-  // ------------------------------------------------------------
-  ...TROUBLESHOOTING_HELP,
-
-  // ------------------------------------------------------------
-  // PCB DESIGN / MANUFACTURING
-  // ------------------------------------------------------------
-  ...PCB_HELP,
-
-  // ------------------------------------------------------------
-  // FIRMWARE / PROGRAMMING
-  // ------------------------------------------------------------
-  ...FIRMWARE_HELP,
-
-  // ------------------------------------------------------------
-  // MECTEC PORTFOLIO
-  // ------------------------------------------------------------
-  ...PORTFOLIO_HELP,
-
-  // ------------------------------------------------------------
-  // WEBSITE / WEB DEVELOPMENT
-  // ------------------------------------------------------------
-  ...WEBSITE_HELP,
-
-  // ------------------------------------------------------------
-  // BUSINESS POLICIES
-  // ------------------------------------------------------------
-  ...POLICIES_HELP,
+  ...BASIC_KNOWLEDGE,
+  ...BUSINESS_KNOWLEDGE,
+  ...ELECTRONICS_KNOWLEDGE,
+  ...EMBEDDED_KNOWLEDGE,
+  ...WEBSITE_KNOWLEDGE,
 ];

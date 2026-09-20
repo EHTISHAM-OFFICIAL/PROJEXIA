@@ -8,11 +8,15 @@ import {
 } from '../../constants/projectOptions';
 import type { ProjectFilters as Filters, ProjectSortKey } from '../../types/project';
 import { EMPTY_FILTERS } from '../../hooks/useProjects';
+import { cn } from '../../utils/cn';
 
 interface ProjectFiltersProps {
   filters: Filters;
   onChange: (filters: Filters) => void;
   technologies: string[];
+  /** Count of published projects per category, so chips can show "IoT (5)". */
+  categoryCounts: Record<string, number>;
+  totalCount: number;
   resultCount: number;
 }
 
@@ -20,6 +24,8 @@ export function ProjectFilters({
   filters,
   onChange,
   technologies,
+  categoryCounts,
+  totalCount,
   resultCount,
 }: ProjectFiltersProps) {
   const update = <K extends keyof Filters>(key: K, value: Filters[K]) =>
@@ -33,6 +39,12 @@ export function ProjectFilters({
   ].filter(Boolean).length;
 
   const hasAnyFilter = activeCount > 0 || filters.search !== '';
+
+  // Only categories that actually have a published project — no dead-end
+  // chips pointing at an empty result.
+  const availableCategories = PROJECT_CATEGORIES.filter(
+    (category) => (categoryCounts[category] ?? 0) > 0
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -52,14 +64,41 @@ export function ProjectFilters({
         />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        <Select
-          options={PROJECT_CATEGORIES}
-          placeholder="All categories"
-          value={filters.category}
-          aria-label="Filter by category"
-          onChange={(event) => update('category', event.target.value)}
-        />
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by category">
+        <button
+          type="button"
+          onClick={() => update('category', '')}
+          className={cn(
+            'rounded-lg border px-3.5 py-2 text-sm transition-colors',
+            filters.category === ''
+              ? 'border-accent bg-accent text-onAccent'
+              : 'border-line bg-surface text-content-secondary hover:border-line-strong hover:text-content'
+          )}
+        >
+          All <span className="opacity-70">({totalCount})</span>
+        </button>
+        {availableCategories.map((category) => {
+          const active = filters.category === category;
+          return (
+            <button
+              key={category}
+              type="button"
+              onClick={() => update('category', active ? '' : category)}
+              aria-pressed={active}
+              className={cn(
+                'rounded-lg border px-3.5 py-2 text-sm transition-colors',
+                active
+                  ? 'border-accent bg-accent text-onAccent'
+                  : 'border-line bg-surface text-content-secondary hover:border-line-strong hover:text-content'
+              )}
+            >
+              {category} <span className="opacity-70">({categoryCounts[category]})</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Select
           options={technologies}
           placeholder="All technologies"

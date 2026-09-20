@@ -76,3 +76,15 @@ export function useTechnologyOptions(projects: Project[] | null): string[] {
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [projects]);
 }
+
+/** How many published projects fall in each category, for the filter chips. */
+export function useCategoryCounts(projects: Project[] | null): Record<string, number> {
+  return useMemo(() => {
+    const counts: Record<string, number> = {};
+    if (!projects) return counts;
+    for (const project of projects) {
+      counts[project.category] = (counts[project.category] ?? 0) + 1;
+    }
+    return counts;
+  }, [projects]);
+}
