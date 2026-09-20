@@ -1151,6 +1151,114 @@ function detectTopic(question: string): string | null {
 }
 
 /* ==========================================================================
+   DETERMINISTIC WEBSITE NAVIGATION
+   ========================================================================== */
+
+const NAVIGATION_ACTIONS = {
+  home: { label: "Go to Home", path: "/" },
+  projects: { label: "View Projects", path: "/projects" },
+  projectRequest: { label: "Open Project Request", path: "/request-project" },
+  about: { label: "About MECTEC", path: "/about" },
+  contact: { label: "Contact MECTEC", path: "/contact" },
+  trackRequest: { label: "Track My Request", path: "/track-request" },
+  blog: { label: "View Blog", path: "/blog" },
+} satisfies Record<string, HelpAction>;
+
+function resolveWebsiteNavigation(question: string): HelpResponse | null {
+  const normalized = normalize(question);
+
+  if (
+    /\bwhere should i contact mectec about (a|my|the) project\b/.test(normalized) ||
+    /\bcontact mectec\b.*\babout (a|my|the) project\b/.test(normalized) ||
+    /\b(project request|request a project|submit (a|my) project)\b/.test(normalized) ||
+    /\b(can|could|how) (can|could|do) i\b.*\b(request|submit|order|commission)\b.*\bproject\b/.test(normalized) ||
+    /\b(i|we)\b.*\b(want|need|would like)\b.*\b(project|custom project)\b/.test(normalized) ||
+    /\b(can you|can mectec|does mectec)\b.*\b(build|make|create|develop)\b.*\bproject\b/.test(normalized)
+  ) {
+    return {
+      answer: "You can submit a new or custom project through MECTEC's Project Request page.",
+      action: NAVIGATION_ACTIONS.projectRequest,
+    };
+  }
+
+  if (
+    /\b(track|check|follow)\b.*\b(request|submission|project)\b/.test(normalized) ||
+    /\b(request|submission|project)\b.*\b(status|tracking)\b/.test(normalized) ||
+    /\bhow can i track (my )?(request|project)\b/.test(normalized)
+  ) {
+    return {
+      answer: "If you have already submitted a request, you can check its status on the request-tracking page.",
+      action: NAVIGATION_ACTIONS.trackRequest,
+    };
+  }
+
+  if (
+    /\bhow (can|do) i (contact|reach)\b/.test(normalized) ||
+    /\bhow to (contact|reach)\b/.test(normalized) ||
+    /\bwhere can i (contact|reach)\b/.test(normalized) ||
+    /\b(get in touch|reach mectec|contact mectec|contact us)\b/.test(normalized) ||
+    /\bcontact (information|details|page|form)\b/.test(normalized) ||
+    /\bcontact form\b/.test(normalized) ||
+    /\b(phone number|email address|whatsapp number)\b/.test(normalized)
+  ) {
+    return {
+      answer: "You can use MECTEC's Contact page to find the available ways to get in touch with MECTEC.",
+      action: NAVIGATION_ACTIONS.contact,
+    };
+  }
+
+  if (
+    /\btell me about mectec\b/.test(normalized) ||
+    /\blearn (more )?about mectec\b/.test(normalized) ||
+    /\babout mectec\b/.test(normalized) ||
+    /\bwho is mectec\b/.test(normalized) ||
+    /\bwhat is mectec\b/.test(normalized) ||
+    /\bwhat does mectec do\b/.test(normalized)
+  ) {
+    return {
+      answer: "You can learn more about MECTEC, its purpose and its work on the About page.",
+      action: NAVIGATION_ACTIONS.about,
+    };
+  }
+
+  if (
+    /\b(show|see|view|browse|explore)\b.*\b(projects?|portfolio)\b/.test(normalized) ||
+    /\b(previous|featured|completed)\s+projects\b/.test(normalized) ||
+    /\bproject portfolio\b/.test(normalized) ||
+    /\bwhat projects does mectec (have|show|showcase)\b/.test(normalized)
+  ) {
+    return {
+      answer: "You can explore MECTEC's projects and portfolio on the Projects page.",
+      action: NAVIGATION_ACTIONS.projects,
+    };
+  }
+
+  if (
+    /\bblog\b/.test(normalized) ||
+    /\bwhere can i (read|find)\b.*\b(posts?|articles?)\b/.test(normalized) ||
+    /\b(read|view|find)\b.*\barticles?\b/.test(normalized)
+  ) {
+    return {
+      answer: "You can read MECTEC's articles and updates on the Blog page.",
+      action: NAVIGATION_ACTIONS.blog,
+    };
+  }
+
+  if (
+    /\b(go|back|return) to (the )?home\b/.test(normalized) ||
+    /\bhomepage\b/.test(normalized) ||
+    /\bhome page\b/.test(normalized)
+  ) {
+    return {
+      answer: "You can return to the MECTEC homepage here.",
+      action: NAVIGATION_ACTIONS.home,
+    };
+  }
+
+  return null;
+}
+
+/* ==========================================================================
    GREETING DETECTION
    ========================================================================== */
 
@@ -1651,6 +1759,13 @@ function createHelpResponse(question: string): HelpResponse | null {
   /* ---------------------------------------------------------------------- */
   /* Direct navigation questions                                             */
   /* ---------------------------------------------------------------------- */
+
+  /* Deterministic website navigation runs before fuzzy knowledge matching. */
+  const navigationResponse = resolveWebsiteNavigation(normalizedQuestion);
+
+  if (navigationResponse) {
+    return navigationResponse;
+  }
 
   const directResponse = handleDirectQuestion(normalizedQuestion);
 
