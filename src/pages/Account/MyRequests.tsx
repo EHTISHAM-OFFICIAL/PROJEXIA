@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Clock3 } from 'lucide-react';
+import { ArrowLeft, Clock3, Trash2 } from 'lucide-react';
 import { Container } from '../../components/ui/Container';
 import { Alert } from '../../components/ui/Alert';
 import { ButtonLink } from '../../components/ui/Button';
@@ -64,9 +64,17 @@ export default function MyRequests() {
                     <h2 className="mt-2 text-lg font-semibold">{request.project.title}</h2>
                     <p className="mt-1 text-sm text-content-secondary">{request.project.category} · {request.project.type}</p>
                   </div>
-                  <span className="inline-flex items-center rounded-full border border-line px-3 py-1 text-xs font-medium text-content-secondary">
-                    {request.status}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center rounded-full border border-line px-3 py-1 text-xs font-medium text-content-secondary">
+                      {request.status}
+                    </span>
+                    {request.deletedAt && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-state-warning/30 bg-state-warning/5 px-3 py-1 text-xs font-medium text-state-warning">
+                        <Trash2 size={13} aria-hidden="true" />
+                        Deleted
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="mt-5 flex items-center gap-2 text-xs text-content-muted">
                   <Clock3 size={14} />
