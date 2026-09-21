@@ -1,4 +1,4 @@
-import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import {
   createUserWithEmailAndPassword,
   deleteUser,
@@ -11,7 +11,6 @@ import { db } from '../firebase/firestore';
 import type { UserProfile } from '../types/user';
 
 const USERS_COLLECTION = 'users';
-const USERNAME_LOOKUP_COLLECTION = 'usernameLookup';
 const INTERNAL_EMAIL_DOMAIN = 'users.mectec.local';
 const usernamePattern = /^[a-z0-9_-]{3,30}$/;
 
@@ -50,28 +49,12 @@ export async function registerUser(
   );
 
   try {
-    await runTransaction(db, async (transaction) => {
-      const lookupRef = doc(db, USERNAME_LOOKUP_COLLECTION, username);
-      const profileRef = doc(db, USERS_COLLECTION, credential.user.uid);
-      const lookup = await transaction.get(lookupRef);
-
-      if (lookup.exists()) {
-        throw new Error('That username is already in use.');
-      }
-
-      transaction.set(lookupRef, {
-        uid: credential.user.uid,
-        username,
-        createdAt: serverTimestamp(),
-      });
-
-      transaction.set(profileRef, {
-        uid: credential.user.uid,
-        username,
-        recoveryEmail: normalizedRecoveryEmail,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+    await setDoc(doc(db, USERS_COLLECTION, credential.user.uid), {
+      uid: credential.user.uid,
+      username,
+      recoveryEmail: normalizedRecoveryEmail,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
     });
 
     return credential.user;
@@ -79,7 +62,7 @@ export async function registerUser(
     try {
       await deleteUser(credential.user);
     } catch {
-      // Best-effort cleanup if the Firestore reservation fails.
+      // Best-effort cleanup if the profile write fails.
     }
     throw error;
   }
@@ -91,33 +74,18 @@ export async function signInWithUsername(usernameInput: string, password: string
     throw new Error('Invalid username or password.');
   }
 
-  const lookupSnapshot = await getDoc(
-    doc(db, USERNAME_LOOKUP_COLLECTION, username),
-  );
-
-  if (!lookupSnapshot.exists()) {
+  try {
+    const credential = await signInWithEmailAndPassword(
+      auth,
+      authEmailForUsername(username),
+      password,
+    );
+    return credential.user;
+  } catch {
+    // Keep the same message for unknown usernames and wrong passwords.
+    // Firebase Auth can additionally provide email-enumeration protection.
     throw new Error('Invalid username or password.');
   }
-
-  const data = lookupSnapshot.data();
-  const uid = typeof data.uid === 'string' ? data.uid : null;
-
-  if (!uid) {
-    throw new Error('Invalid username or password.');
-  }
-
-  const credential = await signInWithEmailAndPassword(
-    auth,
-    authEmailForUsername(username),
-    password,
-  );
-
-  if (credential.user.uid !== uid) {
-    await auth.signOut();
-    throw new Error('Invalid username or password.');
-  }
-
-  return credential.user;
 }
 
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
