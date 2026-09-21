@@ -87,17 +87,12 @@ service cloud.firestore {
       // that submitted it. This is enforced here, not just in React.
       allow create: if isValidNewRequest();
 
-      // Admins have full management access, except that an active request
-      // cannot be newly moved to trash until the configured protection period
-      // has expired. Restoring an already trashed request remains allowed.
-      allow update: if (
-        isAdmin()
-        && (
-          request.resource.data.get('deletedAt', null) == null
-          || resource.data.get('deletedAt', null) != null
-          || customerEditWindowOpen()
-        )
-      )
+      // Admins may manage requests, including moving an active request to
+      // trash during the configured protection period. The React admin UI
+      // requires the per-request project token before it performs that action.
+      // The token is an administrative workflow safeguard; Firebase rules
+      // remain the authoritative admin authentication boundary.
+      allow update: if isAdmin()
         || (
           isOwner(resource.data)
           && customerEditWindowOpen()
