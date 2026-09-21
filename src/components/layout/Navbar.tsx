@@ -7,11 +7,13 @@ import { Wordmark } from './Wordmark';
 import { ThemeToggle } from './ThemeToggle';
 import { NAV_LINKS } from '../../constants/site';
 import { cn } from '../../utils/cn';
+import { useAuth } from '../../hooks/useAuth';
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { user, profile } = useAuth();
 
   useEffect(() => setMobileOpen(false), [location.pathname]);
 
@@ -66,6 +68,15 @@ export function Navbar() {
 
           <div className="hidden items-center gap-2 md:flex">
             <ThemeToggle />
+            {user ? (
+              <ButtonLink to="/account" variant="secondary" size="sm">
+                {profile?.username || 'Account'}
+              </ButtonLink>
+            ) : (
+              <ButtonLink to="/login" variant="secondary" size="sm">
+                Log in
+              </ButtonLink>
+            )}
             <ButtonLink to="/request-project" size="sm">
               Request a project
             </ButtonLink>
@@ -111,9 +122,20 @@ export function Navbar() {
               <span className="text-sm text-content-secondary">Theme</span>
               <ThemeToggle />
             </div>
-            <ButtonLink to="/request-project" size="lg" className="mt-3 w-full">
-              Request a project
-            </ButtonLink>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {user ? (
+                <ButtonLink to="/account" variant="secondary" size="lg">
+                  Account
+                </ButtonLink>
+              ) : (
+                <ButtonLink to="/login" variant="secondary" size="lg">
+                  Log in
+                </ButtonLink>
+              )}
+              <ButtonLink to="/request-project" size="lg">
+                Request a project
+              </ButtonLink>
+            </div>
           </Container>
         </div>
       )}
