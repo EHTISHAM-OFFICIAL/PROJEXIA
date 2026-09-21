@@ -52,7 +52,7 @@ export default function Login() {
     setResetSent(false);
     const normalizedEmail = resetEmail.trim().toLowerCase();
 
-    if (!normalizedEmail || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(normalizedEmail)) {
+    if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
       setResetError('Enter the email address linked to your MECTEC account.');
       return;
     }
