@@ -127,6 +127,9 @@ export interface ProjectRequest {
   additionalRequirements: RequestAdditional;
   consent: RequestConsent;
   admin: RequestAdmin;
+  /** Latest customer-facing update, separate from internal admin notes. */
+  customerUpdate: string | null;
+  customerUpdateAt: Timestamp | null;
   metadata: RequestMetadata;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
