@@ -106,12 +106,22 @@ export default function RequestDetail() {
   const handleTrash = async () => {
     if (!id || !request || request.deletedAt) return;
 
+    let enteredToken = projectToken.trim().toUpperCase();
+
+    // Older requests may predate the project-token field. Backfill one on
+    // demand instead of making those requests permanently unmanageable.
     if (!request.projectToken) {
-      setTrashError("This request does not have a project token. It cannot be moved to trash before the protection window expires.");
-      return;
+      try {
+        enteredToken = await requestService.ensureProjectToken(id);
+        setProjectToken(enteredToken);
+      } catch (caught) {
+        setTrashError(
+          toUserMessage(caught, "Could not create a project token for this request."),
+        );
+        return;
+      }
     }
 
-    const enteredToken = projectToken.trim().toUpperCase();
     if (!enteredToken) {
       setTrashError("Enter the project token to authorize this trash action.");
       return;
