@@ -46,21 +46,28 @@ export const emailNotificationService = {
     if (!config) return; // not configured — feature is opt-in
 
     try {
-      await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          service_id: config.serviceId,
-          template_id: config.templateId,
-          user_id: config.publicKey,
+          service_id: config.serviceId.trim(),
+          template_id: config.templateId.trim(),
+          user_id: config.publicKey.trim(),
           template_params: {
-            to_email: config.toEmail,
+            to_email: config.toEmail.trim(),
             subject: params.subject,
             message: params.message,
-            reply_to: params.replyTo ?? config.toEmail,
+            reply_to: params.replyTo?.trim() || config.toEmail.trim(),
           },
         }),
       });
+
+      if (!response.ok) {
+        const detail = await response.text().catch(() => '');
+        throw new Error(
+          `EmailJS rejected the message (${response.status})${detail ? `: ${detail.slice(0, 300)}` : ''}`,
+        );
+      }
     } catch (error) {
       if (import.meta.env.DEV) console.warn('Email notification failed to send', error);
     }
@@ -73,6 +80,17 @@ export const emailNotificationService = {
   async getConfigOverride(): Promise<Partial<EmailNotificationConfig>> {
     const snapshot = await getDoc(settingsRef);
     return snapshot.exists() ? (snapshot.data() as Partial<EmailNotificationConfig>) : {};
+  },
+
+  async sendTestEmail(): Promise<void> {
+    const config = await resolveConfig();
+    if (!config) throw new Error('Email notifications are not configured. Enter and save all EmailJS settings first.');
+
+    await this.notify({
+      subject: 'MECTEC EmailJS test',
+      message: 'This is a test email from the MECTEC admin panel. If you received this message, email notifications are working.',
+      replyTo: config.toEmail,
+    });
   },
 
   isConfiguredViaEnv(): boolean {
