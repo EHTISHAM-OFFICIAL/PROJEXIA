@@ -131,6 +131,7 @@ function toRequest(
 export interface CreateRequestResult {
   id: string;
   requestNumber: string;
+  projectToken: string;
 }
 
 /** Deliberately minimal — the only fields a visitor is allowed to see. */
@@ -303,9 +304,10 @@ export const requestService = {
         console.warn("Could not create status-lookup record", error);
     }
 
-    // Fire-and-forget: never await this in a way that could block or fail
-    // the confirmation already shown to the visitor.
-    void emailNotificationService.notify({
+    // Send after the request is safely stored. The email path is retried by
+    // emailNotificationService so a transient EmailJS/rate-limit failure does
+    // not disappear when the visitor immediately leaves the page.
+    await emailNotificationService.notify({
       subject: `New project request — ${values.projectTitle}`,
       message:
         `${values.fullName} (${values.email}) submitted a new request.\n\n` +
@@ -334,7 +336,7 @@ export const requestService = {
       replyTo: values.email,
     });
 
-    return { id: requestRef.id, requestNumber };
+    return { id: requestRef.id, requestNumber, projectToken };
   },
 
   /** Admin only — security rules reject unauthenticated reads. */
@@ -527,6 +529,26 @@ export const requestService = {
     }
   },
 
+  /**
+   * Backfills a project token for requests created before the token system
+   * existed. This keeps older requests manageable without weakening the
+   * administrator authentication boundary.
+   */
+  async ensureProjectToken(id: string): Promise<string> {
+    const requestRef = doc(db, COLLECTIONS.projectRequests, id);
+    const snapshot = await getDoc(requestRef);
+    if (!snapshot.exists()) throw new Error("Request not found.");
+
+    const current = snapshot.data();
+    if (typeof current.projectToken === "string" && current.projectToken.trim()) {
+      return current.projectToken.trim().toUpperCase();
+    }
+
+    const projectToken = generateProjectToken();
+    await updateDoc(requestRef, { projectToken, updatedAt: serverTimestamp() });
+    return projectToken;
+  },
+
   async getTrashedRequests(): Promise<ProjectRequest[]> {
     const snapshot = await getDocs(
       query(requestsRef, orderBy("createdAt", "desc")),
@@ -544,23 +566,15 @@ export const requestService = {
     const current = snapshot.data();
     if (current.deletedAt) throw new Error("This request is already in the trash.");
 
-    if (
-      !projectToken ||
-      typeof current.projectToken !== "string" ||
-      projectToken.trim().toUpperCase() !== current.projectToken
-    ) {
-      throw new Error("The project token is incorrect.");
+    const enteredToken = projectToken.trim().toUpperCase();
+    const storedToken =
+      typeof current.projectToken === "string"
+        ? current.projectToken.trim().toUpperCase()
+        : "";
+
+    if (!enteredToken || !storedToken || enteredToken !== storedToken) {
+      throw new Error("The project token is incorrect. Copy the token exactly from the request.");
     }
-
-    const createdAt = current.createdAt as Timestamp | undefined;
-    if (!createdAt) throw new Error("This request cannot be moved to trash.");
-
-    const settings = await requestSettingsService.getSecuritySettings();
-    const deadline =
-      createdAt.toMillis() +
-      settings.customerRequestEditWindowHours * 60 * 60 * 1000;
-    // A valid project token authorizes an administrator to move the request
-    // to trash even during the configured protection window.
 
     const requestNumber = current.requestNumber as string | undefined;
     await updateDoc(requestRef, {
