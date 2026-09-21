@@ -499,6 +499,31 @@ export const requestService = {
     }
   },
 
+  async permanentlyDeleteMyRequest(id: string, uid: string): Promise<void> {
+    if (!uid) throw new Error('You must be signed in.');
+
+    const requestRef = doc(db, COLLECTIONS.projectRequests, id);
+    const snapshot = await getDoc(requestRef);
+    if (!snapshot.exists()) throw new Error('Request not found.');
+
+    const current = snapshot.data();
+    if (current.ownerUid !== uid) throw new Error('You are not allowed to delete this request.');
+    if (!current.deletedAt || current.deletedBy !== 'customer') {
+      throw new Error('This request is not in your trash.');
+    }
+
+    await deleteDoc(requestRef);
+
+    const requestNumber = current.requestNumber as string | undefined;
+    if (requestNumber) {
+      try {
+        await deleteDoc(statusLookupRef(requestNumber));
+      } catch (error) {
+        if (import.meta.env.DEV) console.warn('Could not remove status lookup record', error);
+      }
+    }
+  },
+
   async restoreRequest(id: string): Promise<void> {
     const requestRef = doc(db, COLLECTIONS.projectRequests, id);
     const snapshot = await getDoc(requestRef);
