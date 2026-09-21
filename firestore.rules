@@ -31,6 +31,24 @@ service cloud.firestore {
       return value == null || isString(value, maxLength);
     }
 
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(data) {
+      return isSignedIn() && data.ownerUid == request.auth.uid;
+    }
+
+    function customerEditWindowOpen() {
+      let settings = get(/databases/$(database)/documents/settings/requestSecurity);
+      let hours = settings.data.get('customerRequestEditWindowHours', 24);
+      return resource.data.createdAt is timestamp
+        && hours is int
+        && hours >= 1
+        && hours <= 720
+        && request.time < resource.data.createdAt + duration.value(hours, 'h');
+    }
+
     // ---------------------------------------------------------------------
     // projects
     // ---------------------------------------------------------------------
@@ -59,25 +77,52 @@ service cloud.firestore {
     // ---------------------------------------------------------------------
     match /projectRequests/{requestId} {
 
-      // Requests contain personal contact details. The public can submit one
-      // but can never read any request back, including their own — there is no
-      // account system, so there is no way to prove ownership.
-      allow read: if isAdmin();
+      // Full requests are private. Admins can manage all requests; customers
+      // can only read their own authenticated requests.
+      allow read: if isAdmin() || isOwner(resource.data);
 
+      // Every new customer request must belong to the authenticated account
+      // that submitted it. This is enforced here, not just in React.
       allow create: if isValidNewRequest();
 
-      // Only an admin can change status, priority or the admin block. A
-      // submitted request is immutable from the public side, which is why the
-      // client generates the document id first and uploads attachments before
-      // writing (see requestService.createRequest).
-      allow update, delete: if isAdmin();
+      // Admins have full management access. Customers may update only their
+      // own customer-facing fields while the configurable edit window is open.
+      allow update: if isAdmin()
+        || (
+          isOwner(resource.data)
+          && customerEditWindowOpen()
+          && request.resource.data.ownerUid == resource.data.ownerUid
+          && request.resource.data.requestNumber == resource.data.requestNumber
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.priority == resource.data.priority
+          && request.resource.data.admin == resource.data.admin
+          && request.resource.data.customerUpdate == resource.data.customerUpdate
+          && request.resource.data.customerUpdateAt == resource.data.customerUpdateAt
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'contact',
+            'project',
+            'technical',
+            'software',
+            'scale',
+            'budget',
+            'timeline',
+            'references',
+            'additionalRequirements',
+            'updatedAt'
+          ])
+        );
+
+      allow delete: if isAdmin();
 
       function isValidNewRequest() {
         let incoming = request.resource.data;
         return
           // The workflow always begins at 'new'. A spammer cannot inject a
           // request that already looks reviewed or accepted.
-          incoming.status == 'new'
+          request.auth != null
+          && incoming.ownerUid == request.auth.uid
+          && incoming.status == 'new'
           && incoming.priority in ['low', 'normal', 'high', 'urgent']
 
           // Consent is a legal requirement, not a UI nicety, so it is enforced here.
@@ -97,6 +142,7 @@ service cloud.firestore {
           // Required fields, with length caps so one submission cannot be used
           // to write megabytes into the database.
           && isString(incoming.requestNumber, 40)
+          && isString(incoming.ownerUid, 128)
           && isString(incoming.contact.fullName, 100)
           && isString(incoming.contact.email, 200)
           && incoming.contact.email.matches('.+@.+[.].+')
@@ -110,6 +156,19 @@ service cloud.firestore {
           // Storage and are size-checked by storage.rules.
           && incoming.attachments.size() <= 5;
       }
+    }
+
+    // ---------------------------------------------------------------------
+    // settings/requestSecurity — public read is limited to a non-sensitive
+    // customer edit-window value; only admins can change it.
+    // ---------------------------------------------------------------------
+    match /settings/requestSecurity {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin()
+        && request.resource.data.customerRequestEditWindowHours is int
+        && request.resource.data.customerRequestEditWindowHours >= 1
+        && request.resource.data.customerRequestEditWindowHours <= 720;
     }
 
     // ---------------------------------------------------------------------
@@ -171,6 +230,40 @@ service cloud.firestore {
       // Never writable from the client. Add and remove admins in the Firebase
       // Console — see README, "Creating an admin account".
       allow write: if false;
+    }
+
+    // ---------------------------------------------------------------------
+    // users — private customer profile documents.
+    // ---------------------------------------------------------------------
+    match /users/{uid} {
+      allow get: if isSignedIn() && request.auth.uid == uid;
+      allow list: if false;
+      allow create: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.username is string
+        && request.resource.data.recoveryEmail == null || request.resource.data.recoveryEmail is string;
+      allow update: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.username == resource.data.username
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['recoveryEmail', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------------
+    // usernameLookup — intentionally contains only the username and UID
+    // required to resolve a username to a Firebase Auth account. It contains
+    // no email address or profile data.
+    // ---------------------------------------------------------------------
+    match /usernameLookup/{username} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.username == username
+        && request.resource.data.keys().hasOnly(['uid', 'username', 'createdAt']);
+      allow update, delete: if false;
     }
 
     // ---------------------------------------------------------------------
