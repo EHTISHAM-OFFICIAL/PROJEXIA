@@ -455,11 +455,15 @@ export const requestService = {
 
     const requestNumber = current.requestNumber as string | undefined;
     if (requestNumber) {
-      await setDoc(
-        statusLookupRef(requestNumber),
-        { deletedAt: serverTimestamp(), updatedAt: serverTimestamp() },
-        { merge: true },
-      );
+      try {
+        await setDoc(
+          statusLookupRef(requestNumber),
+          { deletedAt: serverTimestamp(), updatedAt: serverTimestamp() },
+          { merge: true },
+        );
+      } catch (error) {
+        if (import.meta.env.DEV) console.warn('Could not mark status lookup as trashed', error);
+      }
     }
   },
 
