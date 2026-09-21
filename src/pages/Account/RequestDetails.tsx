@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Pencil, LockKeyhole, Activity } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { ArrowLeft, Pencil, LockKeyhole, Activity, Trash2, Clock3 } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Container } from '../../components/ui/Container';
 import { Alert } from '../../components/ui/Alert';
-import { ButtonLink } from '../../components/ui/Button';
+import { Button, ButtonLink } from '../../components/ui/Button';
 import { Seo } from '../../components/ui/Seo';
 import { useAuth } from '../../hooks/useAuth';
 import { requestService } from '../../services/requestService';
@@ -17,11 +17,13 @@ function formatDate(timestamp: ProjectRequest['createdAt']) {
 
 export default function RequestDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [request, setRequest] = useState<ProjectRequest | null>(null);
   const [hours, setHours] = useState(24);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!user || !id) return;
@@ -44,6 +46,27 @@ export default function RequestDetails() {
   }, [request, hours]);
 
   const canEdit = editUntil !== null && Date.now() < editUntil;
+  const editDeadlineLabel = editUntil
+    ? new Date(editUntil).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+    : null;
+
+  const handleDelete = async () => {
+    if (!user || !id || !canEdit) return;
+    const confirmed = window.confirm(
+      'Move this project request to trash? You can no longer edit it after deletion. The request will be kept as a recoverable record.'
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setError(null);
+    try {
+      await requestService.deleteMyRequest(id, user.uid);
+      navigate('/account/requests', { replace: true });
+    } catch (caught) {
+      setError(toUserMessage(caught, 'Could not delete this request.'));
+      setDeleting(false);
+    }
+  };
 
   return (
     <>
@@ -77,11 +100,23 @@ export default function RequestDetails() {
                   </span>
                 </ButtonLink>
                 {canEdit ? (
-                  <ButtonLink to={`/account/requests/${request.id}/edit`}>
-                    <span className="flex items-center gap-2">
-                      <Pencil size={16} /> Edit request
-                    </span>
-                  </ButtonLink>
+                  <>
+                    <ButtonLink to={`/account/requests/${request.id}/edit`}>
+                      <span className="flex items-center gap-2">
+                        <Pencil size={16} /> Edit request
+                      </span>
+                    </ButtonLink>
+                    <Button
+                      variant="danger"
+                      onClick={() => void handleDelete()}
+                      loading={deleting}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Trash2 size={16} aria-hidden="true" />
+                        {deleting ? 'Moving to trash…' : 'Delete request'}
+                      </span>
+                    </Button>
+                  </>
                 ) : (
                   <div className="inline-flex items-center gap-2 rounded-lg border border-line px-4 py-2.5 text-sm text-content-muted">
                     <LockKeyhole size={15} /> Editing window closed
@@ -89,6 +124,19 @@ export default function RequestDetails() {
                 )}
               </div>
             </div>
+
+            {canEdit && editDeadlineLabel && (
+              <div className="mt-6 flex items-start gap-3 rounded-card border border-state-warning/30 bg-state-warning/5 p-4">
+                <Clock3 size={18} className="mt-0.5 shrink-0 text-state-warning" aria-hidden="true" />
+                <div>
+                  <p className="text-sm font-semibold">Editing and deletion window is still open</p>
+                  <p className="mt-1 text-sm leading-relaxed text-content-secondary">
+                    You can edit or delete this request until <span className="font-medium text-content">{editDeadlineLabel}</span> (your local time).
+                    After that deadline, the request becomes read-only.
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="mt-8 grid gap-5 lg:grid-cols-3">
               <div className="rounded-card border border-line bg-surface p-5">
