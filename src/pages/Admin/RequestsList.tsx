@@ -110,10 +110,6 @@ export default function RequestsList() {
           Trash
         </Link>
       </div>
-
-      {false && <div className="mt-8 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
-        </div>}
-
       <div className="mt-6">
         {loading && (
           <div className="flex flex-col gap-3">
