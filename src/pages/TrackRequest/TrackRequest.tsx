@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { Container } from '../../components/ui/Container';
 import { Seo } from '../../components/ui/Seo';
@@ -11,6 +12,7 @@ import { requestService, type PublicRequestStatus } from '../../services/request
 import { REQUEST_STATUS_TONE } from '../../constants/requestOptions';
 import { formatDate } from '../../utils/formatting';
 import { toUserMessage } from '../../utils/errors';
+import { getTrackedRequest } from '../../utils/trackedRequest';
 
 const STATUS_EXPLANATION: Record<string, string> = {
   new: "Submitted and waiting for review — you'll hear back soon.",
@@ -24,8 +26,14 @@ const STATUS_EXPLANATION: Record<string, string> = {
 };
 
 export default function TrackRequest() {
-  const [requestNumber, setRequestNumber] = useState('');
-  const [email, setEmail] = useState('');
+  const [searchParams] = useSearchParams();
+  const tracked = getTrackedRequest();
+  const refFromUrl = searchParams.get('ref');
+
+  const trackedMatchesUrl = !refFromUrl || refFromUrl === tracked?.requestNumber;
+
+  const [requestNumber, setRequestNumber] = useState(refFromUrl ?? tracked?.requestNumber ?? '');
+  const [email, setEmail] = useState(trackedMatchesUrl ? tracked?.email ?? '' : '');
   const [result, setResult] = useState<PublicRequestStatus | null>(null);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);

@@ -2,11 +2,13 @@ import { Link } from 'react-router-dom';
 import { Container } from '../ui/Container';
 import { Wordmark } from './Wordmark';
 import { NAV_LINKS, SITE, SOCIAL_LINKS, whatsappLink } from '../../constants/site';
+import { getTrackedRequest } from '../../utils/trackedRequest';
 
 const activeSocials = SOCIAL_LINKS.filter((social) => social.href);
 
 export function Footer() {
   const whatsapp = whatsappLink();
+  const tracked = getTrackedRequest();
 
   return (
     <footer className="mt-24 border-t border-line bg-surface/40">
@@ -41,14 +43,16 @@ export function Footer() {
                     Request a project
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    to="/track-request"
-                    className="text-sm text-content-secondary transition-colors hover:text-content"
-                  >
-                    Track a request
-                  </Link>
-                </li>
+                {tracked && (
+                  <li>
+                    <Link
+                      to={`/track-request?ref=${encodeURIComponent(tracked.requestNumber)}`}
+                      className="text-sm text-content-secondary transition-colors hover:text-content"
+                    >
+                      Track your request
+                    </Link>
+                  </li>
+                )}
               </ul>
             </nav>
 

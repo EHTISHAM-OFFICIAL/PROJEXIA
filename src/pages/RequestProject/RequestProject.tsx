@@ -24,6 +24,7 @@ import {
   type ProjectRequestFormValues,
 } from '../../utils/validation';
 import { toUserMessage } from '../../utils/errors';
+import { saveTrackedRequest } from '../../utils/trackedRequest';
 import { SITE } from '../../constants/site';
 
 const DEFAULT_VALUES: ProjectRequestFormValues = {
@@ -129,6 +130,11 @@ export default function RequestProject() {
         values as ProjectRequestFormOutput,
         files
       );
+      saveTrackedRequest({
+        requestNumber: created.requestNumber,
+        email: values.email,
+        projectTitle: values.projectTitle,
+      });
       setResult({ requestNumber: created.requestNumber });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
@@ -175,7 +181,7 @@ export default function RequestProject() {
               </button>
               <p className="mt-3 text-xs leading-relaxed text-content-muted">
                 Quote this if you follow up by email or WhatsApp — or use it to{' '}
-                <Link to="/track-request" className="text-accent underline underline-offset-2 hover:text-accent-hover">
+                <Link to={`/track-request?ref=${encodeURIComponent(result.requestNumber)}`} className="text-accent underline underline-offset-2 hover:text-accent-hover">
                   check the status
                 </Link>{' '}
                 any time.
