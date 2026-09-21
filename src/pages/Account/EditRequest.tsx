@@ -1,86 +1,100 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Save, LockKeyhole } from 'lucide-react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Container } from '../../components/ui/Container';
-import { Seo } from '../../components/ui/Seo';
-import { Button } from '../../components/ui/Button';
-import { Alert } from '../../components/ui/Alert';
-import { SectionA } from '../RequestProject/sections/SectionA';
-import { SectionB } from '../RequestProject/sections/SectionB';
-import { SectionC } from '../RequestProject/sections/SectionC';
-import { SectionD } from '../RequestProject/sections/SectionD';
-import { SectionE } from '../RequestProject/sections/SectionE';
-import { SectionF } from '../RequestProject/sections/SectionF';
-import { SectionG } from '../RequestProject/sections/SectionG';
-import { SectionI } from '../RequestProject/sections/SectionI';
-import { Field, FieldSet } from '../../components/forms/Field';
-import { TextArea } from '../../components/forms/Inputs';
-import { RepeatableLinks } from '../../components/forms/RepeatableLinks';
-import { requestService } from '../../services/requestService';
-import { requestSettingsService } from '../../services/requestSettingsService';
-import type { ProjectRequest } from '../../types/projectRequest';
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Save, LockKeyhole } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Container } from "../../components/ui/Container";
+import { Seo } from "../../components/ui/Seo";
+import { Button } from "../../components/ui/Button";
+import { Alert } from "../../components/ui/Alert";
+import { SectionA } from "../RequestProject/sections/SectionA";
+import { SectionB } from "../RequestProject/sections/SectionB";
+import { SectionC } from "../RequestProject/sections/SectionC";
+import { SectionD } from "../RequestProject/sections/SectionD";
+import { SectionE } from "../RequestProject/sections/SectionE";
+import { SectionF } from "../RequestProject/sections/SectionF";
+import { SectionG } from "../RequestProject/sections/SectionG";
+import { SectionI } from "../RequestProject/sections/SectionI";
+import { Field, FieldSet } from "../../components/forms/Field";
+import { TextArea } from "../../components/forms/Inputs";
+import { RepeatableLinks } from "../../components/forms/RepeatableLinks";
+import { requestService } from "../../services/requestService";
+import { requestSettingsService } from "../../services/requestSettingsService";
+import type { ProjectRequest } from "../../types/projectRequest";
 import {
   projectRequestSchema,
-  type ProjectRequestFormValues,\n  type ProjectRequestFormOutput,
-} from '../../utils/validation';
-import { toUserMessage } from '../../utils/errors';
-import { useAuth } from '../../hooks/useAuth';
+  type ProjectRequestFormValues,
+  type ProjectRequestFormOutput,
+} from "../../utils/validation";
+import { toUserMessage } from "../../utils/errors";
+import { useAuth } from "../../hooks/useAuth";
 
-function dateValue(timestamp: ProjectRequest['timeline']['desiredStartDate']) {
-  return timestamp ? timestamp.toDate().toISOString().slice(0, 10) : '';
+function dateValue(timestamp: ProjectRequest["timeline"]["desiredStartDate"]) {
+  return timestamp ? timestamp.toDate().toISOString().slice(0, 10) : "";
 }
 
 function toFormValues(request: ProjectRequest): ProjectRequestFormValues {
   return {
     fullName: request.contact.fullName,
     email: request.contact.email,
-    phone: request.contact.phone ?? '',
-    whatsapp: request.contact.whatsapp ?? '',
-    country: request.contact.country ?? '',
-    city: request.contact.city ?? '',
-    preferredContactMethod: request.contact.preferredContactMethod as ProjectRequestFormValues['preferredContactMethod'],
+    phone: request.contact.phone ?? "",
+    whatsapp: request.contact.whatsapp ?? "",
+    country: request.contact.country ?? "",
+    city: request.contact.city ?? "",
+    preferredContactMethod: request.contact
+      .preferredContactMethod as ProjectRequestFormValues["preferredContactMethod"],
     projectTitle: request.project.title,
-    projectCategory: request.project.category as ProjectRequestFormValues['projectCategory'],
-    projectType: request.project.type as ProjectRequestFormValues['projectType'],
-    projectPurpose: request.project.purpose ?? '',
+    projectCategory: request.project
+      .category as ProjectRequestFormValues["projectCategory"],
+    projectType: request.project
+      .type as ProjectRequestFormValues["projectType"],
+    projectPurpose: request.project.purpose ?? "",
     projectDescription: request.project.description,
     preferredPlatform: request.technical.preferredPlatforms ?? [],
     connectivity: request.technical.connectivity ?? [],
     sensors: request.technical.sensors ?? [],
     outputs: request.technical.outputs ?? [],
-    powerSource: (request.technical.powerSource ?? '') as ProjectRequestFormValues['powerSource'],
-    powerRequirements: request.technical.powerRequirements ?? '',
+    powerSource: (request.technical.powerSource ??
+      "") as ProjectRequestFormValues["powerSource"],
+    powerRequirements: request.technical.powerRequirements ?? "",
     requiresMobileApp: request.software.requiresMobileApp,
     requiresWebDashboard: request.software.requiresWebDashboard,
     requiresCloudDatabase: request.software.requiresCloudDatabase,
     requiresNotifications: request.software.requiresNotifications,
     requiresRemoteControl: request.software.requiresRemoteControl,
-    softwareNotes: request.software.notes ?? '',
+    softwareNotes: request.software.notes ?? "",
     possibleLanguages: request.software.languages ?? [],
-    complexity: request.scale.complexity as ProjectRequestFormValues['complexity'],
-    prototypeQuantity: request.scale.prototypeQuantity ?? '',
-    estimatedQuantity: request.scale.estimatedQuantity ?? '',
-    deploymentEnvironment: (request.scale.deploymentEnvironment ?? '') as ProjectRequestFormValues['deploymentEnvironment'],
-    budgetRange: (request.budget.range ?? '') as ProjectRequestFormValues['budgetRange'],
-    budgetNotes: request.budget.notes ?? '',
+    complexity: request.scale
+      .complexity as ProjectRequestFormValues["complexity"],
+    prototypeQuantity: request.scale.prototypeQuantity ?? "",
+    estimatedQuantity: request.scale.estimatedQuantity ?? "",
+    deploymentEnvironment: (request.scale.deploymentEnvironment ??
+      "") as ProjectRequestFormValues["deploymentEnvironment"],
+    budgetRange: (request.budget.range ??
+      "") as ProjectRequestFormValues["budgetRange"],
+    budgetNotes: request.budget.notes ?? "",
     desiredStartDate: dateValue(request.timeline.desiredStartDate),
     desiredDeadline: dateValue(request.timeline.desiredDeadline),
-    timelineFlexibility: (request.timeline.flexibility ?? '') as ProjectRequestFormValues['timelineFlexibility'],
-    urgency: request.timeline.urgency as ProjectRequestFormValues['urgency'],
-    referenceLinks: request.references.links.length ? request.references.links : [''],
-    referenceDescription: request.references.description ?? '',
-    specialRequirements: request.additionalRequirements.specialRequirements ?? '',
-    additionalNotes: request.additionalRequirements.additionalNotes ?? '',
+    timelineFlexibility: (request.timeline.flexibility ??
+      "") as ProjectRequestFormValues["timelineFlexibility"],
+    urgency: request.timeline.urgency as ProjectRequestFormValues["urgency"],
+    referenceLinks: request.references.links.length
+      ? request.references.links
+      : [""],
+    referenceDescription: request.references.description ?? "",
+    specialRequirements:
+      request.additionalRequirements.specialRequirements ?? "",
+    additionalNotes: request.additionalRequirements.additionalNotes ?? "",
     consultationRequired: request.additionalRequirements.consultationRequired,
     hasExistingHardware: request.additionalRequirements.hasExistingHardware,
-    existingHardwareDescription: request.additionalRequirements.existingHardwareDescription ?? '',
+    existingHardwareDescription:
+      request.additionalRequirements.existingHardwareDescription ?? "",
     hasExistingCode: request.additionalRequirements.hasExistingCode,
-    existingCodeDescription: request.additionalRequirements.existingCodeDescription ?? '',
+    existingCodeDescription:
+      request.additionalRequirements.existingCodeDescription ?? "",
     agreeToTerms: true,
     allowContact: true,
-    website: '',
+    website: "",
   };
 }
 
@@ -96,7 +110,7 @@ export default function EditRequest() {
   const form = useForm<ProjectRequestFormValues>({
     resolver: zodResolver(projectRequestSchema),
     defaultValues: undefined,
-    mode: 'onBlur',
+    mode: "onBlur",
   });
 
   useEffect(() => {
@@ -108,7 +122,7 @@ export default function EditRequest() {
     ])
       .then(([nextRequest, settings]) => {
         if (!nextRequest) {
-          setError('This request could not be found.');
+          setError("This request could not be found.");
           return;
         }
 
@@ -116,7 +130,9 @@ export default function EditRequest() {
         setHours(settings.customerRequestEditWindowHours);
         form.reset(toFormValues(nextRequest));
       })
-      .catch((caught) => setError(toUserMessage(caught, 'Could not load this request.')))
+      .catch((caught) =>
+        setError(toUserMessage(caught, "Could not load this request.")),
+      )
       .finally(() => setLoading(false));
   }, [user, id, form]);
 
@@ -129,7 +145,7 @@ export default function EditRequest() {
 
   const submit = async (values: ProjectRequestFormValues) => {
     if (!user || !id || !canEdit) {
-      setError('The editing window for this request has ended.');
+      setError("The editing window for this request has ended.");
       return;
     }
 
@@ -138,11 +154,12 @@ export default function EditRequest() {
     try {
       // Re-run the shared schema so its defaults produce the exact Firestore
       // payload type expected by requestService (booleans and arrays included).
-      const normalizedValues: ProjectRequestFormOutput = projectRequestSchema.parse(values);
+      const normalizedValues: ProjectRequestFormOutput =
+        projectRequestSchema.parse(values);
       await requestService.updateMyRequest(id, user.uid, normalizedValues);
       navigate(`/account/requests/${id}`, { replace: true });
     } catch (caught) {
-      setError(toUserMessage(caught, 'Could not save your changes.'));
+      setError(toUserMessage(caught, "Could not save your changes."));
     }
   };
 
@@ -150,26 +167,43 @@ export default function EditRequest() {
     <>
       <Seo title="Edit request" noIndex />
       <Container className="py-12 sm:py-16">
-        <Link to={`/account/requests/${id ?? ''}`} className="inline-flex items-center gap-2 text-sm text-content-secondary hover:text-content">
+        <Link
+          to={`/account/requests/${id ?? ""}`}
+          className="inline-flex items-center gap-2 text-sm text-content-secondary hover:text-content"
+        >
           <ArrowLeft size={15} /> Request
         </Link>
 
         <div className="mt-8">
-          <h1 className="text-3xl font-semibold tracking-tight">Edit project request</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Edit project request
+          </h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-content-secondary">
-            You can change customer and project details until the configured editing window closes. Submitted attachments remain unchanged.
+            You can change customer and project details until the configured
+            editing window closes. Submitted attachments remain unchanged.
           </p>
         </div>
 
-        {error && <div className="mt-6"><Alert tone="danger">{error}</Alert></div>}
+        {error && (
+          <div className="mt-6">
+            <Alert tone="danger">{error}</Alert>
+          </div>
+        )}
 
         {!loading && !canEdit ? (
           <div className="mt-8 rounded-card border border-line bg-surface p-6">
-            <div className="flex items-center gap-2 text-sm font-medium"><LockKeyhole size={16}/> Editing window closed</div>
-            <p className="mt-2 text-sm text-content-secondary">This request is now read-only.</p>
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <LockKeyhole size={16} /> Editing window closed
+            </div>
+            <p className="mt-2 text-sm text-content-secondary">
+              This request is now read-only.
+            </p>
           </div>
         ) : (
-          <form onSubmit={form.handleSubmit(submit)} className="mt-10 flex flex-col gap-14">
+          <form
+            onSubmit={form.handleSubmit(submit)}
+            className="mt-10 flex flex-col gap-14"
+          >
             <SectionA form={form} />
             <SectionB form={form} />
             <SectionC form={form} />
@@ -180,21 +214,29 @@ export default function EditRequest() {
             <section className="rounded-card border border-line bg-surface p-6">
               <h2 className="text-base font-semibold">References</h2>
               <p className="mt-2 text-sm leading-relaxed text-content-secondary">
-                Reference links and descriptions can be changed here. Existing uploaded attachments remain unchanged after submission.
+                Reference links and descriptions can be changed here. Existing
+                uploaded attachments remain unchanged after submission.
               </p>
               <div className="mt-6 space-y-5">
                 <FieldSet legend="Reference links">
                   <RepeatableLinks
-                    values={(form.watch('referenceLinks') ?? ['']) as string[]}
-                    onChange={(next) => form.setValue('referenceLinks', next, { shouldDirty: true })}
+                    values={(form.watch("referenceLinks") ?? [""]) as string[]}
+                    onChange={(next) =>
+                      form.setValue("referenceLinks", next, {
+                        shouldDirty: true,
+                      })
+                    }
                     errors={[]}
                   />
                 </FieldSet>
-                <Field label="About those references" htmlFor="referenceDescription">
+                <Field
+                  label="About those references"
+                  htmlFor="referenceDescription"
+                >
                   <TextArea
                     id="referenceDescription"
                     rows={4}
-                    {...form.register('referenceDescription')}
+                    {...form.register("referenceDescription")}
                   />
                 </Field>
               </div>
@@ -202,8 +244,14 @@ export default function EditRequest() {
             <SectionI form={form} />
 
             <div className="border-t border-line pt-8">
-              <Button type="submit" size="lg" loading={form.formState.isSubmitting}>
-                <span className="flex items-center gap-2"><Save size={16}/> Save changes</span>
+              <Button
+                type="submit"
+                size="lg"
+                loading={form.formState.isSubmitting}
+              >
+                <span className="flex items-center gap-2">
+                  <Save size={16} /> Save changes
+                </span>
               </Button>
             </div>
           </form>
