@@ -144,6 +144,7 @@ export const requestService = {
       priority: (values.urgency === 'Urgent' ? 'high' : 'normal') satisfies RequestPriority,
 
       attachments: [...(current.attachments ?? []), ...newAttachments],
+      attachments: [...(current.attachments ?? []), ...newAttachments],
       contact: {
         fullName: values.fullName,
         email: values.email,
@@ -329,6 +330,7 @@ export const requestService = {
     id: string,
     uid: string,
     values: ProjectRequestFormOutput,
+    files: File[] = [],
   ): Promise<void> {
     if (!uid) throw new Error('You must be signed in.');
 
