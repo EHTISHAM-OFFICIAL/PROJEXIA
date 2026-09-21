@@ -74,6 +74,7 @@ function toRequest(snapshot: QueryDocumentSnapshot<DocumentData>): ProjectReques
   const data = snapshot.data();
   return {
     id: snapshot.id,
+    ownerUid: data.ownerUid ?? '',
     requestNumber: data.requestNumber ?? snapshot.id,
     status: data.status ?? 'new',
     priority: data.priority ?? 'normal',
