@@ -21,6 +21,7 @@ const AdminLayout = lazy(() =>
   import('../components/layout/AdminLayout').then((module) => ({ default: module.AdminLayout }))
 );
 const AdminLogin = lazy(() => import('../pages/Admin/Login'));
+const AdminForgotPassword = lazy(() => import('../pages/Admin/ForgotPassword'));
 const AdminDashboard = lazy(() => import('../pages/Admin/Dashboard'));
 const AdminProjectsList = lazy(() => import('../pages/Admin/ProjectsList'));
 const AdminProjectForm = lazy(() => import('../pages/Admin/ProjectForm'));
@@ -61,6 +62,7 @@ export function AppRoutes() {
         </Route>
 
         <Route path="admin/login" element={<AdminLogin />} />
+        <Route path="admin/forgot-password" element={<AdminForgotPassword />} />
 
         <Route path="admin" element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>
