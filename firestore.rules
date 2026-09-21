@@ -141,7 +141,12 @@ service cloud.firestore {
           ])
         );
 
-      allow delete: if isAdmin();
+      allow delete: if isAdmin()
+        || (
+          isOwner(resource.data)
+          && resource.data.deletedAt != null
+          && resource.data.deletedBy == 'customer'
+        );
 
       function isValidNewRequest() {
         let incoming = request.resource.data;
