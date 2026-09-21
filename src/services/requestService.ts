@@ -311,28 +311,28 @@ export const requestService = {
       await emailNotificationService.notify({
         subject: `New project request — ${values.projectTitle}`,
         message:
-          `${values.fullName} (${values.email}) submitted a new request.\\n\\n` +
-          `Reference: ${requestNumber}\\n` +
-          `Category: ${values.projectCategory}\\n` +
-          `Project type: ${values.projectType}\\n` +
-          `Urgency: ${values.urgency}\\n\\n` +
-          `--- Project ---\\n` +
-          `Title: ${values.projectTitle}\\n` +
-          `Purpose: ${values.projectPurpose || "Not provided"}\\n` +
-          `Description:\\n${values.projectDescription}\\n\\n` +
-          `--- Technical ---\\n` +
-          `Preferred platform: ${values.preferredPlatform?.join(", ") || "Not specified"}\\n` +
-          `Connectivity: ${values.connectivity?.join(", ") || "Not specified"}\\n` +
-          `Sensors: ${values.sensors?.join(", ") || "Not specified"}\\n` +
-          `Outputs: ${values.outputs?.join(", ") || "Not specified"}\\n\\n` +
-          `--- Budget & Timeline ---\\n` +
-          `Budget range: ${values.budgetRange || "Not specified"}\\n` +
-          `Start date: ${values.desiredStartDate || "Not specified"}\\n` +
-          `Deadline: ${values.desiredDeadline || "Not specified"}\\n` +
-          `Timeline flexibility: ${values.timelineFlexibility || "Not specified"}\\n\\n` +
-          `--- Scale ---\\n` +
-          `Complexity: ${values.complexity}\\n` +
-          `Prototype quantity: ${values.prototypeQuantity || "Not specified"}\\n` +
+          `${values.fullName} (${values.email}) submitted a new request.\n\n` +
+          `Reference: ${requestNumber}\n` +
+          `Category: ${values.projectCategory}\n` +
+          `Project type: ${values.projectType}\n` +
+          `Urgency: ${values.urgency}\n\n` +
+          `--- Project ---\n` +
+          `Title: ${values.projectTitle}\n` +
+          `Purpose: ${values.projectPurpose || "Not provided"}\n` +
+          `Description:\n${values.projectDescription}\n\n` +
+          `--- Technical ---\n` +
+          `Preferred platform: ${values.preferredPlatform?.join(", ") || "Not specified"}\n` +
+          `Connectivity: ${values.connectivity?.join(", ") || "Not specified"}\n` +
+          `Sensors: ${values.sensors?.join(", ") || "Not specified"}\n` +
+          `Outputs: ${values.outputs?.join(", ") || "Not specified"}\n\n` +
+          `--- Budget & Timeline ---\n` +
+          `Budget range: ${values.budgetRange || "Not specified"}\n` +
+          `Start date: ${values.desiredStartDate || "Not specified"}\n` +
+          `Deadline: ${values.desiredDeadline || "Not specified"}\n` +
+          `Timeline flexibility: ${values.timelineFlexibility || "Not specified"}\n\n` +
+          `--- Scale ---\n` +
+          `Complexity: ${values.complexity}\n` +
+          `Prototype quantity: ${values.prototypeQuantity || "Not specified"}\n` +
           `Estimated quantity: ${values.estimatedQuantity || "Not specified"}`,
         replyTo: values.email,
         maxAttempts: 3,
