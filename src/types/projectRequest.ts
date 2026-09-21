@@ -134,4 +134,6 @@ export interface ProjectRequest {
   metadata: RequestMetadata;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
+  deletedAt?: Timestamp | null;
+  deletedBy?: 'customer' | 'admin' | null;
 }

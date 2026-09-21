@@ -2,7 +2,9 @@ import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import {
   createUserWithEmailAndPassword,
   deleteUser,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  updateEmail,
   updatePassword,
   type User,
 } from 'firebase/auth';
@@ -11,6 +13,7 @@ import { db } from '../firebase/firestore';
 import type { UserProfile } from '../types/user';
 
 const USERS_COLLECTION = 'users';
+const USERNAME_LOOKUP_COLLECTION = 'usernameLookup';
 const INTERNAL_EMAIL_DOMAIN = 'users.mectec.local';
 const usernamePattern = /^[a-z0-9_-]{3,30}$/;
 
@@ -18,8 +21,12 @@ export function normalizeUsername(value: string): string {
   return value.trim().toLowerCase();
 }
 
-function authEmailForUsername(username: string): string {
+function authEmailForLegacyUsername(username: string): string {
   return `${normalizeUsername(username)}@${INTERNAL_EMAIL_DOMAIN}`;
+}
+
+function usernameLookupRef(username: string) {
+  return doc(db, USERNAME_LOOKUP_COLLECTION, normalizeUsername(username));
 }
 
 export function validateUsername(value: string): string | null {
@@ -35,26 +42,42 @@ export function validateUsername(value: string): string | null {
 export async function registerUser(
   usernameInput: string,
   password: string,
-  recoveryEmail?: string,
+  accountEmailInput: string,
 ): Promise<User> {
   const username = normalizeUsername(usernameInput);
   const usernameError = validateUsername(username);
   if (usernameError) throw new Error(usernameError);
 
-  const normalizedRecoveryEmail = recoveryEmail?.trim().toLowerCase() || null;
+  const accountEmail = accountEmailInput.trim().toLowerCase();
+  if (!accountEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(accountEmail)) {
+    throw new Error('Enter a valid email address.');
+  }
+
   const credential = await createUserWithEmailAndPassword(
     auth,
-    authEmailForUsername(username),
+    accountEmail,
     password,
   );
 
   try {
+    const lookupRef = usernameLookupRef(username);
+    const existingLookup = await getDoc(lookupRef);
+    if (existingLookup.exists()) {
+      throw new Error('Could not create your account. That username is already in use. Please choose another username.');
+    }
+
     await setDoc(doc(db, USERS_COLLECTION, credential.user.uid), {
       uid: credential.user.uid,
       username,
-      recoveryEmail: normalizedRecoveryEmail,
+      recoveryEmail: accountEmail,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
+    });
+
+    await setDoc(lookupRef, {
+      uid: credential.user.uid,
+      authEmail: accountEmail,
+      createdAt: serverTimestamp(),
     });
 
     return credential.user;
@@ -62,7 +85,7 @@ export async function registerUser(
     try {
       await deleteUser(credential.user);
     } catch {
-      // Best-effort cleanup if the profile write fails.
+      // Best-effort cleanup if a profile/username lookup write fails.
     }
     throw error;
   }
@@ -75,17 +98,56 @@ export async function signInWithUsername(usernameInput: string, password: string
   }
 
   try {
-    const credential = await signInWithEmailAndPassword(
-      auth,
-      authEmailForUsername(username),
-      password,
-    );
+    const lookupSnapshot = await getDoc(usernameLookupRef(username));
+    const authEmail = lookupSnapshot.exists()
+      ? (lookupSnapshot.data().authEmail as string | undefined)
+      : authEmailForLegacyUsername(username);
+
+    if (!authEmail) throw new Error('Invalid username or password.');
+
+    const credential = await signInWithEmailAndPassword(auth, authEmail, password);
+    const profile = await getUserProfile(credential.user.uid);
+
+    // Accounts created before email became mandatory used an internal Firebase
+    // email. On a successful login, migrate that account to its real recovery
+    // email so Firebase can provide native password-reset emails.
+    if (
+      credential.user.email?.endsWith(`@${INTERNAL_EMAIL_DOMAIN}`) &&
+      profile?.recoveryEmail &&
+      credential.user.email !== profile.recoveryEmail
+    ) {
+      try {
+        await updateEmail(credential.user, profile.recoveryEmail);
+      } catch {
+        // Login remains valid; a later successful login can retry migration.
+      }
+    }
+
+    if (!lookupSnapshot.exists() && credential.user.email) {
+      try {
+        await setDoc(usernameLookupRef(username), {
+          uid: credential.user.uid,
+          authEmail: credential.user.email,
+          createdAt: serverTimestamp(),
+        });
+      } catch {
+        // Lookup creation is an optimization for future username sign-ins.
+      }
+    }
+
     return credential.user;
   } catch {
-    // Keep the same message for unknown usernames and wrong passwords.
-    // Firebase Auth can additionally provide email-enumeration protection.
     throw new Error('Invalid username or password.');
   }
+}
+
+export async function sendCustomerPasswordReset(accountEmailInput: string): Promise<void> {
+  const accountEmail = accountEmailInput.trim().toLowerCase();
+  if (!accountEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(accountEmail)) {
+    throw new Error('Enter a valid email address.');
+  }
+
+  await sendPasswordResetEmail(auth, accountEmail);
 }
 
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {

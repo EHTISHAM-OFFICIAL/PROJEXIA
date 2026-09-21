@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Trash2 } from 'lucide-react';
 import { Seo } from '../../components/ui/Seo';
 import { Badge } from '../../components/ui/Badge';
 import { EmptyState } from '../../components/ui/EmptyState';
@@ -78,13 +79,14 @@ export default function RequestsList() {
         </div>
       )}
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <TextInput
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Search by reference, name, email or project"
           aria-label="Search requests"
+          className="min-w-0 flex-1"
         />
         <Select
           options={REQUEST_STATUSES}
@@ -100,8 +102,14 @@ export default function RequestsList() {
           aria-label="Filter by priority"
           onChange={(event) => setPriority(event.target.value)}
         />
+        <Link
+          to="/admin/requests/trash"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-line bg-surface-raised px-4 text-sm font-medium transition-colors hover:border-line-strong hover:bg-surface"
+        >
+          <Trash2 size={16} aria-hidden="true" />
+          Trash
+        </Link>
       </div>
-
       <div className="mt-6">
         {loading && (
           <div className="flex flex-col gap-3">

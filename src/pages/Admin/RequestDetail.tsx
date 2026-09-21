@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Download, Mail, MessageCircle, Phone } from 'lucide-react';
+import { ArrowLeft, Download, Mail, MessageCircle, Phone, Trash2 } from 'lucide-react';
 import { Seo } from '../../components/ui/Seo';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
@@ -34,6 +34,7 @@ export default function RequestDetail() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [trashing, setTrashing] = useState(false);
 
   useEffect(() => {
     if (!request) return;
@@ -74,6 +75,20 @@ export default function RequestDetail() {
     software.requiresNotifications && 'Notifications',
     software.requiresRemoteControl && 'Remote control',
   ].filter(Boolean) as string[];
+
+  const handleTrash = async () => {
+    if (!id || !window.confirm('Move this request to the recoverable trash? It will disappear from the active request list but can be restored later.')) return;
+
+    setTrashing(true);
+    setSaveError(null);
+    try {
+      await requestService.trashRequest(id);
+      window.location.href = '/admin/requests/trash';
+    } catch (caught) {
+      setSaveError(toUserMessage(caught, 'Could not move this request to trash.'));
+      setTrashing(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!id) return;
@@ -357,6 +372,18 @@ export default function RequestDetail() {
 
               <Button onClick={() => void handleSave()} loading={saving} className="w-full">
                 {saving ? 'Saving…' : 'Save changes'}
+              </Button>
+
+              <Button
+                variant="danger"
+                onClick={() => void handleTrash()}
+                loading={trashing}
+                className="w-full"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <Trash2 size={15} aria-hidden="true" />
+                  {trashing ? 'Moving to trash…' : 'Move request to trash'}
+                </span>
               </Button>
             </div>
           </div>

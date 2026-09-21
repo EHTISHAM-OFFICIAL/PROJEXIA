@@ -50,8 +50,8 @@ export default function Account() {
                 <dd className="font-medium text-content">{profile?.username || '—'}</dd>
               </div>
               <div className="flex items-start justify-between gap-4">
-                <dt className="text-content-secondary">Recovery email</dt>
-                <dd className="font-medium text-content">{profile?.recoveryEmail || 'Not added'}</dd>
+                <dt className="text-content-secondary">Account email</dt>
+                <dd className="font-medium text-content">{profile?.recoveryEmail || '—'}</dd>
               </div>
             </dl>
           </div>

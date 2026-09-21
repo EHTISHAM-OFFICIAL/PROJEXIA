@@ -96,6 +96,8 @@ function toRequest(snapshot: QueryDocumentSnapshot<DocumentData>): ProjectReques
     metadata: data.metadata ?? { source: 'unknown', userAgent: null, createdFrom: 'unknown' },
     createdAt: data.createdAt ?? null,
     updatedAt: data.updatedAt ?? null,
+    deletedAt: data.deletedAt ?? null,
+    deletedBy: data.deletedBy ?? null,
   };
 }
 
@@ -241,6 +243,7 @@ export const requestService = {
     try {
       await setDoc(statusLookupRef(requestNumber), {
         requestNumber,
+        requestId: requestRef.id,
         status: 'new' satisfies RequestStatus,
         projectTitle: values.projectTitle,
         email: values.email.trim().toLowerCase(),
@@ -248,6 +251,7 @@ export const requestService = {
         updatedAt: serverTimestamp(),
         customerUpdate: null,
         customerUpdateAt: null,
+        deletedAt: null,
       });
     } catch (error) {
       if (import.meta.env.DEV) console.warn('Could not create status-lookup record', error);
@@ -293,7 +297,7 @@ export const requestService = {
       ? [where('status', '==', status), orderBy('createdAt', 'desc')]
       : [orderBy('createdAt', 'desc')];
     const snapshot = await getDocs(query(requestsRef, ...constraints));
-    return snapshot.docs.map(toRequest);
+    return snapshot.docs.map(toRequest).filter((request) => !request.deletedAt);
   },
 
   async getMyRequests(uid: string): Promise<ProjectRequest[]> {
@@ -305,6 +309,7 @@ export const requestService = {
 
     return snapshot.docs
       .map(toRequest)
+      .filter((request) => !request.deletedAt)
       .sort((a, b) => {
         const aTime = a.createdAt?.toMillis() ?? 0;
         const bTime = b.createdAt?.toMillis() ?? 0;
@@ -319,7 +324,7 @@ export const requestService = {
     if (!snapshot.exists()) return null;
 
     const data = snapshot.data();
-    if (data.ownerUid !== uid) return null;
+    if (data.ownerUid !== uid || data.deletedAt) return null;
 
     return toRequest(snapshot as QueryDocumentSnapshot<DocumentData>);
   },
@@ -422,6 +427,103 @@ export const requestService = {
     });
   },
 
+  async deleteMyRequest(id: string, uid: string): Promise<void> {
+    if (!uid) throw new Error('You must be signed in.');
+
+    const requestRef = doc(db, COLLECTIONS.projectRequests, id);
+    const snapshot = await getDoc(requestRef);
+    if (!snapshot.exists()) throw new Error('Request not found.');
+
+    const current = snapshot.data();
+    if (current.ownerUid !== uid) throw new Error('You are not allowed to delete this request.');
+    if (current.deletedAt) throw new Error('This request is already in the trash.');
+
+    const createdAt = current.createdAt as Timestamp | undefined;
+    if (!createdAt) throw new Error('This request cannot be deleted.');
+
+    const settings = await requestSettingsService.getSecuritySettings();
+    const deadline = createdAt.toMillis() + settings.customerRequestEditWindowHours * 60 * 60 * 1000;
+    if (Date.now() >= deadline) {
+      throw new Error('The deletion window for this request has ended.');
+    }
+
+    await updateDoc(requestRef, {
+      deletedAt: serverTimestamp(),
+      deletedBy: 'customer',
+      updatedAt: serverTimestamp(),
+    });
+
+    const requestNumber = current.requestNumber as string | undefined;
+    if (requestNumber) {
+      try {
+        await setDoc(
+          statusLookupRef(requestNumber),
+          { deletedAt: serverTimestamp(), updatedAt: serverTimestamp() },
+          { merge: true },
+        );
+      } catch (error) {
+        if (import.meta.env.DEV) console.warn('Could not mark status lookup as trashed', error);
+      }
+    }
+  },
+
+  async getTrashedRequests(): Promise<ProjectRequest[]> {
+    const snapshot = await getDocs(query(requestsRef, orderBy('createdAt', 'desc')));
+    return snapshot.docs
+      .map(toRequest)
+      .filter((request) => Boolean(request.deletedAt));
+  },
+
+  async trashRequest(id: string): Promise<void> {
+    const requestRef = doc(db, COLLECTIONS.projectRequests, id);
+    const snapshot = await getDoc(requestRef);
+    if (!snapshot.exists()) throw new Error('Request not found.');
+
+    const requestNumber = snapshot.data().requestNumber as string | undefined;
+    await updateDoc(requestRef, {
+      deletedAt: serverTimestamp(),
+      deletedBy: 'admin',
+      updatedAt: serverTimestamp(),
+    });
+
+    if (requestNumber) {
+      try {
+        await setDoc(
+          statusLookupRef(requestNumber),
+          { deletedAt: serverTimestamp(), updatedAt: serverTimestamp() },
+          { merge: true },
+        );
+      } catch (error) {
+        if (import.meta.env.DEV) console.warn('Could not mark status lookup as trashed', error);
+      }
+    }
+  },
+
+  async restoreRequest(id: string): Promise<void> {
+    const requestRef = doc(db, COLLECTIONS.projectRequests, id);
+    const snapshot = await getDoc(requestRef);
+    if (!snapshot.exists()) throw new Error('Request not found.');
+
+    const requestNumber = snapshot.data().requestNumber as string | undefined;
+    await updateDoc(requestRef, {
+      deletedAt: null,
+      deletedBy: null,
+      updatedAt: serverTimestamp(),
+    });
+
+    if (requestNumber) {
+      try {
+        await setDoc(
+          statusLookupRef(requestNumber),
+          { deletedAt: null, updatedAt: serverTimestamp() },
+          { merge: true },
+        );
+      } catch (error) {
+        if (import.meta.env.DEV) console.warn('Could not restore status lookup record', error);
+      }
+    }
+  },
+
   async getRecentRequests(limitCount = 5): Promise<ProjectRequest[]> {
     const all = await requestService.getRequests();
     return all.slice(0, limitCount);
@@ -519,6 +621,7 @@ export const requestService = {
     if (!snapshot.exists()) return null;
 
     const data = snapshot.data();
+    if (data.deletedAt) return null;
     if ((data.email as string)?.toLowerCase() !== email.trim().toLowerCase()) return null;
 
     return {

@@ -27,7 +27,7 @@ const FIREBASE_ERROR_MESSAGES: Record<string, string> = {
   'auth/invalid-email': 'That email address is not valid.',
   'auth/user-not-found': 'Incorrect username or password.',
   'auth/wrong-password': 'Incorrect username or password.',
-  'auth/email-already-in-use': 'Could not create your account. That username is already in use. Please choose another username.',
+  'auth/email-already-in-use': 'Could not create your account. That email address is already registered. Please use another email or log in.',
   'auth/too-many-requests': 'Too many sign-in attempts. Please wait a few minutes.',
   'auth/network-request-failed': 'Cannot reach the server. Check your connection.',
   'storage/unauthorized': 'You do not have permission to upload that file.',

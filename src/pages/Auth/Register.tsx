@@ -19,7 +19,7 @@ export default function Register() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
-  const [recoveryEmail, setRecoveryEmail] = useState('');
+  const [accountEmail, setAccountEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,15 +49,20 @@ export default function Register() {
       return;
     }
 
-    if (recoveryEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recoveryEmail.trim())) {
-      setError('Enter a valid recovery email, or leave it blank.');
+    if (!accountEmail.trim()) {
+      setError('Email is required because it is used to reset your password if you forget it.');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(accountEmail.trim())) {
+      setError('Enter a valid email address.');
       return;
     }
 
     setSubmitting(true);
 
     try {
-      await registerUser(username, password, recoveryEmail);
+      await registerUser(username, password, accountEmail);
       navigate(from.startsWith('/') ? from : '/account', { replace: true });
     } catch (caught) {
       setError(toUserMessage(caught, 'Could not create your account.'));
@@ -139,16 +144,17 @@ export default function Register() {
                 </Field>
 
                 <Field
-                  label="Recovery email"
-                  htmlFor="recoveryEmail"
-                  hint="Optional. Optional contact email. Username and password remain your login credentials."
+                  label="Account email"
+                  htmlFor="accountEmail"
+                  required
+                  hint="Required. This email is used for password recovery and account security."
                 >
                   <TextInput
-                    id="recoveryEmail"
+                    id="accountEmail"
                     type="email"
                     autoComplete="email"
-                    value={recoveryEmail}
-                    onChange={(event) => setRecoveryEmail(event.target.value)}
+                    value={accountEmail}
+                    onChange={(event) => setAccountEmail(event.target.value)}
                     placeholder="you@example.com"
                   />
                 </Field>

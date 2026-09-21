@@ -39,6 +39,7 @@ export default function Login() {
     setError(null);
     try {
       await signIn(values.email, values.password);
+      sessionStorage.setItem('mectec-admin-welcome-pending', '1');
       navigate('/admin', { replace: true });
     } catch (caught) {
       setError(toUserMessage(caught, 'Could not sign in. Check your details and try again.'));
