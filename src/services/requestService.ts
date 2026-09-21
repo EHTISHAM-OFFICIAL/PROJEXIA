@@ -106,6 +106,8 @@ export interface PublicRequestStatus {
   projectTitle: string;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
+  customerUpdate: string | null;
+  customerUpdateAt: Timestamp | null;
 }
 
 export const requestService = {
@@ -233,6 +235,8 @@ export const requestService = {
         email: values.email.trim().toLowerCase(),
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
+        customerUpdate: null,
+        customerUpdateAt: null,
       });
     } catch (error) {
       if (import.meta.env.DEV) console.warn('Could not create status-lookup record', error);
@@ -305,6 +309,28 @@ export const requestService = {
     });
   },
 
+  async updateCustomerUpdate(id: string, customerUpdate: string | null): Promise<void> {
+    const requestSnapshot = await getDoc(doc(db, COLLECTIONS.projectRequests, id));
+    if (!requestSnapshot.exists()) throw new Error('Request not found.');
+    const requestNumber = requestSnapshot.data()?.requestNumber as string | undefined;
+    if (!requestNumber) throw new Error('Request reference is missing.');
+
+    const updateText = customerUpdate?.trim() || null;
+    const updateTimestamp = updateText ? serverTimestamp() : null;
+
+    await updateDoc(doc(db, COLLECTIONS.projectRequests, id), {
+      customerUpdate: updateText,
+      customerUpdateAt: updateTimestamp,
+      updatedAt: serverTimestamp(),
+    });
+
+    await setDoc(
+      statusLookupRef(requestNumber),
+      { customerUpdate: updateText, customerUpdateAt: updateTimestamp, updatedAt: serverTimestamp() },
+      { merge: true },
+    );
+  },
+
   async updateAdminFields(
     id: string,
     fields: { notes?: string | null; quotedAmount?: number | null; assignedTo?: string | null }
@@ -346,6 +372,8 @@ export const requestService = {
       projectTitle: data.projectTitle ?? '',
       createdAt: data.createdAt ?? null,
       updatedAt: data.updatedAt ?? null,
+      customerUpdate: data.customerUpdate ?? null,
+      customerUpdateAt: data.customerUpdateAt ?? null,
     };
   },
 };
