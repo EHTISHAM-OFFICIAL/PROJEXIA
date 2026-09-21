@@ -12,6 +12,7 @@ import BlogPostPage from '../pages/Blog/BlogPost';
 import Contact from '../pages/Contact/Contact';
 import TrackRequest from '../pages/TrackRequest/TrackRequest';
 import NotFound from '../pages/NotFound/NotFound';
+import { RequireCustomerAuth } from './RequireCustomerAuth';
 
 // The request form pulls in the whole validation schema, and the admin area is
 // only ever used by one person — both are split out so public visitors never
@@ -20,6 +21,12 @@ const RequestProject = lazy(() => import('../pages/RequestProject/RequestProject
 const AdminLayout = lazy(() =>
   import('../components/layout/AdminLayout').then((module) => ({ default: module.AdminLayout }))
 );
+const Login = lazy(() => import('../pages/Auth/Login'));
+const Register = lazy(() => import('../pages/Auth/Register'));
+const Account = lazy(() => import('../pages/Account/Account'));
+const MyRequests = lazy(() => import('../pages/Account/MyRequests'));
+const RequestDetails = lazy(() => import('../pages/Account/RequestDetails'));
+const EditRequest = lazy(() => import('../pages/Account/EditRequest'));
 const AdminLogin = lazy(() => import('../pages/Admin/Login'));
 const AdminForgotPassword = lazy(() => import('../pages/Admin/ForgotPassword'));
 const AdminDashboard = lazy(() => import('../pages/Admin/Dashboard'));
@@ -58,9 +65,17 @@ export function AppRoutes() {
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="track-request" element={<TrackRequest />} />
+          <Route element={<RequireCustomerAuth />}>
+            <Route path="account" element={<Account />} />
+            <Route path="account/requests" element={<MyRequests />} />
+            <Route path="account/requests/:id" element={<RequestDetails />} />
+            <Route path="account/requests/:id/edit" element={<EditRequest />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Route>
 
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
         <Route path="admin/login" element={<AdminLogin />} />
         <Route path="admin/forgot-password" element={<AdminForgotPassword />} />
 
