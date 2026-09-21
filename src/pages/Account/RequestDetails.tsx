@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Clock3, Pencil, LockKeyhole } from 'lucide-react';
+import { ArrowLeft, Pencil, LockKeyhole } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { Container } from '../../components/ui/Container';
 import { Alert } from '../../components/ui/Alert';
