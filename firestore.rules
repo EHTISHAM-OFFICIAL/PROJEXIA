@@ -149,9 +149,17 @@ service cloud.firestore {
           ])
         );
 
-      allow delete: if isOwner(resource.data)
+      // Customers may permanently delete only their own already-deleted
+      // requests. Admins may permanently delete any request only after it is
+      // already in trash; active requests cannot be hard-deleted.
+      allow delete: if (
+        isAdmin()
+        && resource.data.get('deletedAt', null) != null
+      ) || (
+        isOwner(resource.data)
         && resource.data.deletedAt != null
-        && resource.data.deletedBy == 'customer';
+        && resource.data.deletedBy == 'customer'
+      );
 
       function isValidNewRequest() {
         let incoming = request.resource.data;
