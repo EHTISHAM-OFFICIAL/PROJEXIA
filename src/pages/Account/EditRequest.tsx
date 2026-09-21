@@ -136,7 +136,13 @@ export default function EditRequest() {
     setError(null);
 
     try {
-      await requestService.updateMyRequest(id, user.uid, { ...values, sensors: values.sensors ?? [], outputs: values.outputs ?? [], connectivity: values.connectivity ?? [] });
+      await requestService.updateMyRequest(id, user.uid, {
+        ...values,
+        preferredPlatform: values.preferredPlatform ?? [],
+        sensors: values.sensors ?? [],
+        outputs: values.outputs ?? [],
+        connectivity: values.connectivity ?? [],
+      });
       navigate(`/account/requests/${id}`, { replace: true });
     } catch (caught) {
       setError(toUserMessage(caught, 'Could not save your changes.'));
