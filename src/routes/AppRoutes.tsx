@@ -23,7 +23,6 @@ const AdminLayout = lazy(() =>
 );
 const Login = lazy(() => import('../pages/Auth/Login'));
 const Register = lazy(() => import('../pages/Auth/Register'));
-const ForgotPassword = lazy(() => import('../pages/Auth/ForgotPassword'));
 const Account = lazy(() => import('../pages/Account/Account'));
 const MyRequests = lazy(() => import('../pages/Account/MyRequests'));
 const RequestDetails = lazy(() => import('../pages/Account/RequestDetails'));
@@ -77,7 +76,6 @@ export function AppRoutes() {
 
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="admin/login" element={<AdminLogin />} />
         <Route path="admin/forgot-password" element={<AdminForgotPassword />} />
 
