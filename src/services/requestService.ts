@@ -255,7 +255,7 @@ export const requestService = {
         `Reference: ${requestNumber}\n` +
         `Category: ${values.projectCategory}\n` +
         `Urgency: ${values.urgency}\n\n` +
-        `${values.projectDescription.slice(0, 400)}`,
+        `Project description:\n${values.projectDescription}`,
       replyTo: values.email,
     });
 
