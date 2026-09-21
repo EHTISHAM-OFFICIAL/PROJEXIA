@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { Container } from '../../components/ui/Container';
@@ -13,17 +13,7 @@ import { REQUEST_STATUS_TONE } from '../../constants/requestOptions';
 import { formatDate } from '../../utils/formatting';
 import { toUserMessage } from '../../utils/errors';
 import { getTrackedRequest } from '../../utils/trackedRequest';
-
-const STATUS_EXPLANATION: Record<string, string> = {
-  new: "Submitted and waiting for review — you'll hear back soon.",
-  reviewing: 'Being looked at now.',
-  quoted: "A quote has been prepared — check your email or WhatsApp.",
-  accepted: 'Accepted and about to start.',
-  'in-progress': 'Work is underway.',
-  completed: 'Finished.',
-  rejected: "This request wasn't taken forward.",
-  cancelled: 'Cancelled.',
-};
+import { DEFAULT_REQUEST_STATUS_MESSAGES, getRequestStatusMessages, type RequestStatusMessages } from '../../services/requestStatusService';
 
 export default function TrackRequest() {
   const [searchParams] = useSearchParams();
@@ -38,6 +28,11 @@ export default function TrackRequest() {
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [statusMessages, setStatusMessages] = useState<RequestStatusMessages>(DEFAULT_REQUEST_STATUS_MESSAGES);
+
+  useEffect(() => {
+    getRequestStatusMessages().then(setStatusMessages).catch(() => undefined);
+  }, []);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -113,12 +108,24 @@ export default function TrackRequest() {
             <div className="card mt-8 p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="font-mono text-sm text-content-secondary">{result.requestNumber}</p>
-                <Badge tone={REQUEST_STATUS_TONE[result.status]}>{result.status}</Badge>
+                <Badge tone={REQUEST_STATUS_TONE[result.status]}>{statusMessages[result.status].title}</Badge>
               </div>
               <h2 className="mt-3 text-lg font-semibold tracking-tight">{result.projectTitle}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-content-secondary">
-                {STATUS_EXPLANATION[result.status]}
-              </p>
+              <div className="mt-5 space-y-4 border-t border-line pt-5">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-content-muted">What this means</p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-content-secondary">{statusMessages[result.status].description}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-content-muted">Next step</p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-content-secondary">{statusMessages[result.status].nextStep}</p>
+                </div>
+              </div>
+              <div className="mt-5 border-t border-line pt-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-content-muted">Latest update</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-content-secondary">{result.customerUpdate || 'No additional update has been posted yet.'}</p>
+                {result.customerUpdateAt && <p className="mt-1.5 text-xs text-content-muted">Updated {formatDate(result.customerUpdateAt)}</p>}
+              </div>
               <div className="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-4 text-sm">
                 <div>
                   <p className="text-xs text-content-muted">Submitted</p>
