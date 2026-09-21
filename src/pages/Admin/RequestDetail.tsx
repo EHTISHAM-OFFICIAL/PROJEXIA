@@ -35,6 +35,7 @@ export default function RequestDetail() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [trashing, setTrashing] = useState(false);
+  const isTrashed = Boolean(request?.deletedAt);
 
   useEffect(() => {
     if (!request) return;
@@ -376,15 +377,22 @@ export default function RequestDetail() {
 
               <Button
                 variant="danger"
+                disabled={isTrashed}
                 onClick={() => void handleTrash()}
                 loading={trashing}
                 className="w-full"
               >
                 <span className="flex items-center justify-center gap-2">
                   <Trash2 size={15} aria-hidden="true" />
-                  {trashing ? 'Moving to trash…' : 'Move request to trash'}
+                  {isTrashed ? 'Already in trash' : (trashing ? 'Moving to trash…' : 'Move request to trash')}
                 </span>
               </Button>
+
+              {isTrashed && (
+                <p className="text-center text-xs text-content-muted">
+                  This request is already in recoverable trash. Restore it from the Trash page before making active changes.
+                </p>
+              )}
             </div>
           </div>
         </aside>
