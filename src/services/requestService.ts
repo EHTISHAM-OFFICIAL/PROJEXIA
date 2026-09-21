@@ -258,22 +258,22 @@ export const requestService = {
         `Urgency: ${values.urgency}\n\n` +
         `--- Project ---\n` +
         `Title: ${values.projectTitle}\n` +
-        `Purpose: ${values.projectPurpose || 'Not provided'}\n\n` +
+        `Purpose: ${values.projectPurpose || "Not provided"}\n` +
+        `Description:\n${values.projectDescription}\n\n` +
         `--- Technical ---\n` +
-        `Preferred platform: ${values.preferredPlatform?.join(', ') || 'Not specified'}\n` +
-        `Connectivity: ${values.connectivity?.join(', ') || 'Not specified'}\n` +
-        `Sensors: ${values.sensors?.join(', ') || 'Not specified'}\n` +
-        `Outputs: ${values.outputs?.join(', ') || 'Not specified'}\n\n` +
+        `Preferred platform: ${values.preferredPlatform?.join(", ") || "Not specified"}\n` +
+        `Connectivity: ${values.connectivity?.join(", ") || "Not specified"}\n` +
+        `Sensors: ${values.sensors?.join(", ") || "Not specified"}\n` +
+        `Outputs: ${values.outputs?.join(", ") || "Not specified"}\n\n` +
         `--- Budget & Timeline ---\n` +
-        `Budget range: ${values.budgetRange || 'Not specified'}\n` +
-        `Start date: ${values.desiredStartDate || 'Not specified'}\n` +
-        `Deadline: ${values.desiredDeadline || 'Not specified'}\n` +
-        `Timeline flexibility: ${values.timelineFlexibility || 'Not specified'}\n\n` +
+        `Budget range: ${values.budgetRange || "Not specified"}\n` +
+        `Start date: ${values.desiredStartDate || "Not specified"}\n` +
+        `Deadline: ${values.desiredDeadline || "Not specified"}\n` +
+        `Timeline flexibility: ${values.timelineFlexibility || "Not specified"}\n\n` +
         `--- Scale ---\n` +
         `Complexity: ${values.complexity}\n` +
-        `Prototype quantity: ${values.prototypeQuantity || 'Not specified'}\n` +
-        `Estimated quantity: ${values.estimatedQuantity || 'Not specified'}\n\n` +
-        `--- Project description ---\n${values.projectDescription}`,
+        `Prototype quantity: ${values.prototypeQuantity || "Not specified"}\n` +
+        `Estimated quantity: ${values.estimatedQuantity || "Not specified"}`,
       replyTo: values.email,
     });
 
