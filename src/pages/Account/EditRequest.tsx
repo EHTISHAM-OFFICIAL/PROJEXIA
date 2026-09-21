@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Save, LockKeyhole } from "lucide-react";
+import { ArrowLeft, Save, LockKeyhole, Paperclip } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,12 +15,14 @@ import { SectionE } from "../RequestProject/sections/SectionE";
 import { SectionF } from "../RequestProject/sections/SectionF";
 import { SectionG } from "../RequestProject/sections/SectionG";
 import { SectionI } from "../RequestProject/sections/SectionI";
+import { SectionJ } from "../RequestProject/sections/SectionJ";
 import { Field, FieldSet } from "../../components/forms/Field";
 import { TextArea } from "../../components/forms/Inputs";
 import { RepeatableLinks } from "../../components/forms/RepeatableLinks";
+import { FileUpload } from "../../components/forms/FileUpload";
 import { requestService } from "../../services/requestService";
 import { requestSettingsService } from "../../services/requestSettingsService";
-import type { ProjectRequest } from "../../types/projectRequest";
+import type { ProjectRequest, RequestAttachment } from "../../types/projectRequest";
 import {
   projectRequestSchema,
   type ProjectRequestFormValues,
@@ -106,6 +108,7 @@ export default function EditRequest() {
   const [hours, setHours] = useState(24);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
 
   const form = useForm<ProjectRequestFormValues>({
     resolver: zodResolver(projectRequestSchema),
@@ -156,7 +159,7 @@ export default function EditRequest() {
       // payload type expected by requestService (booleans and arrays included).
       const normalizedValues: ProjectRequestFormOutput =
         projectRequestSchema.parse(values);
-      await requestService.updateMyRequest(id, user.uid, normalizedValues);
+      await requestService.updateMyRequest(id, user.uid, normalizedValues, files);
       navigate(`/account/requests/${id}`, { replace: true });
     } catch (caught) {
       setError(toUserMessage(caught, "Could not save your changes."));
@@ -212,12 +215,12 @@ export default function EditRequest() {
             <SectionF form={form} />
             <SectionG form={form} />
             <section className="rounded-card border border-line bg-surface p-6">
-              <h2 className="text-base font-semibold">References</h2>
+              <h2 className="text-base font-semibold">References and files</h2>
               <p className="mt-2 text-sm leading-relaxed text-content-secondary">
-                Reference links and descriptions can be changed here. Existing
-                uploaded attachments remain unchanged after submission.
+                You can update your reference links and add attachments you
+                forgot to include when you first submitted the request.
               </p>
-              <div className="mt-6 space-y-5">
+              <div className="mt-6 space-y-6">
                 <FieldSet legend="Reference links">
                   <RepeatableLinks
                     values={(form.watch("referenceLinks") ?? [""]) as string[]}
@@ -239,9 +242,38 @@ export default function EditRequest() {
                     {...form.register("referenceDescription")}
                   />
                 </Field>
+
+                <FieldSet
+                  legend="Attachments"
+                  hint="Add sketches, diagrams, specifications or photos you did not include before."
+                >
+                  {request?.attachments?.length ? (
+                    <div className="space-y-2">
+                      <p className="text-xs text-content-muted">Existing attachments</p>
+                      {request.attachments.map((attachment: RequestAttachment) => (
+                        <a
+                          key={attachment.url}
+                          href={attachment.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-2 rounded-lg border border-line bg-surface-raised px-3 py-2.5 text-sm text-content hover:border-line-strong"
+                        >
+                          <Paperclip size={15} aria-hidden="true" />
+                          <span className="min-w-0 truncate">{attachment.name}</span>
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
+                  <FileUpload
+                    files={files}
+                    onChange={setFiles}
+                    disabled={form.formState.isSubmitting}
+                  />
+                </FieldSet>
               </div>
             </section>
             <SectionI form={form} />
+            <SectionJ form={form} />
 
             <div className="border-t border-line pt-8">
               <Button
