@@ -412,9 +412,12 @@ export default function Settings() {
     }
   };
 
-  const emailIsConfigured =
-    (emailConfig.serviceId || emailNotificationService.isConfiguredViaEnv()) &&
-    (emailConfig.templateId || emailNotificationService.isConfiguredViaEnv());
+  const emailIsConfigured = Boolean(
+    emailConfig.serviceId &&
+      emailConfig.templateId &&
+      emailConfig.publicKey &&
+      emailConfig.toEmail,
+  ) || emailNotificationService.isConfiguredViaEnv();
 
   /* ================================================================
      CUSTOMER ACCOUNT / REQUEST SECURITY
