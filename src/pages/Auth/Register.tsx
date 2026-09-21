@@ -143,22 +143,6 @@ export default function Register() {
                   </div>
                 </Field>
 
-                <Field
-                  label="Account email"
-                  htmlFor="accountEmail"
-                  required
-                  hint="Required. This email is used for password recovery and account security."
-                >
-                  <TextInput
-                    id="accountEmail"
-                    type="email"
-                    autoComplete="email"
-                    value={accountEmail}
-                    onChange={(event) => setAccountEmail(event.target.value)}
-                    placeholder="you@example.com"
-                  />
-                </Field>
-
                 <Field label="Password" htmlFor="password" required hint="Use at least 8 characters. A longer, unique password is recommended.">
                   <div className="relative">
                     <TextInput
@@ -178,6 +162,22 @@ export default function Register() {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
+                </Field>
+
+                <Field
+                  label="Account email"
+                  htmlFor="accountEmail"
+                  required
+                  hint="Required. This email is used for password recovery and account security."
+                >
+                  <TextInput
+                    id="accountEmail"
+                    type="email"
+                    autoComplete="email"
+                    value={accountEmail}
+                    onChange={(event) => setAccountEmail(event.target.value)}
+                    placeholder="you@example.com"
+                  />
                 </Field>
 
                 <Field label="Confirm password" htmlFor="confirmation" required>
