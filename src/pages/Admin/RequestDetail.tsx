@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Download, Mail, MessageCircle, Phone } from "lucide-react";
+import { ArrowLeft, Download, Mail, MessageCircle, Phone, Trash2, Clock3 } from "lucide-react";
 import { Seo } from "../../components/ui/Seo";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
@@ -12,6 +12,7 @@ import { Field } from "../../components/forms/Field";
 import { Select, TextArea, TextInput } from "../../components/forms/Inputs";
 import { useProjectRequest } from "../../hooks/useProjectRequests";
 import { requestService } from "../../services/requestService";
+import { requestSettingsService } from "../../services/requestSettingsService";
 import {
   REQUEST_PRIORITIES,
   REQUEST_PRIORITY_TONE,
@@ -41,6 +42,9 @@ export default function RequestDetail() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [trashError, setTrashError] = useState<string | null>(null);
+  const [trashing, setTrashing] = useState(false);
+  const [trashWindowHours, setTrashWindowHours] = useState(24);
 
   useEffect(() => {
     if (!request) return;
@@ -50,6 +54,13 @@ export default function RequestDetail() {
     setCustomerUpdate(request.customerUpdate ?? "");
     setQuote(request.admin.quotedAmount?.toString() ?? "");
   }, [request]);
+
+  useEffect(() => {
+    void requestSettingsService
+      .getSecuritySettings()
+      .then((settings) => setTrashWindowHours(settings.customerRequestEditWindowHours))
+      .catch(() => undefined);
+  }, []);
 
   if (loading) {
     return (
@@ -90,6 +101,37 @@ export default function RequestDetail() {
     software.requiresNotifications && "Notifications",
     software.requiresRemoteControl && "Remote control",
   ].filter(Boolean) as string[];
+
+  const handleTrash = async () => {
+    if (!id || !request || request.deletedAt) return;
+
+    const createdAt = request.createdAt?.toMillis();
+    if (!createdAt) {
+      setTrashError("This request cannot be moved to trash because its submission time is unavailable.");
+      return;
+    }
+
+    const deadline = createdAt + trashWindowHours * 60 * 60 * 1000;
+    if (Date.now() < deadline) {
+      setTrashError(
+        `You can't move this request to trash yet. The configured ${trashWindowHours}-hour protection period ends ${new Date(deadline).toLocaleString()}.`,
+      );
+      return;
+    }
+
+    if (!window.confirm("Move this request to trash? It will remain recoverable in Request Trash.")) return;
+
+    setTrashing(true);
+    setTrashError(null);
+    try {
+      await requestService.trashRequest(id);
+      reload();
+    } catch (caught) {
+      setTrashError(toUserMessage(caught, "Could not move this request to trash."));
+    } finally {
+      setTrashing(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!id) return;
@@ -442,6 +484,40 @@ export default function RequestDetail() {
                   onChange={(event) => setNotes(event.target.value)}
                 />
               </Field>
+
+              {request.deletedAt ? (
+                <div className="rounded-lg border border-line bg-surface-raised p-3">
+                  <div className="flex items-center gap-2 text-sm font-medium text-content-muted">
+                    <Trash2 size={15} aria-hidden="true" />
+                    Request is in trash
+                  </div>
+                  <p className="mt-1 text-xs leading-relaxed text-content-muted">
+                    Deleted by {request.deletedBy === "customer" ? "customer" : "admin"}. Restore it from Request Trash if needed.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {trashError && <Alert tone="danger">{trashError}</Alert>}
+                  <Button
+                    variant="danger"
+                    onClick={() => void handleTrash()}
+                    loading={trashing}
+                    className="w-full"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <Trash2 size={15} aria-hidden="true" />
+                      {trashing ? "Moving to trash…" : "Move to trash"}
+                    </span>
+                  </Button>
+                  <div className="flex items-start gap-2 rounded-lg border border-line bg-surface-raised p-3 text-xs text-content-muted">
+                    <Clock3 size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
+                    <span>
+                      Requests are protected from trashing for the first {trashWindowHours} hours after submission.
+                      After that period, an administrator can move an active request to trash.
+                    </span>
+                  </div>
+                </>
+              )}
 
               <Button
                 onClick={() => void handleSave()}
