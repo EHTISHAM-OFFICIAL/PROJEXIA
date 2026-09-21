@@ -301,8 +301,8 @@ service cloud.firestore {
         && request.auth.uid == uid
         && request.resource.data.uid == uid
         && request.resource.data.username is string
-        && (request.resource.data.recoveryEmail == null
-          || request.resource.data.recoveryEmail is string)
+        && request.resource.data.recoveryEmail is string
+        && request.resource.data.recoveryEmail.matches('.+@.+[.].+')
         && request.resource.data.keys().hasOnly([
           'uid',
           'username',
