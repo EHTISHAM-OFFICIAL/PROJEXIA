@@ -94,6 +94,7 @@ function toRequest(
     id: snapshot.id,
     ownerUid: data.ownerUid ?? "",
     requestNumber: data.requestNumber ?? snapshot.id,
+    projectToken: data.projectToken ?? undefined,
     status: data.status ?? "new",
     priority: data.priority ?? "normal",
     contact: data.contact ?? {},
