@@ -41,7 +41,7 @@ export const emailNotificationService = {
    * Your EmailJS template should reference these template variables:
    * {{to_email}}, {{subject}}, {{message}}, {{reply_to}}
    */
-  async notify(params: { subject: string; message: string; replyTo?: string }): Promise<void> {
+  async notify(params: { subject: string; message: string; replyTo?: string; throwOnError?: boolean }): Promise<void> {
     const config = await resolveConfig();
     if (!config) return; // not configured — feature is opt-in
 
@@ -90,6 +90,7 @@ export const emailNotificationService = {
       subject: 'MECTEC EmailJS test',
       message: 'This is a test email from the MECTEC admin panel. If you received this message, email notifications are working.',
       replyTo: config.toEmail,
+      throwOnError: true,
     });
   },
 
