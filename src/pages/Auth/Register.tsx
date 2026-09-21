@@ -141,7 +141,7 @@ export default function Register() {
                 <Field
                   label="Recovery email"
                   htmlFor="recoveryEmail"
-                  hint="Optional. Add one if you want an email-based recovery option later."
+                  hint="Optional. Optional contact email. Username and password remain your login credentials."
                 >
                   <TextInput
                     id="recoveryEmail"
