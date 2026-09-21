@@ -296,6 +296,7 @@ export default function Settings() {
   const [emailSaving, setEmailSaving] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [emailSaved, setEmailSaved] = useState(false);
+  const [emailTesting, setEmailTesting] = useState(false);
 
   /* ================================================================
      CUSTOMER ACCOUNT / REQUEST SECURITY STATE
@@ -378,6 +379,21 @@ export default function Settings() {
   /* ================================================================
      EMAIL
      ================================================================= */
+
+  const handleTestEmail = async () => {
+    setEmailTesting(true);
+    setEmailError(null);
+    setEmailSaved(false);
+
+    try {
+      await emailNotificationService.sendTestEmail();
+      setEmailSaved(true);
+    } catch (caught) {
+      setEmailError(toUserMessage(caught, "The test email could not be sent. Check your EmailJS settings and template."));
+    } finally {
+      setEmailTesting(false);
+    }
+  };
 
   const handleSaveEmail = async () => {
     setEmailSaving(true);
@@ -731,12 +747,20 @@ export default function Settings() {
             />
           </Field>
 
-          <div>
+          <div className="flex flex-wrap gap-3">
             <Button
               onClick={() => void handleSaveEmail()}
               loading={emailSaving}
             >
               {emailSaving ? "Saving…" : "Save"}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => void handleTestEmail()}
+              loading={emailTesting}
+              disabled={emailSaving}
+            >
+              {emailTesting ? "Sending test…" : "Send test email"}
             </Button>
           </div>
         </div>
