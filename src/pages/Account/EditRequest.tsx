@@ -50,7 +50,7 @@ function toFormValues(request: ProjectRequest): ProjectRequestFormValues {
     connectivity: request.technical.connectivity ?? [],
     sensors: request.technical.sensors ?? [],
     outputs: request.technical.outputs ?? [],
-    powerSource: request.technical.powerSource ?? '',
+    powerSource: (request.technical.powerSource ?? '') as ProjectRequestFormValues['powerSource'],
     powerRequirements: request.technical.powerRequirements ?? '',
     requiresMobileApp: request.software.requiresMobileApp,
     requiresWebDashboard: request.software.requiresWebDashboard,
@@ -62,12 +62,12 @@ function toFormValues(request: ProjectRequest): ProjectRequestFormValues {
     complexity: request.scale.complexity as ProjectRequestFormValues['complexity'],
     prototypeQuantity: request.scale.prototypeQuantity ?? '',
     estimatedQuantity: request.scale.estimatedQuantity ?? '',
-    deploymentEnvironment: request.scale.deploymentEnvironment ?? '',
-    budgetRange: request.budget.range ?? '',
+    deploymentEnvironment: (request.scale.deploymentEnvironment ?? '') as ProjectRequestFormValues['deploymentEnvironment'],
+    budgetRange: (request.budget.range ?? '') as ProjectRequestFormValues['budgetRange'],
     budgetNotes: request.budget.notes ?? '',
     desiredStartDate: dateValue(request.timeline.desiredStartDate),
     desiredDeadline: dateValue(request.timeline.desiredDeadline),
-    timelineFlexibility: request.timeline.flexibility ?? '',
+    timelineFlexibility: (request.timeline.flexibility ?? '') as ProjectRequestFormValues['timelineFlexibility'],
     urgency: request.timeline.urgency as ProjectRequestFormValues['urgency'],
     referenceLinks: request.references.links.length ? request.references.links : [''],
     referenceDescription: request.references.description ?? '',
@@ -136,7 +136,7 @@ export default function EditRequest() {
     setError(null);
 
     try {
-      await requestService.updateMyRequest(id, user.uid, values);
+      await requestService.updateMyRequest(id, user.uid, { ...values, sensors: values.sensors ?? [], outputs: values.outputs ?? [], connectivity: values.connectivity ?? [] });
       navigate(`/account/requests/${id}`, { replace: true });
     } catch (caught) {
       setError(toUserMessage(caught, 'Could not save your changes.'));
