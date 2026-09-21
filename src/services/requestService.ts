@@ -487,11 +487,15 @@ export const requestService = {
     });
 
     if (requestNumber) {
-      await setDoc(
-        statusLookupRef(requestNumber),
-        { deletedAt: serverTimestamp(), updatedAt: serverTimestamp() },
-        { merge: true },
-      );
+      try {
+        await setDoc(
+          statusLookupRef(requestNumber),
+          { deletedAt: serverTimestamp(), updatedAt: serverTimestamp() },
+          { merge: true },
+        );
+      } catch (error) {
+        if (import.meta.env.DEV) console.warn('Could not mark status lookup as trashed', error);
+      }
     }
   },
 
@@ -508,11 +512,15 @@ export const requestService = {
     });
 
     if (requestNumber) {
-      await setDoc(
-        statusLookupRef(requestNumber),
-        { deletedAt: null, updatedAt: serverTimestamp() },
-        { merge: true },
-      );
+      try {
+        await setDoc(
+          statusLookupRef(requestNumber),
+          { deletedAt: null, updatedAt: serverTimestamp() },
+          { merge: true },
+        );
+      } catch (error) {
+        if (import.meta.env.DEV) console.warn('Could not restore status lookup record', error);
+      }
     }
   },
 
