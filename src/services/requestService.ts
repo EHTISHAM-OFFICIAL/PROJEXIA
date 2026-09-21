@@ -343,7 +343,6 @@ export const requestService = {
 
     return snapshot.docs
       .map(toRequest)
-      .filter((request) => !request.deletedAt)
       .sort((a, b) => {
         const aTime = a.createdAt?.toMillis() ?? 0;
         const bTime = b.createdAt?.toMillis() ?? 0;
@@ -361,7 +360,7 @@ export const requestService = {
     if (!snapshot.exists()) return null;
 
     const data = snapshot.data();
-    if (data.ownerUid !== uid || data.deletedAt) return null;
+    if (data.ownerUid !== uid) return null;
 
     return toRequest(snapshot as QueryDocumentSnapshot<DocumentData>);
   },
@@ -530,7 +529,23 @@ export const requestService = {
     const snapshot = await getDoc(requestRef);
     if (!snapshot.exists()) throw new Error("Request not found.");
 
-    const requestNumber = snapshot.data().requestNumber as string | undefined;
+    const current = snapshot.data();
+    if (current.deletedAt) throw new Error("This request is already in the trash.");
+
+    const createdAt = current.createdAt as Timestamp | undefined;
+    if (!createdAt) throw new Error("This request cannot be moved to trash.");
+
+    const settings = await requestSettingsService.getSecuritySettings();
+    const deadline =
+      createdAt.toMillis() +
+      settings.customerRequestEditWindowHours * 60 * 60 * 1000;
+    if (Date.now() < deadline) {
+      throw new Error(
+        `This request cannot be moved to trash until ${new Date(deadline).toLocaleString()}. The configured ${settings.customerRequestEditWindowHours}-hour protection period must expire first.`,
+      );
+    }
+
+    const requestNumber = current.requestNumber as string | undefined;
     await updateDoc(requestRef, {
       deletedAt: serverTimestamp(),
       deletedBy: "admin",
