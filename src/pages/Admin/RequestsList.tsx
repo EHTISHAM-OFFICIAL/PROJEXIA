@@ -78,14 +78,14 @@ export default function RequestsList() {
         </div>
       )}
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+      <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_190px_190px_auto]">
         <TextInput
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search by reference, name, email or project"
+          placeholder="Search requests by reference, name, email or project…"
           aria-label="Search requests"
-          className="min-w-0 flex-1"
+          className="h-11 w-full min-w-0 border-line-strong bg-surface px-4 text-content shadow-sm placeholder:text-content-muted"
         />
         <Select
           options={REQUEST_STATUSES}
@@ -93,6 +93,7 @@ export default function RequestsList() {
           value={status}
           aria-label="Filter by status"
           onChange={(event) => setStatus(event.target.value)}
+          className="h-11 w-full"
         />
         <Select
           options={REQUEST_PRIORITIES}
@@ -100,7 +101,14 @@ export default function RequestsList() {
           value={priority}
           aria-label="Filter by priority"
           onChange={(event) => setPriority(event.target.value)}
+          className="h-11 w-full"
         />
+        <Link
+          to="/admin/requests/trash"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-line bg-surface px-4 text-sm font-medium text-content-secondary transition-colors hover:border-line-strong hover:bg-surface-raised"
+        >
+          Trash
+        </Link>
       </div>
       <div className="mt-6">
         {loading && (
