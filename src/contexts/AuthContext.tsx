@@ -53,10 +53,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAdmin,
       loading,
       signIn: async (email, password) => {
-        await authService.signIn(email, password);
+        setLoading(true);
+        try {
+          await authService.signIn(email, password);
+        } catch (error) {
+          setLoading(false);
+          throw error;
+        }
       },
       signInWithUsername: async (username, password) => {
-        await signInWithUsername(username, password);
+        setLoading(true);
+        try {
+          await signInWithUsername(username, password);
+        } catch (error) {
+          setLoading(false);
+          throw error;
+        }
       },
       signOut: async () => {
         await authService.signOut();
