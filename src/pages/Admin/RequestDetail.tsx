@@ -44,6 +44,7 @@ export default function RequestDetail() {
   const [saved, setSaved] = useState(false);
   const [trashError, setTrashError] = useState<string | null>(null);
   const [trashing, setTrashing] = useState(false);
+  const [projectToken, setProjectToken] = useState("");
   const [trashWindowHours, setTrashWindowHours] = useState(24);
 
   useEffect(() => {
@@ -105,6 +106,17 @@ export default function RequestDetail() {
   const handleTrash = async () => {
     if (!id || !request || request.deletedAt) return;
 
+    if (!request.projectToken) {
+      setTrashError("This request does not have a project token. It cannot be moved to trash before the protection window expires.");
+      return;
+    }
+
+    const enteredToken = projectToken.trim().toUpperCase();
+    if (!enteredToken) {
+      setTrashError("Enter the project token to authorize this trash action.");
+      return;
+    }
+
     const createdAt = request.createdAt?.toMillis();
     if (!createdAt) {
       setTrashError("This request cannot be moved to trash because its submission time is unavailable.");
@@ -112,19 +124,20 @@ export default function RequestDetail() {
     }
 
     const deadline = createdAt + trashWindowHours * 60 * 60 * 1000;
-    if (Date.now() < deadline) {
-      setTrashError(
-        `You can't move this request to trash yet. The configured ${trashWindowHours}-hour protection period ends ${new Date(deadline).toLocaleString()}.`,
-      );
-      return;
-    }
+    const insideProtectionWindow = Date.now() < deadline;
 
-    if (!window.confirm("Move this request to trash? It will remain recoverable in Request Trash.")) return;
+    const confirmed = window.confirm(
+      insideProtectionWindow
+        ? `This request is still inside the ${trashWindowHours}-hour protection window. The project token will authorize early deletion to trash. Continue?`
+        : "Move this request to trash? It will remain recoverable in Request Trash.",
+    );
+    if (!confirmed) return;
 
     setTrashing(true);
     setTrashError(null);
     try {
-      await requestService.trashRequest(id);
+      await requestService.trashRequest(id, enteredToken);
+      setProjectToken("");
       reload();
     } catch (caught) {
       setTrashError(toUserMessage(caught, "Could not move this request to trash."));
@@ -498,6 +511,21 @@ export default function RequestDetail() {
               ) : (
                 <>
                   {trashError && <Alert tone="danger">{trashError}</Alert>}
+                  <Field
+                    label="Project token"
+                    htmlFor="projectToken"
+                    required
+                    hint="Required to move this request to trash, including during the protection window."
+                  >
+                    <TextInput
+                      id="projectToken"
+                      value={projectToken}
+                      onChange={(event) => setProjectToken(event.target.value)}
+                      placeholder="MECTEC-2026-ABSFDW"
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </Field>
                   <Button
                     variant="danger"
                     onClick={() => void handleTrash()}
@@ -512,8 +540,8 @@ export default function RequestDetail() {
                   <div className="flex items-start gap-2 rounded-lg border border-line bg-surface-raised p-3 text-xs text-content-muted">
                     <Clock3 size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
                     <span>
-                      Requests are protected from trashing for the first {trashWindowHours} hours after submission.
-                      After that period, an administrator can move an active request to trash.
+                      The configured {trashWindowHours}-hour protection period normally prevents trashing.
+                      A valid project token lets an administrator authorize the action before that period ends.
                     </span>
                   </div>
                 </>
