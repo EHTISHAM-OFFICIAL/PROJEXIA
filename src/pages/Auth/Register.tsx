@@ -159,6 +159,48 @@ export default function Register() {
                   />
                 </Field>
 
+                <Field label="Password" htmlFor="password" required hint="Use at least 8 characters. A longer, unique password is recommended.">
+                  <div className="relative">
+                    <TextInput
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      className="pr-11"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((visible) => !visible)}
+                      className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-content-muted hover:text-content"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </Field>
+
+                <Field label="Confirm password" htmlFor="confirmation" required>
+                  <div className="relative">
+                    <TextInput
+                      id="confirmation"
+                      type={showConfirmation ? 'text' : 'password'}
+                      autoComplete="new-password"
+                      value={confirmation}
+                      onChange={(event) => setConfirmation(event.target.value)}
+                      className="pr-11"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmation((visible) => !visible)}
+                      className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-content-muted hover:text-content"
+                      aria-label={showConfirmation ? 'Hide password' : 'Show password'}
+                    >
+                      {showConfirmation ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </Field>
+
                 <Button type="submit" size="lg" loading={submitting} className="w-full">
                   <span className="flex items-center justify-center gap-2">
                     <UserPlus size={17} aria-hidden="true" />
