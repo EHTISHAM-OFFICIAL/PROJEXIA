@@ -54,7 +54,7 @@ export default function RequestDetails() {
   const handleDelete = async () => {
     if (!user || !id || !canEdit) return;
     const confirmed = window.confirm(
-      'Move this project request to trash? You can no longer edit it after deletion. The request will be kept as a recoverable record.'
+      'Delete this project request? It will remain visible in My Requests with a Deleted tag, but it will no longer be editable.'
     );
     if (!confirmed) return;
 
@@ -114,36 +114,46 @@ export default function RequestDetails() {
                     >
                       <span className="flex items-center gap-2">
                         <Trash2 size={16} aria-hidden="true" />
-                        {deleting ? 'Moving to trash…' : 'Delete request'}
+                        {deleting ? 'Deleting…' : 'Delete request'}
                       </span>
                     </Button>
-                    {request.deletedAt && request.deletedBy === 'customer' && (
-                      <Button
-                        variant="danger"
-                        onClick={async () => {
-                          if (!window.confirm('Permanently delete this request? This cannot be undone.')) return;
-                          setDeleting(true);
-                          try {
-                            await requestService.permanentlyDeleteMyRequest(request.id, user!.uid);
-                            navigate('/account/requests', { replace: true });
-                          } catch (caught) {
-                            setError(toUserMessage(caught, 'Could not permanently delete this request.'));
-                            setDeleting(false);
-                          }
-                        }}
-                        loading={deleting}
-                      >
-                        Permanently delete
-                      </Button>
-                    )}
                   </>
                 ) : (
                   <div className="inline-flex items-center gap-2 rounded-lg border border-line px-4 py-2.5 text-sm text-content-muted">
-                    <LockKeyhole size={15} /> {isTrashed ? 'Request is in trash' : 'Editing window closed'}
+                    <LockKeyhole size={15} /> {isTrashed ? 'Request is deleted' : 'Editing window closed'}
                   </div>
+                )}
+                {request.deletedAt && request.deletedBy === 'customer' && (
+                  <Button
+                    variant="danger"
+                    onClick={async () => {
+                      if (!window.confirm('Permanently delete this request? This cannot be undone.')) return;
+                      setDeleting(true);
+                      setError(null);
+                      try {
+                        await requestService.permanentlyDeleteMyRequest(request.id, user!.uid);
+                        navigate('/account/requests', { replace: true });
+                      } catch (caught) {
+                        setError(toUserMessage(caught, 'Could not permanently delete this request.'));
+                        setDeleting(false);
+                      }
+                    }}
+                    loading={deleting}
+                  >
+                    Permanently delete
+                  </Button>
                 )}
               </div>
             </div>
+
+            {isTrashed && (
+              <div className="mt-6 rounded-card border border-state-warning/30 bg-state-warning/5 p-4">
+                <p className="text-sm font-semibold">Deleted request</p>
+                <p className="mt-1 text-sm leading-relaxed text-content-secondary">
+                  This request is deleted and read-only. You can permanently delete it from your account if you no longer need it.
+                </p>
+              </div>
+            )}
 
             {canEdit && editDeadlineLabel && (
               <div className="mt-6 flex items-start gap-3 rounded-card border border-state-warning/30 bg-state-warning/5 p-4">
