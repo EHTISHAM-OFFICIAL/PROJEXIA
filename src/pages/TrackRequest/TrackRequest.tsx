@@ -13,12 +13,14 @@ import { REQUEST_STATUS_TONE } from '../../constants/requestOptions';
 import { formatDate } from '../../utils/formatting';
 import { toUserMessage } from '../../utils/errors';
 import { getTrackedRequest } from '../../utils/trackedRequest';
+import { useAuth } from '../../hooks/useAuth';
 import { DEFAULT_REQUEST_STATUS_MESSAGES, getRequestStatusMessages, type RequestStatusMessages } from '../../services/requestStatusService';
 
 export default function TrackRequest() {
   const [searchParams] = useSearchParams();
   const tracked = getTrackedRequest();
   const refFromUrl = searchParams.get('ref');
+  const { user } = useAuth();
 
   const trackedMatchesUrl = !refFromUrl || refFromUrl === tracked?.requestNumber;
 
@@ -33,6 +35,56 @@ export default function TrackRequest() {
   useEffect(() => {
     getRequestStatusMessages().then(setStatusMessages).catch(() => undefined);
   }, []);
+
+  // When a signed-in customer opens the status button from their account,
+  // resolve the request directly from their own account instead of depending
+  // on the browser's local tracked-request storage.
+  useEffect(() => {
+    if (!user || !refFromUrl) return;
+
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    requestService
+      .getMyRequests(user.uid)
+      .then((requests) => {
+        if (cancelled) return;
+        const request = requests.find(
+          (item) => item.requestNumber === refFromUrl.trim().toUpperCase(),
+        );
+
+        if (!request) {
+          setResult(null);
+          setSearched(true);
+          return;
+        }
+
+        setRequestNumber(request.requestNumber);
+        setResult({
+          requestNumber: request.requestNumber,
+          status: request.status,
+          projectTitle: request.project.title,
+          createdAt: request.createdAt,
+          updatedAt: request.updatedAt,
+          customerUpdate: request.customerUpdate,
+          customerUpdateAt: request.customerUpdateAt,
+        });
+        setSearched(true);
+      })
+      .catch((caught) => {
+        if (!cancelled) {
+          setError(toUserMessage(caught, 'Could not check that right now. Please try again.'));
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, refFromUrl]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
