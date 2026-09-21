@@ -114,6 +114,8 @@ export interface ProjectRequest {
   id: string;
   ownerUid: string;
   requestNumber: string;
+  /** Per-request token required for administrator trash actions. */
+  projectToken?: string;
   status: RequestStatus;
   priority: RequestPriority;
   contact: RequestContact;
