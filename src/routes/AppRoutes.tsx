@@ -28,6 +28,7 @@ const AdminRequestsList = lazy(() => import('../pages/Admin/RequestsList'));
 const AdminRequestDetail = lazy(() => import('../pages/Admin/RequestDetail'));
 const AdminBannerSettings = lazy(() => import('../pages/Admin/BannerSettings'));
 const AdminSettings = lazy(() => import('../pages/Admin/Settings'));
+const AdminRequestStatus = lazy(() => import('../pages/Admin/RequestStatusSettings'));
 const AdminTestimonialsList = lazy(() => import('../pages/Admin/TestimonialsList'));
 const AdminTestimonialForm = lazy(() => import('../pages/Admin/TestimonialForm'));
 const AdminBlogList = lazy(() => import('../pages/Admin/BlogList'));
@@ -77,6 +78,7 @@ export function AppRoutes() {
             <Route path="blog/:id/edit" element={<AdminBlogForm />} />
             <Route path="banner" element={<AdminBannerSettings />} />
             <Route path="settings" element={<AdminSettings />} />
+            <Route path="request-status" element={<AdminRequestStatus />} />
           </Route>
         </Route>
       </Routes>
