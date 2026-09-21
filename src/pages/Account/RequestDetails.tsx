@@ -159,6 +159,16 @@ export default function RequestDetails() {
               </div>
             </div>
 
+            {request.projectToken && (
+              <div className="mt-6 rounded-card border border-line bg-surface-raised p-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-content-muted">Project token</p>
+                <p className="mt-2 font-mono text-sm font-semibold tracking-wide">{request.projectToken}</p>
+                <p className="mt-1.5 text-xs leading-relaxed text-content-muted">
+                  Keep this token available if MECTEC needs to authorize an administrative trash action for this request.
+                </p>
+              </div>
+            )}
+
             {isTrashed && (
               <div className="mt-6 rounded-card border border-state-warning/30 bg-state-warning/5 p-4">
                 <p className="text-sm font-semibold">Deleted request</p>
