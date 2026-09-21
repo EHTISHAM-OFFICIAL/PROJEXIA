@@ -88,6 +88,8 @@ function toRequest(snapshot: QueryDocumentSnapshot<DocumentData>): ProjectReques
     additionalRequirements: data.additionalRequirements ?? {},
     consent: data.consent ?? { agreeToTerms: false, allowContact: false },
     admin: data.admin ?? { notes: null, quotedAmount: null, currency: 'PKR', assignedTo: null },
+    customerUpdate: data.customerUpdate ?? null,
+    customerUpdateAt: data.customerUpdateAt ?? null,
     metadata: data.metadata ?? { source: 'unknown', userAgent: null, createdFrom: 'unknown' },
     createdAt: data.createdAt ?? null,
     updatedAt: data.updatedAt ?? null,
@@ -214,6 +216,8 @@ export const requestService = {
 
       // Written empty on create; security rules block the public from setting these.
       admin: { notes: null, quotedAmount: null, currency: 'PKR', assignedTo: null },
+      customerUpdate: null,
+      customerUpdateAt: null,
 
       metadata: {
         source: 'website',
