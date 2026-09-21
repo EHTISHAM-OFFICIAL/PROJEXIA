@@ -9,6 +9,8 @@ import {
   Sun,
   Moon,
   Monitor,
+  Clock3,
+  ShieldCheck,
 } from "lucide-react";
 
 import { Seo } from "../../components/ui/Seo";
@@ -22,6 +24,7 @@ import { imgbbService } from "../../services/imgbbService";
 import { emailNotificationService } from "../../services/emailNotificationService";
 import { themeService, DEFAULT_THEME } from "../../services/themeService";
 import { useTheme } from "../../hooks/useTheme";
+import { requestSettingsService, DEFAULT_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS, MIN_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS, MAX_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS } from "../../services/requestSettingsService";
 
 import type { ThemeColors } from "../../types/theme";
 import { toUserMessage } from "../../utils/errors";
@@ -295,6 +298,14 @@ export default function Settings() {
   const [emailSaved, setEmailSaved] = useState(false);
 
   /* ================================================================
+     CUSTOMER ACCOUNT / REQUEST SECURITY STATE
+     ================================================================= */
+  const [requestEditHours, setRequestEditHours] = useState(DEFAULT_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS);
+  const [requestSecuritySaving, setRequestSecuritySaving] = useState(false);
+  const [requestSecurityError, setRequestSecurityError] = useState<string | null>(null);
+  const [requestSecuritySaved, setRequestSecuritySaved] = useState(false);
+
+  /* ================================================================
      THEME STATE
      ================================================================= */
 
@@ -326,8 +337,9 @@ export default function Settings() {
     Promise.all([
       imgbbService.getApiKeyOverride(),
       emailNotificationService.getConfigOverride(),
+      requestSettingsService.getSecuritySettings(),
     ])
-      .then(([imgbbOverride, emailOverride]) => {
+      .then(([imgbbOverride, emailOverride, requestSecurity]) => {
         setApiKey(imgbbOverride ?? "");
 
         setEmailConfig({
@@ -336,6 +348,8 @@ export default function Settings() {
           publicKey: emailOverride.publicKey ?? "",
           toEmail: emailOverride.toEmail ?? "",
         });
+
+        setRequestEditHours(requestSecurity.customerRequestEditWindowHours);
       })
       .finally(() => {
         setLoading(false);
@@ -385,6 +399,35 @@ export default function Settings() {
   const emailIsConfigured =
     (emailConfig.serviceId || emailNotificationService.isConfiguredViaEnv()) &&
     (emailConfig.templateId || emailNotificationService.isConfiguredViaEnv());
+
+  /* ================================================================
+     CUSTOMER ACCOUNT / REQUEST SECURITY
+     ================================================================= */
+
+  const handleSaveRequestSecurity = async () => {
+    const hours = Number(requestEditHours);
+
+    if (!Number.isInteger(hours) || hours < MIN_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS || hours > MAX_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS) {
+      setRequestSecurityError(`Enter a whole number from ${MIN_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS} to ${MAX_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS} hours.`);
+      return;
+    }
+
+    setRequestSecuritySaving(true);
+    setRequestSecurityError(null);
+    setRequestSecuritySaved(false);
+
+    try {
+      await requestSettingsService.saveSecuritySettings({
+        customerRequestEditWindowHours: hours,
+      });
+      setRequestEditHours(hours);
+      setRequestSecuritySaved(true);
+    } catch (caught) {
+      setRequestSecurityError(toUserMessage(caught, "Could not save the customer request settings."));
+    } finally {
+      setRequestSecuritySaving(false);
+    }
+  };
 
   /* ================================================================
      THEME
@@ -695,6 +738,77 @@ export default function Settings() {
             >
               {emailSaving ? "Saving…" : "Save"}
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================
+          CUSTOMER ACCOUNTS & REQUEST SECURITY
+          ============================================================ */}
+
+      <section className="mt-12 max-w-3xl border-t border-line pt-10">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
+            <ShieldCheck size={17} className="text-accent" aria-hidden="true" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight">Customer accounts & request security</h2>
+            <p className="mt-0.5 text-xs text-content-muted">Authentication and customer request editing rules</p>
+          </div>
+        </div>
+
+        <p className="mt-3 text-sm leading-relaxed text-content-secondary">
+          Customer accounts are optional for normal browsing, but required to submit project requests.
+          The editing window below is also enforced by Firestore Security Rules using server time, so changing
+          the browser cannot bypass it.
+        </p>
+
+        {requestSecurityError && (
+          <div className="mt-5">
+            <Alert tone="danger">{requestSecurityError}</Alert>
+          </div>
+        )}
+
+        {requestSecuritySaved && (
+          <div className="mt-5">
+            <Alert tone="success">
+              <span className="flex items-center gap-2">
+                <CheckCircle2 size={15} aria-hidden="true" />
+                Saved. The new editing window applies to customer edits immediately.
+              </span>
+            </Alert>
+          </div>
+        )}
+
+        <div className="mt-6 rounded-2xl border border-line bg-surface p-5 sm:p-6">
+          <div className="flex items-start gap-4">
+            <Clock3 size={19} className="mt-0.5 shrink-0 text-content-muted" aria-hidden="true" />
+            <div className="min-w-0 flex-1">
+              <Field
+                label="Customer request editing window"
+                htmlFor="requestEditHours"
+                hint={`How long after submission a customer can edit their own request. Default: ${DEFAULT_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS} hours. Allowed range: ${MIN_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS}–${MAX_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS} hours.`}
+              >
+                <div className="flex max-w-xs items-center gap-3">
+                  <TextInput
+                    id="requestEditHours"
+                    type="number"
+                    min={MIN_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS}
+                    max={MAX_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS}
+                    step={1}
+                    value={requestEditHours}
+                    onChange={(event) => setRequestEditHours(Number(event.target.value))}
+                  />
+                  <span className="text-sm text-content-secondary">hours</span>
+                </div>
+              </Field>
+
+              <div className="mt-5">
+                <Button onClick={() => void handleSaveRequestSecurity()} loading={requestSecuritySaving}>
+                  {requestSecuritySaving ? "Saving…" : "Save request security"}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
