@@ -265,10 +265,9 @@ service cloud.firestore {
     // settings — site-wide config, e.g. settings/banner
     // ---------------------------------------------------------------------
     match /settings/{docId} {
-      // Public read: the banner has to be visible to every visitor, not
-      // just admins. Listing isn't needed since documents are read by
-      // fixed, known id (e.g. bannerService always reads "banner" directly).
-      allow get: if true;
+      // Only explicitly public settings may be read by visitors. In particular,
+      // EmailJS and imgBB overrides must never be exposed through Firestore.
+      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity'];
       allow list: if false;
 
       allow write: if isAdmin();
