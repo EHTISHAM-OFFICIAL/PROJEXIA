@@ -1,5 +1,6 @@
 import {
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   type User,
@@ -10,6 +11,8 @@ import { COLLECTIONS, db } from '../firebase/firestore';
 
 export const authService = {
   signIn: (email: string, password: string) => signInWithEmailAndPassword(auth, email, password),
+
+  sendPasswordReset: (email: string) => sendPasswordResetEmail(auth, email),
 
   signOut: () => signOut(auth),
 
