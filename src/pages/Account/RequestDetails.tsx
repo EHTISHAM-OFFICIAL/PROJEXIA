@@ -117,6 +117,25 @@ export default function RequestDetails() {
                         {deleting ? 'Moving to trash…' : 'Delete request'}
                       </span>
                     </Button>
+                    {request.deletedAt && request.deletedBy === 'customer' && (
+                      <Button
+                        variant="danger"
+                        onClick={async () => {
+                          if (!window.confirm('Permanently delete this request? This cannot be undone.')) return;
+                          setDeleting(true);
+                          try {
+                            await requestService.permanentlyDeleteMyRequest(request.id, user!.uid);
+                            navigate('/account/requests', { replace: true });
+                          } catch (caught) {
+                            setError(toUserMessage(caught, 'Could not permanently delete this request.'));
+                            setDeleting(false);
+                          }
+                        }}
+                        loading={deleting}
+                      >
+                        Permanently delete
+                      </Button>
+                    )}
                   </>
                 ) : (
                   <div className="inline-flex items-center gap-2 rounded-lg border border-line px-4 py-2.5 text-sm text-content-muted">
