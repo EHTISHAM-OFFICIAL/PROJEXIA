@@ -24,6 +24,7 @@ import {
   type ProjectRequestFormValues,
 } from '../../utils/validation';
 import { toUserMessage } from '../../utils/errors';
+import { useAuth } from '../../hooks/useAuth';
 
 function dateValue(timestamp: ProjectRequest['timeline']['desiredStartDate']) {
   return timestamp ? timestamp.toDate().toISOString().slice(0, 10) : '';
