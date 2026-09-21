@@ -16,6 +16,7 @@ export default function RequestTrash() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [restoringId, setRestoringId] = useState<string | null>(null);
+  const [permanentlyDeletingId, setPermanentlyDeletingId] = useState<string | null>(null);
 
   const load = async () => {
     setError(null);
@@ -47,6 +48,23 @@ export default function RequestTrash() {
     }
   };
 
+  const permanentlyDelete = async (request: ProjectRequest) => {
+    if (!window.confirm(
+      `Permanently delete “${request.project.title}” (${request.requestNumber})? This cannot be undone.`
+    )) return;
+
+    setPermanentlyDeletingId(request.id);
+    setError(null);
+    try {
+      await requestService.permanentlyDeleteTrashedRequest(request.id);
+      await load();
+    } catch (caught) {
+      setError(toUserMessage(caught, 'Could not permanently delete this request.'));
+    } finally {
+      setPermanentlyDeletingId(null);
+    }
+  };
+
   return (
     <>
       <Seo title="Request trash" noIndex />
@@ -63,7 +81,7 @@ export default function RequestTrash() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Request trash</h1>
           <p className="mt-1.5 max-w-prose text-sm text-content-secondary">
-            Deleted requests are kept here as recoverable records. Admins can review them and restore them; customer and admin trash actions remain subject to the request protection rules.
+            Deleted requests are kept here as recoverable records. Admins can review them, restore them, or permanently delete them. Permanent deletion cannot be undone.
           </p>
         </div>
         <span className="inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-xs text-content-secondary">
@@ -107,17 +125,30 @@ export default function RequestTrash() {
                   </p>
                 </Link>
 
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  loading={restoringId === request.id}
-                  onClick={() => void restore(request)}
-                >
-                  <span className="flex items-center gap-2">
-                    <RotateCcw size={15} aria-hidden="true" />
-                    Restore
-                  </span>
-                </Button>
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    loading={restoringId === request.id}
+                    onClick={() => void restore(request)}
+                  >
+                    <span className="flex items-center gap-2">
+                      <RotateCcw size={15} aria-hidden="true" />
+                      Restore
+                    </span>
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    loading={permanentlyDeletingId === request.id}
+                    onClick={() => void permanentlyDelete(request)}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Trash2 size={15} aria-hidden="true" />
+                      {permanentlyDeletingId === request.id ? 'Deleting…' : 'Permanently delete'}
+                    </span>
+                  </Button>
+                </div>
               </li>
             ))}
           </ul>
