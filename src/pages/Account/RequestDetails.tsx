@@ -54,7 +54,7 @@ export default function RequestDetails() {
   const handleDelete = async () => {
     if (!user || !id || !canEdit) return;
     const confirmed = window.confirm(
-      'Delete this project request? It will remain visible in My Requests with a Deleted tag, but it will no longer be editable.'
+      'Delete this project request? It will move to Deleted Requests inside My Requests and become read-only. Important: if an administrator later permanently deletes this request from the admin trash, it will be removed completely and will never appear in your Deleted Requests section again. This cannot be undone. Continue?'
     );
     if (!confirmed) return;
 
@@ -163,7 +163,7 @@ export default function RequestDetails() {
               <div className="mt-6 rounded-card border border-state-warning/30 bg-state-warning/5 p-4">
                 <p className="text-sm font-semibold">Deleted request</p>
                 <p className="mt-1 text-sm leading-relaxed text-content-secondary">
-                  This request is deleted and read-only. You can permanently delete it from your account if you no longer need it.
+                  This request is deleted and read-only. It will remain in Deleted Requests while it exists. If an administrator permanently deletes it from the admin trash, it will be removed completely and will never appear in your Deleted Requests again.
                 </p>
               </div>
             )}
