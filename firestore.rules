@@ -242,7 +242,8 @@ service cloud.firestore {
         && request.auth.uid == uid
         && request.resource.data.uid == uid
         && request.resource.data.username is string
-        && request.resource.data.recoveryEmail == null || request.resource.data.recoveryEmail is string;
+        && (request.resource.data.recoveryEmail == null
+          || request.resource.data.recoveryEmail is string);
       allow update: if isSignedIn()
         && request.auth.uid == uid
         && request.resource.data.uid == resource.data.uid
