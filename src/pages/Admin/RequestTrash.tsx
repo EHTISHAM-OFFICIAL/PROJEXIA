@@ -63,7 +63,7 @@ export default function RequestTrash() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Request trash</h1>
           <p className="mt-1.5 max-w-prose text-sm text-content-secondary">
-            Deleted requests are kept here as recoverable records instead of being permanently removed.
+            Requests deleted by customers are kept here as recoverable records. Admins can restore them, but request deletion itself is a customer action.
           </p>
         </div>
         <span className="inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-xs text-content-secondary">
