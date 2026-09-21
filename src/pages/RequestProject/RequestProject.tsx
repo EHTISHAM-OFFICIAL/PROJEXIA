@@ -106,7 +106,7 @@ export default function RequestProject() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [result, setResult] = useState<{ requestNumber: string } | null>(null);
   const [copied, setCopied] = useState(false);
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
 
   const form = useForm<ProjectRequestFormValues>({
     resolver: zodResolver(projectRequestSchema),
