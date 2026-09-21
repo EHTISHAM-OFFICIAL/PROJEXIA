@@ -40,8 +40,10 @@ service cloud.firestore {
     }
 
     function customerEditWindowOpen() {
-      let settings = get(/databases/$(database)/documents/settings/requestSecurity);
-      let hours = settings.data.get('customerRequestEditWindowHours', 24);
+      let settingsPath = /databases/$(database)/documents/settings/requestSecurity;
+      let hours = exists(settingsPath)
+        ? get(settingsPath).data.get('customerRequestEditWindowHours', 24)
+        : 24;
       return resource.data.createdAt is timestamp
         && hours is int
         && hours >= 1
