@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { Eye, EyeOff, KeyRound, LogIn } from 'lucide-react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/ui/Container';
 import { Button } from '../../components/ui/Button';
@@ -9,6 +9,7 @@ import { TextInput } from '../../components/forms/Inputs';
 import { Wordmark } from '../../components/layout/Wordmark';
 import { Seo } from '../../components/ui/Seo';
 import { useAuth } from '../../hooks/useAuth';
+import { sendCustomerPasswordReset } from '../../services/userService';
 import { toUserMessage } from '../../utils/errors';
 
 export default function Login() {
@@ -20,6 +21,11 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetSubmitting, setResetSubmitting] = useState(false);
 
   const from = new URLSearchParams(location.search).get('next') || '/account';
 
@@ -37,6 +43,28 @@ export default function Login() {
       setError(toUserMessage(caught, 'Invalid username or password.'));
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const submitReset = async (event: FormEvent) => {
+    event.preventDefault();
+    setResetError(null);
+    setResetSent(false);
+    const normalizedEmail = resetEmail.trim().toLowerCase();
+
+    if (!normalizedEmail || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(normalizedEmail)) {
+      setResetError('Enter the email address linked to your MECTEC account.');
+      return;
+    }
+
+    setResetSubmitting(true);
+    try {
+      await sendCustomerPasswordReset(normalizedEmail);
+      setResetSent(true);
+    } catch (caught) {
+      setResetError(toUserMessage(caught, 'Could not send the reset email. Check the email address and try again.'));
+    } finally {
+      setResetSubmitting(false);
     }
   };
 
@@ -99,7 +127,52 @@ export default function Login() {
                 </Button>
               </form>
 
-              <div className="mt-6 border-t border-line pt-6 text-center text-sm text-content-secondary">
+              <div className="mt-5 text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowReset((open) => !open);
+                  setResetError(null);
+                  setResetSent(false);
+                }}
+                className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:text-accent-hover"
+              >
+                <KeyRound size={15} aria-hidden="true" />
+                Forgot your password?
+              </button>
+            </div>
+
+            {showReset && (
+              <form onSubmit={submitReset} className="mt-5 rounded-lg border border-line bg-surface-raised p-4">
+                <h2 className="text-sm font-semibold">Reset your password</h2>
+                <p className="mt-1 text-xs leading-relaxed text-content-secondary">
+                  Enter the account email you used when registering. You will still sign in with your username after resetting the password.
+                </p>
+                {resetError && <Alert tone="danger" className="mt-4">{resetError}</Alert>}
+                {resetSent ? (
+                  <Alert tone="success" className="mt-4">
+                    Reset email sent. Check your inbox — and check your spam or junk folder too. The reset link will let you create a new password.
+                  </Alert>
+                ) : (
+                  <div className="mt-4 space-y-3">
+                    <Field label="Account email" htmlFor="reset-email" required>
+                      <TextInput
+                        id="reset-email"
+                        type="email"
+                        autoComplete="email"
+                        value={resetEmail}
+                        onChange={(event) => setResetEmail(event.target.value)}
+                      />
+                    </Field>
+                    <Button type="submit" variant="secondary" loading={resetSubmitting} className="w-full">
+                      {resetSubmitting ? 'Sending reset email…' : 'Send reset email'}
+                    </Button>
+                  </div>
+                )}
+              </form>
+            )}
+
+            <div className="mt-6 border-t border-line pt-6 text-center text-sm text-content-secondary">
                 Don't have an account?{' '}
                 <Link to={`/register?next=${encodeURIComponent(from)}`} className="font-medium text-accent hover:text-accent-hover">
                   Create one
@@ -108,7 +181,7 @@ export default function Login() {
             </div>
 
             <p className="mt-5 text-center text-xs leading-relaxed text-content-muted">
-              Email is optional. Your username and password are the credentials used to sign in.
+              Your username and password are used to sign in. Your account email is used for password recovery.
             </p>
           </div>
         </Container>
