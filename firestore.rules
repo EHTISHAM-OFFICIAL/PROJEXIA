@@ -281,13 +281,13 @@ service cloud.firestore {
       allow list: if false;
       allow create: if isSignedIn()
         && request.resource.data.uid == request.auth.uid
-        && request.resource.data.authEmail is string
+        && request.resource.data.authEmail == request.auth.token.email
         && request.resource.data.keys().hasOnly(['uid', 'authEmail', 'createdAt'])
         && !exists(/databases/$(database)/documents/usernameLookup/$(username));
       allow update: if isSignedIn()
         && request.auth.uid == resource.data.uid
         && request.resource.data.uid == resource.data.uid
-        && request.resource.data.authEmail is string
+        && request.resource.data.authEmail == request.auth.token.email
         && request.resource.data.keys().hasOnly(['uid', 'authEmail', 'createdAt']);
       allow delete: if false;
     }
