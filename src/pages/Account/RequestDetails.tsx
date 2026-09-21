@@ -45,7 +45,8 @@ export default function RequestDetails() {
     return request.createdAt.toMillis() + hours * 60 * 60 * 1000;
   }, [request, hours]);
 
-  const canEdit = editUntil !== null && Date.now() < editUntil;
+  const isTrashed = Boolean(request?.deletedAt);
+  const canEdit = !isTrashed && editUntil !== null && Date.now() < editUntil;
   const editDeadlineLabel = editUntil
     ? new Date(editUntil).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
     : null;
@@ -119,7 +120,7 @@ export default function RequestDetails() {
                   </>
                 ) : (
                   <div className="inline-flex items-center gap-2 rounded-lg border border-line px-4 py-2.5 text-sm text-content-muted">
-                    <LockKeyhole size={15} /> Editing window closed
+                    <LockKeyhole size={15} /> {isTrashed ? 'Request is in trash' : 'Editing window closed'}
                   </div>
                 )}
               </div>
