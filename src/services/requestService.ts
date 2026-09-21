@@ -307,34 +307,43 @@ export const requestService = {
     // Send after the request is safely stored. The email path is retried by
     // emailNotificationService so a transient EmailJS/rate-limit failure does
     // not disappear when the visitor immediately leaves the page.
-    await emailNotificationService.notify({
-      subject: `New project request — ${values.projectTitle}`,
-      message:
-        `${values.fullName} (${values.email}) submitted a new request.\n\n` +
-        `Reference: ${requestNumber}\n` +
-        `Category: ${values.projectCategory}\n` +
-        `Project type: ${values.projectType}\n` +
-        `Urgency: ${values.urgency}\n\n` +
-        `--- Project ---\n` +
-        `Title: ${values.projectTitle}\n` +
-        `Purpose: ${values.projectPurpose || "Not provided"}\n` +
-        `Description:\n${values.projectDescription}\n\n` +
-        `--- Technical ---\n` +
-        `Preferred platform: ${values.preferredPlatform?.join(", ") || "Not specified"}\n` +
-        `Connectivity: ${values.connectivity?.join(", ") || "Not specified"}\n` +
-        `Sensors: ${values.sensors?.join(", ") || "Not specified"}\n` +
-        `Outputs: ${values.outputs?.join(", ") || "Not specified"}\n\n` +
-        `--- Budget & Timeline ---\n` +
-        `Budget range: ${values.budgetRange || "Not specified"}\n` +
-        `Start date: ${values.desiredStartDate || "Not specified"}\n` +
-        `Deadline: ${values.desiredDeadline || "Not specified"}\n` +
-        `Timeline flexibility: ${values.timelineFlexibility || "Not specified"}\n\n` +
-        `--- Scale ---\n` +
-        `Complexity: ${values.complexity}\n` +
-        `Prototype quantity: ${values.prototypeQuantity || "Not specified"}\n` +
-        `Estimated quantity: ${values.estimatedQuantity || "Not specified"}`,
-      replyTo: values.email,
-    });
+    try {
+      await emailNotificationService.notify({
+        subject: `New project request — ${values.projectTitle}`,
+        message:
+          `${values.fullName} (${values.email}) submitted a new request.\\n\\n` +
+          `Reference: ${requestNumber}\\n` +
+          `Category: ${values.projectCategory}\\n` +
+          `Project type: ${values.projectType}\\n` +
+          `Urgency: ${values.urgency}\\n\\n` +
+          `--- Project ---\\n` +
+          `Title: ${values.projectTitle}\\n` +
+          `Purpose: ${values.projectPurpose || "Not provided"}\\n` +
+          `Description:\\n${values.projectDescription}\\n\\n` +
+          `--- Technical ---\\n` +
+          `Preferred platform: ${values.preferredPlatform?.join(", ") || "Not specified"}\\n` +
+          `Connectivity: ${values.connectivity?.join(", ") || "Not specified"}\\n` +
+          `Sensors: ${values.sensors?.join(", ") || "Not specified"}\\n` +
+          `Outputs: ${values.outputs?.join(", ") || "Not specified"}\\n\\n` +
+          `--- Budget & Timeline ---\\n` +
+          `Budget range: ${values.budgetRange || "Not specified"}\\n` +
+          `Start date: ${values.desiredStartDate || "Not specified"}\\n` +
+          `Deadline: ${values.desiredDeadline || "Not specified"}\\n` +
+          `Timeline flexibility: ${values.timelineFlexibility || "Not specified"}\\n\\n` +
+          `--- Scale ---\\n` +
+          `Complexity: ${values.complexity}\\n` +
+          `Prototype quantity: ${values.prototypeQuantity || "Not specified"}\\n` +
+          `Estimated quantity: ${values.estimatedQuantity || "Not specified"}`,
+        replyTo: values.email,
+        maxAttempts: 3,
+      });
+    } catch (error) {
+      // The request itself is already safely stored. Never tell the customer
+      // that submission failed just because a secondary email notification did.
+      if (import.meta.env.DEV) {
+        console.warn("Project request was saved, but the notification email failed.", error);
+      }
+    }
 
     return { id: requestRef.id, requestNumber, projectToken };
   },
