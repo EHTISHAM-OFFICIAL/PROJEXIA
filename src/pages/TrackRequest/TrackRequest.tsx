@@ -1,39 +1,47 @@
-import { useState, type FormEvent } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Search } from 'lucide-react';
-import { Container } from '../../components/ui/Container';
-import { Seo } from '../../components/ui/Seo';
-import { Button } from '../../components/ui/Button';
-import { Alert } from '../../components/ui/Alert';
-import { Badge } from '../../components/ui/Badge';
-import { Field } from '../../components/forms/Field';
-import { TextInput } from '../../components/forms/Inputs';
-import { requestService, type PublicRequestStatus } from '../../services/requestService';
-import { REQUEST_STATUS_TONE } from '../../constants/requestOptions';
-import { formatDate } from '../../utils/formatting';
-import { toUserMessage } from '../../utils/errors';
-import { getTrackedRequest } from '../../utils/trackedRequest';
+import { useState, type FormEvent } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Search } from "lucide-react";
+import { Container } from "../../components/ui/Container";
+import { Seo } from "../../components/ui/Seo";
+import { Button } from "../../components/ui/Button";
+import { Alert } from "../../components/ui/Alert";
+import { Badge } from "../../components/ui/Badge";
+import { Field } from "../../components/forms/Field";
+import { TextInput } from "../../components/forms/Inputs";
+import {
+  requestService,
+  type PublicRequestStatus,
+} from "../../services/requestService";
+import { REQUEST_STATUS_TONE } from "../../constants/requestOptions";
+import { formatDate } from "../../utils/formatting";
+import { toUserMessage } from "../../utils/errors";
+import { getTrackedRequest } from "../../utils/trackedRequest";
 
 const STATUS_EXPLANATION: Record<string, string> = {
   new: "Submitted and waiting for review — you'll hear back soon.",
-  reviewing: 'Being looked at now.',
+  reviewing: "Being looked at now.",
   quoted: "A quote has been prepared — check your email or WhatsApp.",
-  accepted: 'Accepted and about to start.',
-  'in-progress': 'Work is underway.',
-  completed: 'Finished.',
+  accepted: "Accepted and about to start.",
+  "in-progress": "Work is underway.",
+  completed: "Finished.",
   rejected: "This request wasn't taken forward.",
-  cancelled: 'Cancelled.',
+  cancelled: "Cancelled.",
 };
 
 export default function TrackRequest() {
   const [searchParams] = useSearchParams();
   const tracked = getTrackedRequest();
-  const refFromUrl = searchParams.get('ref');
+  const refFromUrl = searchParams.get("ref");
 
-  const trackedMatchesUrl = !refFromUrl || refFromUrl === tracked?.requestNumber;
+  const trackedMatchesUrl =
+    !refFromUrl || refFromUrl === tracked?.requestNumber;
 
-  const [requestNumber, setRequestNumber] = useState(refFromUrl ?? tracked?.requestNumber ?? '');
-  const [email, setEmail] = useState(trackedMatchesUrl ? tracked?.email ?? '' : '');
+  const [requestNumber, setRequestNumber] = useState(
+    refFromUrl ?? tracked?.requestNumber ?? "",
+  );
+  const [email, setEmail] = useState(
+    trackedMatchesUrl ? (tracked?.email ?? "") : "",
+  );
   const [result, setResult] = useState<PublicRequestStatus | null>(null);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -49,7 +57,12 @@ export default function TrackRequest() {
       setResult(found);
       setSearched(true);
     } catch (caught) {
-      setError(toUserMessage(caught, 'Could not check that right now. Please try again.'));
+      setError(
+        toUserMessage(
+          caught,
+          "Could not check that right now. Please try again.",
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -65,12 +78,19 @@ export default function TrackRequest() {
 
       <Container className="py-16 sm:py-20">
         <div className="mx-auto max-w-md">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Track a request</h1>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Track a request
+          </h1>
           <p className="mt-4 text-base leading-relaxed text-content-secondary">
-            Enter the reference number from your confirmation and the email you submitted with.
+            Enter the reference number from your confirmation and the email you
+            submitted with.
           </p>
 
-          <form onSubmit={handleSubmit} noValidate className="mt-8 flex flex-col gap-5">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="mt-8 flex flex-col gap-5"
+          >
             {error && <Alert tone="danger">{error}</Alert>}
 
             <Field label="Reference number" htmlFor="requestNumber" required>
@@ -96,15 +116,15 @@ export default function TrackRequest() {
 
             <Button type="submit" loading={loading}>
               <Search size={16} aria-hidden="true" />
-              {loading ? 'Checking…' : 'Check status'}
+              {loading ? "Checking…" : "Check status"}
             </Button>
           </form>
 
           {searched && !result && (
             <div className="mt-8">
               <Alert tone="danger">
-                No matching request found. Double-check the reference number and the email you
-                used when submitting it.
+                No matching request found. Double-check the reference number and
+                the email you used when submitting it.
               </Alert>
             </div>
           )}
@@ -112,21 +132,31 @@ export default function TrackRequest() {
           {result && (
             <div className="card mt-8 p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="font-mono text-sm text-content-secondary">{result.requestNumber}</p>
-                <Badge tone={REQUEST_STATUS_TONE[result.status]}>{result.status}</Badge>
+                <p className="font-mono text-sm text-content-secondary">
+                  {result.requestNumber}
+                </p>
+                <Badge tone={REQUEST_STATUS_TONE[result.status]}>
+                  {result.status}
+                </Badge>
               </div>
-              <h2 className="mt-3 text-lg font-semibold tracking-tight">{result.projectTitle}</h2>
+              <h2 className="mt-3 text-lg font-semibold tracking-tight">
+                {result.projectTitle}
+              </h2>
               <p className="mt-2 text-sm leading-relaxed text-content-secondary">
                 {STATUS_EXPLANATION[result.status]}
               </p>
               <div className="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-4 text-sm">
                 <div>
                   <p className="text-xs text-content-muted">Submitted</p>
-                  <p className="mt-0.5 text-content">{formatDate(result.createdAt)}</p>
+                  <p className="mt-0.5 text-content">
+                    {formatDate(result.createdAt)}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-content-muted">Last updated</p>
-                  <p className="mt-0.5 text-content">{formatDate(result.updatedAt)}</p>
+                  <p className="mt-0.5 text-content">
+                    {formatDate(result.updatedAt)}
+                  </p>
                 </div>
               </div>
             </div>
