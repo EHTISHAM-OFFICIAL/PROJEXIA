@@ -1,48 +1,54 @@
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Download, Mail, MessageCircle, Phone } from 'lucide-react';
-import { Seo } from '../../components/ui/Seo';
-import { Badge } from '../../components/ui/Badge';
-import { Button } from '../../components/ui/Button';
-import { Alert } from '../../components/ui/Alert';
-import { Skeleton } from '../../components/ui/Skeleton';
-import { ErrorState } from '../../components/ui/ErrorState';
-import { EmptyState } from '../../components/ui/EmptyState';
-import { Field } from '../../components/forms/Field';
-import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
-import { useProjectRequest } from '../../hooks/useProjectRequests';
-import { requestService } from '../../services/requestService';
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { ArrowLeft, Download, Mail, MessageCircle, Phone } from "lucide-react";
+import { Seo } from "../../components/ui/Seo";
+import { Badge } from "../../components/ui/Badge";
+import { Button } from "../../components/ui/Button";
+import { Alert } from "../../components/ui/Alert";
+import { Skeleton } from "../../components/ui/Skeleton";
+import { ErrorState } from "../../components/ui/ErrorState";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { Field } from "../../components/forms/Field";
+import { Select, TextArea, TextInput } from "../../components/forms/Inputs";
+import { useProjectRequest } from "../../hooks/useProjectRequests";
+import { requestService } from "../../services/requestService";
 import {
   REQUEST_PRIORITIES,
   REQUEST_PRIORITY_TONE,
   REQUEST_STATUSES,
   REQUEST_STATUS_TONE,
-} from '../../constants/requestOptions';
-import { formatDate, formatDateTime, formatFileSize } from '../../utils/formatting';
-import { toUserMessage } from '../../utils/errors';
-import type { RequestPriority, RequestStatus } from '../../types/projectRequest';
+} from "../../constants/requestOptions";
+import {
+  formatDate,
+  formatDateTime,
+  formatFileSize,
+} from "../../utils/formatting";
+import { toUserMessage } from "../../utils/errors";
+import type {
+  RequestPriority,
+  RequestStatus,
+} from "../../types/projectRequest";
 
 export default function RequestDetail() {
   const { id } = useParams<{ id: string }>();
   const { data: request, loading, error, reload } = useProjectRequest(id);
 
-  const [status, setStatus] = useState<RequestStatus>('new');
-  const [priority, setPriority] = useState<RequestPriority>('normal');
-  const [notes, setNotes] = useState('');
-  const [customerUpdate, setCustomerUpdate] = useState('');
-  const [quote, setQuote] = useState('');
+  const [status, setStatus] = useState<RequestStatus>("new");
+  const [priority, setPriority] = useState<RequestPriority>("normal");
+  const [notes, setNotes] = useState("");
+  const [customerUpdate, setCustomerUpdate] = useState("");
+  const [quote, setQuote] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
-  const isTrashed = Boolean(request?.deletedAt);
 
   useEffect(() => {
     if (!request) return;
     setStatus(request.status);
     setPriority(request.priority);
-    setNotes(request.admin.notes ?? '');
-    setCustomerUpdate(request.customerUpdate ?? '');
-    setQuote(request.admin.quotedAmount?.toString() ?? '');
+    setNotes(request.admin.notes ?? "");
+    setCustomerUpdate(request.customerUpdate ?? "");
+    setQuote(request.admin.quotedAmount?.toString() ?? "");
   }, [request]);
 
   if (loading) {
@@ -65,15 +71,24 @@ export default function RequestDetail() {
     );
   }
 
-  const { contact, project, technical, software, scale, budget, timeline, references } = request;
+  const {
+    contact,
+    project,
+    technical,
+    software,
+    scale,
+    budget,
+    timeline,
+    references,
+  } = request;
   const additional = request.additionalRequirements;
 
   const softwareNeeds = [
-    software.requiresMobileApp && 'Mobile app',
-    software.requiresWebDashboard && 'Web dashboard',
-    software.requiresCloudDatabase && 'Cloud database',
-    software.requiresNotifications && 'Notifications',
-    software.requiresRemoteControl && 'Remote control',
+    software.requiresMobileApp && "Mobile app",
+    software.requiresWebDashboard && "Web dashboard",
+    software.requiresCloudDatabase && "Cloud database",
+    software.requiresNotifications && "Notifications",
+    software.requiresRemoteControl && "Remote control",
   ].filter(Boolean) as string[];
 
   const handleSave = async () => {
@@ -87,12 +102,12 @@ export default function RequestDetail() {
       await requestService.updateCustomerUpdate(id, customerUpdate);
       await requestService.updateAdminFields(id, {
         notes: notes.trim() || null,
-        quotedAmount: quote === '' ? null : Number(quote),
+        quotedAmount: quote === "" ? null : Number(quote),
       });
       setSaved(true);
       reload();
     } catch (caught) {
-      setSaveError(toUserMessage(caught, 'Changes could not be saved.'));
+      setSaveError(toUserMessage(caught, "Changes could not be saved."));
     } finally {
       setSaving(false);
     }
@@ -112,12 +127,20 @@ export default function RequestDetail() {
 
       <header className="mt-4 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight">{project.title}</h1>
-          <p className="mt-1.5 font-mono text-sm text-content-secondary">{request.requestNumber}</p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {project.title}
+          </h1>
+          <p className="mt-1.5 font-mono text-sm text-content-secondary">
+            {request.requestNumber}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Badge tone={REQUEST_STATUS_TONE[request.status]}>{request.status}</Badge>
-          <Badge tone={REQUEST_PRIORITY_TONE[request.priority]}>{request.priority}</Badge>
+          <Badge tone={REQUEST_STATUS_TONE[request.status]}>
+            {request.status}
+          </Badge>
+          <Badge tone={REQUEST_PRIORITY_TONE[request.priority]}>
+            {request.priority}
+          </Badge>
         </div>
       </header>
 
@@ -126,12 +149,16 @@ export default function RequestDetail() {
           <Block title="Contact">
             <Rows
               rows={[
-                ['Name', contact.fullName],
-                ['Email', contact.email],
-                ['Phone', contact.phone],
-                ['WhatsApp', contact.whatsapp],
-                ['Location', [contact.city, contact.country].filter(Boolean).join(', ') || null],
-                ['Prefers', contact.preferredContactMethod],
+                ["Name", contact.fullName],
+                ["Email", contact.email],
+                ["Phone", contact.phone],
+                ["WhatsApp", contact.whatsapp],
+                [
+                  "Location",
+                  [contact.city, contact.country].filter(Boolean).join(", ") ||
+                    null,
+                ],
+                ["Prefers", contact.preferredContactMethod],
               ]}
             />
             <div className="mt-4 flex flex-wrap gap-2">
@@ -144,7 +171,7 @@ export default function RequestDetail() {
               </a>
               {contact.whatsapp && (
                 <a
-                  href={`https://wa.me/${contact.whatsapp.replace(/\D/g, '')}`}
+                  href={`https://wa.me/${contact.whatsapp.replace(/\D/g, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-surface-raised px-3.5 text-sm transition-colors hover:border-line-strong"
@@ -155,7 +182,7 @@ export default function RequestDetail() {
               )}
               {contact.phone && (
                 <a
-                  href={`tel:${contact.phone.replace(/\s/g, '')}`}
+                  href={`tel:${contact.phone.replace(/\s/g, "")}`}
                   className="inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-surface-raised px-3.5 text-sm transition-colors hover:border-line-strong"
                 >
                   <Phone size={15} aria-hidden="true" />
@@ -168,54 +195,76 @@ export default function RequestDetail() {
           <Block title="Project">
             <Rows
               rows={[
-                ['Category', project.category],
-                ['Type', project.type],
+                ["Category", project.category],
+                ["Type", project.type],
               ]}
             />
-            {project.purpose && <Paragraph label="Purpose" text={project.purpose} />}
+            {project.purpose && (
+              <Paragraph label="Purpose" text={project.purpose} />
+            )}
             <Paragraph label="Description" text={project.description} />
           </Block>
 
           <Block title="Technical">
             <Rows
               rows={[
-                ['Platforms', list(technical.preferredPlatforms)],
-                ['Connectivity', list(technical.connectivity)],
-                ['Sensors', list(technical.sensors)],
-                ['Outputs', list(technical.outputs)],
-                ['Power source', technical.powerSource],
+                ["Platforms", list(technical.preferredPlatforms)],
+                ["Connectivity", list(technical.connectivity)],
+                ["Sensors", list(technical.sensors)],
+                ["Outputs", list(technical.outputs)],
+                ["Power source", technical.powerSource],
               ]}
             />
             {technical.powerRequirements && (
-              <Paragraph label="Power notes" text={technical.powerRequirements} />
+              <Paragraph
+                label="Power notes"
+                text={technical.powerRequirements}
+              />
             )}
           </Block>
 
           <Block title="Software">
             <Rows
               rows={[
-                ['Needs', list(softwareNeeds)],
-                ['Languages', list(software.languages)],
+                ["Needs", list(softwareNeeds)],
+                ["Languages", list(software.languages)],
               ]}
             />
-            {software.notes && <Paragraph label="Notes" text={software.notes} />}
+            {software.notes && (
+              <Paragraph label="Notes" text={software.notes} />
+            )}
           </Block>
 
           <Block title="Scale, budget and timeline">
             <Rows
               rows={[
-                ['Complexity', scale.complexity],
-                ['Prototypes', scale.prototypeQuantity?.toString() ?? null],
-                ['Eventual quantity', scale.estimatedQuantity?.toString() ?? null],
-                ['Environment', scale.deploymentEnvironment],
-                ['Budget range', budget.range],
-                ['Start date', timeline.desiredStartDate ? formatDate(timeline.desiredStartDate) : null],
-                ['Deadline', timeline.desiredDeadline ? formatDate(timeline.desiredDeadline) : null],
-                ['Flexibility', timeline.flexibility],
-                ['Urgency', timeline.urgency],
+                ["Complexity", scale.complexity],
+                ["Prototypes", scale.prototypeQuantity?.toString() ?? null],
+                [
+                  "Eventual quantity",
+                  scale.estimatedQuantity?.toString() ?? null,
+                ],
+                ["Environment", scale.deploymentEnvironment],
+                ["Budget range", budget.range],
+                [
+                  "Start date",
+                  timeline.desiredStartDate
+                    ? formatDate(timeline.desiredStartDate)
+                    : null,
+                ],
+                [
+                  "Deadline",
+                  timeline.desiredDeadline
+                    ? formatDate(timeline.desiredDeadline)
+                    : null,
+                ],
+                ["Flexibility", timeline.flexibility],
+                ["Urgency", timeline.urgency],
               ]}
             />
-            {budget.notes && <Paragraph label="Budget notes" text={budget.notes} />}
+            {budget.notes && (
+              <Paragraph label="Budget notes" text={budget.notes} />
+            )}
           </Block>
 
           {(references.links.length > 0 || references.description) && (
@@ -253,11 +302,17 @@ export default function RequestDetail() {
                       rel="noopener noreferrer"
                       className="flex items-center justify-between gap-3 rounded-lg border border-line bg-surface-raised px-3 py-2.5 transition-colors hover:border-line-strong"
                     >
-                      <span className="min-w-0 flex-1 truncate text-sm">{attachment.name}</span>
+                      <span className="min-w-0 flex-1 truncate text-sm">
+                        {attachment.name}
+                      </span>
                       <span className="shrink-0 font-mono text-xs text-content-muted">
                         {formatFileSize(attachment.size)}
                       </span>
-                      <Download size={15} className="shrink-0 text-content-muted" aria-hidden="true" />
+                      <Download
+                        size={15}
+                        className="shrink-0 text-content-muted"
+                        aria-hidden="true"
+                      />
                     </a>
                   </li>
                 ))}
@@ -268,32 +323,50 @@ export default function RequestDetail() {
           <Block title="Additional">
             <Rows
               rows={[
-                ['Wants a consultation', additional.consultationRequired ? 'Yes' : 'No'],
-                ['Has hardware', additional.hasExistingHardware ? 'Yes' : 'No'],
-                ['Has code', additional.hasExistingCode ? 'Yes' : 'No'],
+                [
+                  "Wants a consultation",
+                  additional.consultationRequired ? "Yes" : "No",
+                ],
+                ["Has hardware", additional.hasExistingHardware ? "Yes" : "No"],
+                ["Has code", additional.hasExistingCode ? "Yes" : "No"],
               ]}
             />
             {additional.existingHardwareDescription && (
-              <Paragraph label="Existing hardware" text={additional.existingHardwareDescription} />
+              <Paragraph
+                label="Existing hardware"
+                text={additional.existingHardwareDescription}
+              />
             )}
             {additional.existingCodeDescription && (
-              <Paragraph label="Existing code" text={additional.existingCodeDescription} />
+              <Paragraph
+                label="Existing code"
+                text={additional.existingCodeDescription}
+              />
             )}
             {additional.specialRequirements && (
-              <Paragraph label="Special requirements" text={additional.specialRequirements} />
+              <Paragraph
+                label="Special requirements"
+                text={additional.specialRequirements}
+              />
             )}
             {additional.additionalNotes && (
-              <Paragraph label="Other notes" text={additional.additionalNotes} />
+              <Paragraph
+                label="Other notes"
+                text={additional.additionalNotes}
+              />
             )}
           </Block>
 
           <Block title="Submission">
             <Rows
               rows={[
-                ['Submitted', formatDateTime(request.createdAt as never)],
-                ['Last updated', formatDateTime(request.updatedAt as never)],
-                ['Source', request.metadata.source],
-                ['Consent to contact', request.consent.allowContact ? 'Given' : 'Not given'],
+                ["Submitted", formatDateTime(request.createdAt as never)],
+                ["Last updated", formatDateTime(request.updatedAt as never)],
+                ["Source", request.metadata.source],
+                [
+                  "Consent to contact",
+                  request.consent.allowContact ? "Given" : "Not given",
+                ],
               ]}
             />
           </Block>
@@ -301,7 +374,9 @@ export default function RequestDetail() {
 
         <aside className="lg:sticky lg:top-8 lg:self-start">
           <div className="card p-5">
-            <h2 className="text-sm font-medium">Internal — not visible to the client</h2>
+            <h2 className="text-sm font-medium">
+              Internal — not visible to the client
+            </h2>
 
             <div className="mt-4 flex flex-col gap-4">
               {saveError && <Alert tone="danger">{saveError}</Alert>}
@@ -312,7 +387,9 @@ export default function RequestDetail() {
                   id="status"
                   options={REQUEST_STATUSES}
                   value={status}
-                  onChange={(event) => setStatus(event.target.value as RequestStatus)}
+                  onChange={(event) =>
+                    setStatus(event.target.value as RequestStatus)
+                  }
                 />
               </Field>
 
@@ -321,11 +398,17 @@ export default function RequestDetail() {
                   id="priority"
                   options={REQUEST_PRIORITIES}
                   value={priority}
-                  onChange={(event) => setPriority(event.target.value as RequestPriority)}
+                  onChange={(event) =>
+                    setPriority(event.target.value as RequestPriority)
+                  }
                 />
               </Field>
 
-              <Field label="Quoted amount" htmlFor="quote" hint={`In ${request.admin.currency}.`}>
+              <Field
+                label="Quoted amount"
+                htmlFor="quote"
+                hint={`In ${request.admin.currency}.`}
+              >
                 <TextInput
                   id="quote"
                   type="number"
@@ -335,7 +418,11 @@ export default function RequestDetail() {
                 />
               </Field>
 
-              <Field label="Customer update" htmlFor="customerUpdate" hint="Visible on the public Track Request page.">
+              <Field
+                label="Customer update"
+                htmlFor="customerUpdate"
+                hint="Visible on the public Track Request page."
+              >
                 <TextArea
                   id="customerUpdate"
                   rows={5}
@@ -356,10 +443,13 @@ export default function RequestDetail() {
                 />
               </Field>
 
-              <Button onClick={() => void handleSave()} loading={saving} className="w-full">
-                {saving ? 'Saving…' : 'Save changes'}
+              <Button
+                onClick={() => void handleSave()}
+                loading={saving}
+                className="w-full"
+              >
+                {saving ? "Saving…" : "Save changes"}
               </Button>
-
             </div>
           </div>
         </aside>
@@ -368,9 +458,16 @@ export default function RequestDetail() {
   );
 }
 
-const list = (items: string[] | undefined) => (items && items.length ? items.join(', ') : null);
+const list = (items: string[] | undefined) =>
+  items && items.length ? items.join(", ") : null;
 
-function Block({ title, children }: { title: string; children: React.ReactNode }) {
+function Block({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className="border-t border-line pt-6 first:border-0 first:pt-0">
       <h2 className="text-lg font-semibold tracking-tight">{title}</h2>

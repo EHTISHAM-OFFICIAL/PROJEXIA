@@ -13,20 +13,20 @@ import {
   where,
   type DocumentData,
   type QueryDocumentSnapshot,
-} from 'firebase/firestore';
-import { COLLECTIONS, db } from '../firebase/firestore';
-import { auth } from '../firebase/auth';
-import { imgbbService, type UploadedImage } from './imgbbService';
-import { emailNotificationService } from './emailNotificationService';
+} from "firebase/firestore";
+import { COLLECTIONS, db } from "../firebase/firestore";
+import { auth } from "../firebase/auth";
+import { imgbbService, type UploadedImage } from "./imgbbService";
+import { emailNotificationService } from "./emailNotificationService";
 import type {
   ProjectRequest,
   RequestAttachment,
   RequestPriority,
   RequestStatus,
-} from '../types/projectRequest';
-import type { ProjectRequestFormOutput } from '../utils/validation';
-import { nullable, nullableNumber } from '../utils/validation';
-import { requestSettingsService } from './requestSettingsService';
+} from "../types/projectRequest";
+import type { ProjectRequestFormOutput } from "../utils/validation";
+import { nullable, nullableNumber } from "../utils/validation";
+import { requestSettingsService } from "./requestSettingsService";
 
 const requestsRef = collection(db, COLLECTIONS.projectRequests);
 
@@ -38,7 +38,8 @@ const requestsRef = collection(db, COLLECTIONS.projectRequests);
  * look it up directly without a query (and without Firestore ever needing to
  * expose a list of requests to the public).
  */
-const statusLookupRef = (requestNumber: string) => doc(db, 'requestStatusLookup', requestNumber);
+const statusLookupRef = (requestNumber: string) =>
+  doc(db, "requestStatusLookup", requestNumber);
 
 /**
  * Human-readable reference, e.g. MECTEC-2026-K4T9RQ.
@@ -50,9 +51,12 @@ const statusLookupRef = (requestNumber: string) => doc(db, 'requestStatusLookup'
  * which is a small privacy win. See README for the Cloud Function upgrade path.
  */
 function generateRequestNumber(): string {
-  const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no look-alike characters
+  const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no look-alike characters
   const random = crypto.getRandomValues(new Uint8Array(6));
-  const suffix = Array.from(random, (byte) => alphabet[byte % alphabet.length]).join('');
+  const suffix = Array.from(
+    random,
+    (byte) => alphabet[byte % alphabet.length],
+  ).join("");
   return `MECTEC-${new Date().getFullYear()}-${suffix}`;
 }
 
@@ -72,14 +76,16 @@ function toAttachment(file: File, uploaded: UploadedImage): RequestAttachment {
   };
 }
 
-function toRequest(snapshot: QueryDocumentSnapshot<DocumentData>): ProjectRequest {
+function toRequest(
+  snapshot: QueryDocumentSnapshot<DocumentData>,
+): ProjectRequest {
   const data = snapshot.data();
   return {
     id: snapshot.id,
-    ownerUid: data.ownerUid ?? '',
+    ownerUid: data.ownerUid ?? "",
     requestNumber: data.requestNumber ?? snapshot.id,
-    status: data.status ?? 'new',
-    priority: data.priority ?? 'normal',
+    status: data.status ?? "new",
+    priority: data.priority ?? "normal",
     contact: data.contact ?? {},
     project: data.project ?? {},
     technical: data.technical ?? {},
@@ -91,10 +97,19 @@ function toRequest(snapshot: QueryDocumentSnapshot<DocumentData>): ProjectReques
     attachments: data.attachments ?? [],
     additionalRequirements: data.additionalRequirements ?? {},
     consent: data.consent ?? { agreeToTerms: false, allowContact: false },
-    admin: data.admin ?? { notes: null, quotedAmount: null, currency: 'PKR', assignedTo: null },
+    admin: data.admin ?? {
+      notes: null,
+      quotedAmount: null,
+      currency: "PKR",
+      assignedTo: null,
+    },
     customerUpdate: data.customerUpdate ?? null,
     customerUpdateAt: data.customerUpdateAt ?? null,
-    metadata: data.metadata ?? { source: 'unknown', userAgent: null, createdFrom: 'unknown' },
+    metadata: data.metadata ?? {
+      source: "unknown",
+      userAgent: null,
+      createdFrom: "unknown",
+    },
     createdAt: data.createdAt ?? null,
     updatedAt: data.updatedAt ?? null,
     deletedAt: data.deletedAt ?? null,
@@ -129,22 +144,27 @@ export const requestService = {
    */
   async createRequest(
     values: ProjectRequestFormOutput,
-    files: File[] = []
+    files: File[] = [],
   ): Promise<CreateRequestResult> {
     const ownerUid = auth.currentUser?.uid;
-    if (!ownerUid) throw new Error('You must be signed in to submit a project request.');
+    if (!ownerUid)
+      throw new Error("You must be signed in to submit a project request.");
 
     const requestRef = doc(requestsRef);
     const requestNumber = generateRequestNumber();
 
     const uploads = files.length ? await imgbbService.uploadMany(files) : [];
-    const attachments = uploads.map((uploaded, index) => toAttachment(files[index], uploaded));
+    const attachments = uploads.map((uploaded, index) =>
+      toAttachment(files[index], uploaded),
+    );
 
     await setDoc(requestRef, {
       requestNumber,
       ownerUid,
-      status: 'new' satisfies RequestStatus,
-      priority: (values.urgency === 'Urgent' ? 'high' : 'normal') satisfies RequestPriority,
+      status: "new" satisfies RequestStatus,
+      priority: (values.urgency === "Urgent"
+        ? "high"
+        : "normal") satisfies RequestPriority,
 
       contact: {
         fullName: values.fullName,
@@ -160,7 +180,7 @@ export const requestService = {
         title: values.projectTitle,
         category: values.projectCategory,
         type: values.projectType,
-        purpose: nullable(values.projectPurpose) ?? '',
+        purpose: nullable(values.projectPurpose) ?? "",
         description: values.projectDescription,
       },
 
@@ -203,7 +223,9 @@ export const requestService = {
       },
 
       references: {
-        links: values.referenceLinks.filter((link): link is string => Boolean(link && link.trim())),
+        links: values.referenceLinks.filter((link): link is string =>
+          Boolean(link && link.trim()),
+        ),
         description: nullable(values.referenceDescription),
       },
 
@@ -214,7 +236,9 @@ export const requestService = {
         additionalNotes: nullable(values.additionalNotes),
         consultationRequired: values.consultationRequired,
         hasExistingHardware: values.hasExistingHardware,
-        existingHardwareDescription: nullable(values.existingHardwareDescription),
+        existingHardwareDescription: nullable(
+          values.existingHardwareDescription,
+        ),
         hasExistingCode: values.hasExistingCode,
         existingCodeDescription: nullable(values.existingCodeDescription),
       },
@@ -225,14 +249,22 @@ export const requestService = {
       },
 
       // Written empty on create; security rules block the public from setting these.
-      admin: { notes: null, quotedAmount: null, currency: 'PKR', assignedTo: null },
+      admin: {
+        notes: null,
+        quotedAmount: null,
+        currency: "PKR",
+        assignedTo: null,
+      },
       customerUpdate: null,
       customerUpdateAt: null,
 
       metadata: {
-        source: 'website',
-        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 300) : null,
-        createdFrom: '/request-project',
+        source: "website",
+        userAgent:
+          typeof navigator !== "undefined"
+            ? navigator.userAgent.slice(0, 300)
+            : null,
+        createdFrom: "/request-project",
       },
 
       createdAt: serverTimestamp(),
@@ -245,7 +277,7 @@ export const requestService = {
       await setDoc(statusLookupRef(requestNumber), {
         requestNumber,
         requestId: requestRef.id,
-        status: 'new' satisfies RequestStatus,
+        status: "new" satisfies RequestStatus,
         projectTitle: values.projectTitle,
         email: values.email.trim().toLowerCase(),
         createdAt: serverTimestamp(),
@@ -255,7 +287,8 @@ export const requestService = {
         deletedAt: null,
       });
     } catch (error) {
-      if (import.meta.env.DEV) console.warn('Could not create status-lookup record', error);
+      if (import.meta.env.DEV)
+        console.warn("Could not create status-lookup record", error);
     }
 
     // Fire-and-forget: never await this in a way that could block or fail
@@ -295,8 +328,8 @@ export const requestService = {
   /** Admin only — security rules reject unauthenticated reads. */
   async getRequests(status?: RequestStatus): Promise<ProjectRequest[]> {
     const constraints = status
-      ? [where('status', '==', status), orderBy('createdAt', 'desc')]
-      : [orderBy('createdAt', 'desc')];
+      ? [where("status", "==", status), orderBy("createdAt", "desc")]
+      : [orderBy("createdAt", "desc")];
     const snapshot = await getDocs(query(requestsRef, ...constraints));
     return snapshot.docs.map(toRequest).filter((request) => !request.deletedAt);
   },
@@ -305,7 +338,7 @@ export const requestService = {
     if (!uid) return [];
 
     const snapshot = await getDocs(
-      query(requestsRef, where('ownerUid', '==', uid)),
+      query(requestsRef, where("ownerUid", "==", uid)),
     );
 
     return snapshot.docs
@@ -318,7 +351,10 @@ export const requestService = {
       });
   },
 
-  async getMyRequestById(id: string, uid: string): Promise<ProjectRequest | null> {
+  async getMyRequestById(
+    id: string,
+    uid: string,
+  ): Promise<ProjectRequest | null> {
     if (!uid) return null;
 
     const snapshot = await getDoc(doc(db, COLLECTIONS.projectRequests, id));
@@ -336,28 +372,31 @@ export const requestService = {
     values: ProjectRequestFormOutput,
     files: File[] = [],
   ): Promise<void> {
-    if (!uid) throw new Error('You must be signed in.');
+    if (!uid) throw new Error("You must be signed in.");
 
     const snapshot = await getDoc(doc(db, COLLECTIONS.projectRequests, id));
-    if (!snapshot.exists()) throw new Error('Request not found.');
+    if (!snapshot.exists()) throw new Error("Request not found.");
 
     const current = snapshot.data();
-    if (current.ownerUid !== uid) throw new Error('You are not allowed to edit this request.');
+    if (current.ownerUid !== uid)
+      throw new Error("You are not allowed to edit this request.");
 
     const createdAt = current.createdAt as Timestamp | undefined;
-    if (!createdAt) throw new Error('This request cannot be edited.');
+    if (!createdAt) throw new Error("This request cannot be edited.");
 
     const settings = await requestSettingsService.getSecuritySettings();
-    const editDeadline = createdAt.toMillis() + settings.customerRequestEditWindowHours * 60 * 60 * 1000;
+    const editDeadline =
+      createdAt.toMillis() +
+      settings.customerRequestEditWindowHours * 60 * 60 * 1000;
     if (Date.now() >= editDeadline) {
-      throw new Error('The editing window for this request has ended.');
+      throw new Error("The editing window for this request has ended.");
     }
 
     // New attachments are uploaded to the same imgBB flow used by the
     // original request. Existing attachments are intentionally preserved.
     const newUploads = files.length ? await imgbbService.uploadMany(files) : [];
     const newAttachments = newUploads.map((uploaded, index) =>
-      toAttachment(files[index], uploaded)
+      toAttachment(files[index], uploaded),
     );
 
     await updateDoc(doc(db, COLLECTIONS.projectRequests, id), {
@@ -375,7 +414,7 @@ export const requestService = {
         title: values.projectTitle,
         category: values.projectCategory,
         type: values.projectType,
-        purpose: nullable(values.projectPurpose) ?? '',
+        purpose: nullable(values.projectPurpose) ?? "",
         description: values.projectDescription,
       },
       technical: {
@@ -412,7 +451,9 @@ export const requestService = {
         urgency: values.urgency,
       },
       references: {
-        links: values.referenceLinks.filter((link): link is string => Boolean(link && link.trim())),
+        links: values.referenceLinks.filter((link): link is string =>
+          Boolean(link && link.trim()),
+        ),
         description: nullable(values.referenceDescription),
       },
       additionalRequirements: {
@@ -420,7 +461,9 @@ export const requestService = {
         additionalNotes: nullable(values.additionalNotes),
         consultationRequired: values.consultationRequired,
         hasExistingHardware: values.hasExistingHardware,
-        existingHardwareDescription: nullable(values.existingHardwareDescription),
+        existingHardwareDescription: nullable(
+          values.existingHardwareDescription,
+        ),
         hasExistingCode: values.hasExistingCode,
         existingCodeDescription: nullable(values.existingCodeDescription),
       },
@@ -429,28 +472,32 @@ export const requestService = {
   },
 
   async deleteMyRequest(id: string, uid: string): Promise<void> {
-    if (!uid) throw new Error('You must be signed in.');
+    if (!uid) throw new Error("You must be signed in.");
 
     const requestRef = doc(db, COLLECTIONS.projectRequests, id);
     const snapshot = await getDoc(requestRef);
-    if (!snapshot.exists()) throw new Error('Request not found.');
+    if (!snapshot.exists()) throw new Error("Request not found.");
 
     const current = snapshot.data();
-    if (current.ownerUid !== uid) throw new Error('You are not allowed to delete this request.');
-    if (current.deletedAt) throw new Error('This request is already in the trash.');
+    if (current.ownerUid !== uid)
+      throw new Error("You are not allowed to delete this request.");
+    if (current.deletedAt)
+      throw new Error("This request is already in the trash.");
 
     const createdAt = current.createdAt as Timestamp | undefined;
-    if (!createdAt) throw new Error('This request cannot be deleted.');
+    if (!createdAt) throw new Error("This request cannot be deleted.");
 
     const settings = await requestSettingsService.getSecuritySettings();
-    const deadline = createdAt.toMillis() + settings.customerRequestEditWindowHours * 60 * 60 * 1000;
+    const deadline =
+      createdAt.toMillis() +
+      settings.customerRequestEditWindowHours * 60 * 60 * 1000;
     if (Date.now() >= deadline) {
-      throw new Error('The deletion window for this request has ended.');
+      throw new Error("The deletion window for this request has ended.");
     }
 
     await updateDoc(requestRef, {
       deletedAt: serverTimestamp(),
-      deletedBy: 'customer',
+      deletedBy: "customer",
       updatedAt: serverTimestamp(),
     });
 
@@ -463,13 +510,16 @@ export const requestService = {
           { merge: true },
         );
       } catch (error) {
-        if (import.meta.env.DEV) console.warn('Could not mark status lookup as trashed', error);
+        if (import.meta.env.DEV)
+          console.warn("Could not mark status lookup as trashed", error);
       }
     }
   },
 
   async getTrashedRequests(): Promise<ProjectRequest[]> {
-    const snapshot = await getDocs(query(requestsRef, orderBy('createdAt', 'desc')));
+    const snapshot = await getDocs(
+      query(requestsRef, orderBy("createdAt", "desc")),
+    );
     return snapshot.docs
       .map(toRequest)
       .filter((request) => Boolean(request.deletedAt));
@@ -478,12 +528,12 @@ export const requestService = {
   async trashRequest(id: string): Promise<void> {
     const requestRef = doc(db, COLLECTIONS.projectRequests, id);
     const snapshot = await getDoc(requestRef);
-    if (!snapshot.exists()) throw new Error('Request not found.');
+    if (!snapshot.exists()) throw new Error("Request not found.");
 
     const requestNumber = snapshot.data().requestNumber as string | undefined;
     await updateDoc(requestRef, {
       deletedAt: serverTimestamp(),
-      deletedBy: 'admin',
+      deletedBy: "admin",
       updatedAt: serverTimestamp(),
     });
 
@@ -495,22 +545,24 @@ export const requestService = {
           { merge: true },
         );
       } catch (error) {
-        if (import.meta.env.DEV) console.warn('Could not mark status lookup as trashed', error);
+        if (import.meta.env.DEV)
+          console.warn("Could not mark status lookup as trashed", error);
       }
     }
   },
 
   async permanentlyDeleteMyRequest(id: string, uid: string): Promise<void> {
-    if (!uid) throw new Error('You must be signed in.');
+    if (!uid) throw new Error("You must be signed in.");
 
     const requestRef = doc(db, COLLECTIONS.projectRequests, id);
     const snapshot = await getDoc(requestRef);
-    if (!snapshot.exists()) throw new Error('Request not found.');
+    if (!snapshot.exists()) throw new Error("Request not found.");
 
     const current = snapshot.data();
-    if (current.ownerUid !== uid) throw new Error('You are not allowed to delete this request.');
-    if (!current.deletedAt || current.deletedBy !== 'customer') {
-      throw new Error('This request is not in your trash.');
+    if (current.ownerUid !== uid)
+      throw new Error("You are not allowed to delete this request.");
+    if (!current.deletedAt || current.deletedBy !== "customer") {
+      throw new Error("This request is not in your trash.");
     }
 
     await deleteDoc(requestRef);
@@ -520,7 +572,8 @@ export const requestService = {
       try {
         await deleteDoc(statusLookupRef(requestNumber));
       } catch (error) {
-        if (import.meta.env.DEV) console.warn('Could not remove status lookup record', error);
+        if (import.meta.env.DEV)
+          console.warn("Could not remove status lookup record", error);
       }
     }
   },
@@ -528,7 +581,7 @@ export const requestService = {
   async restoreRequest(id: string): Promise<void> {
     const requestRef = doc(db, COLLECTIONS.projectRequests, id);
     const snapshot = await getDoc(requestRef);
-    if (!snapshot.exists()) throw new Error('Request not found.');
+    if (!snapshot.exists()) throw new Error("Request not found.");
 
     const requestNumber = snapshot.data().requestNumber as string | undefined;
     await updateDoc(requestRef, {
@@ -545,7 +598,8 @@ export const requestService = {
           { merge: true },
         );
       } catch (error) {
-        if (import.meta.env.DEV) console.warn('Could not restore status lookup record', error);
+        if (import.meta.env.DEV)
+          console.warn("Could not restore status lookup record", error);
       }
     }
   },
@@ -572,31 +626,44 @@ export const requestService = {
     // reads it first and just skips the sync if there's nothing to update.
     try {
       const snapshot = await getDoc(doc(db, COLLECTIONS.projectRequests, id));
-      const requestNumber = snapshot.data()?.requestNumber as string | undefined;
+      const requestNumber = snapshot.data()?.requestNumber as
+        | string
+        | undefined;
       if (requestNumber) {
         await setDoc(
           statusLookupRef(requestNumber),
           { status, updatedAt: serverTimestamp() },
-          { merge: true }
+          { merge: true },
         );
       }
     } catch (error) {
-      if (import.meta.env.DEV) console.warn('Could not sync status-lookup record', error);
+      if (import.meta.env.DEV)
+        console.warn("Could not sync status-lookup record", error);
     }
   },
 
-  async updateRequestPriority(id: string, priority: RequestPriority): Promise<void> {
+  async updateRequestPriority(
+    id: string,
+    priority: RequestPriority,
+  ): Promise<void> {
     await updateDoc(doc(db, COLLECTIONS.projectRequests, id), {
       priority,
       updatedAt: serverTimestamp(),
     });
   },
 
-  async updateCustomerUpdate(id: string, customerUpdate: string | null): Promise<void> {
-    const requestSnapshot = await getDoc(doc(db, COLLECTIONS.projectRequests, id));
-    if (!requestSnapshot.exists()) throw new Error('Request not found.');
-    const requestNumber = requestSnapshot.data()?.requestNumber as string | undefined;
-    if (!requestNumber) throw new Error('Request reference is missing.');
+  async updateCustomerUpdate(
+    id: string,
+    customerUpdate: string | null,
+  ): Promise<void> {
+    const requestSnapshot = await getDoc(
+      doc(db, COLLECTIONS.projectRequests, id),
+    );
+    if (!requestSnapshot.exists()) throw new Error("Request not found.");
+    const requestNumber = requestSnapshot.data()?.requestNumber as
+      | string
+      | undefined;
+    if (!requestNumber) throw new Error("Request reference is missing.");
 
     const updateText = customerUpdate?.trim() || null;
     const updateTimestamp = updateText ? serverTimestamp() : null;
@@ -609,19 +676,29 @@ export const requestService = {
 
     await setDoc(
       statusLookupRef(requestNumber),
-      { customerUpdate: updateText, customerUpdateAt: updateTimestamp, updatedAt: serverTimestamp() },
+      {
+        customerUpdate: updateText,
+        customerUpdateAt: updateTimestamp,
+        updatedAt: serverTimestamp(),
+      },
       { merge: true },
     );
   },
 
   async updateAdminFields(
     id: string,
-    fields: { notes?: string | null; quotedAmount?: number | null; assignedTo?: string | null }
+    fields: {
+      notes?: string | null;
+      quotedAmount?: number | null;
+      assignedTo?: string | null;
+    },
   ): Promise<void> {
     const updates: Record<string, unknown> = { updatedAt: serverTimestamp() };
-    if (fields.notes !== undefined) updates['admin.notes'] = fields.notes;
-    if (fields.quotedAmount !== undefined) updates['admin.quotedAmount'] = fields.quotedAmount;
-    if (fields.assignedTo !== undefined) updates['admin.assignedTo'] = fields.assignedTo;
+    if (fields.notes !== undefined) updates["admin.notes"] = fields.notes;
+    if (fields.quotedAmount !== undefined)
+      updates["admin.quotedAmount"] = fields.quotedAmount;
+    if (fields.assignedTo !== undefined)
+      updates["admin.assignedTo"] = fields.assignedTo;
     await updateDoc(doc(db, COLLECTIONS.projectRequests, id), updates);
   },
 
@@ -640,7 +717,7 @@ export const requestService = {
    */
   async lookupStatus(
     requestNumber: string,
-    email: string
+    email: string,
   ): Promise<PublicRequestStatus | null> {
     const normalizedNumber = requestNumber.trim().toUpperCase();
     const snapshot = await getDoc(statusLookupRef(normalizedNumber));
@@ -648,12 +725,13 @@ export const requestService = {
 
     const data = snapshot.data();
     if (data.deletedAt) return null;
-    if ((data.email as string)?.toLowerCase() !== email.trim().toLowerCase()) return null;
+    if ((data.email as string)?.toLowerCase() !== email.trim().toLowerCase())
+      return null;
 
     return {
       requestNumber: data.requestNumber ?? normalizedNumber,
-      status: data.status ?? 'new',
-      projectTitle: data.projectTitle ?? '',
+      status: data.status ?? "new",
+      projectTitle: data.projectTitle ?? "",
       createdAt: data.createdAt ?? null,
       updatedAt: data.updatedAt ?? null,
       customerUpdate: data.customerUpdate ?? null,
