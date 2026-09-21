@@ -15,7 +15,9 @@ import { SectionE } from '../RequestProject/sections/SectionE';
 import { SectionF } from '../RequestProject/sections/SectionF';
 import { SectionG } from '../RequestProject/sections/SectionG';
 import { SectionI } from '../RequestProject/sections/SectionI';
-import { SectionJ } from '../RequestProject/sections/SectionJ';
+import { Field, FieldSet } from '../../components/forms/Field';
+import { TextArea } from '../../components/forms/Inputs';
+import { RepeatableLinks } from '../../components/forms/RepeatableLinks';
 import { requestService } from '../../services/requestService';
 import { requestSettingsService } from '../../services/requestSettingsService';
 import type { ProjectRequest } from '../../types/projectRequest';
@@ -173,13 +175,28 @@ export default function EditRequest() {
             <SectionF form={form} />
             <SectionG form={form} />
             <section className="rounded-card border border-line bg-surface p-6">
-              <h2 className="text-base font-semibold">References and attachments</h2>
+              <h2 className="text-base font-semibold">References</h2>
               <p className="mt-2 text-sm leading-relaxed text-content-secondary">
-                Reference links and descriptions are editable below through the existing request fields. Existing attachments stay unchanged for security and consistency.
+                Reference links and descriptions can be changed here. Existing uploaded attachments remain unchanged after submission.
               </p>
+              <div className="mt-6 space-y-5">
+                <FieldSet legend="Reference links">
+                  <RepeatableLinks
+                    values={(form.watch('referenceLinks') ?? ['']) as string[]}
+                    onChange={(next) => form.setValue('referenceLinks', next, { shouldDirty: true })}
+                    errors={[]}
+                  />
+                </FieldSet>
+                <Field label="About those references" htmlFor="referenceDescription">
+                  <TextArea
+                    id="referenceDescription"
+                    rows={4}
+                    {...form.register('referenceDescription')}
+                  />
+                </Field>
+              </div>
             </section>
             <SectionI form={form} />
-            <SectionJ form={form} />
 
             <div className="border-t border-line pt-8">
               <Button type="submit" size="lg" loading={form.formState.isSubmitting}>
