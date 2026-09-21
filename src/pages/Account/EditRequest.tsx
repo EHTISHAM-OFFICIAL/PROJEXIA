@@ -23,7 +23,7 @@ import { requestSettingsService } from '../../services/requestSettingsService';
 import type { ProjectRequest } from '../../types/projectRequest';
 import {
   projectRequestSchema,
-  type ProjectRequestFormValues,
+  type ProjectRequestFormValues,\n  type ProjectRequestFormOutput,
 } from '../../utils/validation';
 import { toUserMessage } from '../../utils/errors';
 import { useAuth } from '../../hooks/useAuth';
@@ -136,13 +136,10 @@ export default function EditRequest() {
     setError(null);
 
     try {
-      await requestService.updateMyRequest(id, user.uid, {
-        ...values,
-        preferredPlatform: values.preferredPlatform ?? [],
-        sensors: values.sensors ?? [],
-        outputs: values.outputs ?? [],
-        connectivity: values.connectivity ?? [],
-      });
+      // Re-run the shared schema so its defaults produce the exact Firestore
+      // payload type expected by requestService (booleans and arrays included).
+      const normalizedValues: ProjectRequestFormOutput = projectRequestSchema.parse(values);
+      await requestService.updateMyRequest(id, user.uid, normalizedValues);
       navigate(`/account/requests/${id}`, { replace: true });
     } catch (caught) {
       setError(toUserMessage(caught, 'Could not save your changes.'));
