@@ -29,6 +29,7 @@ export default function RequestDetail() {
   const [status, setStatus] = useState<RequestStatus>('new');
   const [priority, setPriority] = useState<RequestPriority>('normal');
   const [notes, setNotes] = useState('');
+  const [customerUpdate, setCustomerUpdate] = useState('');
   const [quote, setQuote] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -39,6 +40,7 @@ export default function RequestDetail() {
     setStatus(request.status);
     setPriority(request.priority);
     setNotes(request.admin.notes ?? '');
+    setCustomerUpdate(request.customerUpdate ?? '');
     setQuote(request.admin.quotedAmount?.toString() ?? '');
   }, [request]);
 
@@ -81,6 +83,7 @@ export default function RequestDetail() {
     try {
       await requestService.updateRequestStatus(id, status);
       await requestService.updateRequestPriority(id, priority);
+      await requestService.updateCustomerUpdate(id, customerUpdate);
       await requestService.updateAdminFields(id, {
         notes: notes.trim() || null,
         quotedAmount: quote === '' ? null : Number(quote),
@@ -328,6 +331,17 @@ export default function RequestDetail() {
                   min={0}
                   value={quote}
                   onChange={(event) => setQuote(event.target.value)}
+                />
+              </Field>
+
+              <Field label="Customer update" htmlFor="customerUpdate" hint="Visible on the public Track Request page.">
+                <TextArea
+                  id="customerUpdate"
+                  rows={5}
+                  value={customerUpdate}
+                  placeholder="Example: The PCB assembly is complete and firmware testing is underway."
+                  onChange={(event) => setCustomerUpdate(event.target.value)}
+                  maxLength={1000}
                 />
               </Field>
 

@@ -88,6 +88,8 @@ function toRequest(snapshot: QueryDocumentSnapshot<DocumentData>): ProjectReques
     additionalRequirements: data.additionalRequirements ?? {},
     consent: data.consent ?? { agreeToTerms: false, allowContact: false },
     admin: data.admin ?? { notes: null, quotedAmount: null, currency: 'PKR', assignedTo: null },
+    customerUpdate: data.customerUpdate ?? null,
+    customerUpdateAt: data.customerUpdateAt ?? null,
     metadata: data.metadata ?? { source: 'unknown', userAgent: null, createdFrom: 'unknown' },
     createdAt: data.createdAt ?? null,
     updatedAt: data.updatedAt ?? null,
@@ -106,6 +108,8 @@ export interface PublicRequestStatus {
   projectTitle: string;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
+  customerUpdate: string | null;
+  customerUpdateAt: Timestamp | null;
 }
 
 export const requestService = {
@@ -212,6 +216,8 @@ export const requestService = {
 
       // Written empty on create; security rules block the public from setting these.
       admin: { notes: null, quotedAmount: null, currency: 'PKR', assignedTo: null },
+      customerUpdate: null,
+      customerUpdateAt: null,
 
       metadata: {
         source: 'website',
@@ -233,6 +239,8 @@ export const requestService = {
         email: values.email.trim().toLowerCase(),
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
+        customerUpdate: null,
+        customerUpdateAt: null,
       });
     } catch (error) {
       if (import.meta.env.DEV) console.warn('Could not create status-lookup record', error);
@@ -305,6 +313,28 @@ export const requestService = {
     });
   },
 
+  async updateCustomerUpdate(id: string, customerUpdate: string | null): Promise<void> {
+    const requestSnapshot = await getDoc(doc(db, COLLECTIONS.projectRequests, id));
+    if (!requestSnapshot.exists()) throw new Error('Request not found.');
+    const requestNumber = requestSnapshot.data()?.requestNumber as string | undefined;
+    if (!requestNumber) throw new Error('Request reference is missing.');
+
+    const updateText = customerUpdate?.trim() || null;
+    const updateTimestamp = updateText ? serverTimestamp() : null;
+
+    await updateDoc(doc(db, COLLECTIONS.projectRequests, id), {
+      customerUpdate: updateText,
+      customerUpdateAt: updateTimestamp,
+      updatedAt: serverTimestamp(),
+    });
+
+    await setDoc(
+      statusLookupRef(requestNumber),
+      { customerUpdate: updateText, customerUpdateAt: updateTimestamp, updatedAt: serverTimestamp() },
+      { merge: true },
+    );
+  },
+
   async updateAdminFields(
     id: string,
     fields: { notes?: string | null; quotedAmount?: number | null; assignedTo?: string | null }
@@ -346,6 +376,8 @@ export const requestService = {
       projectTitle: data.projectTitle ?? '',
       createdAt: data.createdAt ?? null,
       updatedAt: data.updatedAt ?? null,
+      customerUpdate: data.customerUpdate ?? null,
+      customerUpdateAt: data.customerUpdateAt ?? null,
     };
   },
 };

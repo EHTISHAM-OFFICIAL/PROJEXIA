@@ -128,12 +128,13 @@ service cloud.firestore {
       // Written once, automatically, by requestService.createRequest at the
       // same moment the real request is submitted — mirrors the validation
       // on the main create above, minus fields this collection doesn't have.
-      allow create: if request.resource.data.requestNumber == requestNumber
+      allow create: if isAdmin()
+        || (request.resource.data.requestNumber == requestNumber
         && request.resource.data.status == 'new'
         && isString(request.resource.data.projectTitle, 120)
         && isString(request.resource.data.email, 200)
         && request.resource.data.createdAt == request.time
-        && request.resource.data.updatedAt == request.time;
+        && request.resource.data.updatedAt == request.time);
 
       // Only an admin changes status thereafter (via requestService keeping
       // this in sync with the real request).

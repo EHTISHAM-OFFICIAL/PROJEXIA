@@ -10,6 +10,7 @@ import {
   MessageSquareQuote,
   Newspaper,
   Settings,
+  ClipboardList,
   X,
 } from 'lucide-react';
 import { Wordmark } from './Wordmark';
@@ -24,6 +25,7 @@ const ADMIN_LINKS = [
   { to: '/admin/blog', label: 'Blog', icon: Newspaper, end: false },
   { to: '/admin/banner', label: 'Banner', icon: Megaphone, end: false },
   { to: '/admin/settings', label: 'Settings', icon: Settings, end: false },
+  { to: '/admin/request-status', label: 'Request Status', icon: ClipboardList, end: false },
 ];
 
 export function AdminLayout() {
