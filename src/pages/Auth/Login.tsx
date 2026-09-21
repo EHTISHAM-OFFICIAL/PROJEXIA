@@ -108,7 +108,7 @@ export default function Login() {
             </div>
 
             <p className="mt-5 text-center text-xs leading-relaxed text-content-muted">
-              Email is optional for an account. If you don't add one, password recovery by email is not available.
+              Email is optional. Your username and password are the credentials used to sign in.
             </p>
           </div>
         </Container>
