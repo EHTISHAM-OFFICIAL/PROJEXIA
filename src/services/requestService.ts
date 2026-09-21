@@ -50,6 +50,16 @@ const statusLookupRef = (requestNumber: string) =>
  * year — collisions are not a practical concern, and the value is unguessable,
  * which is a small privacy win. See README for the Cloud Function upgrade path.
  */
+function generateProjectToken(): string {
+  const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  const random = crypto.getRandomValues(new Uint8Array(6));
+  const suffix = Array.from(
+    random,
+    (byte) => alphabet[byte % alphabet.length],
+  ).join("");
+  return `MECTEC-${new Date().getFullYear()}-${suffix}`;
+}
+
 function generateRequestNumber(): string {
   const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no look-alike characters
   const random = crypto.getRandomValues(new Uint8Array(6));
@@ -152,6 +162,7 @@ export const requestService = {
 
     const requestRef = doc(requestsRef);
     const requestNumber = generateRequestNumber();
+    const projectToken = generateProjectToken();
 
     const uploads = files.length ? await imgbbService.uploadMany(files) : [];
     const attachments = uploads.map((uploaded, index) =>
@@ -524,13 +535,21 @@ export const requestService = {
       .filter((request) => Boolean(request.deletedAt));
   },
 
-  async trashRequest(id: string): Promise<void> {
+  async trashRequest(id: string, projectToken: string): Promise<void> {
     const requestRef = doc(db, COLLECTIONS.projectRequests, id);
     const snapshot = await getDoc(requestRef);
     if (!snapshot.exists()) throw new Error("Request not found.");
 
     const current = snapshot.data();
     if (current.deletedAt) throw new Error("This request is already in the trash.");
+
+    if (
+      !projectToken ||
+      typeof current.projectToken !== "string" ||
+      projectToken.trim().toUpperCase() !== current.projectToken
+    ) {
+      throw new Error("The project token is incorrect.");
+    }
 
     const createdAt = current.createdAt as Timestamp | undefined;
     if (!createdAt) throw new Error("This request cannot be moved to trash.");
@@ -539,11 +558,8 @@ export const requestService = {
     const deadline =
       createdAt.toMillis() +
       settings.customerRequestEditWindowHours * 60 * 60 * 1000;
-    if (Date.now() < deadline) {
-      throw new Error(
-        `This request cannot be moved to trash until ${new Date(deadline).toLocaleString()}. The configured ${settings.customerRequestEditWindowHours}-hour protection period must expire first.`,
-      );
-    }
+    // A valid project token authorizes an administrator to move the request
+    // to trash even during the configured protection window.
 
     const requestNumber = current.requestNumber as string | undefined;
     await updateDoc(requestRef, {
