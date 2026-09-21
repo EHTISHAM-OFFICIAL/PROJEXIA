@@ -66,14 +66,7 @@ service cloud.firestore {
       //  1. An admin may change anything.
       //  2. The public may increment viewCount and nothing else. Without this,
       //     the view counter on the project page would silently fail forever.
-      allow update: if (
-        isAdmin()
-        && (
-          request.resource.data.get('deletedAt', null) == null
-          || resource.data.get('deletedAt', null) != null
-          || customerEditWindowOpen()
-        )
-      )
+      allow update: if isAdmin()
         || (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount'])
           && request.resource.data.viewCount is int
@@ -94,9 +87,17 @@ service cloud.firestore {
       // that submitted it. This is enforced here, not just in React.
       allow create: if isValidNewRequest();
 
-      // Admins have full management access. Customers may update only their
-      // own customer-facing fields while the configurable edit window is open.
-      allow update: if isAdmin()
+      // Admins have full management access, except that an active request
+      // cannot be newly moved to trash until the configured protection period
+      // has expired. Restoring an already trashed request remains allowed.
+      allow update: if (
+        isAdmin()
+        && (
+          request.resource.data.get('deletedAt', null) == null
+          || resource.data.get('deletedAt', null) != null
+          || customerEditWindowOpen()
+        )
+      )
         || (
           isOwner(resource.data)
           && customerEditWindowOpen()
