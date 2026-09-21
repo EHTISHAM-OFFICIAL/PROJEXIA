@@ -76,18 +76,39 @@ export default function Login() {
             </Field>
 
             <Field label="Password" htmlFor="password" required error={errors.password?.message}>
-              <TextInput
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                hasError={Boolean(errors.password)}
-                {...register('password')}
-              />
+              <div className="relative">
+                <TextInput
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  hasError={Boolean(errors.password)}
+                  className="pr-11"
+                  {...register('password')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-content-muted transition-colors hover:text-content-secondary"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
+                </button>
+              </div>
             </Field>
 
             <Button type="submit" loading={isSubmitting} className="w-full">
               {isSubmitting ? 'Signing in…' : 'Sign in'}
             </Button>
+
+            <div className="text-center">
+              <a
+                href="/admin/forgot-password"
+                className="text-sm font-medium text-content-secondary underline-offset-4 transition-colors hover:text-content-primary hover:underline"
+              >
+                Forgot or reset password?
+              </a>
+            </div>
           </form>
         </div>
       </Container>
