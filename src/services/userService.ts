@@ -1,9 +1,4 @@
-import {
-  doc,
-  getDoc,
-  runTransaction,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore';
 import {
   createUserWithEmailAndPassword,
   deleteUser,
@@ -18,7 +13,6 @@ import type { UserProfile } from '../types/user';
 const USERS_COLLECTION = 'users';
 const USERNAME_LOOKUP_COLLECTION = 'usernameLookup';
 const INTERNAL_EMAIL_DOMAIN = 'users.mectec.local';
-
 const usernamePattern = /^[a-z0-9_-]{3,30}$/;
 
 export function normalizeUsername(value: string): string {
