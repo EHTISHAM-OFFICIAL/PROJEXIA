@@ -217,6 +217,7 @@ service cloud.firestore {
       // on the main create above, minus fields this collection doesn't have.
       allow create: if isAdmin()
         || (request.resource.data.requestNumber == requestNumber
+        && request.resource.data.requestId is string
         && request.resource.data.status == 'new'
         && isString(request.resource.data.projectTitle, 120)
         && isString(request.resource.data.email, 200)
