@@ -143,6 +143,7 @@ export const requestService = {
       status: 'new' satisfies RequestStatus,
       priority: (values.urgency === 'Urgent' ? 'high' : 'normal') satisfies RequestPriority,
 
+      attachments: [...(current.attachments ?? []), ...newAttachments],
       contact: {
         fullName: values.fullName,
         email: values.email,
@@ -345,6 +346,13 @@ export const requestService = {
     if (Date.now() >= editDeadline) {
       throw new Error('The editing window for this request has ended.');
     }
+
+    // New attachments are uploaded to the same imgBB flow used by the
+    // original request. Existing attachments are intentionally preserved.
+    const newUploads = files.length ? await imgbbService.uploadMany(files) : [];
+    const newAttachments = newUploads.map((uploaded, index) =>
+      toAttachment(files[index], uploaded)
+    );
 
     await updateDoc(doc(db, COLLECTIONS.projectRequests, id), {
       contact: {
