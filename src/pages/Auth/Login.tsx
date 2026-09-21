@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/ui/Container';
 import { Button } from '../../components/ui/Button';
 import { Alert } from '../../components/ui/Alert';
@@ -21,12 +21,9 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  if (user) {
-    navigate('/account', { replace: true });
-    return null;
-  }
-
   const from = new URLSearchParams(location.search).get('next') || '/account';
+
+  if (user) return <Navigate to="/account" replace />;
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
