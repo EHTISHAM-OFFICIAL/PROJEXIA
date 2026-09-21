@@ -26,6 +26,7 @@ import {
 import { toUserMessage } from '../../utils/errors';
 import { saveTrackedRequest } from '../../utils/trackedRequest';
 import { SITE } from '../../constants/site';
+import { useAuth } from '../../hooks/useAuth';
 
 const DEFAULT_VALUES: ProjectRequestFormValues = {
   fullName: '',
@@ -105,6 +106,7 @@ export default function RequestProject() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [result, setResult] = useState<{ requestNumber: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const { user, profile } = useAuth();
 
   const form = useForm<ProjectRequestFormValues>({
     resolver: zodResolver(projectRequestSchema),
@@ -118,6 +120,11 @@ export default function RequestProject() {
 
   const onSubmit = async (values: ProjectRequestFormValues) => {
     setSubmitError(null);
+
+    if (!user) {
+      setSubmitError('Please log in before submitting a project request.');
+      return;
+    }
 
     // Honeypot: hidden from real users, so a value here means an automated submission.
     if (values.website) {
@@ -193,6 +200,30 @@ export default function RequestProject() {
                 Browse projects
               </ButtonLink>
               <ButtonLink to="/">Back to home</ButtonLink>
+            </div>
+          </div>
+        </Container>
+      </>
+    );
+  }
+
+  if (!user) {
+    return (
+      <>
+        <Seo title="Login required" path="/request-project" noIndex />
+        <Container className="py-20 sm:py-28">
+          <div className="mx-auto max-w-xl rounded-card border border-line bg-surface p-8 text-center sm:p-12">
+            <p className="text-sm font-medium text-accent">MECTEC project requests</p>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight">Log in to continue</h1>
+            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-content-secondary">
+              A MECTEC account is required to submit a project request. This lets you securely
+              access your own requests and gives you a limited editing window after submission.
+            </p>
+            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+              <ButtonLink to="/login?next=%2Frequest-project" size="lg">Log in</ButtonLink>
+              <ButtonLink to="/register?next=%2Frequest-project" variant="secondary" size="lg">
+                Create account
+              </ButtonLink>
             </div>
           </div>
         </Container>
