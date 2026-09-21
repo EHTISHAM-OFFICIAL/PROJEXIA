@@ -93,6 +93,7 @@ service cloud.firestore {
         || (
           isOwner(resource.data)
           && customerEditWindowOpen()
+          && request.resource.data.deletedAt == null
           && request.resource.data.ownerUid == resource.data.ownerUid
           && request.resource.data.requestNumber == resource.data.requestNumber
           && request.resource.data.status == resource.data.status
@@ -118,6 +119,26 @@ service cloud.firestore {
           && request.resource.data.attachments.size() <= 5
           && request.resource.data.attachments.size() >= resource.data.attachments.size()
           && request.resource.data.attachments.hasAll(resource.data.attachments)
+        )
+        || (
+          isOwner(resource.data)
+          && resource.data.deletedAt == null
+          && customerEditWindowOpen()
+          && request.resource.data.ownerUid == resource.data.ownerUid
+          && request.resource.data.requestNumber == resource.data.requestNumber
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.priority == resource.data.priority
+          && request.resource.data.admin == resource.data.admin
+          && request.resource.data.customerUpdate == resource.data.customerUpdate
+          && request.resource.data.customerUpdateAt == resource.data.customerUpdateAt
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.deletedAt == request.time
+          && request.resource.data.deletedBy == 'customer'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'deletedAt',
+            'deletedBy',
+            'updatedAt'
+          ])
         );
 
       allow delete: if isAdmin();
@@ -202,9 +223,19 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time);
 
-      // Only an admin changes status thereafter (via requestService keeping
-      // this in sync with the real request).
-      allow update, delete: if isAdmin();
+      // Admins can maintain status/trash state. A customer may only mark
+      // their own request as trashed; the rule resolves the real request by
+      // requestId instead of exposing ownerUid in this public document.
+      allow update: if isAdmin()
+        || (
+          request.auth != null
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['deletedAt', 'updatedAt'])
+          && request.resource.data.deletedAt == request.time
+          && resource.data.requestId is string
+          && exists(/databases/$(database)/documents/projectRequests/$(resource.data.requestId))
+          && get(/databases/$(database)/documents/projectRequests/$(resource.data.requestId)).data.ownerUid == request.auth.uid
+        );
+      allow delete: if isAdmin();
     }
 
     // ---------------------------------------------------------------------
@@ -237,6 +268,27 @@ service cloud.firestore {
       // Never writable from the client. Add and remove admins in the Firebase
       // Console — see README, "Creating an admin account".
       allow write: if false;
+    }
+
+    // ---------------------------------------------------------------------
+    // usernameLookup — exact username -> Firebase Auth email mapping.
+    // The document can be fetched only by its exact username; collection
+    // listing is disabled. It contains no password or request data.
+    // ---------------------------------------------------------------------
+    match /usernameLookup/{username} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.authEmail is string
+        && request.resource.data.keys().hasOnly(['uid', 'authEmail', 'createdAt'])
+        && !exists(/databases/$(database)/documents/usernameLookup/$(username));
+      allow update: if isSignedIn()
+        && request.auth.uid == resource.data.uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.authEmail is string
+        && request.resource.data.keys().hasOnly(['uid', 'authEmail', 'createdAt']);
+      allow delete: if false;
     }
 
     // ---------------------------------------------------------------------
