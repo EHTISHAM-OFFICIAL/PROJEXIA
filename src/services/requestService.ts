@@ -14,6 +14,7 @@ import {
   type QueryDocumentSnapshot,
 } from 'firebase/firestore';
 import { COLLECTIONS, db } from '../firebase/firestore';
+import { auth } from '../firebase/auth';
 import { imgbbService, type UploadedImage } from './imgbbService';
 import { emailNotificationService } from './emailNotificationService';
 import type {
@@ -125,6 +126,9 @@ export const requestService = {
     values: ProjectRequestFormOutput,
     files: File[] = []
   ): Promise<CreateRequestResult> {
+    const ownerUid = auth.currentUser?.uid;
+    if (!ownerUid) throw new Error('You must be signed in to submit a project request.');
+
     const requestRef = doc(requestsRef);
     const requestNumber = generateRequestNumber();
 
@@ -133,6 +137,7 @@ export const requestService = {
 
     await setDoc(requestRef, {
       requestNumber,
+      ownerUid,
       status: 'new' satisfies RequestStatus,
       priority: (values.urgency === 'Urgent' ? 'high' : 'normal') satisfies RequestPriority,
 
@@ -287,6 +292,34 @@ export const requestService = {
       : [orderBy('createdAt', 'desc')];
     const snapshot = await getDocs(query(requestsRef, ...constraints));
     return snapshot.docs.map(toRequest);
+  },
+
+  async getMyRequests(uid: string): Promise<ProjectRequest[]> {
+    if (!uid) return [];
+
+    const snapshot = await getDocs(
+      query(requestsRef, where('ownerUid', '==', uid)),
+    );
+
+    return snapshot.docs
+      .map(toRequest)
+      .sort((a, b) => {
+        const aTime = a.createdAt?.toMillis() ?? 0;
+        const bTime = b.createdAt?.toMillis() ?? 0;
+        return bTime - aTime;
+      });
+  },
+
+  async getMyRequestById(id: string, uid: string): Promise<ProjectRequest | null> {
+    if (!uid) return null;
+
+    const snapshot = await getDoc(doc(db, COLLECTIONS.projectRequests, id));
+    if (!snapshot.exists()) return null;
+
+    const data = snapshot.data();
+    if (data.ownerUid !== uid) return null;
+
+    return toRequest(snapshot as QueryDocumentSnapshot<DocumentData>);
   },
 
   async getRecentRequests(limitCount = 5): Promise<ProjectRequest[]> {
