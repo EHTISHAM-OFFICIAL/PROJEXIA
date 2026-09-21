@@ -323,6 +323,97 @@ export const requestService = {
     return toRequest(snapshot as QueryDocumentSnapshot<DocumentData>);
   },
 
+  async updateMyRequest(
+    id: string,
+    uid: string,
+    values: ProjectRequestFormOutput,
+  ): Promise<void> {
+    if (!uid) throw new Error('You must be signed in.');
+
+    const snapshot = await getDoc(doc(db, COLLECTIONS.projectRequests, id));
+    if (!snapshot.exists()) throw new Error('Request not found.');
+
+    const current = snapshot.data();
+    if (current.ownerUid !== uid) throw new Error('You are not allowed to edit this request.');
+
+    const createdAt = current.createdAt as Timestamp | undefined;
+    if (!createdAt) throw new Error('This request cannot be edited.');
+
+    const settings = await import('./requestSettingsService').then(
+      ({ requestSettingsService }) => requestSettingsService.getSecuritySettings(),
+    );
+    const editDeadline = createdAt.toMillis() + settings.customerRequestEditWindowHours * 60 * 60 * 1000;
+    if (Date.now() >= editDeadline) {
+      throw new Error('The editing window for this request has ended.');
+    }
+
+    await updateDoc(doc(db, COLLECTIONS.projectRequests, id), {
+      contact: {
+        fullName: values.fullName,
+        email: values.email,
+        phone: nullable(values.phone),
+        whatsapp: nullable(values.whatsapp),
+        country: nullable(values.country),
+        city: nullable(values.city),
+        preferredContactMethod: values.preferredContactMethod,
+      },
+      project: {
+        title: values.projectTitle,
+        category: values.projectCategory,
+        type: values.projectType,
+        purpose: nullable(values.projectPurpose) ?? '',
+        description: values.projectDescription,
+      },
+      technical: {
+        preferredPlatforms: values.preferredPlatform,
+        connectivity: values.connectivity,
+        sensors: values.sensors,
+        outputs: values.outputs,
+        powerSource: nullable(values.powerSource),
+        powerRequirements: nullable(values.powerRequirements),
+      },
+      software: {
+        requiresMobileApp: values.requiresMobileApp,
+        requiresWebDashboard: values.requiresWebDashboard,
+        requiresCloudDatabase: values.requiresCloudDatabase,
+        requiresNotifications: values.requiresNotifications,
+        requiresRemoteControl: values.requiresRemoteControl,
+        notes: nullable(values.softwareNotes),
+        languages: values.possibleLanguages,
+      },
+      scale: {
+        complexity: values.complexity,
+        prototypeQuantity: nullableNumber(values.prototypeQuantity),
+        estimatedQuantity: nullableNumber(values.estimatedQuantity),
+        deploymentEnvironment: nullable(values.deploymentEnvironment),
+      },
+      budget: {
+        range: nullable(values.budgetRange),
+        notes: nullable(values.budgetNotes),
+      },
+      timeline: {
+        desiredStartDate: dateToTimestamp(values.desiredStartDate),
+        desiredDeadline: dateToTimestamp(values.desiredDeadline),
+        flexibility: nullable(values.timelineFlexibility),
+        urgency: values.urgency,
+      },
+      references: {
+        links: values.referenceLinks.filter((link): link is string => Boolean(link && link.trim())),
+        description: nullable(values.referenceDescription),
+      },
+      additionalRequirements: {
+        specialRequirements: nullable(values.specialRequirements),
+        additionalNotes: nullable(values.additionalNotes),
+        consultationRequired: values.consultationRequired,
+        hasExistingHardware: values.hasExistingHardware,
+        existingHardwareDescription: nullable(values.existingHardwareDescription),
+        hasExistingCode: values.hasExistingCode,
+        existingCodeDescription: nullable(values.existingCodeDescription),
+      },
+      updatedAt: serverTimestamp(),
+    });
+  },
+
   async getRecentRequests(limitCount = 5): Promise<ProjectRequest[]> {
     const all = await requestService.getRequests();
     return all.slice(0, limitCount);
