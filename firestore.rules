@@ -93,7 +93,7 @@ service cloud.firestore {
         || (
           isOwner(resource.data)
           && customerEditWindowOpen()
-          && request.resource.data.deletedAt == null
+          && request.resource.data.get('deletedAt', null) == null
           && request.resource.data.ownerUid == resource.data.ownerUid
           && request.resource.data.requestNumber == resource.data.requestNumber
           && request.resource.data.status == resource.data.status
@@ -122,7 +122,7 @@ service cloud.firestore {
         )
         || (
           isOwner(resource.data)
-          && resource.data.deletedAt == null
+          && resource.data.get('deletedAt', null) == null
           && customerEditWindowOpen()
           && request.resource.data.ownerUid == resource.data.ownerUid
           && request.resource.data.requestNumber == resource.data.requestNumber
