@@ -253,21 +253,6 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------
-    // usernameLookup — intentionally contains only the username and UID
-    // required to resolve a username to a Firebase Auth account. It contains
-    // no email address or profile data.
-    // ---------------------------------------------------------------------
-    match /usernameLookup/{username} {
-      allow get: if true;
-      allow list: if false;
-      allow create: if isSignedIn()
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.username == username
-        && request.resource.data.keys().hasOnly(['uid', 'username', 'createdAt']);
-      allow update, delete: if false;
-    }
-
-    // ---------------------------------------------------------------------
     // settings — site-wide config, e.g. settings/banner
     // ---------------------------------------------------------------------
     match /settings/{docId} {
