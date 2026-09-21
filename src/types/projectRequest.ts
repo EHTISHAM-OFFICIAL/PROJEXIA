@@ -112,6 +112,7 @@ export interface RequestMetadata {
 
 export interface ProjectRequest {
   id: string;
+  ownerUid: string;
   requestNumber: string;
   status: RequestStatus;
   priority: RequestPriority;
