@@ -143,8 +143,6 @@ export const requestService = {
       status: 'new' satisfies RequestStatus,
       priority: (values.urgency === 'Urgent' ? 'high' : 'normal') satisfies RequestPriority,
 
-      attachments: [...(current.attachments ?? []), ...newAttachments],
-      attachments: [...(current.attachments ?? []), ...newAttachments],
       contact: {
         fullName: values.fullName,
         email: values.email,
@@ -357,6 +355,7 @@ export const requestService = {
     );
 
     await updateDoc(doc(db, COLLECTIONS.projectRequests, id), {
+      attachments: [...(current.attachments ?? []), ...newAttachments],
       contact: {
         fullName: values.fullName,
         email: values.email,
