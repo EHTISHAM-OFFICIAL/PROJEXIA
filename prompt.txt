@@ -8,3 +8,23 @@ Also, I want an AI integration through which we can chat only about website-rela
 Furthermore, I want this imgBB API integration instead of Firebase Storage, because in the Spark plan there is no free Firebase Storage available, so for that purpose I want to use the imgBB API. Here's the API key: "fb83cf6fc0439db00cbe2607d548638b". Make sure it is properly customizable through the admin panel and also in the project image upload section.
 
 Add all these functionalities properly and nicely.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
+
+
+
+Now add following things properly:
+
+1) Make sure that email is must during registration, because if someone later on forgot his account password there's no way to reset except manually asking the admin, so add that as a must option
+
+2) Add forgot password option in login page for users, so they can create new pass incase they forgot one, moreover, when they click forgot password and enters their email, after successful submission message also tells them to check in your mail spam's folder as well.
+
+3) We know that it's a 24 hour edit time, but how can a user knows there's no such warning which tell user about deadline of final edit time, so aware them once they submit their project, like which ever way you think it's better, show a pop up or whatever.
+
+4) Also make sure user can delete their request within 24 hours or whatever limit set by admin.
+
+5) Moreover admin can also delete project request but that deleted request first goes in trash, not directly deleted, so if admin wants he can restore that
+
+6) Also when admin successfully sign in, then show a proper disclaimer + greeting message first, like a pop up, then give options like go back or go ahead to admin panel or whatever looks suitable.
+
+
+
+Add these must features immediately
