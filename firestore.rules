@@ -188,6 +188,7 @@ service cloud.firestore {
           // Required fields, with length caps so one submission cannot be used
           // to write megabytes into the database.
           && isString(incoming.requestNumber, 40)
+          && isString(incoming.projectToken, 40)
           && isString(incoming.ownerUid, 128)
           && isString(incoming.contact.fullName, 100)
           && isString(incoming.contact.email, 200)
