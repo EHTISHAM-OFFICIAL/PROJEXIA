@@ -25,6 +25,7 @@ import type {
 } from '../types/projectRequest';
 import type { ProjectRequestFormOutput } from '../utils/validation';
 import { nullable, nullableNumber } from '../utils/validation';
+import { requestSettingsService } from './requestSettingsService';
 
 const requestsRef = collection(db, COLLECTIONS.projectRequests);
 
@@ -339,9 +340,7 @@ export const requestService = {
     const createdAt = current.createdAt as Timestamp | undefined;
     if (!createdAt) throw new Error('This request cannot be edited.');
 
-    const settings = await import('./requestSettingsService').then(
-      ({ requestSettingsService }) => requestSettingsService.getSecuritySettings(),
-    );
+    const settings = await requestSettingsService.getSecuritySettings();
     const editDeadline = createdAt.toMillis() + settings.customerRequestEditWindowHours * 60 * 60 * 1000;
     if (Date.now() >= editDeadline) {
       throw new Error('The editing window for this request has ended.');
