@@ -110,9 +110,14 @@ service cloud.firestore {
             'budget',
             'timeline',
             'references',
+            'attachments',
             'additionalRequirements',
             'updatedAt'
           ])
+          && request.resource.data.attachments is list
+          && request.resource.data.attachments.size() <= 5
+          && request.resource.data.attachments.size() >= resource.data.attachments.size()
+          && request.resource.data.attachments.hasAll(resource.data.attachments)
         );
 
       allow delete: if isAdmin();
