@@ -26,50 +26,107 @@ async function resolveConfig(): Promise<EmailNotificationConfig | null> {
     toEmail: override.toEmail || (import.meta.env.VITE_EMAILJS_TO_EMAIL as string) || '',
   };
 
-  const isConfigured = config.serviceId && config.templateId && config.publicKey && config.toEmail;
-  return isConfigured ? config : null;
+  const normalized: EmailNotificationConfig = {
+    serviceId: config.serviceId.trim(),
+    templateId: config.templateId.trim(),
+    publicKey: config.publicKey.trim(),
+    toEmail: config.toEmail.trim(),
+  };
+
+  const isConfigured =
+    Boolean(normalized.serviceId) &&
+    Boolean(normalized.templateId) &&
+    Boolean(normalized.publicKey) &&
+    Boolean(normalized.toEmail);
+
+  return isConfigured ? normalized : null;
 }
 
 export const emailNotificationService = {
   /**
-   * Sends a notification email via EmailJS's REST API, called directly from
-   * the browser — no backend, same architecture as imgBB uploads. Silently
-   * does nothing if not configured, and never throws: a notification email
-   * failing must never block the actual Firestore write that already
-   * succeeded, since that write is the source of truth.
+   * Send through EmailJS from the browser.
    *
-   * Your EmailJS template should reference these template variables:
-   * {{to_email}}, {{subject}}, {{message}}, {{reply_to}}
+   * Important: request notifications are intentionally awaited by
+   * requestService after Firestore succeeds. That prevents the browser from
+   * abandoning a fire-and-forget fetch when the user leaves the page.
+   *
+   * EmailJS documents a 1-request/second rate limit, so transient failures are
+   * retried with a short delay.
    */
-  async notify(params: { subject: string; message: string; replyTo?: string; throwOnError?: boolean }): Promise<void> {
+  async notify(params: {
+    subject: string;
+    message: string;
+    replyTo?: string;
+    throwOnError?: boolean;
+    maxAttempts?: number;
+  }): Promise<void> {
     const config = await resolveConfig();
-    if (!config) return; // not configured — feature is opt-in
+    if (!config) {
+      const error = new Error(
+        'Email notifications are not configured. Check the EmailJS settings.',
+      );
+      if (params.throwOnError) throw error;
+      if (import.meta.env.DEV) console.warn(error.message);
+      return;
+    }
 
-    try {
-      const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          service_id: config.serviceId.trim(),
-          template_id: config.templateId.trim(),
-          user_id: config.publicKey.trim(),
-          template_params: {
-            to_email: config.toEmail.trim(),
-            subject: params.subject,
-            message: params.message,
-            reply_to: params.replyTo?.trim() || config.toEmail.trim(),
+    const maxAttempts = Math.max(1, Math.min(params.maxAttempts ?? 3, 5));
+    let lastError: unknown = null;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      try {
+        const response = await fetch(
+          'https://api.emailjs.com/api/v1.0/email/send',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              service_id: config.serviceId,
+              template_id: config.templateId,
+              user_id: config.publicKey,
+              template_params: {
+                to_email: config.toEmail,
+                subject: params.subject,
+                message: params.message,
+                reply_to: params.replyTo?.trim() || config.toEmail,
+              },
+            }),
           },
-        }),
-      });
-
-      if (!response.ok) {
-        const detail = await response.text().catch(() => '');
-        throw new Error(
-          `EmailJS rejected the message (${response.status})${detail ? `: ${detail.slice(0, 300)}` : ''}`,
         );
+
+        const responseText = await response.text().catch(() => '');
+
+        if (!response.ok) {
+          throw new Error(
+            `EmailJS rejected the message (${response.status})${responseText ? `: ${responseText.slice(0, 500)}` : ''}`,
+          );
+        }
+
+        if (import.meta.env.DEV) {
+          console.info(
+            `MECTEC email notification sent successfully on attempt ${attempt}.`,
+          );
+        }
+        return;
+      } catch (error) {
+        lastError = error;
+
+        if (attempt < maxAttempts) {
+          // EmailJS documents a 1 request/second rate limit. Waiting slightly
+          // longer also handles short-lived network/provider failures.
+          await new Promise((resolve) => setTimeout(resolve, 1200 * attempt));
+        }
       }
-    } catch (error) {
-      if (import.meta.env.DEV) console.warn('Email notification failed to send', error);
+    }
+
+    if (params.throwOnError) {
+      throw lastError instanceof Error
+        ? lastError
+        : new Error('Email notification could not be sent.');
+    }
+
+    if (import.meta.env.DEV) {
+      console.warn('Email notification failed after retries', lastError);
     }
   },
 
@@ -84,13 +141,19 @@ export const emailNotificationService = {
 
   async sendTestEmail(): Promise<void> {
     const config = await resolveConfig();
-    if (!config) throw new Error('Email notifications are not configured. Enter and save all EmailJS settings first.');
+    if (!config) {
+      throw new Error(
+        'Email notifications are not configured. Enter and save all EmailJS settings first.',
+      );
+    }
 
     await this.notify({
       subject: 'MECTEC EmailJS test',
-      message: 'This is a test email from the MECTEC admin panel. If you received this message, email notifications are working.',
+      message:
+        'This is a test email from the MECTEC admin panel. If you received this message, email notifications are working.',
       replyTo: config.toEmail,
       throwOnError: true,
+      maxAttempts: 3,
     });
   },
 
@@ -99,7 +162,7 @@ export const emailNotificationService = {
       import.meta.env.VITE_EMAILJS_SERVICE_ID &&
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID &&
         import.meta.env.VITE_EMAILJS_PUBLIC_KEY &&
-        import.meta.env.VITE_EMAILJS_TO_EMAIL
+        import.meta.env.VITE_EMAILJS_TO_EMAIL,
     );
   },
-};
+}
