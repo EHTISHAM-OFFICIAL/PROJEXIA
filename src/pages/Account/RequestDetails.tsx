@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Pencil, LockKeyhole } from 'lucide-react';
+import { ArrowLeft, Pencil, LockKeyhole, Activity } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { Container } from '../../components/ui/Container';
 import { Alert } from '../../components/ui/Alert';
@@ -67,13 +67,27 @@ export default function RequestDetails() {
                 <h1 className="mt-2 text-3xl font-semibold tracking-tight">{request.project.title}</h1>
                 <p className="mt-3 text-sm text-content-secondary">{request.project.category} · {request.project.type}</p>
               </div>
-              {canEdit ? (
-                <ButtonLink to={`/account/requests/${request.id}/edit`}><span className="flex items-center gap-2"><Pencil size={16}/> Edit request</span></ButtonLink>
-              ) : (
-                <div className="inline-flex items-center gap-2 rounded-lg border border-line px-4 py-2.5 text-sm text-content-muted">
-                  <LockKeyhole size={15} /> Editing window closed
-                </div>
-              )}
+              <div className="flex flex-wrap gap-3">
+                <ButtonLink
+                  to={`/track-request?ref=${encodeURIComponent(request.requestNumber)}`}
+                  variant="secondary"
+                >
+                  <span className="flex items-center gap-2">
+                    <Activity size={16} /> View request status
+                  </span>
+                </ButtonLink>
+                {canEdit ? (
+                  <ButtonLink to={`/account/requests/${request.id}/edit`}>
+                    <span className="flex items-center gap-2">
+                      <Pencil size={16} /> Edit request
+                    </span>
+                  </ButtonLink>
+                ) : (
+                  <div className="inline-flex items-center gap-2 rounded-lg border border-line px-4 py-2.5 text-sm text-content-muted">
+                    <LockKeyhole size={15} /> Editing window closed
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="mt-8 grid gap-5 lg:grid-cols-3">
