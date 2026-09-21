@@ -92,14 +92,27 @@ export default function RequestDetails() {
                 <p className="mt-3 text-sm text-content-secondary">{request.project.category} · {request.project.type}</p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <ButtonLink
-                  to={`/track-request?ref=${encodeURIComponent(request.requestNumber)}`}
-                  variant="secondary"
-                >
-                  <span className="flex items-center gap-2">
-                    <Activity size={16} /> View request status
-                  </span>
-                </ButtonLink>
+                {isTrashed ? (
+                  <Button
+                    variant="secondary"
+                    disabled
+                    className="cursor-not-allowed opacity-50"
+                    title="Status tracking is unavailable for deleted requests."
+                  >
+                    <span className="flex items-center gap-2">
+                      <Activity size={16} /> View request status
+                    </span>
+                  </Button>
+                ) : (
+                  <ButtonLink
+                    to={`/track-request?ref=${encodeURIComponent(request.requestNumber)}`}
+                    variant="secondary"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Activity size={16} /> View request status
+                    </span>
+                  </ButtonLink>
+                )}
                 {canEdit ? (
                   <>
                     <ButtonLink to={`/account/requests/${request.id}/edit`}>
