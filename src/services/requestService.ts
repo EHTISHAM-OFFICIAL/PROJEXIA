@@ -297,7 +297,7 @@ export const requestService = {
       ? [where('status', '==', status), orderBy('createdAt', 'desc')]
       : [orderBy('createdAt', 'desc')];
     const snapshot = await getDocs(query(requestsRef, ...constraints));
-    return snapshot.docs.map(toRequest);
+    return snapshot.docs.map(toRequest).filter((request) => !request.deletedAt);
   },
 
   async getMyRequests(uid: string): Promise<ProjectRequest[]> {
