@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/ui/Container';
@@ -29,7 +29,7 @@ export default function Register() {
 
   if (user) return <Navigate to="/account" replace />;
 
-  const submit = async (event: React.FormEvent) => {
+  const submit = async (event: FormEvent) => {
     event.preventDefault();
     setError(null);
 
