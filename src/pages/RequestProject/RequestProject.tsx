@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckCircle2, Copy } from 'lucide-react';
+import { CheckCircle2, Copy, Clock3 } from 'lucide-react';
 import { Container } from '../../components/ui/Container';
 import { Seo } from '../../components/ui/Seo';
 import { Button, ButtonLink } from '../../components/ui/Button';
@@ -18,6 +18,7 @@ import { SectionH } from './sections/SectionH';
 import { SectionI } from './sections/SectionI';
 import { SectionJ } from './sections/SectionJ';
 import { requestService } from '../../services/requestService';
+import { requestSettingsService } from '../../services/requestSettingsService';
 import {
   projectRequestSchema,
   type ProjectRequestFormOutput,
@@ -104,7 +105,7 @@ const SECTION_LINKS = [
 export default function RequestProject() {
   const [files, setFiles] = useState<File[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ requestNumber: string } | null>(null);
+  const [result, setResult] = useState<{ requestNumber: string; editDeadline: Date | null; editHours: number } | null>(null);
   const [copied, setCopied] = useState(false);
   const { user } = useAuth();
 
@@ -128,7 +129,7 @@ export default function RequestProject() {
 
     // Honeypot: hidden from real users, so a value here means an automated submission.
     if (values.website) {
-      setResult({ requestNumber: 'MECTEC-0000-000000' });
+      setResult({ requestNumber: 'MECTEC-0000-000000', editDeadline: null, editHours: 24 });
       return;
     }
 
@@ -142,7 +143,27 @@ export default function RequestProject() {
         email: values.email,
         projectTitle: values.projectTitle,
       });
-      setResult({ requestNumber: created.requestNumber });
+
+      let editDeadline: Date | null = null;
+      let editHours = 24;
+      try {
+        const [settings, savedRequest] = await Promise.all([
+          requestSettingsService.getSecuritySettings(),
+          requestService.getMyRequestById(created.id, user.uid),
+        ]);
+        editHours = settings.customerRequestEditWindowHours;
+        if (savedRequest?.createdAt) {
+          editDeadline = new Date(savedRequest.createdAt.toMillis() + editHours * 60 * 60 * 1000);
+        }
+      } catch {
+        // The request is already saved; the account page remains the source of truth for the deadline.
+      }
+
+      setResult({
+        requestNumber: created.requestNumber,
+        editDeadline,
+        editHours,
+      });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       setSubmitError(
@@ -170,6 +191,22 @@ export default function RequestProject() {
               MECTEC will review the details and reply {SITE.responseTime} to the contact method you
               chose.
             </p>
+
+            <div className="mt-6 rounded-lg border border-state-warning/30 bg-state-warning/5 p-5 text-left">
+              <div className="flex items-start gap-3">
+                <Clock3 size={18} className="mt-0.5 shrink-0 text-state-warning" aria-hidden="true" />
+                <div>
+                  <p className="text-sm font-semibold">Important: your request has a limited editing window</p>
+                  <p className="mt-1 text-sm leading-relaxed text-content-secondary">
+                    You can edit or delete this request for the next {result.editHours} {result.editHours === 1 ? 'hour' : 'hours'} after submission.
+                    {result.editDeadline
+                      ? <> Your current deadline is <span className="font-medium text-content">{result.editDeadline.toLocaleString()}</span>.</>
+                      : ' The exact deadline is also shown on your request details page.'}
+                    {' '}After the window closes, the request becomes read-only.
+                  </p>
+                </div>
+              </div>
+            </div>
 
             <div className="mt-8 rounded-lg border border-line bg-surface p-5">
               <p className="text-sm text-content-muted">Your reference number</p>
