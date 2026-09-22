@@ -335,6 +335,9 @@ export const requestService = {
           `Prototype quantity: ${values.prototypeQuantity || "Not specified"}\n` +
           `Estimated quantity: ${values.estimatedQuantity || "Not specified"}`,
         replyTo: values.email,
+        name: values.fullName,
+        title: values.projectTitle,
+        requestNumber,
         maxAttempts: 3,
       });
     } catch (error) {
