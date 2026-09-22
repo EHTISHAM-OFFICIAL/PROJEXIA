@@ -259,11 +259,14 @@ export function HelpChatWidget() {
     // disabled while the assistant is "typing"; refocus it immediately
     // when that state ends so the user can type the next message without
     // manually clicking the field.
-    const timeout = window.setTimeout(() => {
-      if (!isTyping) {
-        inputRef.current?.focus();
-      }
-    }, isTyping ? 40 : 0);
+    const timeout = window.setTimeout(
+      () => {
+        if (!isTyping) {
+          inputRef.current?.focus();
+        }
+      },
+      isTyping ? 40 : 0,
+    );
 
     return () => {
       window.clearTimeout(timeout);
@@ -773,7 +776,7 @@ export function HelpChatWidget() {
         <button
           className="mectec-help-launcher"
           type="button"
-          onClick={() => setIsOpen(true)
+          onClick={() => setIsOpen(true)}
           aria-label="Open MECTEC Help Assistant"
           title="MECTEC Help Assistant"
           style={{
