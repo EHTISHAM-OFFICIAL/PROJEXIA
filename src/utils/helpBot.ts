@@ -2642,6 +2642,46 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
     };
   }
 
+  // Handle time-of-day greetings naturally.
+  if (/^(good morning)$/i.test(normalizedQuestion)) {
+    return {
+      answer:
+        "Good morning! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
+      suggestedQuestions: [
+        "What services does MECTEC provide?",
+        "Can I request a custom project?",
+        "What is Arduino?",
+        "How can I contact MECTEC?",
+      ],
+    };
+  }
+
+  if (/^(good afternoon)$/i.test(normalizedQuestion)) {
+    return {
+      answer:
+        "Good afternoon! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
+      suggestedQuestions: [
+        "What services does MECTEC provide?",
+        "Can I request a custom project?",
+        "What is Arduino?",
+        "How can I contact MECTEC?",
+      ],
+    };
+  }
+
+  if (/^(good evening)$/i.test(normalizedQuestion)) {
+    return {
+      answer:
+        "Good evening! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
+      suggestedQuestions: [
+        "What services does MECTEC provide?",
+        "Can I request a custom project?",
+        "What is Arduino?",
+        "How can I contact MECTEC?",
+      ],
+    };
+  }
+
   // Handle Islamic greetings separately from generic greetings.
   if (
     /^(aoa|salam|assalam alaikum|assalamualaikum|assalamu alaikum)$/i.test(
