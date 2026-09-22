@@ -187,7 +187,7 @@ service cloud.firestore {
           // intentionally optional in the rule so older clients/builds can
           // still submit requests. Admin trash authorization handles missing
           // tokens by generating one when needed.
-          && isOptionalString(incoming.projectToken, 40)
+          && isOptionalString(incoming.get('projectToken', null), 40)
           && isString(incoming.ownerUid, 128)
           && isString(incoming.contact.fullName, 100)
           && isString(incoming.contact.email, 200)
