@@ -55,7 +55,7 @@ export default function Projects() {
   return (
     <>
       <Seo
-        title="Projects"
+        title="Electronics Projects & Prototypes"
         description="Electronics projects built by MECTEC — embedded systems, IoT devices, automation and robotics, documented as case studies."
         path="/projects"
       />
