@@ -10,9 +10,9 @@ export function Intro() {
           </h2>
           <div className="flex flex-col gap-4 text-base leading-relaxed text-content-secondary">
             <p>
-              MECTEC works on one thing: taking an electronics idea and turning it into something
-              that actually runs. That means circuit design, firmware, enclosure decisions, testing,
-              and the documentation that lets you keep using it after handover.
+              MECTEC is a custom electronics design and development studio in Pakistan. The work
+              covers circuit design, embedded firmware, IoT connectivity, automation, robotics,
+              prototyping and the documentation needed to keep a system useful after handover.
             </p>
             <p>
               Projects range from a student's first sensor build to a small-batch automation system
