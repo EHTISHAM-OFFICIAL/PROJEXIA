@@ -336,8 +336,10 @@ export const requestService = {
           `Estimated quantity: ${values.estimatedQuantity || "Not specified"}`,
         replyTo: values.email,
         name: values.fullName,
+        email: values.email,
         title: values.projectTitle,
         requestNumber,
+        throwOnError: true,
         maxAttempts: 3,
       });
     } catch (error) {
