@@ -42,7 +42,7 @@ export default function About() {
   return (
     <>
       <Seo
-        title="About"
+        title="About MECTEC"
         description="MECTEC is an electronics studio building embedded systems, IoT devices and automation projects from concept through to tested hardware."
         path="/about"
       />
