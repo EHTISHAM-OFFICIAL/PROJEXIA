@@ -1,11 +1,4 @@
 User-agent: *
 Allow: /
 
-# Private, authenticated and utility areas are not search content.
-Disallow: /admin
-Disallow: /account
-Disallow: /login
-Disallow: /register
-Disallow: /track-request
-
 Sitemap: https://mectec.pk/sitemap.xml
