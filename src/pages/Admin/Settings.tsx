@@ -297,6 +297,7 @@ export default function Settings() {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [emailSaved, setEmailSaved] = useState(false);
   const [emailTesting, setEmailTesting] = useState(false);
+  const [projectEmailTesting, setProjectEmailTesting] = useState(false);
 
   /* ================================================================
      CUSTOMER ACCOUNT / REQUEST SECURITY STATE
@@ -392,6 +393,26 @@ export default function Settings() {
       setEmailError(toUserMessage(caught, "The test email could not be sent. Check your EmailJS settings and template."));
     } finally {
       setEmailTesting(false);
+    }
+  };
+
+  const handleProjectEmailTest = async () => {
+    setProjectEmailTesting(true);
+    setEmailError(null);
+    setEmailSaved(false);
+
+    try {
+      await emailNotificationService.sendProjectRequestTestEmail();
+      setEmailSaved(true);
+    } catch (caught) {
+      setEmailError(
+        toUserMessage(
+          caught,
+          "The project-request test email could not be sent. Check EmailJS History for the exact failure.",
+        ),
+      );
+    } finally {
+      setProjectEmailTesting(false);
     }
   };
 
@@ -764,6 +785,16 @@ export default function Settings() {
               disabled={emailSaving}
             >
               {emailTesting ? "Sending test…" : "Send test email"}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => void handleProjectEmailTest()}
+              loading={projectEmailTesting}
+              disabled={emailSaving || emailTesting}
+            >
+              {projectEmailTesting
+                ? "Sending project test…"
+                : "Test project request email"}
             </Button>
           </div>
         </div>
