@@ -32,8 +32,8 @@ export function Services() {
   return (
     <Section className="border-b border-line">
       <SectionHeading
-        title="What MECTEC builds"
-        description="Four areas cover most of the work. If your project sits between them, that's usually fine — ask."
+        title="Custom electronics services"
+        description="MECTEC develops embedded systems, IoT devices, automation and robotics prototypes, from an initial idea through testing and handover."
       />
       <div className="mt-12 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2">
         {SERVICES.map((service) => (
