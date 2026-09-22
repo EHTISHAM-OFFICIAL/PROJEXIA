@@ -26,11 +26,20 @@ export const contactService = {
       createdAt: serverTimestamp(),
     });
 
-    void emailNotificationService.notify({
-      subject: `New contact message — ${values.subject}`,
-      message: `${values.name} (${values.email}) wrote:\n\n${values.message}`,
-      replyTo: values.email,
-    });
+    try {
+      await emailNotificationService.notify({
+        subject: `New contact message — ${values.subject}`,
+        message: `${values.name} (${values.email}) wrote:\n\n${values.message}`,
+        replyTo: values.email,
+        name: values.name,
+        title: values.subject,
+        maxAttempts: 3,
+      });
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.warn("Contact message was saved, but the notification email failed.", error);
+      }
+    }
   },
 
   /** Admin only. */
