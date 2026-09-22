@@ -31,6 +31,7 @@ export function Image({ src, alt, className, eager = false }: ImageProps) {
       src={src}
       alt={alt}
       loading={eager ? 'eager' : 'lazy'}
+      fetchPriority={eager ? 'high' : 'auto'}
       decoding="async"
       onError={() => setFailed(true)}
       className={className}
