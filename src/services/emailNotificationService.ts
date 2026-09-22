@@ -2,6 +2,7 @@ import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { COLLECTIONS, db } from "../firebase/firestore";
 
 const settingsRef = doc(db, COLLECTIONS.settings, "emailNotifications");
+const publicSettingsRef = doc(db, COLLECTIONS.settings, "emailNotificationsPublic");
 
 export interface EmailNotificationConfig {
   serviceId: string;
@@ -12,12 +13,18 @@ export interface EmailNotificationConfig {
 
 async function resolveConfig(): Promise<EmailNotificationConfig | null> {
   let override: Partial<EmailNotificationConfig> = {};
+  let configSource: "firestore-public" | "env" = "env";
+  let firestoreReadError: string | null = null;
+
   try {
-    const snapshot = await getDoc(settingsRef);
-    if (snapshot.exists())
+    const snapshot = await getDoc(publicSettingsRef);
+    if (snapshot.exists()) {
       override = snapshot.data() as Partial<EmailNotificationConfig>;
-  } catch {
-    // Firestore unreachable — fall through to env defaults.
+      configSource = "firestore-public";
+    }
+  } catch (error) {
+    firestoreReadError =
+      error instanceof Error ? error.message : String(error);
   }
 
   const config: EmailNotificationConfig = {
@@ -51,6 +58,19 @@ async function resolveConfig(): Promise<EmailNotificationConfig | null> {
     Boolean(normalized.templateId) &&
     Boolean(normalized.publicKey) &&
     Boolean(normalized.toEmail);
+
+  const diagnostics = {
+    source: isConfigured ? configSource : "missing",
+    firestoreReadError,
+    fields: {
+      serviceId: Boolean(normalized.serviceId),
+      templateId: Boolean(normalized.templateId),
+      publicKey: Boolean(normalized.publicKey),
+      toEmail: Boolean(normalized.toEmail),
+    },
+  };
+
+  console.info("[MECTEC email] configuration diagnostics", diagnostics);
 
   return isConfigured ? normalized : null;
 }
@@ -220,6 +240,23 @@ export const emailNotificationService = {
     config: Partial<EmailNotificationConfig>,
   ): Promise<void> {
     await setDoc(settingsRef, { ...config, updatedAt: serverTimestamp() });
+
+    // These values are intentionally the browser-safe EmailJS configuration:
+    // service ID, template ID and public key are required by EmailJS's client
+    // API, and toEmail is MECTEC's public business recipient. No customer
+    // request data, admin notes, passwords, or private account information is
+    // stored here.
+    await setDoc(
+      publicSettingsRef,
+      {
+        serviceId: config.serviceId ?? null,
+        templateId: config.templateId ?? null,
+        publicKey: config.publicKey ?? null,
+        toEmail: config.toEmail ?? null,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    );
   },
 
   async getConfigOverride(): Promise<Partial<EmailNotificationConfig>> {
