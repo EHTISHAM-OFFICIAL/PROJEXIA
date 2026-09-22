@@ -109,7 +109,7 @@ Then delete `scripts/seed.mjs`.
 Replace the placeholder values in **`src/constants/site.ts`**. Every one is marked `TODO`:
 
 ```ts
-email: 'contact@mectec.pk',   // TODO — your real address
+email: 'ehtishamofficial28@gmail.com',   // TODO — your real address
 whatsapp: '',                 // TODO — e.g. 923001234567 (no + or spaces)
 phone: '',                    // TODO
 ```
@@ -118,7 +118,7 @@ Empty WhatsApp, phone and social links are hidden automatically rather than rend
 
 Also update:
 - `SITE.url` in `src/constants/site.ts` — used for canonical URLs and OG tags
-- `public/robots.txt` and `public/sitemap.xml` — replace `https://mectec.pk`
+- `public/robots.txt` and `public/sitemap.xml` — replace `https://mectec-shop.web.app`
 
 ---
 
