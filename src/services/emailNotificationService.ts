@@ -1,7 +1,7 @@
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { COLLECTIONS, db } from '../firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { COLLECTIONS, db } from "../firebase/firestore";
 
-const settingsRef = doc(db, COLLECTIONS.settings, 'emailNotifications');
+const settingsRef = doc(db, COLLECTIONS.settings, "emailNotifications");
 
 export interface EmailNotificationConfig {
   serviceId: string;
@@ -14,16 +14,29 @@ async function resolveConfig(): Promise<EmailNotificationConfig | null> {
   let override: Partial<EmailNotificationConfig> = {};
   try {
     const snapshot = await getDoc(settingsRef);
-    if (snapshot.exists()) override = snapshot.data() as Partial<EmailNotificationConfig>;
+    if (snapshot.exists())
+      override = snapshot.data() as Partial<EmailNotificationConfig>;
   } catch {
     // Firestore unreachable — fall through to env defaults.
   }
 
   const config: EmailNotificationConfig = {
-    serviceId: override.serviceId || (import.meta.env.VITE_EMAILJS_SERVICE_ID as string) || '',
-    templateId: override.templateId || (import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string) || '',
-    publicKey: override.publicKey || (import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string) || '',
-    toEmail: override.toEmail || (import.meta.env.VITE_EMAILJS_TO_EMAIL as string) || '',
+    serviceId:
+      override.serviceId ||
+      (import.meta.env.VITE_EMAILJS_SERVICE_ID as string) ||
+      "",
+    templateId:
+      override.templateId ||
+      (import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string) ||
+      "",
+    publicKey:
+      override.publicKey ||
+      (import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string) ||
+      "",
+    toEmail:
+      override.toEmail ||
+      (import.meta.env.VITE_EMAILJS_TO_EMAIL as string) ||
+      "",
   };
 
   const normalized: EmailNotificationConfig = {
@@ -58,6 +71,7 @@ export const emailNotificationService = {
     message: string;
     replyTo?: string;
     name?: string;
+    email?: string;
     title?: string;
     requestNumber?: string;
     throwOnError?: boolean;
@@ -66,7 +80,7 @@ export const emailNotificationService = {
     const config = await resolveConfig();
     if (!config) {
       const error = new Error(
-        'Email notifications are not configured. Check the EmailJS settings.',
+        "Email notifications are not configured. Check the EmailJS settings.",
       );
       if (params.throwOnError) throw error;
       if (import.meta.env.DEV) console.warn(error.message);
@@ -79,10 +93,10 @@ export const emailNotificationService = {
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
       try {
         const response = await fetch(
-          'https://api.emailjs.com/api/v1.0/email/send',
+          "https://api.emailjs.com/api/v1.0/email/send",
           {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               service_id: config.serviceId,
               template_id: config.templateId,
@@ -110,11 +124,11 @@ export const emailNotificationService = {
           },
         );
 
-        const responseText = await response.text().catch(() => '');
+        const responseText = await response.text().catch(() => "");
 
         if (!response.ok) {
           throw new Error(
-            `EmailJS rejected the message (${response.status})${responseText ? `: ${responseText.slice(0, 500)}` : ''}`,
+            `EmailJS rejected the message (${response.status})${responseText ? `: ${responseText.slice(0, 500)}` : ""}`,
           );
         }
 
@@ -138,35 +152,39 @@ export const emailNotificationService = {
     if (params.throwOnError) {
       throw lastError instanceof Error
         ? lastError
-        : new Error('Email notification could not be sent.');
+        : new Error("Email notification could not be sent.");
     }
 
     if (import.meta.env.DEV) {
-      console.warn('Email notification failed after retries', lastError);
+      console.warn("Email notification failed after retries", lastError);
     }
   },
 
-  async saveConfigOverride(config: Partial<EmailNotificationConfig>): Promise<void> {
+  async saveConfigOverride(
+    config: Partial<EmailNotificationConfig>,
+  ): Promise<void> {
     await setDoc(settingsRef, { ...config, updatedAt: serverTimestamp() });
   },
 
   async getConfigOverride(): Promise<Partial<EmailNotificationConfig>> {
     const snapshot = await getDoc(settingsRef);
-    return snapshot.exists() ? (snapshot.data() as Partial<EmailNotificationConfig>) : {};
+    return snapshot.exists()
+      ? (snapshot.data() as Partial<EmailNotificationConfig>)
+      : {};
   },
 
   async sendTestEmail(): Promise<void> {
     const config = await resolveConfig();
     if (!config) {
       throw new Error(
-        'Email notifications are not configured. Enter and save all EmailJS settings first.',
+        "Email notifications are not configured. Enter and save all EmailJS settings first.",
       );
     }
 
     await this.notify({
-      subject: 'MECTEC EmailJS test',
+      subject: "MECTEC EmailJS test",
       message:
-        'This is a test email from the MECTEC admin panel. If you received this message, the EmailJS API, service, template and recipient configuration are working.',
+        "This is a test email from the MECTEC admin panel. If you received this message, the EmailJS API, service, template and recipient configuration are working.",
       replyTo: config.toEmail,
       name: "MECTEC Email Test",
       title: "MECTEC EmailJS test",
@@ -185,42 +203,42 @@ export const emailNotificationService = {
     const config = await resolveConfig();
     if (!config) {
       throw new Error(
-        'Email notifications are not configured. Enter and save all EmailJS settings first.',
+        "Email notifications are not configured. Enter and save all EmailJS settings first.",
       );
     }
 
     await this.notify({
-      subject: 'New project request — Smart Energy Generator',
+      subject: "New project request — Smart Energy Generator",
       message:
-        'MECTEC PROJECT REQUEST TEST\n\n' +
-        'Test Customer (test@example.com) submitted a sample request.\n\n' +
-        'Reference: MECTEC-TEST-000001\n' +
-        'Category: Embedded Systems\n' +
-        'Project type: Prototype\n' +
-        'Urgency: Normal\n\n' +
-        '--- Project ---\n' +
-        'Title: Smart Energy Generator\n' +
-        'Purpose: Sample notification-path test.\n' +
-        'Description:\nThis is a safe test message used to verify the same EmailJS payload structure as a real project request.\n\n' +
-        '--- Technical ---\n' +
-        'Preferred platform: Arduino\n' +
-        'Connectivity: None\n' +
-        'Sensors: Voltage sensor\n' +
-        'Outputs: Display\n\n' +
-        '--- Budget & Timeline ---\n' +
-        'Budget range: Not specified\n' +
-        'Start date: Not specified\n' +
-        'Deadline: Not specified\n' +
-        'Timeline flexibility: Flexible\n\n' +
-        '--- Scale ---\n' +
-        'Complexity: Prototype\n' +
-        'Prototype quantity: 1\n' +
-        'Estimated quantity: 1',
+        "MECTEC PROJECT REQUEST TEST\n\n" +
+        "Test Customer (test@example.com) submitted a sample request.\n\n" +
+        "Reference: MECTEC-TEST-000001\n" +
+        "Category: Embedded Systems\n" +
+        "Project type: Prototype\n" +
+        "Urgency: Normal\n\n" +
+        "--- Project ---\n" +
+        "Title: Smart Energy Generator\n" +
+        "Purpose: Sample notification-path test.\n" +
+        "Description:\nThis is a safe test message used to verify the same EmailJS payload structure as a real project request.\n\n" +
+        "--- Technical ---\n" +
+        "Preferred platform: Arduino\n" +
+        "Connectivity: None\n" +
+        "Sensors: Voltage sensor\n" +
+        "Outputs: Display\n\n" +
+        "--- Budget & Timeline ---\n" +
+        "Budget range: Not specified\n" +
+        "Start date: Not specified\n" +
+        "Deadline: Not specified\n" +
+        "Timeline flexibility: Flexible\n\n" +
+        "--- Scale ---\n" +
+        "Complexity: Prototype\n" +
+        "Prototype quantity: 1\n" +
+        "Estimated quantity: 1",
       replyTo: config.toEmail,
-      name: 'MECTEC Project Request Test',
+      name: "MECTEC Project Request Test",
       email: config.toEmail,
-      title: 'Smart Energy Generator',
-      requestNumber: 'MECTEC-TEST-000001',
+      title: "Smart Energy Generator",
+      requestNumber: "MECTEC-TEST-000001",
       throwOnError: true,
       maxAttempts: 3,
     });
@@ -229,9 +247,9 @@ export const emailNotificationService = {
   isConfiguredViaEnv(): boolean {
     return Boolean(
       import.meta.env.VITE_EMAILJS_SERVICE_ID &&
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID &&
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY &&
-        import.meta.env.VITE_EMAILJS_TO_EMAIL,
+      import.meta.env.VITE_EMAILJS_TEMPLATE_ID &&
+      import.meta.env.VITE_EMAILJS_PUBLIC_KEY &&
+      import.meta.env.VITE_EMAILJS_TO_EMAIL,
     );
   },
-}
+};
