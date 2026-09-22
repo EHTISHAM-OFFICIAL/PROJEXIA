@@ -19,7 +19,7 @@ export function Footer() {
             <p className="mt-4 text-sm leading-relaxed text-content-secondary">{SITE.description}</p>
           </div>
 
-          <div className="flex gap-12 sm:gap-20">
+          <div className="flex flex-wrap gap-10 sm:gap-20">
             <nav aria-labelledby="footer-nav">
               <h2 id="footer-nav" className="text-sm font-medium text-content">
                 Pages
@@ -62,7 +62,7 @@ export function Footer() {
                 <li>
                   <a
                     href={`mailto:${SITE.email}`}
-                    className="text-sm text-content-secondary transition-colors hover:text-content"
+                    className="break-all text-sm text-content-secondary transition-colors hover:text-content"
                   >
                     {SITE.email}
                   </a>
