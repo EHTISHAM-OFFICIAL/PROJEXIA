@@ -1467,18 +1467,22 @@ export function HelpChatWidget() {
 
           @media (max-width: 700px) {
             .mectec-help-chat {
-              left: 1rem !important;
-              right: 1rem !important;
-              bottom: 1rem !important;
-
+              left: 0.75rem !important;
+              right: 0.75rem !important;
+              bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
               width: auto !important;
-
               height: min(
                 760px,
-                calc(100vh - 2rem)
+                calc(100dvh - 1.5rem - env(safe-area-inset-bottom))
               ) !important;
-
+              max-height: calc(100dvh - 1.5rem - env(safe-area-inset-bottom)) !important;
               transform: none !important;
+              border-radius: 18px !important;
+            }
+
+            .mectec-help-launcher {
+              right: 1rem !important;
+              bottom: max(5.75rem, calc(4.75rem + env(safe-area-inset-bottom))) !important;
             }
           }
         `}
