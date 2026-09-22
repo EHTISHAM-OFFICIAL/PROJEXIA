@@ -218,6 +218,31 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------
+    // settings/emailNotificationsPublic — browser-safe EmailJS configuration.
+    // EmailJS client-side sending requires the service/template/public key.
+    // The recipient is MECTEC's public business email, not customer data.
+    // No request content, admin notes, credentials, or private account data
+    // belongs in this document.
+    // ---------------------------------------------------------------------
+    match /settings/emailNotificationsPublic {
+      allow get: if true;
+      allow list: if false;
+
+      allow write: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'serviceId',
+          'templateId',
+          'publicKey',
+          'toEmail',
+          'updatedAt'
+        ])
+        && request.resource.data.serviceId is string
+        && request.resource.data.templateId is string
+        && request.resource.data.publicKey is string
+        && request.resource.data.toEmail is string;
+    }
+
+    // ---------------------------------------------------------------------
     // requestStatusLookup — the public "track my request" page reads only
     // this narrow record, never the full projectRequests document, so an
     // admin's internal notes and quoted amounts can never reach a visitor's
