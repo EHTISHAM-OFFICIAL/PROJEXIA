@@ -96,7 +96,7 @@ export function Navbar() {
       </Container>
 
       {mobileOpen && (
-        <div id="mobile-menu" className="border-t border-line bg-bg md:hidden">
+        <div id="mobile-menu" className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line bg-bg md:hidden">
           <Container className="py-4">
             <ul className="flex flex-col gap-1">
               {NAV_LINKS.map((link) => (
