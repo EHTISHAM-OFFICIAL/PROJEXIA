@@ -2815,28 +2815,75 @@ function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
    DATE / TIME / HOURS
    ========================================================= */
 
-function getDateResponse(normalizedQuestion: string): HelpResponse | null {
-  const asksDate =
-    /\b(what day is it|what is todays date|what is today's date|what date is it|todays date|today's date|current date)\b/i.test(
-      normalizedQuestion,
-    );
+function getPakistanDateParts(offsetDays = 0): {
+  weekday: string;
+  month: string;
+  day: string;
+  year: string;
+} {
+  const base = new Date();
 
-  if (!asksDate) {
-    return null;
-  }
-
-  const now = new Date();
-
-  const date = new Intl.DateTimeFormat("en-US", {
+  const dateParts = new Intl.DateTimeFormat("en-US", {
     timeZone: MECTEC_TIME_ZONE,
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  }).formatToParts(base);
+
+  const year = Number(
+    dateParts.find((part) => part.type === "year")?.value ?? 0,
+  );
+  const month = Number(
+    dateParts.find((part) => part.type === "month")?.value ?? 0,
+  );
+  const day = Number(
+    dateParts.find((part) => part.type === "day")?.value ?? 0,
+  );
+
+  const target = new Date(Date.UTC(year, month - 1, day + offsetDays));
+
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "UTC",
     weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
-  }).format(now);
+  }).formatToParts(target);
 
   return {
-    answer: `Today is ${date}.`,
+    weekday: parts.find((part) => part.type === "weekday")?.value ?? "",
+    month: parts.find((part) => part.type === "month")?.value ?? "",
+    day: parts.find((part) => part.type === "day")?.value ?? "",
+    year: parts.find((part) => part.type === "year")?.value ?? "",
+  };
+}
+
+function getDateResponse(normalizedQuestion: string): HelpResponse | null {
+  const asksToday =
+    /\b(what day is it|what is todays date|what is today's date|what date is it|todays date|today's date|current date|what day is today|what is the date today)\b/i.test(
+      normalizedQuestion,
+    );
+
+  const asksTomorrow =
+    /\b(what day is tomorrow|what is tomorrows date|what is tomorrow's date|what date is tomorrow|tomorrows date|tomorrow's date|what day will it be tomorrow)\b/i.test(
+      normalizedQuestion,
+    );
+
+  const asksYesterday =
+    /\b(what day was yesterday|what was yesterdays date|what was yesterday's date|what date was yesterday|yesterdays date|yesterday's date)\b/i.test(
+      normalizedQuestion,
+    );
+
+  if (!asksToday && !asksTomorrow && !asksYesterday) {
+    return null;
+  }
+
+  const offsetDays = asksTomorrow ? 1 : asksYesterday ? -1 : 0;
+  const date = getPakistanDateParts(offsetDays);
+  const label = asksTomorrow ? "Tomorrow" : asksYesterday ? "Yesterday" : "Today";
+
+  return {
+    answer: `${label} is ${date.weekday}, ${date.month} ${date.day}, ${date.year}.`,
   };
 }
 
@@ -2852,8 +2899,21 @@ function getCurrentPakistanTime(): string {
 function getDynamicHoursResponse(
   normalizedQuestion: string,
 ): HelpResponse | null {
-  const asksShopHours =
-    /\b(shop|store|business)\s+(hours|timing|timings)\b/i.test(
+  /*
+   * General business-hours intelligence:
+   *
+   * - "Are you open?"
+   * - "Open tomorrow?"
+   * - "Will you be open Saturday?"
+   * - "When do you open on Monday?"
+   * - "Are you closed today?"
+   *
+   * The answer is calculated from Pakistan time and the
+   * configured MECTEC weekly schedule instead of relying on
+   * a separate knowledge entry for every day/wording.
+   */
+  const asksGenericHours =
+    /\b(shop|store|business|mectec)\s+(hours|timing|timings|time)\b/i.test(
       normalizedQuestion,
     ) ||
     /\bwhat time do you (open|close)\b/i.test(normalizedQuestion) ||
@@ -2861,49 +2921,173 @@ function getDynamicHoursResponse(
       normalizedQuestion,
     ) ||
     /\bare you open\b/i.test(normalizedQuestion) ||
+    /\bare you closed\b/i.test(normalizedQuestion) ||
     /\bwhen are you open\b/i.test(normalizedQuestion) ||
     /\bopening hours\b/i.test(normalizedQuestion) ||
-    /\bclosing hours\b/i.test(normalizedQuestion);
+    /\bclosing hours\b/i.test(normalizedQuestion) ||
+    /\bshop timing\b/i.test(normalizedQuestion);
 
-  if (!asksShopHours) {
+  const asksTomorrow =
+    /\b(tomorrow|tmrw)\b/i.test(normalizedQuestion) &&
+    /\b(open|close|closed|hours?|timing|timings|working|work)\b/i.test(
+      normalizedQuestion,
+    );
+
+  const asksToday =
+    /\btoday\b/i.test(normalizedQuestion) &&
+    /\b(open|close|closed|hours?|timing|timings|working|work)\b/i.test(
+      normalizedQuestion,
+    );
+
+  const requestedWeekdayMatch = normalizedQuestion.match(
+    /\b(on|this|next)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i,
+  );
+
+  const bareWeekdayMatch = normalizedQuestion.match(
+    /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i,
+  );
+
+  const asksSpecificDay = Boolean(
+    requestedWeekdayMatch || bareWeekdayMatch,
+  );
+
+  if (
+    !asksGenericHours &&
+    !asksTomorrow &&
+    !asksToday &&
+    !asksSpecificDay
+  ) {
     return null;
   }
 
   const now = new Date();
 
-  const parts = new Intl.DateTimeFormat("en-US", {
+  const currentParts = new Intl.DateTimeFormat("en-US", {
     timeZone: MECTEC_TIME_ZONE,
+    weekday: "long",
     hour: "numeric",
     minute: "numeric",
     hour12: false,
   }).formatToParts(now);
 
-  const hourPart = parts.find((part) => part.type === "hour");
+  const currentWeekday =
+    currentParts.find((part) => part.type === "weekday")?.value ?? "";
 
-  const minutePart = parts.find((part) => part.type === "minute");
+  const currentHour = Number(
+    currentParts.find((part) => part.type === "hour")?.value ?? 0,
+  );
 
-  const hour = Number(hourPart?.value ?? 0);
+  const currentMinute = Number(
+    currentParts.find((part) => part.type === "minute")?.value ?? 0,
+  );
 
-  const minute = Number(minutePart?.value ?? 0);
-
-  const currentMinutes = hour * 60 + minute;
-
+  const currentMinutes = currentHour * 60 + currentMinute;
   const openMinutes = MECTEC_OPEN_HOUR * 60;
-
   const closeMinutes = MECTEC_CLOSE_HOUR * 60;
 
-  const isOpen = currentMinutes >= openMinutes && currentMinutes < closeMinutes;
+  const weekdayNames = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+
+  const currentDayIndex = weekdayNames.indexOf(currentWeekday.toLowerCase());
+
+  let offsetDays = 0;
+  let targetWeekday = currentWeekday;
+
+  if (asksTomorrow) {
+    offsetDays = 1;
+  } else if (asksToday) {
+    offsetDays = 0;
+  } else if (requestedWeekdayMatch || bareWeekdayMatch) {
+    const requestedDay = (
+      requestedWeekdayMatch?.[2] ??
+      requestedWeekdayMatch?.[1] ??
+      bareWeekdayMatch?.[1] ??
+      ""
+    ).toLowerCase();
+
+    const requestedIndex = weekdayNames.indexOf(requestedDay);
+
+    if (requestedIndex >= 0) {
+      /*
+       * "next Monday" means the next occurrence after today.
+       * "Monday" means the upcoming Monday, or today if today
+       * is Monday.
+       */
+      if (requestedWeekdayMatch?.[1]?.toLowerCase() === "next") {
+        offsetDays = (requestedIndex - currentDayIndex + 7) % 7 || 7;
+      } else {
+        offsetDays = (requestedIndex - currentDayIndex + 7) % 7;
+      }
+    }
+  }
+
+  const targetDate = getPakistanDateParts(offsetDays);
+  targetWeekday = targetDate.weekday;
+
+  const isFriday =
+    targetWeekday.toLowerCase() === "friday";
+
+  const targetLabel =
+    offsetDays === 0
+      ? "today"
+      : offsetDays === 1
+        ? "tomorrow"
+        : targetWeekday;
+
+  /*
+   * Friday is officially closed, with the existing MECTEC rule
+   * that urgent/high-workload operation may still occur.
+   */
+  if (isFriday) {
+    return {
+      answer:
+        `MECTEC is officially closed on Friday. However, we may operate on Fridays when there is an unusually high workload or urgent work. For ${targetLabel} availability, please contact MECTEC directly.`,
+      action: NAVIGATION_ACTIONS.contact,
+      suggestedQuestions: [
+        "What are MECTEC's normal opening hours?",
+        "Are you open tomorrow?",
+        "How can I contact MECTEC?",
+      ],
+    };
+  }
+
+  /*
+   * If the user asked about a future/specific day, report that
+   * day's schedule rather than the current moment.
+   */
+  const isFutureOrSpecificDay =
+    asksTomorrow || asksToday || asksSpecificDay;
+
+  if (isFutureOrSpecificDay) {
+    return {
+      answer:
+        `MECTEC is scheduled to be open ${targetLabel} from 10:00 AM to 10:00 PM (Pakistan time).`,
+    };
+  }
+
+  const isOpen =
+    currentMinutes >= openMinutes &&
+    currentMinutes < closeMinutes;
 
   const currentTime = getCurrentPakistanTime();
 
   if (isOpen) {
     return {
-      answer: `MECTEC's listed business hours are 10:00 AM to 10:00 PM. It is currently ${currentTime} in Pakistan, so the shop is within its listed opening hours.`,
+      answer:
+        `MECTEC's listed business hours are 10:00 AM to 10:00 PM. It is currently ${currentTime} in Pakistan, so the shop is within its listed opening hours.`,
     };
   }
 
   return {
-    answer: `MECTEC's listed business hours are 10:00 AM to 10:00 PM. It is currently ${currentTime} in Pakistan, so the shop is currently outside its listed opening hours.`,
+    answer:
+      `MECTEC's listed business hours are 10:00 AM to 10:00 PM. It is currently ${currentTime} in Pakistan, so the shop is currently outside its listed opening hours.`,
   };
 }
 
