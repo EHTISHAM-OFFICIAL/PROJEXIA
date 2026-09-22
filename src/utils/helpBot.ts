@@ -629,20 +629,35 @@ function levenshtein(a: string, b: string): number {
   return previous[b.length];
 }
 
-function wordSimilarity(a: string, b: string): number {
-  if (a === b) {
-    return 1;
+function hasAdjacentTransposition(a: string, b: string): boolean {
+  if (a.length !== b.length || a.length < 4) return false;
+  for (let i = 0; i < a.length - 1; i += 1) {
+    if (a[i] !== b[i]) {
+      return a[i] === b[i + 1] && a[i + 1] === b[i] && a.slice(i + 2) === b.slice(i + 2);
+    }
   }
+  return false;
+}
 
-  if (a.length < 4 || b.length < 4) {
-    return 0;
-  }
+function fuzzyThreshold(word: string): number {
+  if (word.length >= 10) return 0.72;
+  if (word.length >= 8) return 0.75;
+  if (word.length >= 6) return 0.78;
+  return 0.84;
+}
+
+function wordSimilarity(a: string, b: string): number {
+  if (a === b) return 1;
+  if (a.length < 4 || b.length < 4) return 0;
+  if (hasAdjacentTransposition(a, b)) return 0.96;
 
   const distance = levenshtein(a, b);
-
   const maxLength = Math.max(a.length, b.length);
+  const similarity = 1 - distance / maxLength;
 
-  return 1 - distance / maxLength;
+  if (maxLength >= 10 && distance <= 2) return Math.max(similarity, 0.82);
+  if (maxLength >= 8 && distance <= 2) return Math.max(similarity, 0.78);
+  return similarity;
 }
 
 function tokenSimilarity(question: string, candidate: string): number {
@@ -668,7 +683,7 @@ function tokenSimilarity(question: string, candidate: string): number {
       best = Math.max(best, wordSimilarity(questionToken, candidateToken));
     }
 
-    if (best >= 0.78) {
+    if (best >= fuzzyThreshold(questionToken)) {
       matched += best;
     }
   }
@@ -908,7 +923,7 @@ function detectTopic(question: string): string | null {
         const found = questionTokens.some(
           (questionToken) =>
             questionToken === aliasToken ||
-            wordSimilarity(questionToken, aliasToken) >= 0.88,
+            wordSimilarity(questionToken, aliasToken) >= fuzzyThreshold(aliasToken),
         );
 
         if (found) {
@@ -4110,7 +4125,7 @@ function scoreLiveCandidate(
 
     if (!found) {
       const fuzzy = questionTokens.some(
-        (questionToken) => wordSimilarity(inputToken, questionToken) >= 0.8,
+        (questionToken) => wordSimilarity(inputToken, questionToken) >= fuzzyThreshold(inputToken),
       );
 
       if (fuzzy) {
