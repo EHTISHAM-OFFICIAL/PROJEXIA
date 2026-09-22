@@ -1055,11 +1055,13 @@ export const POLICIES_HELP: HelpEntry[] = [
   {
     id: "policy-pricing-policy",
     category: "policies",
-    intent: "compatibility",
+    intent: "pricing",
     question: "What is the pricing policy?",
     variations: [
       "What is the pricing policy",
       "Pricing policy",
+      "Pricing policies",
+      "What are your pricing policies",
       "How is price determined",
       "Cost policy",
       "Quote policy",
