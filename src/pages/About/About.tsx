@@ -45,6 +45,17 @@ export default function About() {
         title="About MECTEC"
         description="MECTEC is an electronics studio building embedded systems, IoT devices and automation projects from concept through to tested hardware."
         path="/about"
+        schema={{
+          '@type': 'FAQPage',
+          mainEntity: FAQ_ITEMS.map((item) => ({
+            '@type': 'Question',
+            name: item.question,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: item.answer,
+            },
+          })),
+        }}
       />
 
       <div className="relative overflow-hidden border-b border-line">
