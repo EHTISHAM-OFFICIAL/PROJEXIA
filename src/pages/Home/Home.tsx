@@ -16,13 +16,6 @@ export default function Home() {
         title="Custom Electronics Design & Development in Pakistan"
         description="MECTEC designs and builds custom electronics in Pakistan, including embedded systems, IoT devices, automation, robotics, PCB work and working prototypes."
         path="/"
-        keywords={[
-          'custom electronics design Pakistan',
-          'electronics development Pakistan',
-          'embedded systems Pakistan',
-          'IoT development Pakistan',
-          'electronics prototyping Pakistan',
-        ]}
       />
       <Hero />
       <Intro />
