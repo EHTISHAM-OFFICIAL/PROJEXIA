@@ -1529,6 +1529,9 @@ function detectQuestionMode(
     /\bhow does it work\b/i.test(normalized) ||
     /\bhow does this work\b/i.test(normalized) ||
     /\bhow does that work\b/i.test(normalized) ||
+    /\bhow it works\b/i.test(normalized) ||
+    /\bhow this works\b/i.test(normalized) ||
+    /\bhow that works\b/i.test(normalized) ||
     /\bhow .+ function\b/i.test(normalized) ||
     /\bworking principle\b/i.test(normalized) ||
     /\bprinciple of operation\b/i.test(normalized) ||
@@ -2611,6 +2614,8 @@ function isGreeting(normalizedQuestion: string): boolean {
     /^aoa$/i.test(normalizedQuestion) ||
     /^salam$/i.test(normalizedQuestion) ||
     /^assalam alaikum$/i.test(normalizedQuestion) ||
+    /^assalamualaikum$/i.test(normalizedQuestion) ||
+    /^assalamu alaikum$/i.test(normalizedQuestion) ||
     /^good morning$/i.test(normalizedQuestion) ||
     /^good afternoon$/i.test(normalizedQuestion) ||
     /^good evening$/i.test(normalizedQuestion) ||
@@ -2619,6 +2624,10 @@ function isGreeting(normalizedQuestion: string): boolean {
 }
 
 function getGreetingResponse(normalizedQuestion: string): HelpResponse {
+  // A greeting starts a fresh conversational thread. Do not let a
+  // previous technical topic leak into the new greeting.
+  clearTechnicalContext();
+
   if (/\bhow are you\b/i.test(normalizedQuestion)) {
     return {
       answer:
@@ -2633,9 +2642,28 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
     };
   }
 
+  // Handle Islamic greetings separately from generic greetings.
+  if (
+    /^(aoa|salam|assalam alaikum|assalamualaikum|assalamu alaikum)$/i.test(
+      normalizedQuestion,
+    )
+  ) {
+    return {
+      answer:
+        "Wa Alaikum Assalam! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
+
+      suggestedQuestions: [
+        "What services does MECTEC provide?",
+        "Can I request a custom project?",
+        "What is Arduino?",
+        "How can I contact MECTEC?",
+      ],
+    };
+  }
+
   return {
     answer:
-      "Hi! I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
+      "Hi! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
 
     suggestedQuestions: [
       "What services does MECTEC provide?",
@@ -3503,8 +3531,54 @@ function createHelpResponse(question: string): HelpResponse | null {
   );
 
   /*
-   * Only inherit the previous intent when the current
-   * question has no identifiable intent.
+   * Resolve the meaning of short follow-ups BEFORE inheriting the
+   * previous intent.
+   *
+   * Example:
+   *   What is Arduino?  -> definition
+   *   How it works?     -> procedure/how_it_works
+   *
+   * The old order inherited "definition" from the first turn,
+   * which filtered out Arduino's dedicated how-it-works entry and
+   * caused the generic fallback.
+   */
+  if (!detectedIntent && isFollowUp) {
+    if (
+      /\bhow it works\b/i.test(normalizedQuestion) ||
+      /\bhow this works\b/i.test(normalizedQuestion) ||
+      /\bhow that works\b/i.test(normalizedQuestion) ||
+      /\bhow does it work\b/i.test(normalizedQuestion) ||
+      /\bhow does this work\b/i.test(normalizedQuestion) ||
+      /\bhow does that work\b/i.test(normalizedQuestion) ||
+      /\bworking principle\b/i.test(normalizedQuestion)
+    ) {
+      detectedIntent = "procedure";
+    } else if (
+      /\bwhat does it do\b/i.test(normalizedQuestion) ||
+      /\bwhat can it do\b/i.test(normalizedQuestion) ||
+      /\bwhat can this do\b/i.test(normalizedQuestion) ||
+      /\bwhat can that do\b/i.test(normalizedQuestion)
+    ) {
+      detectedIntent = "capability";
+    } else if (
+      /\bwhat is it used for\b/i.test(normalizedQuestion) ||
+      /\bwhat is this used for\b/i.test(normalizedQuestion) ||
+      /\bwhat is that used for\b/i.test(normalizedQuestion) ||
+      /\bwhat is it for\b/i.test(normalizedQuestion)
+    ) {
+      detectedIntent = "purpose";
+    } else if (
+      /\bhow do i use it\b/i.test(normalizedQuestion) ||
+      /\bhow to use it\b/i.test(normalizedQuestion) ||
+      /\bhow can i use it\b/i.test(normalizedQuestion)
+    ) {
+      detectedIntent = "procedure";
+    }
+  }
+
+  /*
+   * Only inherit the previous intent when the current follow-up
+   * still has no identifiable conversational mode.
    */
   if (!detectedIntent && isFollowUp && helpContext.lastIntent) {
     detectedIntent = helpContext.lastIntent;
