@@ -255,14 +255,20 @@ export function HelpChatWidget() {
       return;
     }
 
+    // Keep the conversation keyboard-friendly. The input is temporarily
+    // disabled while the assistant is "typing"; refocus it immediately
+    // when that state ends so the user can type the next message without
+    // manually clicking the field.
     const timeout = window.setTimeout(() => {
-      inputRef.current?.focus();
-    }, 80);
+      if (!isTyping) {
+        inputRef.current?.focus();
+      }
+    }, isTyping ? 40 : 0);
 
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [isOpen]);
+  }, [isOpen, isTyping]);
 
   /* =========================================================
      CLEANUP RESPONSE TIMER
