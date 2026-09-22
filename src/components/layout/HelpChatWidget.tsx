@@ -17,7 +17,7 @@ import {
    CONFIGURATION
    ========================================================= */
 
-const CHAT_WINDOW_POSITION: "center" | "left" | "right" = "left";
+const CHAT_WINDOW_POSITION: "center" | "left" | "right" = "right";
 
 const WINDOW_HORIZONTAL = "20px";
 const WINDOW_BOTTOM = "20px";
@@ -33,8 +33,8 @@ const DEFAULT_WIDTH = 448;
 const DEFAULT_HEIGHT = 620;
 
 /* Launcher position */
-const LAUNCHER_RIGHT = "94.5rem";
-const LAUNCHER_BOTTOM = "1.5rem";
+const LAUNCHER_RIGHT = "88px";
+const LAUNCHER_BOTTOM = "20px";
 
 /* Typing */
 const TYPING_DELAY = 450;
@@ -487,7 +487,7 @@ export function HelpChatWidget() {
   const chatWindowPositionStyle = useMemo<React.CSSProperties>(() => {
     const size: React.CSSProperties = {
       width: `min(${width}px, calc(100vw - 2rem))`,
-      height: `min(${height}px, calc(100vh - 2rem))`,
+      height: `min(${height}px, calc(100dvh - 2rem))`,
       bottom: WINDOW_BOTTOM,
     };
 
@@ -771,8 +771,9 @@ export function HelpChatWidget() {
     return (
       <>
         <button
+          className="mectec-help-launcher"
           type="button"
-          onClick={() => setIsOpen(true)}
+          onClick={() => setIsOpen(true)
           aria-label="Open MECTEC Help Assistant"
           title="MECTEC Help Assistant"
           style={{
@@ -798,6 +799,8 @@ export function HelpChatWidget() {
             boxShadow: "0 12px 30px rgba(249,115,22,0.35)",
 
             zIndex: 9998,
+
+            touchAction: "manipulation",
 
             transition:
               "transform 160ms ease, background 160ms ease, box-shadow 160ms ease",
