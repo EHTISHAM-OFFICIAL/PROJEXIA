@@ -60,6 +60,7 @@ export const emailNotificationService = {
     name?: string;
     title?: string;
     requestNumber?: string;
+    email?: string;
     throwOnError?: boolean;
     maxAttempts?: number;
   }): Promise<void> {
