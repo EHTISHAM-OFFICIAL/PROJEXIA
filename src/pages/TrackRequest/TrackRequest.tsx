@@ -108,6 +108,7 @@ export default function TrackRequest() {
         title="Track a request"
         description="Check the status of a project request you submitted to MECTEC."
         path="/track-request"
+        noIndex
       />
 
       <Container className="py-16 sm:py-20">
