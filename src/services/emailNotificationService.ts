@@ -74,6 +74,7 @@ export const emailNotificationService = {
     email?: string;
     title?: string;
     requestNumber?: string;
+    email?: string;
     throwOnError?: boolean;
     maxAttempts?: number;
   }): Promise<void> {
