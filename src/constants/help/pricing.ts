@@ -18,6 +18,7 @@ export const PRICING_HELP: HelpEntry[] = [
       "How much do you charge",
       "What is your project price",
       "How much money do I need",
+      "How much does a project cost",
     ],
     keywords: ["price", "cost", "charge", "budget", "money", "expensive"],
     answer:
