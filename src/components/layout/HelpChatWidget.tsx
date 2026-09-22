@@ -33,7 +33,7 @@ const DEFAULT_WIDTH = 448;
 const DEFAULT_HEIGHT = 620;
 
 /* Launcher position */
-const LAUNCHER_RIGHT = "88px";
+const LAUNCHER_LEFT = "20px";
 const LAUNCHER_BOTTOM = "20px";
 
 /* Typing */
@@ -782,6 +782,7 @@ export function HelpChatWidget() {
           style={{
             position: "fixed",
             left: LAUNCHER_LEFT,
+            right: "auto",
             bottom: LAUNCHER_BOTTOM,
 
             width: 58,
@@ -1485,6 +1486,7 @@ export function HelpChatWidget() {
 
             .mectec-help-launcher {
               left: 1rem !important;
+              right: auto !important;
               bottom: max(5.75rem, calc(4.75rem + env(safe-area-inset-bottom))) !important;
             }
           }
