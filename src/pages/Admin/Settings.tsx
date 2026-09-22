@@ -351,6 +351,34 @@ export default function Settings() {
           toEmail: emailOverride.toEmail ?? "",
         });
 
+        // Migrate an existing admin-only EmailJS configuration into the
+        // browser-safe public settings document. Older installations already
+        // have the private document, but the customer request flow cannot read
+        // that document by design. This keeps the migration automatic: opening
+        // Admin Settings once is enough; no customer data is copied.
+        if (
+          emailOverride.serviceId &&
+          emailOverride.templateId &&
+          emailOverride.publicKey &&
+          emailOverride.toEmail
+        ) {
+          void emailNotificationService
+            .saveConfigOverride({
+              serviceId: emailOverride.serviceId,
+              templateId: emailOverride.templateId,
+              publicKey: emailOverride.publicKey,
+              toEmail: emailOverride.toEmail,
+            })
+            .catch((error) => {
+              if (import.meta.env.DEV) {
+                console.warn(
+                  "Could not migrate the EmailJS configuration to the public settings document.",
+                  error,
+                );
+              }
+            });
+        }
+
         setRequestEditHours(requestSecurity.customerRequestEditWindowHours);
       })
       .finally(() => {
