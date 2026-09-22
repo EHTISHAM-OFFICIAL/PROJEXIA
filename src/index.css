@@ -104,6 +104,44 @@ MECTEC LIGHT THEME
   --shadow-elevated: 0 20px 45px -18px rgba(22, 20, 17, 0.18);
 }
 
+/* ================================================================
+GLOBAL RESPONSIVE SAFETY
+================================================================ */
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+@supports not (overflow: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
