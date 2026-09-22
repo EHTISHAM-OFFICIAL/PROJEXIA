@@ -2596,7 +2596,28 @@ function cleanAnswer(answer: string): string {
     return trimmed;
   }
 
-  return trimmed.replace(/^(yes|yes,|yes\.|yes —|yes -)\s*/i, "");
+  /*
+   * Normalize leading affirmative filler without leaving punctuation
+   * behind.
+   *
+   * Examples:
+   *   "Yes, I'm ..."  -> "I'm ..."
+   *   "Yes. MECTEC ..." -> "MECTEC ..."
+   *   "Yes — MECTEC ..." -> "MECTEC ..."
+   *
+   * Keep this centralized so every knowledge/direct response gets
+   * the same cleanup before it reaches the chat UI.
+   */
+  const cleaned = trimmed.replace(
+    /^yes\s*(?:[,.:;—–-])?\s*/i,
+    "",
+  );
+
+  /*
+   * Safety net for answers that were already stored with a leading
+   * punctuation mark after affirmative cleanup.
+   */
+  return cleaned.replace(/^[,;:]+\s*/, "").trim();
 }
 
 /* =========================================================
