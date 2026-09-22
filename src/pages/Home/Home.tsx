@@ -8,7 +8,6 @@ import { Technologies } from '../../components/home/Technologies';
 import { WhyMectec } from '../../components/home/WhyMectec';
 import { Testimonials } from '../../components/home/Testimonials';
 import { RequestCta } from '../../components/home/RequestCta';
-import { SITE } from '../../constants/site';
 
 export default function Home() {
   return (
