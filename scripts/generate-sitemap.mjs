@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { initializeApp } from 'firebase/app';
 import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
 
-const SITE_URL = 'https://mectec.pk';
+const SITE_URL = 'https://mectec-shop.web.app';
 
 function loadEnvFile(path) {
   if (!existsSync(path)) return {};

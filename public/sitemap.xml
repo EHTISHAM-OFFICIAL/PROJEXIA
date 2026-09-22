@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://mectec.pk/</loc>
+    <loc>https://mectec-shop.web.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://mectec.pk/about</loc>
+    <loc>https://mectec-shop.web.app/about</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mectec.pk/blog</loc>
+    <loc>https://mectec-shop.web.app/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mectec.pk/contact</loc>
+    <loc>https://mectec-shop.web.app/contact</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mectec.pk/projects</loc>
+    <loc>https://mectec-shop.web.app/projects</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://mectec.pk/projects/smart-energy-monitor</loc>
+    <loc>https://mectec-shop.web.app/projects/smart-energy-monitor</loc>
     <lastmod>2026-09-19T13:07:37.019Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mectec.pk/request-project</loc>
+    <loc>https://mectec-shop.web.app/request-project</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

@@ -104,21 +104,24 @@ Then delete `scripts/seed.mjs`.
 
 ---
 
-## Before you go live
+## Production URL and remaining placeholders
 
-Replace the placeholder values in **`src/constants/site.ts`**. Every one is marked `TODO`:
+The current production site is hosted on Firebase Hosting at:
 
-```ts
-email: 'contact@mectec.pk',   // TODO — your real address
-whatsapp: '',                 // TODO — e.g. 923001234567 (no + or spaces)
-phone: '',                    // TODO
+```
+https://mectec-shop.web.app/
 ```
 
-Empty WhatsApp, phone and social links are hidden automatically rather than rendering as dead links, so the site is presentable even before you fill them in.
+This URL is already configured as the site's canonical URL, Open Graph URL, JSON-LD URL, robots.txt sitemap URL, and sitemap base URL.
 
-Also update:
-- `SITE.url` in `src/constants/site.ts` — used for canonical URLs and OG tags
-- `public/robots.txt` and `public/sitemap.xml` — replace `https://mectec.pk`
+The remaining values marked `TODO` in **`src/constants/site.ts`** are optional business-profile placeholders:
+
+```ts
+whatsapp: "03015168091", // TODO — confirm/replace if needed
+phone: "03015168091",    // TODO — confirm/replace if needed
+```
+
+Empty WhatsApp, phone and social links are hidden automatically rather than rendering as dead links.
 
 ---
 
