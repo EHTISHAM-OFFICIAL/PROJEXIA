@@ -67,7 +67,10 @@ export default function ProjectDetails() {
         description={seo.metaDescription || project.shortDescription}
         path={`/projects/${project.slug}`}
         image={heroImage || null}
+        imageAlt={project.title}
         type="article"
+        keywords={seo.keywords.length > 0 ? seo.keywords : [...project.tags, ...project.technologies]}
+        modifiedTime={project.updatedAt?.toDate().toISOString() ?? null}
       />
 
       <Container className="pt-10">
