@@ -77,13 +77,37 @@ export const emailNotificationService = {
     throwOnError?: boolean;
     maxAttempts?: number;
   }): Promise<void> {
+    const diagnosticId = `email-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const startedAt = Date.now();
+
     const config = await resolveConfig();
+    const safeConfig = config
+      ? {
+          serviceId: config.serviceId,
+          templateId: config.templateId,
+          publicKeyPresent: Boolean(config.publicKey),
+          toEmail: config.toEmail,
+        }
+      : null;
+
+    console.info("[MECTEC email] notification started", {
+      diagnosticId,
+      startedAt: new Date(startedAt).toISOString(),
+      subject: params.subject,
+      requestNumber: params.requestNumber ?? null,
+      customerEmail: params.email?.trim() || params.replyTo?.trim() || null,
+      config: safeConfig,
+    });
+
     if (!config) {
       const error = new Error(
         "Email notifications are not configured. Check the EmailJS settings.",
       );
+      console.error("[MECTEC email] configuration failure", {
+        diagnosticId,
+        error: error.message,
+      });
       if (params.throwOnError) throw error;
-      if (import.meta.env.DEV) console.warn(error.message);
       return;
     }
 
@@ -92,6 +116,7 @@ export const emailNotificationService = {
 
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
       try {
+        const requestStartedAt = Date.now();
         const response = await fetch(
           "https://api.emailjs.com/api/v1.0/email/send",
           {
@@ -113,7 +138,10 @@ export const emailNotificationService = {
                 // Also provide common aliases so the same template can be
                 // reused without silently rendering empty values.
                 name: params.name ?? "MECTEC Website",
-                email: params.replyTo?.trim() || config.toEmail,
+                email:
+                  params.email?.trim() ||
+                  params.replyTo?.trim() ||
+                  config.toEmail,
                 title: params.title ?? params.subject,
                 request_number: params.requestNumber ?? "",
                 time: new Date().toLocaleString("en-PK", {
@@ -125,6 +153,16 @@ export const emailNotificationService = {
         );
 
         const responseText = await response.text().catch(() => "");
+        const requestDurationMs = Date.now() - requestStartedAt;
+
+        console.info("[MECTEC email] EmailJS response received", {
+          diagnosticId,
+          attempt,
+          status: response.status,
+          ok: response.ok,
+          durationMs: requestDurationMs,
+          responseBody: responseText.slice(0, 1000),
+        });
 
         if (!response.ok) {
           throw new Error(
@@ -132,14 +170,25 @@ export const emailNotificationService = {
           );
         }
 
-        if (import.meta.env.DEV) {
-          console.info(
-            `MECTEC email notification sent successfully on attempt ${attempt}.`,
-          );
-        }
+        console.info("[MECTEC email] notification accepted by EmailJS", {
+          diagnosticId,
+          attempt,
+          totalDurationMs: Date.now() - startedAt,
+          requestNumber: params.requestNumber ?? null,
+        });
         return;
       } catch (error) {
         lastError = error;
+
+        console.error("[MECTEC email] attempt failed", {
+          diagnosticId,
+          attempt,
+          maxAttempts,
+          error:
+            error instanceof Error
+              ? { name: error.name, message: error.message, stack: error.stack }
+              : error,
+        });
 
         if (attempt < maxAttempts) {
           // EmailJS documents a 1 request/second rate limit. Waiting slightly
@@ -149,14 +198,21 @@ export const emailNotificationService = {
       }
     }
 
+    console.error("[MECTEC email] notification failed after all attempts", {
+      diagnosticId,
+      attempts: maxAttempts,
+      totalDurationMs: Date.now() - startedAt,
+      requestNumber: params.requestNumber ?? null,
+      error:
+        lastError instanceof Error
+          ? { name: lastError.name, message: lastError.message, stack: lastError.stack }
+          : lastError,
+    });
+
     if (params.throwOnError) {
       throw lastError instanceof Error
         ? lastError
         : new Error("Email notification could not be sent.");
-    }
-
-    if (import.meta.env.DEV) {
-      console.warn("Email notification failed after retries", lastError);
     }
   },
 
