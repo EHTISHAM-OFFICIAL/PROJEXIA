@@ -174,11 +174,7 @@ export function Seo({
       noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'
     );
 
-    if (keywords && keywords.length > 0) {
-      setMeta('meta[name="keywords"]', 'name', 'keywords', keywords.join(', '));
-    } else {
-      removeElement('meta[name="keywords"]');
-    }
+    removeElement('meta[name="keywords"]');
 
     setMeta('meta[property="og:title"]', 'property', 'og:title', fullTitle);
     setMeta('meta[property="og:description"]', 'property', 'og:description', metaDescription);
