@@ -47,11 +47,11 @@ export default function Account() {
             <dl className="mt-4 space-y-3 text-sm">
               <div className="flex items-start justify-between gap-4">
                 <dt className="text-content-secondary">Username</dt>
-                <dd className="font-medium text-content">{profile?.username || '—'}</dd>
+                <dd className="min-w-0 max-w-[65%] break-words text-right font-medium text-content">{profile?.username || '—'}</dd>
               </div>
               <div className="flex items-start justify-between gap-4">
                 <dt className="text-content-secondary">Account email</dt>
-                <dd className="font-medium text-content">{profile?.recoveryEmail || '—'}</dd>
+                <dd className="min-w-0 max-w-[65%] break-all text-right font-medium text-content">{profile?.recoveryEmail || '—'}</dd>
               </div>
             </dl>
           </div>
