@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { SITE } from '../../constants/site';
+import { useEffect } from "react";
+import { SITE } from "../../constants/site";
 
 interface SeoProps {
   title: string;
@@ -7,7 +7,7 @@ interface SeoProps {
   path?: string;
   image?: string | null;
   imageAlt?: string;
-  type?: 'website' | 'article';
+  type?: "website" | "article";
   noIndex?: boolean;
   keywords?: string[];
   publishedTime?: string | null;
@@ -17,23 +17,25 @@ interface SeoProps {
 
 function setMeta(
   selector: string,
-  attribute: 'name' | 'property',
+  attribute: "name" | "property",
   key: string,
-  content: string
+  content: string,
 ) {
   let element = document.head.querySelector<HTMLMetaElement>(selector);
   if (!element) {
-    element = document.createElement('meta');
+    element = document.createElement("meta");
     element.setAttribute(attribute, key);
     document.head.appendChild(element);
   }
-  element.setAttribute('content', content);
+  element.setAttribute("content", content);
 }
 
 function setLink(rel: string, href: string) {
-  let element = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+  let element = document.head.querySelector<HTMLLinkElement>(
+    `link[rel="${rel}"]`,
+  );
   if (!element) {
-    element = document.createElement('link');
+    element = document.createElement("link");
     element.rel = rel;
     document.head.appendChild(element);
   }
@@ -54,37 +56,37 @@ function absoluteUrl(value: string | null | undefined): string | null {
 }
 
 function cleanPath(path: string): string {
-  const normalized = path.split('?')[0].split('#')[0];
-  if (normalized === '/') return '/';
-  return normalized.replace(/\/+$/, '');
+  const normalized = path.split("?")[0].split("#")[0];
+  if (normalized === "/") return "/";
+  return normalized.replace(/\/+$/, "");
 }
 
 function titleCaseSegment(segment: string): string {
   return decodeURIComponent(segment)
-    .replace(/[-_]+/g, ' ')
+    .replace(/[-_]+/g, " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function buildBreadcrumbSchema(path: string, pageTitle: string) {
   const normalizedPath = cleanPath(path);
-  if (normalizedPath === '/') return null;
+  if (normalizedPath === "/") return null;
 
-  const segments = normalizedPath.split('/').filter(Boolean);
+  const segments = normalizedPath.split("/").filter(Boolean);
   const items: Array<Record<string, unknown>> = [
     {
-      '@type': 'ListItem',
+      "@type": "ListItem",
       position: 1,
       name: SITE.name,
       item: SITE.url,
     },
   ];
 
-  let accumulated = '';
+  let accumulated = "";
   segments.forEach((segment, index) => {
     accumulated += `/${segment}`;
     const isLast = index === segments.length - 1;
     items.push({
-      '@type': 'ListItem',
+      "@type": "ListItem",
       position: index + 2,
       name: isLast ? pageTitle : titleCaseSegment(segment),
       item: `${SITE.url}${accumulated}`,
@@ -92,28 +94,28 @@ function buildBreadcrumbSchema(path: string, pageTitle: string) {
   });
 
   return {
-    '@type': 'BreadcrumbList',
+    "@type": "BreadcrumbList",
     itemListElement: items,
   };
 }
 
 function buildSiteSchema() {
   return {
-    '@type': 'WebSite',
-    '@id': `${SITE.url}/#website`,
+    "@type": "WebSite",
+    "@id": `${SITE.url}/#website`,
     url: SITE.url,
     name: SITE.name,
     description: SITE.description,
     publisher: {
-      '@id': `${SITE.url}/#organization`,
+      "@id": `${SITE.url}/#organization`,
     },
   };
 }
 
 function buildOrganizationSchema() {
   return {
-    '@type': 'Organization',
-    '@id': `${SITE.url}/#organization`,
+    "@type": "Organization",
+    "@id": `${SITE.url}/#organization`,
     name: SITE.name,
     url: SITE.url,
     description: SITE.description,
@@ -122,17 +124,17 @@ function buildOrganizationSchema() {
 }
 
 function setJsonLd(data: Record<string, unknown> | null) {
-  const id = 'mectec-seo-jsonld';
-  const existing = document.getElementById(id);
+  const id = "mectec-seo-jsonld";
+  const existing = document.getElementById(id) as HTMLScriptElement | null;
 
   if (!data) {
     existing?.remove();
     return;
   }
 
-  const script = existing ?? document.createElement('script');
+  const script = existing ?? document.createElement("script");
   script.id = id;
-  script.type = 'application/ld+json';
+  script.type = "application/ld+json";
   script.textContent = JSON.stringify(data);
   if (!existing) document.head.appendChild(script);
 }
@@ -143,7 +145,7 @@ export function Seo({
   path,
   image,
   imageAlt,
-  type = 'website',
+  type = "website",
   noIndex,
   keywords,
   publishedTime,
@@ -152,66 +154,81 @@ export function Seo({
 }: SeoProps) {
   const fullTitle = title === SITE.name ? title : `${title} — ${SITE.name}`;
   const metaDescription = (description ?? SITE.description).trim();
-  const normalizedPath = cleanPath(path ?? '/');
-  const url = `${SITE.url}${normalizedPath === '/' ? '/' : normalizedPath}`;
+  const normalizedPath = cleanPath(path ?? "/");
+  const url = `${SITE.url}${normalizedPath === "/" ? "/" : normalizedPath}`;
   const absoluteImage = absoluteUrl(image);
 
   useEffect(() => {
-    document.documentElement.lang = 'en';
+    document.documentElement.lang = "en";
     document.title = fullTitle;
 
-    setMeta('meta[name="description"]', 'name', 'description', metaDescription);
+    setMeta('meta[name="description"]', "name", "description", metaDescription);
     setMeta(
       'meta[name="robots"]',
-      'name',
-      'robots',
-      noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'
+      "name",
+      "robots",
+      noIndex ? "noindex, nofollow" : "index, follow, max-image-preview:large",
     );
     setMeta(
       'meta[name="googlebot"]',
-      'name',
-      'googlebot',
-      noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'
+      "name",
+      "googlebot",
+      noIndex ? "noindex, nofollow" : "index, follow, max-image-preview:large",
     );
 
     removeElement('meta[name="keywords"]');
 
-    setMeta('meta[property="og:title"]', 'property', 'og:title', fullTitle);
-    setMeta('meta[property="og:description"]', 'property', 'og:description', metaDescription);
-    setMeta('meta[property="og:type"]', 'property', 'og:type', type);
-    setMeta('meta[property="og:url"]', 'property', 'og:url', url);
-    setMeta('meta[property="og:site_name"]', 'property', 'og:site_name', SITE.name);
+    setMeta('meta[property="og:title"]', "property", "og:title", fullTitle);
+    setMeta(
+      'meta[property="og:description"]',
+      "property",
+      "og:description",
+      metaDescription,
+    );
+    setMeta('meta[property="og:type"]', "property", "og:type", type);
+    setMeta('meta[property="og:url"]', "property", "og:url", url);
+    setMeta(
+      'meta[property="og:site_name"]',
+      "property",
+      "og:site_name",
+      SITE.name,
+    );
 
     if (absoluteImage) {
-      setMeta('meta[property="og:image"]', 'property', 'og:image', absoluteImage);
+      setMeta(
+        'meta[property="og:image"]',
+        "property",
+        "og:image",
+        absoluteImage,
+      );
       setMeta(
         'meta[property="og:image:alt"]',
-        'property',
-        'og:image:alt',
-        imageAlt || fullTitle
+        "property",
+        "og:image:alt",
+        imageAlt || fullTitle,
       );
     } else {
       removeElement('meta[property="og:image"]');
       removeElement('meta[property="og:image:alt"]');
     }
 
-    if (type === 'article' && publishedTime) {
+    if (type === "article" && publishedTime) {
       setMeta(
         'meta[property="article:published_time"]',
-        'property',
-        'article:published_time',
-        publishedTime
+        "property",
+        "article:published_time",
+        publishedTime,
       );
     } else {
       removeElement('meta[property="article:published_time"]');
     }
 
-    if (type === 'article' && modifiedTime) {
+    if (type === "article" && modifiedTime) {
       setMeta(
         'meta[property="article:modified_time"]',
-        'property',
-        'article:modified_time',
-        modifiedTime
+        "property",
+        "article:modified_time",
+        modifiedTime,
       );
     } else {
       removeElement('meta[property="article:modified_time"]');
@@ -219,55 +236,65 @@ export function Seo({
 
     setMeta(
       'meta[name="twitter:card"]',
-      'name',
-      'twitter:card',
-      absoluteImage ? 'summary_large_image' : 'summary'
+      "name",
+      "twitter:card",
+      absoluteImage ? "summary_large_image" : "summary",
     );
-    setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', fullTitle);
-    setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', metaDescription);
+    setMeta('meta[name="twitter:title"]', "name", "twitter:title", fullTitle);
+    setMeta(
+      'meta[name="twitter:description"]',
+      "name",
+      "twitter:description",
+      metaDescription,
+    );
 
     if (absoluteImage) {
-      setMeta('meta[name="twitter:image"]', 'name', 'twitter:image', absoluteImage);
+      setMeta(
+        'meta[name="twitter:image"]',
+        "name",
+        "twitter:image",
+        absoluteImage,
+      );
       setMeta(
         'meta[name="twitter:image:alt"]',
-        'name',
-        'twitter:image:alt',
-        imageAlt || fullTitle
+        "name",
+        "twitter:image:alt",
+        imageAlt || fullTitle,
       );
     } else {
       removeElement('meta[name="twitter:image"]');
       removeElement('meta[name="twitter:image:alt"]');
     }
 
-    setLink('canonical', url);
+    setLink("canonical", url);
 
     const graph: Array<Record<string, unknown>> = [];
-    if (normalizedPath === '/') {
+    if (normalizedPath === "/") {
       graph.push(buildOrganizationSchema(), buildSiteSchema());
     }
 
     const breadcrumb = buildBreadcrumbSchema(normalizedPath, title);
     if (breadcrumb) graph.push(breadcrumb);
 
-    if (type === 'article') {
+    if (type === "article") {
       graph.push({
-        '@type': 'Article',
+        "@type": "Article",
         headline: title,
         description: metaDescription,
         url,
         mainEntityOfPage: {
-          '@type': 'WebPage',
-          '@id': url,
+          "@type": "WebPage",
+          "@id": url,
         },
         publisher: {
-          '@type': 'Organization',
+          "@type": "Organization",
           name: SITE.name,
           url: SITE.url,
         },
         ...(absoluteImage ? { image: [absoluteImage] } : {}),
         ...(publishedTime ? { datePublished: publishedTime } : {}),
         ...(modifiedTime ? { dateModified: modifiedTime } : {}),
-        ...(keywords?.length ? { keywords: keywords.join(', ') } : {}),
+        ...(keywords?.length ? { keywords: keywords.join(", ") } : {}),
       });
     }
 
@@ -276,10 +303,10 @@ export function Seo({
     setJsonLd(
       graph.length
         ? {
-            '@context': 'https://schema.org',
-            '@graph': graph,
+            "@context": "https://schema.org",
+            "@graph": graph,
           }
-        : null
+        : null,
     );
   }, [
     fullTitle,
