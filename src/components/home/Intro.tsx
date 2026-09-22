@@ -15,9 +15,10 @@ export function Intro() {
               prototyping and the documentation needed to keep a system useful after handover.
             </p>
             <p>
-              Projects range from a student's first sensor build to a small-batch automation system
-              for a workshop. The scale changes. The approach doesn't — understand the problem
-              first, pick the simplest hardware that solves it, then build it properly.
+              Projects range from sensor and microcontroller prototypes to connected IoT devices
+              and small automation systems. The scale changes, but the approach stays the same:
+              understand the problem first, choose hardware that fits the requirement, prototype
+              early, then test the finished system properly.
             </p>
           </div>
         </div>
