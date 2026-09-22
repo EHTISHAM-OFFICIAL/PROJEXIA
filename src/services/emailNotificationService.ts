@@ -57,6 +57,9 @@ export const emailNotificationService = {
     subject: string;
     message: string;
     replyTo?: string;
+    name?: string;
+    title?: string;
+    requestNumber?: string;
     throwOnError?: boolean;
     maxAttempts?: number;
   }): Promise<void> {
@@ -85,10 +88,23 @@ export const emailNotificationService = {
               template_id: config.templateId,
               user_id: config.publicKey,
               template_params: {
+                // Keep the canonical delivery fields explicit. The EmailJS
+                // template should use {{to_email}} in its "To Email" field
+                // and {{reply_to}} in "Reply To".
                 to_email: config.toEmail,
                 subject: params.subject,
                 message: params.message,
                 reply_to: params.replyTo?.trim() || config.toEmail,
+
+                // Also provide common aliases so the same template can be
+                // reused without silently rendering empty values.
+                name: params.name ?? "MECTEC Website",
+                email: params.replyTo?.trim() || config.toEmail,
+                title: params.title ?? params.subject,
+                request_number: params.requestNumber ?? "",
+                time: new Date().toLocaleString("en-PK", {
+                  timeZone: "Asia/Karachi",
+                }),
               },
             }),
           },
@@ -150,8 +166,10 @@ export const emailNotificationService = {
     await this.notify({
       subject: 'MECTEC EmailJS test',
       message:
-        'This is a test email from the MECTEC admin panel. If you received this message, email notifications are working.',
+        'This is a test email from the MECTEC admin panel. If you received this message, the EmailJS API, service, template and recipient configuration are working.',
       replyTo: config.toEmail,
+      name: "MECTEC Email Test",
+      title: "MECTEC EmailJS test",
       throwOnError: true,
       maxAttempts: 3,
     });
