@@ -57,7 +57,10 @@ export default function BlogPost() {
         description={post.excerpt}
         path={`/blog/${post.slug}`}
         image={post.coverImageUrl}
+        imageAlt={post.title}
         type="article"
+        publishedTime={post.createdAt?.toDate().toISOString() ?? null}
+        modifiedTime={post.updatedAt?.toDate().toISOString() ?? null}
       />
 
       <Container className="pt-10">
