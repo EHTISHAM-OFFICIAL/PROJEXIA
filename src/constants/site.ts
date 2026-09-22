@@ -7,7 +7,7 @@ export const SITE = {
   tagline: "Custom electronics design and development",
   description:
     "MECTEC designs and builds custom electronics: embedded systems, IoT devices, automation, robotics, and working prototypes.",
-  url: "https://mectec.pk",
+  url: "https://mectec-shop.web.app",
   email: "ehtishamofficial28@gmail.com", // TODO: replace with your real address
   /** International format without '+' or spaces, e.g. 923001234567. Leave empty to hide. */
   whatsapp: "03015168091", // TODO
