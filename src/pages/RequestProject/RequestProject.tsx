@@ -271,8 +271,8 @@ export default function RequestProject() {
   return (
     <>
       <Seo
-        title="Request a project"
-        description="Tell MECTEC what you want to build. This form covers the technical details, budget and timeline so the first reply is a real answer."
+        title="Request a Custom Electronics Project"
+        description="Tell MECTEC what you want to build. Submit a detailed project brief covering technical requirements, budget and timeline for a more useful first reply."
         path="/request-project"
       />
 
