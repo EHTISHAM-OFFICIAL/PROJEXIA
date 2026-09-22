@@ -175,6 +175,57 @@ export const emailNotificationService = {
     });
   },
 
+  /**
+   * Sends the exact same shape used by a real project request, but with
+   * harmless sample data. This is deliberately separate from the tiny
+   * connectivity test above so the admin can verify the real request
+   * notification path without creating a Firestore request.
+   */
+  async sendProjectRequestTestEmail(): Promise<void> {
+    const config = await resolveConfig();
+    if (!config) {
+      throw new Error(
+        'Email notifications are not configured. Enter and save all EmailJS settings first.',
+      );
+    }
+
+    await this.notify({
+      subject: 'New project request — Smart Energy Generator',
+      message:
+        'MECTEC PROJECT REQUEST TEST\n\n' +
+        'Test Customer (test@example.com) submitted a sample request.\n\n' +
+        'Reference: MECTEC-TEST-000001\n' +
+        'Category: Embedded Systems\n' +
+        'Project type: Prototype\n' +
+        'Urgency: Normal\n\n' +
+        '--- Project ---\n' +
+        'Title: Smart Energy Generator\n' +
+        'Purpose: Sample notification-path test.\n' +
+        'Description:\nThis is a safe test message used to verify the same EmailJS payload structure as a real project request.\n\n' +
+        '--- Technical ---\n' +
+        'Preferred platform: Arduino\n' +
+        'Connectivity: None\n' +
+        'Sensors: Voltage sensor\n' +
+        'Outputs: Display\n\n' +
+        '--- Budget & Timeline ---\n' +
+        'Budget range: Not specified\n' +
+        'Start date: Not specified\n' +
+        'Deadline: Not specified\n' +
+        'Timeline flexibility: Flexible\n\n' +
+        '--- Scale ---\n' +
+        'Complexity: Prototype\n' +
+        'Prototype quantity: 1\n' +
+        'Estimated quantity: 1',
+      replyTo: config.toEmail,
+      name: 'MECTEC Project Request Test',
+      email: config.toEmail,
+      title: 'Smart Energy Generator',
+      requestNumber: 'MECTEC-TEST-000001',
+      throwOnError: true,
+      maxAttempts: 3,
+    });
+  },
+
   isConfiguredViaEnv(): boolean {
     return Boolean(
       import.meta.env.VITE_EMAILJS_SERVICE_ID &&
