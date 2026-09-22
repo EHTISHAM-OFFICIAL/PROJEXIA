@@ -49,7 +49,7 @@ export default function Contact() {
   return (
     <>
       <Seo
-        title="Contact"
+        title="Contact MECTEC"
         description={`Get in touch with MECTEC about an electronics project. Replies usually ${SITE.responseTime}.`}
         path="/contact"
       />
