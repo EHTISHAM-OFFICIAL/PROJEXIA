@@ -781,7 +781,7 @@ export function HelpChatWidget() {
           title="MECTEC Help Assistant"
           style={{
             position: "fixed",
-            right: LAUNCHER_RIGHT,
+            left: LAUNCHER_LEFT,
             bottom: LAUNCHER_BOTTOM,
 
             width: 58,
@@ -1484,7 +1484,7 @@ export function HelpChatWidget() {
             }
 
             .mectec-help-launcher {
-              right: 1rem !important;
+              left: 1rem !important;
               bottom: max(5.75rem, calc(4.75rem + env(safe-area-inset-bottom))) !important;
             }
           }
