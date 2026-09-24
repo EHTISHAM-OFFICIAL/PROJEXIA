@@ -101,6 +101,8 @@ export default function BlogList() {
                     <Badge tone={post.published ? 'success' : 'neutral'}>
                       {post.published ? 'Published' : 'Draft'}
                     </Badge>
+                    {post.featured && <Badge tone="accent">Featured</Badge>}
+                    {post.category && <Badge tone="info">{post.category}</Badge>}
                   </div>
                   <p className="mt-1 truncate font-mono text-xs text-content-muted">
                     /blog/{post.slug} · {formatShortDate(post.createdAt)}
