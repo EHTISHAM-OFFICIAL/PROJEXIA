@@ -7,6 +7,7 @@ import { ErrorState } from '../../components/ui/ErrorState';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { usePublishedPosts } from '../../hooks/useBlog';
 import { formatDate } from '../../utils/formatting';
+import { Badge } from '../../components/ui/Badge';
 
 export default function BlogIndex() {
   const { data, loading, error, reload } = usePublishedPosts();
@@ -58,13 +59,17 @@ export default function BlogIndex() {
                   <div className="aspect-[16/10] overflow-hidden bg-surface-raised">
                     <Image
                       src={post.coverImageUrl}
-                      alt={post.title}
+                      alt={post.coverImageAlt || post.title}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                   </div>
                 )}
                 <div className="p-5">
-                  <p className="font-mono text-xs text-content-muted">{formatDate(post.createdAt)}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-mono text-xs text-content-muted">{formatDate(post.createdAt)}</p>
+                    {post.category && <Badge tone="neutral">{post.category}</Badge>}
+                    {post.featured && <Badge tone="accent">Featured</Badge>}
+                  </div>
                   <h2 className="mt-2 text-lg font-semibold leading-snug tracking-tight">
                     {post.title}
                   </h2>
