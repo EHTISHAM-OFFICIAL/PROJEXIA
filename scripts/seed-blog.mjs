@@ -261,15 +261,13 @@ That does not mean every connected project needs an ESP32. It means the board gi
 
 ## Arduino vs ESP32 at a glance
 
-| Requirement | Arduino-class board | ESP32 |
-| --- | --- | --- |
-| Simple sensor project | Suitable | Suitable |
-| Learning embedded basics | Strong fit | Suitable |
-| Wi-Fi | Usually needs extra hardware | Built in |
-| Bluetooth | Usually needs extra hardware | Built in |
-| More demanding firmware | Depends on board | Generally more capable |
-| Connected IoT prototype | Possible with additions | Natural fit |
-| Simple standalone control | Very practical | Also practical |
+- **Simple sensor project:** both can work well.
+- **Learning embedded basics:** Arduino-class boards are straightforward; ESP32 is also suitable.
+- **Wi-Fi:** ESP32 includes it; Arduino-class boards may need additional hardware.
+- **Bluetooth:** ESP32 includes it; support on Arduino-class boards depends on the board or added hardware.
+- **More demanding firmware:** ESP32 generally provides more processing capability.
+- **Connected IoT prototype:** ESP32 is a natural fit when wireless connectivity is a real requirement.
+- **Simple standalone control:** either can be practical depending on the exact board and peripherals.
 
 The exact capabilities vary between individual Arduino and ESP32 models, so the board's actual datasheet should always be checked before final hardware selection.
 
