@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Seo } from '../../components/ui/Seo';
 import { Badge } from '../../components/ui/Badge';
+import { Button } from '../../components/ui/Button';
+import { Trash2 } from 'lucide-react';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { Skeleton } from '../../components/ui/Skeleton';
@@ -16,7 +18,7 @@ import {
 } from '../../constants/requestOptions';
 import { formatDateTime } from '../../utils/formatting';
 import { toUserMessage } from '../../utils/errors';
-import type { RequestStatus } from '../../types/projectRequest';
+import type { ProjectRequest, RequestStatus } from '../../types/projectRequest';
 
 export default function RequestsList() {
   const { data, loading, error, reload } = useProjectRequests();
@@ -25,6 +27,46 @@ export default function RequestsList() {
   const [priority, setPriority] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [trashingId, setTrashingId] = useState<string | null>(null);
+  const [trashError, setTrashError] = useState<string | null>(null);
+  const [trashWindowHours, setTrashWindowHours] = useState(24);
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    void requestSettingsService
+      .getSecuritySettings()
+      .then((settings) => setTrashWindowHours(settings.customerRequestEditWindowHours));
+    const timer = window.setInterval(() => setNow(Date.now()), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const canDirectTrash = (request: ProjectRequest) => {
+    const createdAt = request.createdAt?.toMillis();
+    return Boolean(
+      createdAt &&
+        !request.deletedAt &&
+        now >= createdAt + trashWindowHours * 60 * 60 * 1000,
+    );
+  };
+
+  const handleTrash = async (request: ProjectRequest) => {
+    if (!request.id || !canDirectTrash(request)) return;
+    setTrashingId(request.id);
+    setTrashError(null);
+    try {
+      const token = request.projectToken || (await requestService.ensureProjectToken(request.id));
+      const confirmed = window.confirm(
+        `Move “${request.project.title}” to trash? It will remain recoverable in Request Trash.`,
+      );
+      if (!confirmed) return;
+      await requestService.trashRequest(request.id, token);
+      reload();
+    } catch (caught) {
+      setTrashError(toUserMessage(caught, 'Could not move this request to trash.'));
+    } finally {
+      setTrashingId(null);
+    }
+  };
 
   const filtered = useMemo(() => {
     if (!data) return [];
@@ -71,6 +113,12 @@ export default function RequestsList() {
           open a request for full details and internal notes.
         </p>
       </header>
+
+      {trashError && (
+        <div className="mt-6">
+          <ErrorState message={trashError} />
+        </div>
+      )}
 
       {updateError && (
         <div className="mt-6">
@@ -162,7 +210,21 @@ export default function RequestsList() {
                   </p>
                 </Link>
 
-                <div className="flex shrink-0 items-center gap-2">
+                <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                  {canDirectTrash(request) && (
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      loading={trashingId === request.id}
+                      onClick={() => void handleTrash(request)}
+                      aria-label={`Move ${request.project.title} to trash`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Trash2 size={15} aria-hidden="true" />
+                        {trashingId === request.id ? 'Moving…' : 'Move to trash'}
+                      </span>
+                    </Button>
+                  )}
                   <Badge tone={REQUEST_STATUS_TONE[request.status]}>{request.status}</Badge>
                   <Select
                     options={REQUEST_STATUSES}
