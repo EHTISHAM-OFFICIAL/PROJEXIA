@@ -10,6 +10,7 @@ import { Skeleton } from '../../components/ui/Skeleton';
 import { Select, TextInput } from '../../components/forms/Inputs';
 import { useProjectRequests } from '../../hooks/useProjectRequests';
 import { requestService } from '../../services/requestService';
+import { requestSettingsService } from '../../services/requestSettingsService';
 import {
   REQUEST_PRIORITIES,
   REQUEST_PRIORITY_TONE,
