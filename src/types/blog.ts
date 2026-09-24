@@ -7,6 +7,12 @@ export interface BlogPost {
   excerpt: string;
   body: string;
   coverImageUrl: string | null;
+  coverImageAlt?: string | null;
+  seoTitle?: string | null;
+  metaDescription?: string | null;
+  keywords?: string[];
+  category?: string | null;
+  featured?: boolean;
   published: boolean;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
