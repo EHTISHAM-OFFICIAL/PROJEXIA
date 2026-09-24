@@ -321,7 +321,7 @@ The right question is not “Which board has the most features?”
 
 It is **“Which board satisfies the requirements without adding unnecessary complexity?”**
 
-For a custom electronics project, writing those requirements down first makes hardware selection much easier.,
+For a custom electronics project, writing those requirements down first makes hardware selection much easier.`,
     coverImageUrl: null,
     coverImageAlt: 'Arduino and ESP32 development boards used for embedded electronics projects',
     seoTitle: 'Arduino vs ESP32: Which Microcontroller Should You Choose?',
@@ -458,7 +458,7 @@ Yes, but the firmware and hardware interfaces may need to be redesigned. Choosin
 
 Choose a microcontroller from the **requirements outward**, not from a board list inward.
 
-A good selection gives the firmware enough resources, the hardware enough interfaces, and the final design enough room to evolve without paying for capabilities the project never uses.,
+A good selection gives the firmware enough resources, the hardware enough interfaces, and the final design enough room to evolve without paying for capabilities the project never uses.`,
     coverImageUrl: null,
     coverImageAlt: 'Microcontroller selection checklist for a custom electronics project',
     seoTitle: 'How to Choose a Microcontroller for a Custom Electronics Project',
@@ -628,7 +628,7 @@ Firmware is software stored on or associated with a hardware device that control
 
 Embedded systems development is not simply “writing code for a microcontroller.”
 
-It is the process of turning **requirements into a coordinated hardware-and-firmware system** that behaves predictably in the real world.,
+It is the process of turning **requirements into a coordinated hardware-and-firmware system** that behaves predictably in the real world.`,
     coverImageUrl: null,
     coverImageAlt: 'Embedded systems development combining electronics hardware and firmware',
     seoTitle: 'What Is Embedded Systems Development? A Practical Guide',
@@ -767,7 +767,7 @@ Possible causes include electrical noise, power problems, environmental variatio
 
 When integrating a sensor, do not stop at “the library detects it.”
 
-Ask whether the **electrical signal, data interpretation and final application behavior** all make sense together. That is what turns a sensor connection into a reliable embedded system.,
+Ask whether the **electrical signal, data interpretation and final application behavior** all make sense together. That is what turns a sensor connection into a reliable embedded system.`,
     coverImageUrl: null,
     coverImageAlt: 'Electronic sensors connected to a microcontroller for an embedded project',
     seoTitle: 'How Sensors Work With Microcontrollers',
