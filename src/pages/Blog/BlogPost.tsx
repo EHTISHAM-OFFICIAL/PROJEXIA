@@ -53,14 +53,15 @@ export default function BlogPost() {
   return (
     <>
       <Seo
-        title={post.title}
-        description={post.excerpt}
+        title={post.seoTitle || post.title}
+        description={post.metaDescription || post.excerpt}
         path={`/blog/${post.slug}`}
         image={post.coverImageUrl}
-        imageAlt={post.title}
+        imageAlt={post.coverImageAlt || post.title}
         type="article"
         publishedTime={post.createdAt?.toDate().toISOString() ?? null}
         modifiedTime={post.updatedAt?.toDate().toISOString() ?? null}
+        keywords={post.keywords}
       />
 
       <Container className="pt-10">
@@ -81,7 +82,7 @@ export default function BlogPost() {
 
         {post.coverImageUrl && (
           <div className="mt-8 overflow-hidden rounded-card border border-line bg-surface-raised">
-            <Image src={post.coverImageUrl} alt={post.title} eager className="aspect-[16/9] w-full object-cover" />
+            <Image src={post.coverImageUrl} alt={post.coverImageAlt || post.title} eager className="aspect-[16/9] w-full object-cover" />
           </div>
         )}
 
