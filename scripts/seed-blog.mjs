@@ -785,7 +785,7 @@ async function main() {
   try {
     await signInWithEmailAndPassword(auth, email, password);
   } catch (error) {
-    console.error(Could not sign in as ${email}: ${error.code ?? error.message});
+    console.error(`Could not sign in as ${email}: ${error.code ?? error.message}`);
     process.exit(1);
   }
 
@@ -798,17 +798,17 @@ async function main() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
-      console.log(Published: ${post.title});
+      console.log(`Published: ${post.title}`);
     } else {
       const document = existing.docs[0];
       await updateDoc(document.ref, {
         ...post,
         updatedAt: serverTimestamp(),
       });
-      console.log(Updated existing post: ${post.title});
+      console.log(`Updated existing post: ${post.title}`);
     }
 
-    console.log(URL: /blog/${post.slug});
+    console.log(`URL: /blog/${post.slug}`);
   }
 }
 
