@@ -517,6 +517,12 @@ export default function RequestDetail() {
                   <p className="mt-1 text-xs leading-relaxed text-content-muted">
                     Deleted by {request.deletedBy === "customer" ? "customer" : "admin"}. Restore it from Request Trash if needed.
                   </p>
+                  <Link
+                    to="/admin/requests/trash"
+                    className="mt-3 inline-flex h-9 items-center justify-center rounded-lg border border-line bg-surface px-3.5 text-sm font-medium text-content transition-colors hover:border-line-strong hover:bg-surface-raised"
+                  >
+                    View Trash
+                  </Link>
                 </div>
               ) : (
                 <>
