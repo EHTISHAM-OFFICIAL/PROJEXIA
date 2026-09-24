@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "tsc --noEmit",
     "seed": "node scripts/seed.mjs",
-    "prebuild": "node scripts/generate-sitemap.mjs"
+    "prebuild": "node scripts/generate-sitemap.mjs",
+    "seed:blog": "node scripts/seed-blog.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
