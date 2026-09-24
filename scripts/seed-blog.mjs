@@ -243,7 +243,7 @@ They are a natural fit when the system needs a few sensors, buttons, LEDs, displ
 
 A simple control loop might look like:
 
-`sensor → microcontroller → decision → output`
+sensor → microcontroller → decision → output
 
 That architecture is enough for a large number of useful projects.
 
@@ -253,7 +253,7 @@ ESP32 boards are attractive when connectivity or additional processing is part o
 
 A connected project might look more like:
 
-`sensor → ESP32 → Wi-Fi → web service or dashboard`
+sensor → ESP32 → Wi-Fi → web service or dashboard
 
 The same board can also combine multiple peripherals with wireless communication, local processing, and application logic.
 
@@ -321,7 +321,7 @@ The right question is not “Which board has the most features?”
 
 It is **“Which board satisfies the requirements without adding unnecessary complexity?”**
 
-For a custom electronics project, writing those requirements down first makes hardware selection much easier.`,
+For a custom electronics project, writing those requirements down first makes hardware selection much easier.,
     coverImageUrl: null,
     coverImageAlt: 'Arduino and ESP32 development boards used for embedded electronics projects',
     seoTitle: 'Arduino vs ESP32: Which Microcontroller Should You Choose?',
@@ -418,11 +418,11 @@ A development board is excellent for prototyping, but it is not automatically th
 
 During the prototype stage you might use:
 
-`development board + modules + jumper wires`
+development board + modules + jumper wires
 
 A later product may become:
 
-`microcontroller + power supply + interfaces + protection + PCB`
+microcontroller + power supply + interfaces + protection + PCB
 
 That transition should influence component selection from the beginning.
 
@@ -458,7 +458,7 @@ Yes, but the firmware and hardware interfaces may need to be redesigned. Choosin
 
 Choose a microcontroller from the **requirements outward**, not from a board list inward.
 
-A good selection gives the firmware enough resources, the hardware enough interfaces, and the final design enough room to evolve without paying for capabilities the project never uses.`,
+A good selection gives the firmware enough resources, the hardware enough interfaces, and the final design enough room to evolve without paying for capabilities the project never uses.,
     coverImageUrl: null,
     coverImageAlt: 'Microcontroller selection checklist for a custom electronics project',
     seoTitle: 'How to Choose a Microcontroller for a Custom Electronics Project',
@@ -497,7 +497,7 @@ The firmware tells that hardware what to do.
 
 A simple embedded system might follow:
 
-`read input → process data → make decision → control output`
+read input → process data → make decision → control output
 
 The quality of the result depends on both sides working together.
 
@@ -628,7 +628,7 @@ Firmware is software stored on or associated with a hardware device that control
 
 Embedded systems development is not simply “writing code for a microcontroller.”
 
-It is the process of turning **requirements into a coordinated hardware-and-firmware system** that behaves predictably in the real world.`,
+It is the process of turning **requirements into a coordinated hardware-and-firmware system** that behaves predictably in the real world.,
     coverImageUrl: null,
     coverImageAlt: 'Embedded systems development combining electronics hardware and firmware',
     seoTitle: 'What Is Embedded Systems Development? A Practical Guide',
@@ -658,7 +658,7 @@ An analog sensor produces a voltage or current that represents a measured condit
 
 The basic chain is:
 
-`physical condition → sensor → electrical signal → microcontroller → software decision`
+physical condition → sensor → electrical signal → microcontroller → software decision
 
 ## Common communication interfaces
 
@@ -767,7 +767,7 @@ Possible causes include electrical noise, power problems, environmental variatio
 
 When integrating a sensor, do not stop at “the library detects it.”
 
-Ask whether the **electrical signal, data interpretation and final application behavior** all make sense together. That is what turns a sensor connection into a reliable embedded system.`,
+Ask whether the **electrical signal, data interpretation and final application behavior** all make sense together. That is what turns a sensor connection into a reliable embedded system.,
     coverImageUrl: null,
     coverImageAlt: 'Electronic sensors connected to a microcontroller for an embedded project',
     seoTitle: 'How Sensors Work With Microcontrollers',
@@ -785,7 +785,7 @@ async function main() {
   try {
     await signInWithEmailAndPassword(auth, email, password);
   } catch (error) {
-    console.error(`Could not sign in as ${email}: ${error.code ?? error.message}`);
+    console.error(Could not sign in as ${email}: ${error.code ?? error.message});
     process.exit(1);
   }
 
@@ -798,17 +798,17 @@ async function main() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
-      console.log(`Published: ${post.title}`);
+      console.log(Published: ${post.title});
     } else {
       const document = existing.docs[0];
       await updateDoc(document.ref, {
         ...post,
         updatedAt: serverTimestamp(),
       });
-      console.log(`Updated existing post: ${post.title}`);
+      console.log(Updated existing post: ${post.title});
     }
 
-    console.log(`URL: /blog/${post.slug}`);
+    console.log(URL: /blog/${post.slug});
   }
 }
 
