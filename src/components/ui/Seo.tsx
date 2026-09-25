@@ -154,10 +154,7 @@ export function Seo({
   modifiedTime,
   schema,
 }: SeoProps) {
-  const fullTitle =
-    title === SITE.name || title.startsWith(`${SITE.name} —`)
-      ? title
-      : `${title} — ${SITE.name}`;
+  const fullTitle = title;
   const metaDescription = (description ?? SITE.description).trim();
   const normalizedPath = cleanPath(path ?? "/");
   const url = `${SITE.url}${normalizedPath === "/" ? "/" : normalizedPath}`;
