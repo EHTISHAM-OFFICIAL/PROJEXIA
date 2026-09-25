@@ -105,6 +105,7 @@ function buildSiteSchema() {
     "@id": `${SITE.url}/#website`,
     url: SITE.url,
     name: SITE.name,
+    alternateName: "MECTEC Electronics",
     description: SITE.description,
     publisher: {
       "@id": `${SITE.url}/#organization`,
@@ -117,6 +118,7 @@ function buildOrganizationSchema() {
     "@type": "Organization",
     "@id": `${SITE.url}/#organization`,
     name: SITE.name,
+    alternateName: "MECTEC Electronics",
     url: SITE.url,
     description: SITE.description,
     ...(SITE.email ? { email: SITE.email } : {}),
@@ -152,7 +154,10 @@ export function Seo({
   modifiedTime,
   schema,
 }: SeoProps) {
-  const fullTitle = title === SITE.name ? title : `${title} — ${SITE.name}`;
+  const fullTitle =
+    title === SITE.name || title.startsWith(`${SITE.name} —`)
+      ? title
+      : `${title} — ${SITE.name}`;
   const metaDescription = (description ?? SITE.description).trim();
   const normalizedPath = cleanPath(path ?? "/");
   const url = `${SITE.url}${normalizedPath === "/" ? "/" : normalizedPath}`;
@@ -192,6 +197,12 @@ export function Seo({
       "property",
       "og:site_name",
       SITE.name,
+    );
+    setMeta(
+      'meta[property="og:locale"]',
+      "property",
+      "og:locale",
+      "en_PK",
     );
 
     if (absoluteImage) {
