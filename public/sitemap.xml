@@ -16,8 +16,32 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://mectec-shop.web.app/blog/arduino-vs-esp32-which-microcontroller-should-you-choose</loc>
+    <lastmod>2026-09-24T22:04:58.475Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mectec-shop.web.app/blog/how-sensors-work-with-microcontrollers</loc>
+    <lastmod>2026-09-24T22:05:00.290Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mectec-shop.web.app/blog/how-to-choose-a-microcontroller-for-a-custom-electronics-project</loc>
+    <lastmod>2026-09-24T22:04:59.082Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://mectec-shop.web.app/blog/what-is-an-rfid-door-lock-and-how-does-it-work</loc>
-    <lastmod>2026-09-24T21:15:12.710Z</lastmod>
+    <lastmod>2026-09-24T22:04:57.851Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mectec-shop.web.app/blog/what-is-embedded-systems-development-a-practical-guide</loc>
+    <lastmod>2026-09-24T22:04:59.673Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
