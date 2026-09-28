@@ -102,10 +102,22 @@ export function Hero() {
                 </g>
 
                 <g className="mectec-energy-pulses">
-                  <circle r="4.5" fill="rgb(var(--color-accent2))" className="mectec-energy-pulse pulse-a" />
-                  <circle r="3.5" fill="rgb(var(--color-accent))" className="mectec-energy-pulse pulse-b" />
-                  <circle r="4" fill="rgb(var(--color-accent2))" className="mectec-energy-pulse pulse-c" />
-                  <circle r="3.5" fill="rgb(var(--color-accent))" className="mectec-energy-pulse pulse-d" />
+                  <circle r="4.5" fill="rgb(var(--color-accent2))" className="mectec-energy-pulse">
+                    <animateMotion dur="5.6s" repeatCount="indefinite" begin="-1.8s" path="M34 86H120C142 86 146 112 169 112H205" />
+                    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.72;1" dur="5.6s" repeatCount="indefinite" begin="-1.8s" />
+                  </circle>
+                  <circle r="3.5" fill="rgb(var(--color-accent))" className="mectec-energy-pulse">
+                    <animateMotion dur="6.8s" repeatCount="indefinite" begin="-4.2s" path="M486 334H408C382 334 378 306 350 306H315" />
+                    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.72;1" dur="6.8s" repeatCount="indefinite" begin="-4.2s" />
+                  </circle>
+                  <circle r="4" fill="rgb(var(--color-accent2))" className="mectec-energy-pulse">
+                    <animateMotion dur="7.4s" repeatCount="indefinite" begin="-2.7s" path="M34 210H92C118 210 124 180 151 180H205" />
+                    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.68;1" dur="7.4s" repeatCount="indefinite" begin="-2.7s" />
+                  </circle>
+                  <circle r="3.5" fill="rgb(var(--color-accent))" className="mectec-energy-pulse">
+                    <animateMotion dur="6.3s" repeatCount="indefinite" begin="-3.4s" path="M486 210H428C402 210 396 180 369 180H315" />
+                    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.7;1" dur="6.3s" repeatCount="indefinite" begin="-3.4s" />
+                  </circle>
                 </g>
 
                 <g className="mectec-energy-nodes" fill="rgb(var(--color-surface))" stroke="rgb(var(--color-accent))">
