@@ -407,55 +407,6 @@ LIVING ELECTRICAL HERO
 .mectec-energy-specks span:nth-child(5) { left: 27%; top: 88%; animation-delay: -4.2s; }
 .mectec-energy-specks span:nth-child(6) { left: 74%; top: 11%; animation-delay: -2.9s; }
 
-.pulse-a {
-  animation: mectec-flow-a 6s linear infinite;
-}
-
-.pulse-b {
-  animation: mectec-flow-b 7.5s linear 1.2s infinite;
-}
-
-.pulse-c {
-  animation: mectec-flow-c 8.2s linear 2.1s infinite;
-}
-
-.pulse-d {
-  animation: mectec-flow-d 6.8s linear 3.2s infinite;
-}
-
-@keyframes mectec-flow-a {
-  0% { offset-distance: 0%; opacity: 0; }
-  5% { opacity: 1; }
-  38% { offset-distance: 100%; opacity: 1; }
-  43%, 100% { offset-distance: 100%; opacity: 0; }
-}
-
-@keyframes mectec-flow-b {
-  0% { offset-distance: 0%; opacity: 0; }
-  8% { opacity: 1; }
-  48% { offset-distance: 100%; opacity: 1; }
-  54%, 100% { offset-distance: 100%; opacity: 0; }
-}
-
-@keyframes mectec-flow-c {
-  0% { offset-distance: 0%; opacity: 0; }
-  7% { opacity: 1; }
-  42% { offset-distance: 100%; opacity: 1; }
-  48%, 100% { offset-distance: 100%; opacity: 0; }
-}
-
-@keyframes mectec-flow-d {
-  0% { offset-distance: 0%; opacity: 0; }
-  6% { opacity: 1; }
-  44% { offset-distance: 100%; opacity: 1; }
-  50%, 100% { offset-distance: 100%; opacity: 0; }
-}
-
-.pulse-a { offset-path: path("M34 86H120C142 86 146 112 169 112H205"); }
-.pulse-b { offset-path: path("M486 334H408C382 334 378 306 350 306H315"); }
-.pulse-c { offset-path: path("M34 210H92C118 210 124 180 151 180H205"); }
-.pulse-d { offset-path: path("M486 210H428C402 210 396 180 369 180H315"); }
-
 @keyframes mectec-aura-breathe {
   0%, 100% { transform: scale(0.92); opacity: 0.65; }
   50% { transform: scale(1.08); opacity: 1; }
