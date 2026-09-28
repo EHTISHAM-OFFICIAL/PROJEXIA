@@ -274,6 +274,238 @@ MECTEC ANNOUNCEMENT MARQUEE KEYFRAMES
 }
 
 /* ================================================================
+MECTEC HERO CIRCUIT
+Lightweight SVG/CSS motion: no external animation library or media.
+================================================================ */
+
+.mectec-hero-underline {
+  position: absolute;
+  left: 0;
+  right: 0.08em;
+  bottom: -0.14em;
+  height: 2px;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(var(--color-accent)),
+    rgb(var(--color-accent2)),
+    transparent
+  );
+  opacity: 0.8;
+  transform-origin: left;
+  animation: mectec-hero-line 4s ease-in-out infinite;
+}
+
+.mectec-circuit-shell {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-line));
+  border-radius: 1rem;
+  background: rgb(var(--color-surface));
+  box-shadow: var(--shadow-elevated);
+}
+
+.mectec-circuit-glow {
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+    rgb(var(--color-accent) / 0.13),
+    transparent 24%
+  );
+}
+
+.mectec-circuit-stage {
+  position: relative;
+  isolation: isolate;
+  padding: 0.5rem;
+}
+
+.mectec-circuit-stage svg {
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.mectec-circuit-traces path {
+  fill: none;
+  stroke: rgb(var(--color-content-muted) / 0.42);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mectec-circuit-traces-active path {
+  stroke: url(#mectec-trace-gradient);
+  stroke-width: 1.8;
+  stroke-dasharray: 0.08 0.92;
+  animation: mectec-trace-pulse 5.5s linear infinite;
+}
+
+.mectec-circuit-traces-active path:nth-child(2) { animation-delay: -1.8s; }
+.mectec-circuit-traces-active path:nth-child(3) { animation-delay: -3.1s; }
+.mectec-circuit-traces-active path:nth-child(4) { animation-delay: -4.2s; }
+.mectec-circuit-traces-active path:nth-child(5) { animation-delay: -2.6s; }
+.mectec-circuit-traces-active path:nth-child(6) { animation-delay: -4.8s; }
+.mectec-circuit-traces-active path:nth-child(7) { animation-delay: -0.9s; }
+
+.mectec-circuit-nodes circle {
+  fill: rgb(var(--color-surface));
+  stroke: rgb(var(--color-accent));
+  stroke-width: 1.5;
+  animation: mectec-node-pulse 3.8s ease-in-out infinite;
+}
+
+.mectec-circuit-nodes circle:nth-child(2n) { animation-delay: -1.2s; }
+.mectec-circuit-nodes circle:nth-child(3n) { animation-delay: -2.1s; }
+
+.mectec-circuit-chip rect:first-child {
+  fill: rgb(var(--color-surface-raised));
+  stroke: rgb(var(--color-line-strong));
+  stroke-width: 1.5;
+}
+
+.mectec-circuit-chip rect:nth-child(2) {
+  fill: rgb(var(--color-bg) / 0.6);
+  stroke: rgb(var(--color-accent) / 0.35);
+  stroke-width: 1;
+}
+
+.mectec-circuit-chip text {
+  fill: rgb(var(--color-content));
+  font-family: "Chakra Petch", Inter, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.mectec-circuit-chip .mectec-chip-subtitle {
+  fill: rgb(var(--color-content-muted));
+  font-family: "JetBrains Mono", monospace;
+  font-size: 7px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+}
+
+.mectec-circuit-labels text {
+  fill: rgb(var(--color-content-muted));
+  font-family: "JetBrains Mono", monospace;
+  font-size: 6px;
+  letter-spacing: 0.12em;
+}
+
+.mectec-circuit-pulse {
+  fill: rgb(var(--color-accent2));
+  filter: drop-shadow(0 0 5px rgb(var(--color-accent2) / 0.65));
+}
+
+.mectec-circuit-pulse-one { animation: mectec-pulse-one 4.8s linear infinite; }
+.mectec-circuit-pulse-two { animation: mectec-pulse-two 4.8s linear infinite; animation-delay: -1.6s; }
+.mectec-circuit-pulse-three { animation: mectec-pulse-three 4.8s linear infinite; animation-delay: -3.2s; }
+
+.mectec-circuit-hover {
+  position: absolute;
+  inset: 0.5rem;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    90px circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+    rgb(var(--color-accent) / 0.08),
+    transparent 72%
+  );
+}
+
+.mectec-floating-chip {
+  position: absolute;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid rgb(var(--color-line));
+  border-radius: 999px;
+  background: rgb(var(--color-surface) / 0.92);
+  padding: 0.4rem 0.65rem;
+  color: rgb(var(--color-content-muted));
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  box-shadow: var(--shadow-resting);
+  backdrop-filter: blur(8px);
+  animation: mectec-float 5s ease-in-out infinite;
+}
+
+.mectec-floating-chip-left {
+  left: -0.7rem;
+  bottom: 4.5rem;
+}
+
+.mectec-floating-chip-right {
+  right: -0.7rem;
+  top: 4.5rem;
+  animation-delay: -2.4s;
+}
+
+@keyframes mectec-hero-line {
+  0%, 100% { transform: scaleX(0.35); opacity: 0.35; }
+  50% { transform: scaleX(1); opacity: 0.9; }
+}
+
+@keyframes mectec-trace-pulse {
+  0% { stroke-dashoffset: 1; opacity: 0.2; }
+  20%, 70% { opacity: 0.9; }
+  100% { stroke-dashoffset: 0; opacity: 0.2; }
+}
+
+@keyframes mectec-node-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgb(var(--color-accent) / 0.45));
+  }
+}
+
+@keyframes mectec-pulse-one {
+  0% { transform: translate(0, 0); opacity: 0; }
+  8% { opacity: 1; }
+  42% { transform: translate(102px, -34px); opacity: 1; }
+  50% { transform: translate(102px, -34px); opacity: 0; }
+  100% { transform: translate(102px, -34px); opacity: 0; }
+}
+
+@keyframes mectec-pulse-two {
+  0% { transform: translate(0, 0); opacity: 0; }
+  8% { opacity: 1; }
+  42% { transform: translate(148px, 34px); opacity: 1; }
+  50% { transform: translate(148px, 34px); opacity: 0; }
+  100% { transform: translate(148px, 34px); opacity: 0; }
+}
+
+@keyframes mectec-pulse-three {
+  0% { transform: translate(0, 0); opacity: 0; }
+  8% { opacity: 1; }
+  42% { transform: translate(116px, -34px); opacity: 1; }
+  50% { transform: translate(116px, -34px); opacity: 0; }
+  100% { transform: translate(116px, -34px); opacity: 0; }
+}
+
+@keyframes mectec-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -6px, 0); }
+}
+
+@media (max-width: 640px) {
+  .mectec-floating-chip {
+    display: none;
+  }
+
+  .mectec-circuit-stage {
+    padding: 0.25rem;
+  }
+}
+
+/* ================================================================
 REDUCED-MOTION HANDLING
 ================================================================ */
 
