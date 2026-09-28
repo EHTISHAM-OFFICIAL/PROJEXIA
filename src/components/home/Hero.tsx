@@ -2,6 +2,12 @@ import { ArrowRight } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { ButtonLink } from '../ui/Button';
 
+const INDICATORS = [
+  { label: 'PWR', tone: 'bg-state-success' },
+  { label: 'SIG', tone: 'bg-accent' },
+  { label: 'OUT', tone: 'bg-state-info' },
+] as const;
+
 export function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-line">
@@ -12,7 +18,9 @@ export function Hero() {
           <div className="max-w-2xl animate-fade-up">
             <h1 className="text-4xl font-semibold leading-[1.06] tracking-tight sm:text-5xl lg:text-[3.4rem]">
               Turning ideas into{' '}
-              <span className="bg-gradient-to-r from-accent via-accent2 to-accent bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-pan">
+              <span
+                className="bg-gradient-to-r from-accent via-accent2 to-accent bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-pan"
+              >
                 working electronic systems
               </span>
               <span
@@ -36,13 +44,72 @@ export function Hero() {
             </div>
           </div>
 
+          {/* The one deliberate flourish on the page: an oscilloscope-style
+              signal trace, grounded in what an electronics bench actually
+              looks like, rather than generic decoration. */}
           <div className="relative animate-fade-up" style={{ animationDelay: '120ms' }}>
-            <div className="relative aspect-[5/4] overflow-hidden rounded-card border border-line bg-surface">
-              <div className="flex h-full items-center justify-center">
-                <div className="text-center">
-                  <div className="mx-auto h-16 w-16 rounded-2xl border border-line-strong bg-surface-elevated" />
-                  <p className="mt-4 text-sm text-content-secondary">MECTEC</p>
+            <div className="overflow-hidden rounded-card border border-line bg-surface">
+              <div className="flex items-center justify-between border-b border-line px-4 py-3">
+                <span className="font-mono text-xs tracking-wide text-content-muted">
+                  BENCH.TRACE — CH1
+                </span>
+                <div className="flex items-center gap-3">
+                  {INDICATORS.map((indicator, index) => (
+                    <span key={indicator.label} className="flex items-center gap-1.5">
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${indicator.tone} animate-pulse`}
+                        style={{ animationDelay: `${index * 200}ms` }}
+                        aria-hidden="true"
+                      />
+                      <span className="font-mono text-[10px] text-content-muted">
+                        {indicator.label}
+                      </span>
+                    </span>
+                  ))}
                 </div>
+              </div>
+
+              <svg
+                viewBox="0 0 400 220"
+                className="h-56 w-full sm:h-64"
+                role="img"
+                aria-label="Decorative oscilloscope trace"
+              >
+                <defs>
+                  <pattern id="scope-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <path
+                      d="M 20 0 L 0 0 0 20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1"
+                      className="text-content-muted/10"
+                    />
+                  </pattern>
+                  <linearGradient id="trace-gradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" style={{ stopColor: 'rgb(var(--color-accent))' }} />
+                    <stop offset="100%" style={{ stopColor: 'rgb(var(--color-accent2))' }} />
+                  </linearGradient>
+                </defs>
+                <rect width="400" height="220" fill="url(#scope-grid)" />
+                <path
+                  d="M0,110 L40,110 L55,60 L70,160 L85,40 L100,180 L115,110 L160,110
+                     L175,70 L190,150 L205,50 L220,170 L235,110 L280,110
+                     L295,65 L310,155 L325,45 L340,175 L355,110 L400,110"
+                  fill="none"
+                  stroke="url(#trace-gradient)"
+                  strokeWidth="2.5"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  pathLength={1}
+                  strokeDasharray={1}
+                  className="animate-trace-draw"
+                />
+              </svg>
+
+              <div className="flex items-center justify-between border-t border-line px-4 py-3">
+                <span className="font-mono text-xs text-content-muted">
+                  REQUEST → BUILD → TEST → DELIVER
+                </span>
               </div>
             </div>
           </div>
