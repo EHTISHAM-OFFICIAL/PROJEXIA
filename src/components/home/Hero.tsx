@@ -2,12 +2,6 @@ import { ArrowRight } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { ButtonLink } from '../ui/Button';
 
-const INDICATORS = [
-  { label: 'PWR', tone: 'bg-state-success' },
-  { label: 'SIG', tone: 'bg-accent' },
-  { label: 'OUT', tone: 'bg-state-info' },
-] as const;
-
 export function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-line">
@@ -44,72 +38,113 @@ export function Hero() {
             </div>
           </div>
 
-          {/* The one deliberate flourish on the page: an oscilloscope-style
-              signal trace, grounded in what an electronics bench actually
-              looks like, rather than generic decoration. */}
           <div className="relative animate-fade-up" style={{ animationDelay: '120ms' }}>
-            <div className="overflow-hidden rounded-card border border-line bg-surface">
-              <div className="flex items-center justify-between border-b border-line px-4 py-3">
-                <span className="font-mono text-xs tracking-wide text-content-muted">
-                  BENCH.TRACE — CH1
-                </span>
-                <div className="flex items-center gap-3">
-                  {INDICATORS.map((indicator, index) => (
-                    <span key={indicator.label} className="flex items-center gap-1.5">
-                      <span
-                        className={`h-1.5 w-1.5 rounded-full ${indicator.tone} animate-pulse`}
-                        style={{ animationDelay: `${index * 200}ms` }}
-                        aria-hidden="true"
-                      />
-                      <span className="font-mono text-[10px] text-content-muted">
-                        {indicator.label}
-                      </span>
-                    </span>
-                  ))}
-                </div>
-              </div>
+            <div className="mectec-energy-field relative aspect-[5/4] overflow-hidden rounded-card border border-line bg-surface">
+              <div className="mectec-energy-aura" aria-hidden="true" />
+              <div className="mectec-energy-orbit mectec-energy-orbit-one" aria-hidden="true" />
+              <div className="mectec-energy-orbit mectec-energy-orbit-two" aria-hidden="true" />
 
               <svg
-                viewBox="0 0 400 220"
-                className="h-56 w-full sm:h-64"
+                viewBox="0 0 520 420"
+                className="absolute inset-0 h-full w-full"
                 role="img"
-                aria-label="Decorative oscilloscope trace"
+                aria-label="Animated glowing electrical current flowing through a circuit"
               >
                 <defs>
-                  <pattern id="scope-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <path
-                      d="M 20 0 L 0 0 0 20"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                      className="text-content-muted/10"
-                    />
-                  </pattern>
-                  <linearGradient id="trace-gradient" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" style={{ stopColor: 'rgb(var(--color-accent))' }} />
-                    <stop offset="100%" style={{ stopColor: 'rgb(var(--color-accent2))' }} />
+                  <linearGradient id="energy-line" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="rgb(var(--color-accent))" />
+                    <stop offset="50%" stopColor="rgb(var(--color-accent2))" />
+                    <stop offset="100%" stopColor="rgb(var(--color-accent))" />
                   </linearGradient>
+                  <radialGradient id="core-glow">
+                    <stop offset="0%" stopColor="rgb(var(--color-accent2) / 0.34)" />
+                    <stop offset="55%" stopColor="rgb(var(--color-accent) / 0.12)" />
+                    <stop offset="100%" stopColor="rgb(var(--color-accent) / 0)" />
+                  </radialGradient>
+                  <filter id="energy-blur" x="-100%" y="-100%" width="300%" height="300%">
+                    <feGaussianBlur stdDeviation="5" />
+                  </filter>
+                  <filter id="soft-blur" x="-100%" y="-100%" width="300%" height="300%">
+                    <feGaussianBlur stdDeviation="11" />
+                  </filter>
                 </defs>
-                <rect width="400" height="220" fill="url(#scope-grid)" />
-                <path
-                  d="M0,110 L40,110 L55,60 L70,160 L85,40 L100,180 L115,110 L160,110
-                     L175,70 L190,150 L205,50 L220,170 L235,110 L280,110
-                     L295,65 L310,155 L325,45 L340,175 L355,110 L400,110"
-                  fill="none"
-                  stroke="url(#trace-gradient)"
-                  strokeWidth="2.5"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  pathLength={1}
-                  strokeDasharray={1}
-                  className="animate-trace-draw"
-                />
+
+                <circle cx="260" cy="210" r="145" fill="url(#core-glow)" />
+
+                <g className="mectec-circuit-lines" fill="none" stroke="url(#energy-line)">
+                  <path d="M34 86H120C142 86 146 112 169 112H205" />
+                  <path d="M34 210H92C118 210 124 180 151 180H205" />
+                  <path d="M34 334H112C138 334 142 306 170 306H205" />
+                  <path d="M486 86H398C376 86 372 112 349 112H315" />
+                  <path d="M486 210H428C402 210 396 180 369 180H315" />
+                  <path d="M486 334H408C382 334 378 306 350 306H315" />
+                  <path d="M205 112V82C205 62 226 50 244 50H260" />
+                  <path d="M315 112V82C315 62 294 50 276 50H260" />
+                  <path d="M205 306V338C205 358 226 370 244 370H260" />
+                  <path d="M315 306V338C315 358 294 370 276 370H260" />
+                  <path d="M151 180V144C151 124 166 112 186 112" />
+                  <path d="M369 180V144C369 124 354 112 334 112" />
+                  <path d="M151 240V276C151 296 166 306 186 306" />
+                  <path d="M369 240V276C369 296 354 306 334 306" />
+                </g>
+
+                <g className="mectec-circuit-glow" fill="none" stroke="url(#energy-line)">
+                  <path d="M34 86H120C142 86 146 112 169 112H205" />
+                  <path d="M34 210H92C118 210 124 180 151 180H205" />
+                  <path d="M34 334H112C138 334 142 306 170 306H205" />
+                  <path d="M486 86H398C376 86 372 112 349 112H315" />
+                  <path d="M486 210H428C402 210 396 180 369 180H315" />
+                  <path d="M486 334H408C382 334 378 306 350 306H315" />
+                  <path d="M205 112V82C205 62 226 50 244 50H260" />
+                  <path d="M315 112V82C315 62 294 50 276 50H260" />
+                  <path d="M205 306V338C205 358 226 370 244 370H260" />
+                  <path d="M315 306V338C315 358 294 370 276 370H260" />
+                </g>
+
+                <g className="mectec-energy-pulses">
+                  <circle r="4.5" fill="rgb(var(--color-accent2))" className="mectec-energy-pulse pulse-a" />
+                  <circle r="3.5" fill="rgb(var(--color-accent))" className="mectec-energy-pulse pulse-b" />
+                  <circle r="4" fill="rgb(var(--color-accent2))" className="mectec-energy-pulse pulse-c" />
+                  <circle r="3.5" fill="rgb(var(--color-accent))" className="mectec-energy-pulse pulse-d" />
+                </g>
+
+                <g className="mectec-energy-nodes" fill="rgb(var(--color-surface))" stroke="rgb(var(--color-accent))">
+                  <circle cx="34" cy="86" r="5" />
+                  <circle cx="34" cy="210" r="5" />
+                  <circle cx="34" cy="334" r="5" />
+                  <circle cx="486" cy="86" r="5" />
+                  <circle cx="486" cy="210" r="5" />
+                  <circle cx="486" cy="334" r="5" />
+                  <circle cx="151" cy="180" r="5" />
+                  <circle cx="369" cy="180" r="5" />
+                  <circle cx="151" cy="240" r="5" />
+                  <circle cx="369" cy="240" r="5" />
+                </g>
+
+                <g className="mectec-energy-core">
+                  <rect x="205" y="112" width="110" height="196" rx="24" fill="rgb(var(--color-surface-raised) / 0.82)" stroke="rgb(var(--color-line-strong))" strokeWidth="1.5" />
+                  <rect x="218" y="126" width="84" height="168" rx="17" fill="none" stroke="rgb(var(--color-accent) / 0.24)" />
+                  <path d="M235 153H285M235 180H285M235 207H285M235 234H285M235 261H285" stroke="rgb(var(--color-accent) / 0.3)" strokeWidth="2" strokeLinecap="round" />
+                  <circle cx="260" cy="207" r="30" fill="url(#core-glow)" filter="url(#soft-blur)" />
+                  <circle cx="260" cy="207" r="20" fill="rgb(var(--color-accent) / 0.08)" stroke="rgb(var(--color-accent))" strokeWidth="1.5" />
+                  <circle cx="260" cy="207" r="7" fill="rgb(var(--color-accent2))" className="mectec-core-beacon" />
+                </g>
+
+                <g className="mectec-component-shapes" fill="none" stroke="rgb(var(--color-accent2))" strokeWidth="2">
+                  <path d="M105 86h16l6-10 8 20 8-20 8 20 6-10h16" />
+                  <path d="M382 334h16l6-10 8 20 8-20 8 20 6-10h16" />
+                  <path d="M105 334h18M124 324v20M137 324v20M143 334h18" />
+                  <path d="M359 86h18M378 76v20M391 76v20M397 86h18" />
+                </g>
               </svg>
 
-              <div className="flex items-center justify-between border-t border-line px-4 py-3">
-                <span className="font-mono text-xs text-content-muted">
-                  REQUEST → BUILD → TEST → DELIVER
-                </span>
+              <div className="mectec-energy-specks" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
               </div>
             </div>
           </div>
