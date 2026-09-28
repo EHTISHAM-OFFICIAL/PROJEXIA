@@ -533,4 +533,17 @@ REDUCED-MOTION HANDLING
   .group:hover .mectec-marquee {
     animation-play-state: paused !important;
   }
+
+  .mectec-hero-underline,
+  .mectec-circuit-traces-active path,
+  .mectec-circuit-nodes circle,
+  .mectec-circuit-pulse,
+  .mectec-floating-chip {
+    animation: none !important;
+  }
+
+  .mectec-circuit-hover,
+  .mectec-circuit-glow {
+    display: none;
+  }
 }
