@@ -211,7 +211,13 @@ service cloud.firestore {
       // Meeting requests are public submissions. Only the requester may
       // create one; all reading and management stays in the admin area.
       allow create: if
-        request.resource.data.status == 'pending'
+        request.resource.data.keys().hasOnly([
+          'fullName','email','phone','whatsapp','country','city','purpose',
+          'preferredDate','preferredTime','timezone','duration','method',
+          'discussion','projectReference','additionalNotes','status','adminNotes',
+          'confirmedDate','confirmedTime','meetingLink','createdAt','updatedAt'
+        ])
+        && request.resource.data.status == 'pending'
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time
         && isString(request.resource.data.fullName, 100)
