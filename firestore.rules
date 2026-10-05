@@ -205,6 +205,45 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------
+    // meetingRequests
+    // ---------------------------------------------------------------------
+    match /meetingRequests/{meetingId} {
+      // Meeting requests are public submissions. Only the requester may
+      // create one; all reading and management stays in the admin area.
+      allow create: if
+        request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && isString(request.resource.data.fullName, 100)
+        && isString(request.resource.data.email, 200)
+        && request.resource.data.email.matches('.+@.+[.].+')
+        && isOptionalString(request.resource.data.phone, 30)
+        && isOptionalString(request.resource.data.whatsapp, 30)
+        && isOptionalString(request.resource.data.country, 80)
+        && isOptionalString(request.resource.data.city, 80)
+        && request.resource.data.purpose in [
+          'Project consultation',
+          'Discuss an existing project request',
+          'Technical discussion',
+          'General inquiry'
+        ]
+        && isString(request.resource.data.preferredDate, 20)
+        && isString(request.resource.data.preferredTime, 10)
+        && isString(request.resource.data.timezone, 80)
+        && request.resource.data.duration in ['15 minutes', '30 minutes', '60 minutes']
+        && request.resource.data.method in ['Google Meet', 'WhatsApp', 'Phone call']
+        && isString(request.resource.data.discussion, 3000)
+        && isOptionalString(request.resource.data.projectReference, 80)
+        && isOptionalString(request.resource.data.additionalNotes, 2000)
+        && request.resource.data.adminNotes == null
+        && request.resource.data.confirmedDate == null
+        && request.resource.data.confirmedTime == null
+        && request.resource.data.meetingLink == null;
+
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
     // settings/requestSecurity — public read is limited to a non-sensitive
     // customer edit-window value; only admins can change it.
     // ---------------------------------------------------------------------
