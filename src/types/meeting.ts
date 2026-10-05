@@ -5,7 +5,7 @@ export type MeetingPurpose =
   | 'Discuss an existing project request'
   | 'Technical discussion'
   | 'General inquiry';
-export type MeetingMethod = 'Google Meet' | 'WhatsApp' | 'Phone call';
+export type MeetingMethod = 'Google Meet' | 'WhatsApp' | 'Phone call' | 'Face-to-face';
 export type MeetingDuration = '15 minutes' | '30 minutes' | '60 minutes';
 export type MeetingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
