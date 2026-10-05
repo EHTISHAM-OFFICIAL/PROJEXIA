@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
-import { FolderKanban, Inbox, Send, Sparkles } from 'lucide-react';
+import { CalendarDays, FolderKanban, Inbox, Send, Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { meetingService } from '../../services/meetingService';
+import type { MeetingRequest } from '../../types/meeting';
 import { Seo } from '../../components/ui/Seo';
 import { Badge } from '../../components/ui/Badge';
 import { ButtonLink } from '../../components/ui/Button';
@@ -14,12 +17,15 @@ import { formatDateTime } from '../../utils/formatting';
 export default function Dashboard() {
   const projects = useAllProjects();
   const requests = useProjectRequests();
+  const [meetings, setMeetings] = useState<MeetingRequest[] | null>(null);
+  useEffect(() => { void meetingService.listMeetings().then(setMeetings).catch(() => setMeetings([])); }, []);
 
   const totalProjects = projects.data?.length ?? 0;
   const publishedProjects = projects.data?.filter((project) => project.published).length ?? 0;
   const featuredProjects = projects.data?.filter((project) => project.featured).length ?? 0;
   const totalRequests = requests.data?.length ?? 0;
   const newRequests = requests.data?.filter((request) => request.status === 'new').length ?? 0;
+  const pendingMeetings = meetings?.filter((meeting) => meeting.status === 'pending').length ?? 0;
   const recent = requests.data?.slice(0, 5) ?? [];
 
   const loading = projects.loading || requests.loading;
@@ -46,7 +52,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard
           label="Projects"
           value={totalProjects}
@@ -70,6 +76,15 @@ export default function Dashboard() {
           icon={Inbox}
           to="/admin/requests"
           loading={loading}
+        />
+        <StatCard
+          label="Meetings"
+          value={meetings?.length ?? 0}
+          hint={`${pendingMeetings} pending`}
+          icon={CalendarDays}
+          to="/admin/meetings"
+          loading={meetings === null}
+          highlight={pendingMeetings > 0}
         />
         <StatCard
           label="New requests"
