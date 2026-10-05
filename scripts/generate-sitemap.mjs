@@ -62,6 +62,7 @@ const staticUrls = [
   { path: '/request-project', priority: '0.8' },
   { path: '/about', priority: '0.7' },
   { path: '/contact', priority: '0.7' },
+  { path: '/book-meeting', priority: '0.7' },
 ];
 
 const urls = new Map(staticUrls.map((entry) => [entry.path, entry]));
