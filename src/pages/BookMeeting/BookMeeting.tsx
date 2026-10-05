@@ -11,6 +11,7 @@ import { Field } from '../../components/forms/Field';
 import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
 import { meetingService } from '../../services/meetingService';
 import { toUserMessage } from '../../utils/errors';
+import { useAuth } from '../../hooks/useAuth';
 
 const schema = z.object({
   fullName: z.string().trim().min(2, 'Enter your full name.').max(100),
@@ -20,14 +21,14 @@ const schema = z.object({
   purpose: z.enum(['Project consultation','Discuss an existing project request','Technical discussion','General inquiry']),
   preferredDate: z.string().min(1, 'Choose a preferred date.'), preferredTime: z.string().min(1, 'Choose a preferred time.'),
   timezone: z.string().min(1), duration: z.enum(['15 minutes','30 minutes','60 minutes']),
-  method: z.enum(['Google Meet','WhatsApp','Phone call']),
+  method: z.enum(['Google Meet','WhatsApp','Phone call','Face-to-face']),
   discussion: z.string().trim().min(10, 'Tell us what you would like to discuss.').max(3000),
   projectReference: z.string().trim().max(80).optional(), additionalNotes: z.string().trim().max(2000).optional(),
   website: z.string().max(0).optional(),
 });
 const purposes = ['Project consultation','Discuss an existing project request','Technical discussion','General inquiry'].map(value => ({value,label:value}));
 const durations = ['15 minutes','30 minutes','60 minutes'].map(value => ({value,label:value}));
-const methods = ['Google Meet','WhatsApp','Phone call'].map(value => ({value,label:value}));
+const methods = ['Google Meet','WhatsApp','Phone call','Face-to-face'].map(value => ({value,label:value}));
 const timezones = [
   {value:'Asia/Karachi',label:'Pakistan Standard Time (UTC+05:00)'},{value:'UTC',label:'UTC'},
   {value:'Europe/London',label:'United Kingdom'},{value:'Europe/Berlin',label:'Central Europe'},
@@ -36,7 +37,26 @@ const timezones = [
 type FormValues = z.infer<typeof schema>;
 
 export default function BookMeeting() {
-  const [sent,setSent]=useState(false); const [error,setError]=useState<string|null>(null);
+  const [sent,setSent]=useState(false); const [error,setError]=useState<string|null>(null); const { user } = useAuth();
+  if (!user) {
+    return <>
+      <Seo title="Login required" path="/book-meeting" noIndex />
+      <Container className="py-20 sm:py-28">
+        <div className="mx-auto max-w-xl rounded-card border border-line bg-surface p-8 text-center sm:p-12">
+          <p className="text-sm font-medium text-accent">MECTEC meetings</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight">Log in to continue</h1>
+          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-content-secondary">
+            A MECTEC account is required to request a meeting. This keeps meeting requests connected to your account and lets you manage your requests securely.
+          </p>
+          <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+            <ButtonLink to="/login?next=%2Fbook-meeting" size="lg">Log in</ButtonLink>
+            <ButtonLink to="/register?next=%2Fbook-meeting" variant="secondary" size="lg">Create account</ButtonLink>
+          </div>
+        </div>
+      </Container>
+    </>;
+  }
+
   const {register,handleSubmit,reset,formState:{errors,isSubmitting}}=useForm<FormValues>({
     resolver:zodResolver(schema),
     defaultValues:{fullName:'',email:'',phone:'',whatsapp:'',country:'',city:'',purpose:'Project consultation',
