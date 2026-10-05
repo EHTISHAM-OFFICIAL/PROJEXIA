@@ -18,6 +18,7 @@ import { RequireCustomerAuth } from './RequireCustomerAuth';
 // only ever used by one person — both are split out so public visitors never
 // download them.
 const RequestProject = lazy(() => import('../pages/RequestProject/RequestProject'));
+const BookMeeting = lazy(() => import('../pages/BookMeeting/BookMeeting'));
 const AdminLayout = lazy(() =>
   import('../components/layout/AdminLayout').then((module) => ({ default: module.AdminLayout }))
 );
@@ -33,6 +34,8 @@ const AdminDashboard = lazy(() => import('../pages/Admin/Dashboard'));
 const AdminProjectsList = lazy(() => import('../pages/Admin/ProjectsList'));
 const AdminProjectForm = lazy(() => import('../pages/Admin/ProjectForm'));
 const AdminRequestsList = lazy(() => import('../pages/Admin/RequestsList'));
+const AdminMeetingRequests = lazy(() => import('../pages/Admin/MeetingRequests'));
+const AdminMeetingDetail = lazy(() => import('../pages/Admin/MeetingDetail'));
 const AdminRequestDetail = lazy(() => import('../pages/Admin/RequestDetail'));
 const AdminRequestTrash = lazy(() => import('../pages/Admin/RequestTrash'));
 const AdminBannerSettings = lazy(() => import('../pages/Admin/BannerSettings'));
@@ -63,6 +66,7 @@ export function AppRoutes() {
           <Route path="blog" element={<BlogIndex />} />
           <Route path="blog/:slug" element={<BlogPostPage />} />
           <Route path="request-project" element={<RequestProject />} />
+          <Route path="book-meeting" element={<BookMeeting />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="track-request" element={<TrackRequest />} />
@@ -89,6 +93,8 @@ export function AppRoutes() {
             <Route path="requests" element={<AdminRequestsList />} />
             <Route path="requests/trash" element={<AdminRequestTrash />} />
             <Route path="requests/:id" element={<AdminRequestDetail />} />
+            <Route path="meetings" element={<AdminMeetingRequests />} />
+            <Route path="meetings/:id" element={<AdminMeetingDetail />} />
             <Route path="testimonials" element={<AdminTestimonialsList />} />
             <Route path="testimonials/new" element={<AdminTestimonialForm />} />
             <Route path="testimonials/:id/edit" element={<AdminTestimonialForm />} />
