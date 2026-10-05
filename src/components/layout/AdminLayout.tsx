@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   FolderKanban,
   Inbox,
+  CalendarDays,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -22,6 +23,7 @@ const ADMIN_LINKS = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/projects', label: 'Projects', icon: FolderKanban, end: false },
   { to: '/admin/requests', label: 'Requests', icon: Inbox, end: false },
+  { to: '/admin/meetings', label: 'Meetings', icon: CalendarDays, end: false },
   { to: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote, end: false },
   { to: '/admin/blog', label: 'Blog', icon: Newspaper, end: false },
   { to: '/admin/banner', label: 'Banner', icon: Megaphone, end: false },
