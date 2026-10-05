@@ -8,6 +8,7 @@ export const COLLECTIONS = {
   projects: 'projects',
   projectRequests: 'projectRequests',
   contactMessages: 'contactMessages',
+  meetingRequests: 'meetingRequests',
   admins: 'admins',
   settings: 'settings',
 } as const;
