@@ -21,6 +21,7 @@ export const NAV_LINKS = [
   { label: "Projects", to: "/projects" },
   { label: "About", to: "/about" },
   { label: "Contact", to: "/contact" },
+  { label: "Book a Meeting", to: "/book-meeting" },
 ] as const;
 
 /** Entries with an empty href are hidden automatically. */
