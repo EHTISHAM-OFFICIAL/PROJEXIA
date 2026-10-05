@@ -208,10 +208,11 @@ service cloud.firestore {
     // meetingRequests
     // ---------------------------------------------------------------------
     match /meetingRequests/{meetingId} {
-      // Meeting requests are public submissions. Only the requester may
-      // create one; all reading and management stays in the admin area.
+      // Meeting requests require a signed-in customer account. All reading
+      // and management stays in the admin area.
       allow create: if
-        request.resource.data.keys().hasOnly([
+        request.auth != null
+        && request.resource.data.keys().hasOnly([
           'fullName','email','phone','whatsapp','country','city','purpose',
           'preferredDate','preferredTime','timezone','duration','method',
           'discussion','projectReference','additionalNotes','status','adminNotes',
@@ -237,7 +238,7 @@ service cloud.firestore {
         && isString(request.resource.data.preferredTime, 10)
         && isString(request.resource.data.timezone, 80)
         && request.resource.data.duration in ['15 minutes', '30 minutes', '60 minutes']
-        && request.resource.data.method in ['Google Meet', 'WhatsApp', 'Phone call']
+        && request.resource.data.method in ['Google Meet', 'WhatsApp', 'Phone call', 'Face-to-face']
         && isString(request.resource.data.discussion, 3000)
         && isOptionalString(request.resource.data.projectReference, 80)
         && isOptionalString(request.resource.data.additionalNotes, 2000)
