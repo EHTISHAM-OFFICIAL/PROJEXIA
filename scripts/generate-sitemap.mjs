@@ -31,12 +31,6 @@ const firebaseConfig = {
   appId: env.VITE_FIREBASE_APP_ID,
 };
 
-const required = Object.entries(firebaseConfig).filter(([, value]) => !value);
-if (required.length) {
-  console.warn('Sitemap generation skipped: Firebase environment variables are not available.');
-  process.exit(0);
-}
-
 function escapeXml(value) {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
 }
@@ -52,17 +46,12 @@ function toIso(value) {
   return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 const staticUrls = [
   { path: '/', priority: '1.0' },
   { path: '/projects', priority: '0.9' },
   { path: '/blog', priority: '0.8' },
-  { path: '/request-project', priority: '0.8' },
   { path: '/about', priority: '0.7' },
   { path: '/contact', priority: '0.7' },
-  { path: '/book-meeting', priority: '0.7' },
 ];
 
 const urls = new Map(staticUrls.map((entry) => [entry.path, entry]));
@@ -81,10 +70,7 @@ async function addPublished(collectionName, prefix, priority) {
   }
 }
 
-try {
-  await addPublished('projects', '/projects', '0.8');
-  await addPublished('posts', '/blog', '0.7');
-
+async function writeSitemap() {
   const entries = [...urls.values()]
     .sort((a, b) => a.path.localeCompare(b.path))
     .map((entry) => {
@@ -97,7 +83,22 @@ try {
 
   writeFileSync(resolve(process.cwd(), 'public/sitemap.xml'), sitemap);
   console.log(`Sitemap generated with ${urls.size} URLs.`);
+}
+
+const required = Object.entries(firebaseConfig).filter(([, value]) => !value);
+
+try {
+  if (!required.length) {
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    await addPublished('projects', '/projects', '0.8');
+    await addPublished('posts', '/blog', '0.7');
+  } else {
+    console.warn('Firebase environment variables are not available; generating sitemap with static public URLs only.');
+  }
+
+  await writeSitemap();
 } catch (error) {
-  console.error('Sitemap generation failed:', error);
-  process.exit(1);
+  console.error('Dynamic sitemap generation failed; writing static public sitemap instead:', error);
+  await writeSitemap();
 }
