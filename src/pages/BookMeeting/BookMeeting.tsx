@@ -38,6 +38,13 @@ type FormValues = z.infer<typeof schema>;
 
 export default function BookMeeting() {
   const [sent,setSent]=useState(false); const [error,setError]=useState<string|null>(null); const { user } = useAuth();
+  const {register,handleSubmit,reset,formState:{errors,isSubmitting}}=useForm<FormValues>({
+    resolver:zodResolver(schema),
+    defaultValues:{fullName:'',email:'',phone:'',whatsapp:'',country:'',city:'',purpose:'Project consultation',
+      preferredDate:'',preferredTime:'',timezone:'Asia/Karachi',duration:'30 minutes',method:'Google Meet',
+      discussion:'',projectReference:'',additionalNotes:'',website:''}
+  });
+
   if (!user) {
     return <>
       <Seo title="Login required" path="/book-meeting" noIndex />
@@ -56,13 +63,6 @@ export default function BookMeeting() {
       </Container>
     </>;
   }
-
-  const {register,handleSubmit,reset,formState:{errors,isSubmitting}}=useForm<FormValues>({
-    resolver:zodResolver(schema),
-    defaultValues:{fullName:'',email:'',phone:'',whatsapp:'',country:'',city:'',purpose:'Project consultation',
-      preferredDate:'',preferredTime:'',timezone:'Asia/Karachi',duration:'30 minutes',method:'Google Meet',
-      discussion:'',projectReference:'',additionalNotes:'',website:''}
-  });
   const onSubmit=async(values:FormValues)=>{
     setError(null); if(values.website){setSent(true);return;}
     try { const {website: _website,...meeting}=values; await meetingService.createMeeting(meeting); reset(); setSent(true); }
