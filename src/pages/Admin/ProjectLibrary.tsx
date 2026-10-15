@@ -101,10 +101,27 @@ export default function ProjectLibrary() {
         <h2 className="sm:col-span-2 text-lg font-semibold">{editingId ? 'Edit library item' : 'Add library item'}</h2>
         <Field label="Name" required><TextInput required maxLength={120} value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} /></Field>
         <Field label="Type" required><Select options={KINDS} value={draft.kind} onChange={(event) => setDraft({ ...draft, kind: event.target.value as ProjectLibraryKind })} /></Field>
-        <Field label="Category"><TextInput maxLength={80} value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} placeholder="e.g. Microcontrollers" /></Field>
-        <Field label="Unit"><TextInput maxLength={30} value={draft.unit} onChange={(event) => setDraft({ ...draft, unit: event.target.value })} placeholder="e.g. V, mA, mm" /></Field>
-        <Field label="Suggested default value"><TextInput maxLength={120} value={draft.defaultValue} onChange={(event) => setDraft({ ...draft, defaultValue: event.target.value })} placeholder="Optional; verify for each project" /></Field>
-        <Field label="Description"><TextArea rows={2} maxLength={300} value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} /></Field>
+        <Field
+          label={draft.kind === 'component' ? 'Component type' : 'Category'}
+          hint={draft.kind === 'component' ? 'This is copied into the project component Type field.' : 'Optional grouping used to organize library suggestions.'}
+        >
+          <TextInput maxLength={80} value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} placeholder={draft.kind === 'component' ? 'e.g. Sensor, controller, motor driver' : 'e.g. Microcontrollers'} />
+        </Field>
+        <Field label="Unit" hint={draft.kind === 'specification' ? 'Unit for this specification, such as V, mA, mm, or °C.' : 'Optional measurement unit, if relevant.'}>
+          <TextInput maxLength={30} value={draft.unit} onChange={(event) => setDraft({ ...draft, unit: event.target.value })} placeholder="e.g. V, mA, mm" />
+        </Field>
+        <Field
+          label={draft.kind === 'specification' ? 'Suggested specification value' : 'Suggested default value'}
+          hint={draft.kind === 'specification' ? 'Prefills the project specification Value field. Verify it for each actual build.' : 'Optional; verify for each project.'}
+        >
+          <TextInput maxLength={120} value={draft.defaultValue} onChange={(event) => setDraft({ ...draft, defaultValue: event.target.value })} placeholder="Optional; verify for each project" />
+        </Field>
+        <Field
+          label={draft.kind === 'component' ? 'Component notes' : 'Description'}
+          hint={draft.kind === 'component' ? 'Copied into the project component Notes field when selected. Leave blank if no note is needed.' : 'Optional description shown with library suggestions.'}
+        >
+          <TextArea rows={2} maxLength={300} value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} />
+        </Field>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={draft.active} onChange={(event) => setDraft({ ...draft, active: event.target.checked })} /> Available for new projects</label>
         <div className="flex flex-wrap gap-2 sm:col-span-2">
           <Button type="submit"><Check size={15} /> {editingId ? 'Save changes' : 'Add item'}</Button>
@@ -121,7 +138,7 @@ export default function ProjectLibrary() {
       <div className="mt-3 overflow-hidden rounded-xl border border-line">
         {loading ? <p className="p-4 text-sm text-content-muted">Loading library…</p> : visible.length ? visible.map((item) => (
           <div key={item.id} className="flex flex-col gap-3 border-b border-line p-4 last:border-b-0 sm:flex-row sm:items-center">
-            <div className="min-w-0 flex-1"><p className="font-medium">{item.name}</p><p className="mt-1 text-xs text-content-muted">{KINDS.find((entry) => entry.value === item.kind)?.label} {item.category && `· ${item.category}`} {!item.active && '· Inactive'}</p>{item.description && <p className="mt-1 text-sm text-content-secondary">{item.description}</p>}</div>
+            <div className="min-w-0 flex-1"><p className="font-medium">{item.name}</p><p className="mt-1 text-xs text-content-muted">{KINDS.find((entry) => entry.value === item.kind)?.label} {item.category && `· ${item.category}`} {!item.active && '· Inactive'}</p>{item.description && <p className="mt-1 text-sm text-content-secondary">{item.description}</p>}{(item.unit || item.defaultValue) && <p className="mt-1 text-xs text-content-muted">{item.unit && `Unit: ${item.unit}`}{item.unit && item.defaultValue ? ' · ' : ''}{item.defaultValue && `Suggested value: ${item.defaultValue}`}</p>}</div>
             <div className="flex flex-wrap gap-2">
               <Button type="button" variant="secondary" onClick={() => edit(item)}><Pencil size={14} /> Edit</Button>
               <Button type="button" variant="secondary" onClick={() => void toggleActive(item)}><Archive size={14} /> {item.active ? 'Deactivate' : 'Activate'}</Button>
