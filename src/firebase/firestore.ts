@@ -11,4 +11,5 @@ export const COLLECTIONS = {
   meetingRequests: 'meetingRequests',
   admins: 'admins',
   settings: 'settings',
+  projectLibrary: 'projectLibrary',
 } as const;
