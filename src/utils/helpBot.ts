@@ -110,7 +110,7 @@ interface ScoredEntry {
    ========================================================= */
 
 const FALLBACK_ANSWER =
-  "I don't have a specific answer for that yet. You can use the Project Request form or contact MECTEC directly for a real reply.";
+  "I don't have a specific answer for that yet. You can use the Project Request form or contact ProjexiaHub directly for a real reply.";
 
 const MECTEC_TIME_ZONE = "Asia/Karachi";
 const MECTEC_OPEN_HOUR = 10;
@@ -2670,7 +2670,7 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
         "I'm doing well and ready to help you with MECTEC, electronics, projects, services and the website.",
 
       suggestedQuestions: [
-        "What services does MECTEC provide?",
+        "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "What is Arduino?",
         "How can I contact MECTEC?",
@@ -2684,7 +2684,7 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
       answer:
         "Good morning! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
       suggestedQuestions: [
-        "What services does MECTEC provide?",
+        "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "What is Arduino?",
         "How can I contact MECTEC?",
@@ -2697,7 +2697,7 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
       answer:
         "Good afternoon! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
       suggestedQuestions: [
-        "What services does MECTEC provide?",
+        "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "What is Arduino?",
         "How can I contact MECTEC?",
@@ -2710,7 +2710,7 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
       answer:
         "Good evening! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
       suggestedQuestions: [
-        "What services does MECTEC provide?",
+        "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "What is Arduino?",
         "How can I contact MECTEC?",
@@ -2729,7 +2729,7 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
         "Wa Alaikum Assalam! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
 
       suggestedQuestions: [
-        "What services does MECTEC provide?",
+        "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "What is Arduino?",
         "How can I contact MECTEC?",
@@ -2742,7 +2742,7 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
       "Hi! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
 
     suggestedQuestions: [
-      "What services does MECTEC provide?",
+      "What services does ProjexiaHub provide?",
       "Can I request a custom project?",
       "What is Arduino?",
       "How can I contact MECTEC?",
@@ -2757,7 +2757,7 @@ function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
         "I'm the MECTEC Help Assistant. I provide local answers about MECTEC, its services, projects, electronics and website features.",
 
       suggestedQuestions: [
-        "What services does MECTEC provide?",
+        "What services does ProjexiaHub provide?",
         "Can I request a project?",
         "How can I contact MECTEC?",
         "Show me MECTEC projects.",
@@ -2774,7 +2774,7 @@ function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
         "I can help you understand MECTEC services, request a project, explore previous projects, learn about electronics and microcontrollers, troubleshoot common issues, and find relevant pages on the website.",
 
       suggestedQuestions: [
-        "What services does MECTEC provide?",
+        "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "Show me your projects.",
         "How can I contact MECTEC?",
@@ -2800,7 +2800,7 @@ function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
       action: NAVIGATION_ACTIONS.about,
 
       suggestedQuestions: [
-        "What services does MECTEC provide?",
+        "What services does ProjexiaHub provide?",
         "Can I request a project?",
         "Show me your projects.",
         "How can I contact MECTEC?",
@@ -3250,7 +3250,7 @@ function detectNavigation(question: string): NavigationMatch | null {
 
       suggestedQuestions: [
         "Can I request a custom project?",
-        "What services does MECTEC provide?",
+        "What services does ProjexiaHub provide?",
         "How can I contact MECTEC?",
         "Tell me about MECTEC.",
       ],
@@ -3361,7 +3361,7 @@ function detectNavigation(question: string): NavigationMatch | null {
       action: NAVIGATION_ACTIONS.about,
 
       suggestedQuestions: [
-        "What services does MECTEC provide?",
+        "What services does ProjexiaHub provide?",
         "Show me your projects.",
         "Can I request a custom project?",
         "How can I contact MECTEC?",
@@ -3392,7 +3392,7 @@ function detectNavigation(question: string): NavigationMatch | null {
 
       suggestedQuestions: [
         "Show me your projects.",
-        "What services does MECTEC provide?",
+        "What services does ProjexiaHub provide?",
         "Can I request a project?",
         "How can I contact MECTEC?",
       ],
@@ -3521,7 +3521,7 @@ function getDynamicKnowledgeSuggestions(
 const FALLBACK_SUGGESTIONS = [
   "What is Arduino?",
   "Can I request a custom project?",
-  "What services does MECTEC provide?",
+  "What services does ProjexiaHub provide?",
   "How can I contact MECTEC?",
 ];
 
