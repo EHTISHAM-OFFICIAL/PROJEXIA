@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   FolderKanban,
-  LibraryBig,
+  Database,
   Inbox,
   CalendarDays,
   LayoutDashboard,
@@ -23,7 +23,7 @@ import { cn } from '../../utils/cn';
 const ADMIN_LINKS = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/projects', label: 'Projects', icon: FolderKanban, end: false },
-  { to: '/admin/project-library', label: 'Project Library', icon: LibraryBig, end: false },
+  { to: '/admin/project-library', label: 'Project Library', icon: Database, end: false },
   { to: '/admin/requests', label: 'Requests', icon: Inbox, end: false },
   { to: '/admin/meetings', label: 'Meetings', icon: CalendarDays, end: false },
   { to: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote, end: false },
