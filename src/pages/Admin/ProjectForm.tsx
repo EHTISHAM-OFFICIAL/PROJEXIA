@@ -11,6 +11,7 @@ import { Field, FieldSet } from '../../components/forms/Field';
 import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
 import { Checkbox, CheckboxGroup } from '../../components/forms/Choice';
 import { ListEditor, TableEditor } from '../../components/forms/ListEditor';
+import { LibraryMultiSelect } from '../../components/forms/LibraryMultiSelect';
 import { ImageUploadField } from '../../components/forms/ImageUploadField';
 import { useProjectById } from '../../hooks/useProject';
 import { projectService } from '../../services/projectService';
@@ -331,13 +332,8 @@ export default function ProjectForm() {
             />
           </Field>
 
-          <FieldSet legend="Objectives">
-            <ListEditor
-              label="Objective"
-              values={draft.objectives}
-              onChange={(values) => update('objectives', values)}
-              placeholder="What the project set out to achieve"
-            />
+          <FieldSet legend="Objectives" hint="Choose reusable objectives or add project-specific ones.">
+            <LibraryMultiSelect kind="objective" label="objectives" values={draft.objectives.filter(Boolean)} onChange={(values) => update('objectives', values)} />
           </FieldSet>
 
           <Field label="Solution overview" htmlFor="solutionOverview">
@@ -358,22 +354,12 @@ export default function ProjectForm() {
             />
           </Field>
 
-          <FieldSet legend="Features">
-            <ListEditor
-              label="Feature"
-              values={draft.features}
-              onChange={(values) => update('features', values)}
-              placeholder="What the finished system does"
-            />
+          <FieldSet legend="Features" hint="Select common features or add a custom feature.">
+            <LibraryMultiSelect kind="feature" label="features" values={draft.features.filter(Boolean)} onChange={(values) => update('features', values)} />
           </FieldSet>
 
-          <FieldSet legend="Challenges">
-            <ListEditor
-              label="Challenge"
-              values={draft.challenges}
-              onChange={(values) => update('challenges', values)}
-              placeholder="What was difficult, and how it was resolved"
-            />
+          <FieldSet legend="Challenges" hint="Reusable prompts are optional; describe the actual project challenge.">
+            <LibraryMultiSelect kind="challenge" label="challenges" values={draft.challenges.filter(Boolean)} onChange={(values) => update('challenges', values)} />
           </FieldSet>
 
           <Field label="Results" htmlFor="results">
@@ -387,25 +373,21 @@ export default function ProjectForm() {
         </Group>
 
         <Group title="Technical detail">
-          <FieldSet legend="Technologies" hint="Used for filtering on the projects page.">
-            <CheckboxGroup
-              name="technologies"
-              options={TECHNOLOGY_OPTIONS}
-              value={draft.technologies}
-              onChange={(values) => update('technologies', values)}
-            />
+          <FieldSet legend="Technologies" hint="Used for filtering on the projects page. Select from the shared library or add custom entries.">
+            <LibraryMultiSelect kind="technology" label="technologies" values={draft.technologies} onChange={(values) => update('technologies', values)} />
           </FieldSet>
 
-          <FieldSet legend="Tags">
-            <ListEditor
-              label="Tag"
-              values={draft.tags}
-              onChange={(values) => update('tags', values)}
-              placeholder="e.g. water management"
-            />
+          <FieldSet legend="Tags" hint="Consistent tags improve project discovery and filtering.">
+            <LibraryMultiSelect kind="tag" label="tags" values={draft.tags.filter(Boolean)} onChange={(values) => update('tags', values)} />
           </FieldSet>
 
-          <FieldSet legend="Components">
+          <FieldSet legend="Components" hint="Add reusable components first, then edit quantities, types, and notes below.">
+            <LibraryMultiSelect
+              kind="component"
+              label="components"
+              values={draft.components.filter((component) => component.name.trim()).map((component) => component.name)}
+              onChange={(names) => update('components', names.map((name) => draft.components.find((component) => component.name.toLocaleLowerCase() === name.toLocaleLowerCase()) ?? { ...EMPTY_COMPONENT, name }))}
+            />
             <TableEditor<ProjectComponent>
               label="Component"
               rows={draft.components}
@@ -420,7 +402,13 @@ export default function ProjectForm() {
             />
           </FieldSet>
 
-          <FieldSet legend="Specifications" hint="Shown in the sidebar of the project page.">
+          <FieldSet legend="Specifications" hint="Select common specification labels, then enter the values that are actually correct for this project.">
+            <LibraryMultiSelect
+              kind="specification"
+              label="specifications"
+              values={draft.specifications.filter((spec) => spec.label.trim()).map((spec) => spec.label)}
+              onChange={(labels) => update('specifications', labels.map((label) => draft.specifications.find((spec) => spec.label.toLocaleLowerCase() === label.toLocaleLowerCase()) ?? { ...EMPTY_SPEC, label }))}
+            />
             <TableEditor<ProjectSpecification>
               label="Specification"
               rows={draft.specifications}
