@@ -1,4 +1,5 @@
 import { Section, SectionHeading } from '../ui/Section';
+import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 const REASONS = [
   {
@@ -24,9 +25,10 @@ const REASONS = [
 ];
 
 export function WhyMectec() {
+  const { settings } = useSiteSettings();
   return (
     <Section className="border-b border-line">
-      <SectionHeading title="How MECTEC works" />
+      <SectionHeading title={`How ${settings.name} works`} />
       <dl className="mt-12 grid gap-x-12 gap-y-10 sm:grid-cols-2">
         {REASONS.map((reason) => (
           <div key={reason.title}>
