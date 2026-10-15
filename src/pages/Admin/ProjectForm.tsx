@@ -9,7 +9,7 @@ import { Skeleton } from '../../components/ui/Skeleton';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { Field, FieldSet } from '../../components/forms/Field';
 import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
-import { Checkbox, CheckboxGroup } from '../../components/forms/Choice';
+import { Checkbox } from '../../components/forms/Choice';
 import { ListEditor, TableEditor } from '../../components/forms/ListEditor';
 import { LibraryMultiSelect } from '../../components/forms/LibraryMultiSelect';
 import { ImageUploadField } from '../../components/forms/ImageUploadField';
@@ -20,7 +20,6 @@ import { PROJECT_CATEGORIES } from '../../constants/categories';
 import {
   PROJECT_DIFFICULTIES,
   PROJECT_STATUSES,
-  TECHNOLOGY_OPTIONS,
 } from '../../constants/projectOptions';
 import { slugify } from '../../utils/slug';
 import { toDateInputValue } from '../../utils/formatting';
