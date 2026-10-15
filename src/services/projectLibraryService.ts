@@ -9,9 +9,11 @@ import {
   serverTimestamp,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 import { COLLECTIONS, db } from '../firebase/firestore';
 import type { ProjectLibraryDraft, ProjectLibraryItem, ProjectLibraryKind } from '../types/projectLibrary';
+import { PROJECT_LIBRARY_STARTER } from '../constants/projectLibraryStarter';
 
 const libraryRef = collection(db, COLLECTIONS.projectLibrary);
 
@@ -79,5 +81,20 @@ export const projectLibraryService = {
 
   async remove(id: string): Promise<void> {
     await deleteDoc(doc(db, COLLECTIONS.projectLibrary, id));
+  },
+
+  /** Adds only missing starter entries; existing/custom records are never overwritten. */
+  async seedStarterCatalog(): Promise<number> {
+    const existing = await getDocs(libraryRef);
+    const keys = new Set(existing.docs.map((entry) => `${String(entry.data().kind ?? '')}::${normalizeName(String(entry.data().name ?? ''))}`));
+    const missing = PROJECT_LIBRARY_STARTER.filter((item) => !keys.has(`${item.kind}::${normalizeName(item.name)}`));
+    if (!missing.length) return 0;
+    const batch = writeBatch(db);
+    for (const item of missing) {
+      const ref = doc(libraryRef);
+      batch.set(ref, { ...item, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+    }
+    await batch.commit();
+    return missing.length;
   },
 };
