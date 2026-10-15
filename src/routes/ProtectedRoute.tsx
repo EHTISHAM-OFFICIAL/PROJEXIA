@@ -35,7 +35,7 @@ export function ProtectedRoute() {
           <ShieldAlert size={24} className="mx-auto text-state-warning" aria-hidden="true" />
           <h1 className="mt-4 text-xl font-semibold tracking-tight">No admin access</h1>
           <p className="mt-3 text-sm leading-relaxed text-content-secondary">
-            You're signed in as {user.email}, but that account isn't registered as a MECTEC admin.
+            You're signed in as {user.email}, but that account isn't registered as a ProjexiaHub admin.
             Add a document at <span className="font-mono text-content">admins/{user.uid}</span> in
             Firestore to grant access — see the README.
           </p>
