@@ -28,6 +28,7 @@ import { toUserMessage } from '../../utils/errors';
 import { saveTrackedRequest } from '../../utils/trackedRequest';
 import { SITE } from '../../constants/site';
 import { useAuth } from '../../hooks/useAuth';
+import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 const DEFAULT_VALUES: ProjectRequestFormValues = {
   fullName: '',
@@ -103,6 +104,7 @@ const SECTION_LINKS = [
 ];
 
 export default function RequestProject() {
+  const { settings } = useSiteSettings();
   const [files, setFiles] = useState<File[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [result, setResult] = useState<{ requestNumber: string; editDeadline: Date | null; editHours: number } | null>(null);
@@ -188,7 +190,7 @@ export default function RequestProject() {
               Request received
             </h1>
             <p className="mt-4 text-base leading-relaxed text-content-secondary">
-              MECTEC will review the details and reply {SITE.responseTime} to the contact method you
+              {settings.name} will review the details and reply {SITE.responseTime} to the contact method you
               chose.
             </p>
 
