@@ -3,6 +3,9 @@ import { Check, ChevronDown, Plus, Search, X } from 'lucide-react';
 import { TextInput } from './Inputs';
 import { projectLibraryService } from '../../services/projectLibraryService';
 import type { ProjectLibraryItem, ProjectLibraryKind } from '../../types/projectLibrary';
+import { PROJECT_LIBRARY_STARTER } from '../../constants/projectLibraryStarter';
+
+const normalizeLibraryName = (value: string) => value.trim().toLocaleLowerCase().replace(/\\s+/g, ' ');
 
 export function LibraryMultiSelect({
   kind,
@@ -35,7 +38,12 @@ export function LibraryMultiSelect({
         setLoadError('');
       })
       .catch(() => {
-        if (alive) setLoadError('Saved library options could not be loaded. Starter suggestions and custom entries are still available.');
+        if (alive) {
+          setItems(PROJECT_LIBRARY_STARTER
+            .filter((item) => item.kind === kind)
+            .map((item, index) => ({ ...item, id: `fallback-${kind}-${index}` })));
+          setLoadError('Saved library options could not be loaded. Showing starter suggestions; custom entries are still available.');
+        }
       });
     return () => { alive = false; };
   }, [kind]);
@@ -60,16 +68,16 @@ export function LibraryMultiSelect({
     const term = search.trim().toLocaleLowerCase();
     return items.filter((item) =>
       (!term || `${item.name} ${item.category} ${item.description}`.toLocaleLowerCase().includes(term)) &&
-      !values.some((value) => normalized(value) === normalized(item.name))
+      !values.some((value) => normalizeLibraryName(value) === normalizeLibraryName(item.name))
     ).slice(0, 30);
   }, [items, search, values]);
 
-  const exactMatch = items.some((item) => normalized(item.name) === normalized(search));
-  const alreadySelected = values.some((value) => normalized(value) === normalized(search));
+  const exactMatch = items.some((item) => normalizeLibraryName(item.name) === normalizeLibraryName(search));
+  const alreadySelected = values.some((value) => normalizeLibraryName(value) === normalizeLibraryName(search));
 
   const add = (name: string) => {
     const clean = name.trim();
-    if (clean && !values.some((value) => normalized(value) === normalized(clean))) {
+    if (clean && !values.some((value) => normalizeLibraryName(value) === normalizeLibraryName(clean))) {
       onChange([...values, clean]);
     }
     setCustom('');
