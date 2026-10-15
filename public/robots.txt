@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mectec-shop.web.app/sitemap.xml
+Sitemap: https://projexiahub.web.app/sitemap.xml
