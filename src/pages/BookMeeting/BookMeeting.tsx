@@ -50,10 +50,10 @@ export default function BookMeeting() {
       <Seo title="Login required" path="/book-meeting" noIndex />
       <Container className="py-20 sm:py-28">
         <div className="mx-auto max-w-xl rounded-card border border-line bg-surface p-8 text-center sm:p-12">
-          <p className="text-sm font-medium text-accent">MECTEC meetings</p>
+          <p className="text-sm font-medium text-accent">ProjexiaHub meetings</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight">Log in to continue</h1>
           <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-content-secondary">
-            A MECTEC account is required to request a meeting. This keeps meeting requests connected to your account and lets you manage your requests securely.
+            A ProjexiaHub account is required to request a meeting. This keeps meeting requests connected to your account and lets you manage your requests securely.
           </p>
           <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
             <ButtonLink to="/login?next=%2Fbook-meeting" size="lg">Log in</ButtonLink>
@@ -69,16 +69,16 @@ export default function BookMeeting() {
     catch(e){setError(toUserMessage(e,'Your meeting request could not be submitted. Please try again.'));}
   };
   return <>
-    <Seo title="Book a Meeting with MECTEC" description="Request a meeting with MECTEC to discuss an electronics project, technical question, or existing project request." path="/book-meeting"/>
+    <Seo title="Book a Meeting with ProjexiaHub" description="Request a meeting with ProjexiaHub to discuss an electronics project, technical question, or existing project request." path="/book-meeting"/>
     <div className="border-b border-line"><Container className="py-14 sm:py-20">
-      <p className="text-sm font-medium text-accent">Talk with MECTEC</p>
+      <p className="text-sm font-medium text-accent">Talk with ProjexiaHub</p>
       <h1 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Book a Meeting</h1>
-      <p className="mt-4 max-w-2xl text-base leading-relaxed text-content-secondary">Choose a preferred time and tell us what you want to discuss. This is a meeting request, not an instant calendar booking — MECTEC will review it and confirm the meeting.</p>
+      <p className="mt-4 max-w-2xl text-base leading-relaxed text-content-secondary">Choose a preferred time and tell us what you want to discuss. This is a meeting request, not an instant calendar booking — ProjexiaHub will review it and confirm the meeting.</p>
     </Container></div>
     <Container className="py-14"><div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-16"><div>
-      {sent ? <div className="rounded-card border border-state-success/25 bg-state-success/5 p-8"><CheckCircle2 size={24} className="text-state-success"/><h2 className="mt-4 text-2xl font-semibold">Meeting request received</h2><p className="mt-3 max-w-prose text-sm leading-relaxed text-content-secondary">Thanks. MECTEC will review your preferred time and contact you using the details you provided to confirm the meeting.</p><div className="mt-6 flex flex-col gap-3 sm:flex-row"><Button variant="secondary" size="sm" onClick={()=>setSent(false)}>Request another meeting</Button><ButtonLink to="/request-project" size="sm">Request a project</ButtonLink></div></div> :
+      {sent ? <div className="rounded-card border border-state-success/25 bg-state-success/5 p-8"><CheckCircle2 size={24} className="text-state-success"/><h2 className="mt-4 text-2xl font-semibold">Meeting request received</h2><p className="mt-3 max-w-prose text-sm leading-relaxed text-content-secondary">Thanks. ProjexiaHub will review your preferred time and contact you using the details you provided to confirm the meeting.</p><div className="mt-6 flex flex-col gap-3 sm:flex-row"><Button variant="secondary" size="sm" onClick={()=>setSent(false)}>Request another meeting</Button><ButtonLink to="/request-project" size="sm">Request a project</ButtonLink></div></div> :
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-8">{error&&<Alert tone="danger">{error}</Alert>}
-        <section><h2 className="text-xl font-semibold">How to reach you</h2><p className="mt-1 text-sm text-content-secondary">So MECTEC can confirm the meeting.</p><div className="mt-5 grid gap-5 sm:grid-cols-2">
+        <section><h2 className="text-xl font-semibold">How to reach you</h2><p className="mt-1 text-sm text-content-secondary">So ProjexiaHub can confirm the meeting.</p><div className="mt-5 grid gap-5 sm:grid-cols-2">
           <Field label="Full name" htmlFor="fullName" required error={errors.fullName?.message}><TextInput id="fullName" autoComplete="name" hasError={!!errors.fullName} {...register('fullName')}/></Field>
           <Field label="Email" htmlFor="email" required error={errors.email?.message}><TextInput id="email" type="email" autoComplete="email" hasError={!!errors.email} {...register('email')}/></Field>
           <Field label="Phone" htmlFor="phone"><TextInput id="phone" type="tel" autoComplete="tel" {...register('phone')}/></Field>
@@ -93,15 +93,15 @@ export default function BookMeeting() {
           <div className="grid gap-5 sm:grid-cols-2"><Field label="Meeting duration" htmlFor="duration" required><Select id="duration" options={durations} {...register('duration')}/></Field><Field label="Preferred meeting method" htmlFor="method" required><Select id="method" options={methods} {...register('method')}/></Field></div>
         </div></section>
         <section className="border-t border-line pt-8"><h2 className="text-xl font-semibold">What should we discuss?</h2><div className="mt-5 flex flex-col gap-5">
-          <Field label="Discussion" htmlFor="discussion" required hint="A clear description helps MECTEC prepare for the conversation." error={errors.discussion?.message}><TextArea id="discussion" rows={7} placeholder="What do you want to discuss?" {...register('discussion')}/></Field>
-          <Field label="Project reference" htmlFor="projectReference"><TextInput id="projectReference" placeholder="e.g. MECTEC-2026-ABC123" {...register('projectReference')}/></Field>
+          <Field label="Discussion" htmlFor="discussion" required hint="A clear description helps ProjexiaHub prepare for the conversation." error={errors.discussion?.message}><TextArea id="discussion" rows={7} placeholder="What do you want to discuss?" {...register('discussion')}/></Field>
+          <Field label="Project reference" htmlFor="projectReference"><TextInput id="projectReference" placeholder="e.g. ProjexiaHub-2026-ABC123" {...register('projectReference')}/></Field>
           <Field label="Additional notes" htmlFor="additionalNotes"><TextArea id="additionalNotes" rows={4} {...register('additionalNotes')}/></Field>
         </div></section>
         <input type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute h-0 w-0 opacity-0" {...register('website')}/>
         <Button type="submit" loading={isSubmitting}>{isSubmitting?'Submitting…':'Request meeting'}</Button>
       </form>}
     </div>
-    <aside className="flex flex-col gap-5"><div className="card p-5"><CalendarDays size={20} className="text-accent"/><h2 className="mt-4 text-base font-semibold">How it works</h2><ul className="mt-4 flex flex-col gap-3 text-sm leading-relaxed text-content-secondary"><li>1. Choose a preferred date and time.</li><li>2. Tell MECTEC what you want to discuss.</li><li>3. MECTEC reviews the request.</li><li>4. You receive confirmation before the meeting.</li></ul></div><div className="card p-5"><Clock3 size={20} className="text-content-muted"/><h2 className="mt-4 text-base font-semibold">Need a full project quote?</h2><p className="mt-2 text-sm leading-relaxed text-content-secondary">Use the project request form when you already know what you want built and need a detailed technical review.</p><ButtonLink to="/request-project" variant="secondary" size="sm" className="mt-4 w-full">Request a project</ButtonLink></div><div className="card p-5"><Video size={20} className="text-content-muted"/><h2 className="mt-4 text-base font-semibold">Meeting format</h2><p className="mt-2 text-sm leading-relaxed text-content-secondary">Meetings are confirmed individually. The final meeting method, time and link are confirmed by MECTEC.</p></div></aside>
+    <aside className="flex flex-col gap-5"><div className="card p-5"><CalendarDays size={20} className="text-accent"/><h2 className="mt-4 text-base font-semibold">How it works</h2><ul className="mt-4 flex flex-col gap-3 text-sm leading-relaxed text-content-secondary"><li>1. Choose a preferred date and time.</li><li>2. Tell ProjexiaHub what you want to discuss.</li><li>3. ProjexiaHub reviews the request.</li><li>4. You receive confirmation before the meeting.</li></ul></div><div className="card p-5"><Clock3 size={20} className="text-content-muted"/><h2 className="mt-4 text-base font-semibold">Need a full project quote?</h2><p className="mt-2 text-sm leading-relaxed text-content-secondary">Use the project request form when you already know what you want built and need a detailed technical review.</p><ButtonLink to="/request-project" variant="secondary" size="sm" className="mt-4 w-full">Request a project</ButtonLink></div><div className="card p-5"><Video size={20} className="text-content-muted"/><h2 className="mt-4 text-base font-semibold">Meeting format</h2><p className="mt-2 text-sm leading-relaxed text-content-secondary">Meetings are confirmed individually. The final meeting method, time and link are confirmed by ProjexiaHub.</p></div></aside>
     </div></Container>
   </>;
 }
