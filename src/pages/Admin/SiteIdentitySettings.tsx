@@ -65,7 +65,7 @@ export function SiteIdentitySettings() {
       await saveSettings({
         ...draft,
         name,
-        description: draft.description.trim() || DEFAULT_SITE_SETTINGS.description,
+        description: (draft.description.trim() || DEFAULT_SITE_SETTINGS.description).replace(/MECTEC|ProjexiaHub/gi, name),
         email: draft.email.trim(),
         phone: draft.phone.trim(),
         whatsapp: draft.whatsapp.trim(),
