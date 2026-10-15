@@ -12,13 +12,15 @@ import { contactService } from '../../services/contactService';
 import { contactSchema, type ContactFormValues } from '../../utils/validation';
 import { toUserMessage } from '../../utils/errors';
 import { SITE, SOCIAL_LINKS, whatsappLink } from '../../constants/site';
+import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 const activeSocials = SOCIAL_LINKS.filter((social) => social.href);
 
 export default function Contact() {
+  const { settings } = useSiteSettings();
   const [submitState, setSubmitState] = useState<'idle' | 'sent'>('idle');
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const whatsapp = whatsappLink('Hello MECTEC, I have a question about a project.');
+  const whatsapp = settings.showWhatsapp ? whatsappLink(`Hello ${settings.name}, I have a question about a project.`, settings.whatsapp) : null;
 
   const {
     register,
@@ -49,8 +51,8 @@ export default function Contact() {
   return (
     <>
       <Seo
-        title="Contact MECTEC"
-        description={`Get in touch with MECTEC about an electronics project. Replies usually ${SITE.responseTime}.`}
+        title={`Contact ${settings.name}`}
+        description={`Get in touch with ${settings.name} about an electronics project. Replies usually ${SITE.responseTime}.`}
         path="/contact"
       />
 
@@ -74,7 +76,7 @@ export default function Contact() {
                 <CheckCircle2 size={22} className="text-state-success" aria-hidden="true" />
                 <h3 className="mt-4 text-lg font-semibold">Message sent</h3>
                 <p className="mt-2 max-w-prose text-sm leading-relaxed text-content-secondary">
-                  Thanks for getting in touch. MECTEC replies {SITE.responseTime}, usually to the
+                  Thanks for getting in touch. {settings.name} replies {SITE.responseTime}, usually to the
                   email address you provided.
                 </p>
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -151,17 +153,24 @@ export default function Contact() {
 
           <aside className="flex flex-col gap-5">
             <div className="card p-5">
-              <h2 className="text-sm font-medium">Reach MECTEC directly</h2>
+              <h2 className="text-sm font-medium">Reach {settings.name} directly</h2>
               <ul className="mt-4 flex flex-col gap-4 text-sm">
-                <li className="flex gap-3">
-                  <Mail size={16} className="mt-0.5 shrink-0 text-content-muted" aria-hidden="true" />
-                  <a
-                    href={`mailto:${SITE.email}`}
-                    className="break-all text-content-secondary transition-colors hover:text-content"
-                  >
-                    {SITE.email}
-                  </a>
-                </li>
+                {settings.showEmail && settings.email && (
+                  <li className="flex gap-3">
+                    <Mail size={16} className="mt-0.5 shrink-0 text-content-muted" aria-hidden="true" />
+                    <a href={`mailto:${settings.email}`} className="break-all text-content-secondary transition-colors hover:text-content">
+                      {settings.email}
+                    </a>
+                  </li>
+                )}
+                {settings.showPhone && settings.phone && (
+                  <li className="flex gap-3">
+                    <MessageCircle size={16} className="mt-0.5 shrink-0 text-content-muted" aria-hidden="true" />
+                    <a href={`tel:${settings.phone.replace(/[^+0-9]/g, '')}`} className="text-content-secondary transition-colors hover:text-content">
+                      {settings.phone}
+                    </a>
+                  </li>
+                )}
                 {whatsapp && (
                   <li className="flex gap-3">
                     <MessageCircle
@@ -179,10 +188,12 @@ export default function Contact() {
                     </a>
                   </li>
                 )}
-                <li className="flex gap-3">
-                  <MapPin size={16} className="mt-0.5 shrink-0 text-content-muted" aria-hidden="true" />
-                  <span className="text-content-secondary">{SITE.location}</span>
-                </li>
+                {settings.showAddress && settings.address && (
+                  <li className="flex gap-3">
+                    <MapPin size={16} className="mt-0.5 shrink-0 text-content-muted" aria-hidden="true" />
+                    <span className="text-content-secondary">{settings.address}</span>
+                  </li>
+                )}
                 <li className="flex gap-3">
                   <Clock size={16} className="mt-0.5 shrink-0 text-content-muted" aria-hidden="true" />
                   <span className="text-content-secondary">Replies {SITE.responseTime}</span>
