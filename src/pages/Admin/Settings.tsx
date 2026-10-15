@@ -28,6 +28,7 @@ import { requestSettingsService, DEFAULT_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS, MIN
 
 import type { ThemeColors } from "../../types/theme";
 import { toUserMessage } from "../../utils/errors";
+import { SiteIdentitySettings } from "./SiteIdentitySettings";
 
 /* ================================================================
    COLOR GROUPS
@@ -593,6 +594,8 @@ export default function Settings() {
         </p>
       </header>
 
+      <SiteIdentitySettings />
+
       {/* ============================================================
           IMGBB
           ============================================================ */}
@@ -920,7 +923,7 @@ export default function Settings() {
         </div>
 
         <p className="mt-3 max-w-3xl text-sm leading-relaxed text-content-secondary">
-          Customize the colors used across the MECTEC website. Changes are
+          Customize the colors used across the website. Changes are
           previewed immediately and saved to Firebase, so you can manage the
           visual theme without editing CSS manually.
         </p>
