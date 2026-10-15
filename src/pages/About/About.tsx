@@ -5,6 +5,7 @@ import { ButtonLink } from '../../components/ui/Button';
 import { Accordion } from '../../components/ui/Accordion';
 import { PROJECT_CATEGORIES } from '../../constants/categories';
 import { FAQ_ITEMS } from '../../constants/faq';
+import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 const CAPABILITIES = [
   {
@@ -39,11 +40,12 @@ const CAPABILITIES = [
 ];
 
 export default function About() {
+  const { settings } = useSiteSettings();
   return (
     <>
       <Seo
-        title="About MECTEC"
-        description="MECTEC is an electronics studio building embedded systems, IoT devices and automation projects from concept through to tested hardware."
+        title={`About ${settings.name}`}
+        description={`${settings.name} is an electronics studio building embedded systems, IoT devices and automation projects from concept through to tested hardware.`}
         path="/about"
         schema={{
           '@type': 'FAQPage',
@@ -65,7 +67,7 @@ export default function About() {
             Electronics built to be understood, not just delivered.
           </h1>
           <p className="mt-6 max-w-prose text-lg leading-relaxed text-content-secondary">
-            MECTEC is an electronics design and development studio working on embedded systems, IoT
+            {settings.name} is an electronics design and development studio working on embedded systems, IoT
             devices, automation and robotics.
           </p>
         </Container>
@@ -76,12 +78,12 @@ export default function About() {
           <h2 className="text-2xl font-semibold tracking-tight">The story</h2>
           <div className="flex max-w-prose flex-col gap-4 text-base leading-relaxed text-content-secondary">
             <p>
-              MECTEC started from a simple frustration: plenty of electronics projects exist online,
+              {settings.name} started from a simple frustration: plenty of electronics projects exist online,
               but very few are explained well enough to actually rebuild, adapt or trust. Wiring
               diagrams are missing, code is half-posted, and nobody says what went wrong.
             </p>
             <p>
-              So MECTEC was set up to work the other way round. Every project is documented as a
+              So {settings.name} was set up to work the other way round. Every project is documented as a
               case study — what the problem was, which components were chosen and why, what failed
               during development, and what the finished system measurably does.
             </p>
@@ -107,7 +109,7 @@ export default function About() {
       <Section className="border-b border-line">
         <SectionHeading
           title="Technical capabilities"
-          description="The tools and techniques currently used on MECTEC projects."
+          description="The tools and techniques currently used on {settings.name} projects."
         />
         <div className="mt-12 grid gap-10 md:grid-cols-3">
           {CAPABILITIES.map((group) => (
@@ -134,7 +136,7 @@ export default function About() {
 
       <Section className="border-b border-line">
         <SectionHeading
-          title="What MECTEC works on"
+          title={`What ${settings.name} works on`}
           description="Project categories currently covered. The list grows as new work comes in."
         />
         <ul className="mt-10 flex flex-wrap gap-2.5">
@@ -215,7 +217,7 @@ export default function About() {
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <ButtonLink to="/request-project">Request a project</ButtonLink>
             <ButtonLink to="/contact" variant="secondary">
-              Contact MECTEC
+              Contact {settings.name}
             </ButtonLink>
           </div>
         </div>
