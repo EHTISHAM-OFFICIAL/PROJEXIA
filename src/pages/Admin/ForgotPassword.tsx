@@ -48,7 +48,7 @@ export default function ForgotPassword() {
 
           <h1 className="mt-8 text-center text-xl font-semibold tracking-tight">Reset admin password</h1>
           <p className="mt-2 text-center text-sm text-content-secondary">
-            Enter the email address used for your MECTEC admin account.
+            Enter the email address used for your ProjexiaHub admin account.
           </p>
 
           <form onSubmit={handleSubmit} noValidate className="mt-8 flex flex-col gap-5 rounded-card border border-line bg-surface p-6">
