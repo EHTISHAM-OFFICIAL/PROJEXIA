@@ -5,8 +5,10 @@ import { Button } from '../../components/ui/Button';
 import { ButtonLink } from '../../components/ui/Button';
 import { Seo } from '../../components/ui/Seo';
 import { useAuth } from '../../hooks/useAuth';
+import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 export default function Account() {
+  const { settings } = useSiteSettings();
   const { user, profile, signOut } = useAuth();
 
   if (!user) return null;
@@ -17,7 +19,7 @@ export default function Account() {
       <Container className="py-14 sm:py-20">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-medium text-accent">MECTEC account</p>
+            <p className="text-sm font-medium text-accent">{settings.name} account</p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
               {profile?.username || 'My account'}
             </h1>
