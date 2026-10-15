@@ -12,7 +12,7 @@ export function SectionJ({ form }: { form: UseFormReturn<ProjectRequestFormValue
       id="consent"
       step={10}
       title="Before you send"
-      description="Both boxes are required — MECTEC cannot act on a request without them."
+      description="Both boxes are required — the team cannot act on a request without them."
     >
       <div className="flex flex-col gap-4 rounded-card border border-line bg-surface p-5">
         <div>
@@ -32,7 +32,7 @@ export function SectionJ({ form }: { form: UseFormReturn<ProjectRequestFormValue
         <div>
           <Checkbox
             id="allowContact"
-            label="MECTEC may contact me about this request."
+            label="the team may contact me about this request."
             description="Only about this project. Your details are not shared with anyone else or used for marketing."
             {...register('allowContact')}
           />
