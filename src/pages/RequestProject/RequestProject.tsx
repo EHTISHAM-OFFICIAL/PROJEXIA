@@ -131,7 +131,7 @@ export default function RequestProject() {
 
     // Honeypot: hidden from real users, so a value here means an automated submission.
     if (values.website) {
-      setResult({ requestNumber: 'MECTEC-0000-000000', editDeadline: null, editHours: 24 });
+      setResult({ requestNumber: 'PROJEXIAHUB-0000-000000', editDeadline: null, editHours: 24 });
       return;
     }
 
