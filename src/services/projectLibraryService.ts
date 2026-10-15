@@ -46,10 +46,26 @@ export const projectLibraryService = {
 
   async listByKind(kind: ProjectLibraryKind, includeInactive = false): Promise<ProjectLibraryItem[]> {
     const snapshot = await getDocs(query(libraryRef, where('kind', '==', kind)));
-    const stored = snapshot.docs.map((entry) => toItem(entry.id, entry.data()));
+    const starterByName = new Map(
+      PROJECT_LIBRARY_STARTER
+        .filter((item) => item.kind === kind)
+        .map((item) => [normalizeName(item.name), item])
+    );
+    const stored = snapshot.docs.map((entry) => {
+      const item = toItem(entry.id, entry.data());
+      const starter = starterByName.get(normalizeName(item.name));
+      // Older seeded records may have blank notes/units because those fields
+      // were added later. Fill only blank metadata; keep all custom values.
+      if (!starter) return item;
+      return {
+        ...item,
+        category: item.category || starter.category,
+        description: item.description || starter.description,
+        unit: item.unit || starter.unit,
+        defaultValue: item.defaultValue || starter.defaultValue,
+      };
+    });
     const storedNames = new Set(stored.map((item) => normalizeName(item.name)));
-    // Starter entries remain available as suggestions before the admin seeds them
-    // into Firestore. Existing records (including inactive ones) take precedence.
     const starter = PROJECT_LIBRARY_STARTER
       .filter((item) => item.kind === kind && !storedNames.has(normalizeName(item.name)))
       .map((item, index) => ({
