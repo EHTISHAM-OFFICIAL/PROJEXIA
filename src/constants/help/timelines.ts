@@ -179,16 +179,16 @@ export const TIMELINE_HELP: HelpEntry[] = [
     id: "timeline-response",
     category: "timelines",
     intent: "timeline",
-    question: "How long does MECTEC take to respond?",
+    question: "How long does ProjexiaHub take to respond?",
     variations: [
-      "How long does MECTEC take to respond",
+      "How long does ProjexiaHub take to respond",
       "When will you reply",
       "How soon will I get a reply",
       "What is the response time",
       "When will someone contact me",
     ],
     keywords: ["response", "reply", "contact", "time"],
-    answer: `MECTEC typically replies ${SITE.responseTime} to a submitted request.`,
+    answer: `ProjexiaHub typically replies ${SITE.responseTime} to a submitted request.`,
     priority: 15,
   },
 
@@ -196,9 +196,9 @@ export const TIMELINE_HELP: HelpEntry[] = [
     id: "timeline-availability",
     category: "timelines",
     intent: "timeline",
-    question: "Does MECTEC availability affect the timeline?",
+    question: "Does ProjexiaHub availability affect the timeline?",
     variations: [
-      "Does MECTEC availability affect the timeline",
+      "Does ProjexiaHub availability affect the timeline",
       "Current workload timeline",
       "Busy schedule project",
       "Capacity for new projects",
@@ -206,7 +206,7 @@ export const TIMELINE_HELP: HelpEntry[] = [
     ],
     keywords: ["availability", "workload", "schedule", "timeline", "start"],
     answer:
-      "Yes. Current workload and scheduling can affect when work starts and how quickly it progresses. Contact MECTEC to discuss availability.",
+      "Yes. Current workload and scheduling can affect when work starts and how quickly it progresses. Contact ProjexiaHub to discuss availability.",
     priority: 13,
   },
 
@@ -683,7 +683,7 @@ export const TIMELINE_HELP: HelpEntry[] = [
     ],
     keywords: ["progress", "update", "regular", "report", "status"],
     answer:
-      "Update frequency depends on the project agreement. Contact MECTEC to discuss how progress will be communicated.",
+      "Update frequency depends on the project agreement. Contact ProjexiaHub to discuss how progress will be communicated.",
     priority: 13,
   },
 
@@ -722,7 +722,7 @@ export const TIMELINE_HELP: HelpEntry[] = [
     ],
     keywords: ["delay", "late", "timeline", "project", "on time"],
     answer:
-      "Contact MECTEC to understand the cause and revised timeline. Delays can come from components, testing, revisions or scheduling.",
+      "Contact ProjexiaHub to understand the cause and revised timeline. Delays can come from components, testing, revisions or scheduling.",
     priority: 13,
   },
 
@@ -851,7 +851,7 @@ export const TIMELINE_HELP: HelpEntry[] = [
     ],
     keywords: ["deadline", "guarantee", "commit", "timeline", "delivery"],
     answer:
-      "Deadline commitments depend on the project and agreement. Contact MECTEC to discuss realistic timelines for your specific project.",
+      "Deadline commitments depend on the project and agreement. Contact ProjexiaHub to discuss realistic timelines for your specific project.",
     priority: 13,
   },
 
@@ -869,7 +869,7 @@ export const TIMELINE_HELP: HelpEntry[] = [
     ],
     keywords: ["planning", "timeline", "project", "schedule", "tips"],
     answer:
-      "Define requirements clearly, allow buffer, confirm component lead times and consider testing and certification. Review with MECTEC to align expectations.",
+      "Define requirements clearly, allow buffer, confirm component lead times and consider testing and certification. Review with ProjexiaHub to align expectations.",
     priority: 15,
   },
 
