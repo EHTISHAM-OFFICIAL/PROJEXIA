@@ -26,7 +26,7 @@ export function SectionC({ form }: { form: UseFormReturn<ProjectRequestFormValue
       id="technical"
       step={3}
       title="Technical preferences"
-      description="All optional. Skip anything you're unsure about — MECTEC will recommend the parts."
+      description="All optional. Skip anything you're unsure about — the team will recommend the parts."
     >
       <FieldSet legend="Preferred platform" hint="Choose any that would suit, or leave blank.">
         <CheckboxGroup name="preferredPlatform" options={PLATFORM_OPTIONS} {...multi('preferredPlatform')} />
