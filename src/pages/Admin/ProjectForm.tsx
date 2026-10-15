@@ -385,7 +385,17 @@ export default function ProjectForm() {
               kind="component"
               label="components"
               values={draft.components.filter((component) => component.name.trim()).map((component) => component.name)}
-              onChange={(names) => update('components', names.map((name) => draft.components.find((component) => component.name.toLocaleLowerCase() === name.toLocaleLowerCase()) ?? { ...EMPTY_COMPONENT, name }))}
+              onChange={(names, addedItem) => update('components', names.map((name) => {
+                const existingComponent = draft.components.find((component) => component.name.trim().toLocaleLowerCase() === name.trim().toLocaleLowerCase());
+                if (existingComponent) return existingComponent;
+                const libraryItem = addedItem && addedItem.name.trim().toLocaleLowerCase() === name.trim().toLocaleLowerCase() ? addedItem : undefined;
+                return {
+                  ...EMPTY_COMPONENT,
+                  name,
+                  category: libraryItem?.category ?? '',
+                  notes: libraryItem?.description ?? '',
+                };
+              }))}
             />
             <TableEditor<ProjectComponent>
               label="Component"
@@ -406,7 +416,12 @@ export default function ProjectForm() {
               kind="specification"
               label="specifications"
               values={draft.specifications.filter((spec) => spec.label.trim()).map((spec) => spec.label)}
-              onChange={(labels) => update('specifications', labels.map((label) => draft.specifications.find((spec) => spec.label.toLocaleLowerCase() === label.toLocaleLowerCase()) ?? { ...EMPTY_SPEC, label }))}
+              onChange={(labels, addedItem) => update('specifications', labels.map((label) => {
+                const existingSpec = draft.specifications.find((spec) => spec.label.trim().toLocaleLowerCase() === label.trim().toLocaleLowerCase());
+                if (existingSpec) return existingSpec;
+                const libraryItem = addedItem && addedItem.name.trim().toLocaleLowerCase() === label.trim().toLocaleLowerCase() ? addedItem : undefined;
+                return { ...EMPTY_SPEC, label, value: libraryItem?.defaultValue ?? '' };
+              }))}
             />
             <TableEditor<ProjectSpecification>
               label="Specification"
