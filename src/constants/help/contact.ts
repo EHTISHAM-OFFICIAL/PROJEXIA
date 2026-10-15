@@ -9,17 +9,17 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-email",
     category: "contact",
     intent: "contact",
-    question: "What is the MECTEC email?",
+    question: "What is the ProjexiaHub email?",
     variations: [
-      "What is the MECTEC email",
-      "How can I email MECTEC",
+      "What is the ProjexiaHub email",
+      "How can I email ProjexiaHub",
       "What email should I use",
-      "Give me the MECTEC email",
+      "Give me the ProjexiaHub email",
       "Where can I send an email",
       "What is your email address",
     ],
     keywords: ["email", "mail", "address", "contact"],
-    answer: `MECTEC can be contacted by email at ${SITE.email}.`,
+    answer: `ProjexiaHub can be contacted by email at ${SITE.email}.`,
     priority: 15,
   },
 
@@ -27,19 +27,19 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-whatsapp",
     category: "contact",
     intent: "contact",
-    question: "Can I contact MECTEC through WhatsApp?",
+    question: "Can I contact ProjexiaHub through WhatsApp?",
     variations: [
-      "Can I contact MECTEC through WhatsApp",
+      "Can I contact ProjexiaHub through WhatsApp",
       "Do you have WhatsApp",
-      "Can I WhatsApp MECTEC",
+      "Can I WhatsApp ProjexiaHub",
       "How do I contact you on WhatsApp",
       "Can I message you on WhatsApp",
       "Is WhatsApp available",
     ],
     keywords: ["whatsapp", "message", "contact", "chat"],
     answer: SITE.whatsapp
-      ? "Yes. MECTEC provides WhatsApp contact through the WhatsApp button available on the website."
-      : `MECTEC can be reached through the contact page and email at ${SITE.email}.`,
+      ? "Yes. ProjexiaHub provides WhatsApp contact through the WhatsApp button available on the website."
+      : `ProjexiaHub can be reached through the contact page and email at ${SITE.email}.`,
     priority: 15,
   },
 
@@ -57,7 +57,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["contact", "form", "message", "submit", "request"],
     answer:
-      "Use the Contact section of the website to find the contact form or available contact options. Provide clear details about your question or project so MECTEC can respond appropriately.",
+      "Use the Contact section of the website to find the contact form or available contact options. Provide clear details about your question or project so ProjexiaHub can respond appropriately.",
     priority: 13,
   },
 
@@ -65,17 +65,17 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-phone",
     category: "contact",
     intent: "contact",
-    question: "What is the MECTEC phone number?",
+    question: "What is the ProjexiaHub phone number?",
     variations: [
-      "What is the MECTEC phone number",
-      "Can I call MECTEC",
+      "What is the ProjexiaHub phone number",
+      "Can I call ProjexiaHub",
       "What is your phone number",
       "How do I call you",
       "Do you have a contact number",
       "Phone contact",
     ],
     keywords: ["phone", "call", "number", "contact"],
-    answer: `MECTEC contact details are available through the Contact section of the website. You can also reach MECTEC by email at ${SITE.email}.`,
+    answer: `ProjexiaHub contact details are available through the Contact section of the website. You can also reach ProjexiaHub by email at ${SITE.email}.`,
     priority: 13,
   },
 
@@ -83,17 +83,17 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-social",
     category: "contact",
     intent: "contact",
-    question: "Does MECTEC have social media?",
+    question: "Does ProjexiaHub have social media?",
     variations: [
-      "Does MECTEC have social media",
+      "Does ProjexiaHub have social media",
       "Are you on Facebook",
       "Do you have Instagram",
       "Social media links",
-      "Where can I follow MECTEC",
+      "Where can I follow ProjexiaHub",
     ],
     keywords: ["social", "media", "facebook", "instagram", "follow"],
     answer:
-      "Social media availability depends on the current MECTEC online presence. Check the website or contact MECTEC directly for the latest official channels.",
+      "Social media availability depends on the current ProjexiaHub online presence. Check the website or contact ProjexiaHub directly for the latest official channels.",
     priority: 10,
   },
 
@@ -101,9 +101,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-project",
     category: "contact",
     intent: "contact",
-    question: "Where should I contact MECTEC about a project?",
+    question: "Where should I contact ProjexiaHub about a project?",
     variations: [
-      "Where should I contact MECTEC about a project",
+      "Where should I contact ProjexiaHub about a project",
       "Where do I send my project idea",
       "How do I discuss a project",
       "Who do I contact about a project",
@@ -140,9 +140,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-response",
     category: "contact",
     intent: "contact",
-    question: "How long does MECTEC take to respond?",
+    question: "How long does ProjexiaHub take to respond?",
     variations: [
-      "How long does MECTEC take to respond",
+      "How long does ProjexiaHub take to respond",
       "Response time",
       "When will I get a reply",
       "How fast do you respond",
@@ -150,7 +150,7 @@ export const CONTACT_HELP: HelpEntry[] = [
       "When will someone contact me",
     ],
     keywords: ["response", "reply", "contact", "time", "fast"],
-    answer: `MECTEC typically replies ${SITE.responseTime} to a submitted request. For the latest information, use the contact options provided on the website.`,
+    answer: `ProjexiaHub typically replies ${SITE.responseTime} to a submitted request. For the latest information, use the contact options provided on the website.`,
     priority: 15,
   },
 
@@ -167,7 +167,7 @@ export const CONTACT_HELP: HelpEntry[] = [
       "Follow up on project request",
     ],
     keywords: ["follow", "request", "status", "reply", "submitted"],
-    answer: `You can follow up using the contact options on the website. MECTEC typically replies ${SITE.responseTime} to submitted requests. If you have not received a response within the expected time, send a follow-up message with your original request details.`,
+    answer: `You can follow up using the contact options on the website. ProjexiaHub typically replies ${SITE.responseTime} to submitted requests. If you have not received a response within the expected time, send a follow-up message with your original request details.`,
     priority: 13,
   },
 
@@ -178,13 +178,13 @@ export const CONTACT_HELP: HelpEntry[] = [
     question: "What if I do not get a response?",
     variations: [
       "What if I do not get a response",
-      "No reply from MECTEC",
+      "No reply from ProjexiaHub",
       "I did not hear back",
       "My email was not answered",
       "No response to my request",
     ],
     keywords: ["response", "reply", "answer", "request", "contact"],
-    answer: `MECTEC typically replies ${SITE.responseTime} to submitted requests. If you have not received a response, check the contact details were correct, look in your spam folder and send a polite follow-up with your original message details.`,
+    answer: `ProjexiaHub typically replies ${SITE.responseTime} to submitted requests. If you have not received a response, check the contact details were correct, look in your spam folder and send a polite follow-up with your original message details.`,
     priority: 13,
   },
 
@@ -192,9 +192,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-preferred",
     category: "contact",
     intent: "contact",
-    question: "What is the best way to contact MECTEC?",
+    question: "What is the best way to contact ProjexiaHub?",
     variations: [
-      "What is the best way to contact MECTEC",
+      "What is the best way to contact ProjexiaHub",
       "How should I contact you",
       "Best contact method",
       "Email or form",
@@ -202,7 +202,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["best", "contact", "method", "preferred", "email"],
     answer:
-      "For project requests, the project request form is usually the best starting point because it collects the needed details. For general questions, use the contact options provided on the website or email MECTEC directly.",
+      "For project requests, the project request form is usually the best starting point because it collects the needed details. For general questions, use the contact options provided on the website or email ProjexiaHub directly.",
     priority: 15,
   },
 
@@ -210,11 +210,11 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-urgent",
     category: "contact",
     intent: "contact",
-    question: "How do I contact MECTEC for an urgent matter?",
+    question: "How do I contact ProjexiaHub for an urgent matter?",
     variations: [
-      "How do I contact MECTEC for an urgent matter",
+      "How do I contact ProjexiaHub for an urgent matter",
       "Urgent contact",
-      "I need to reach MECTEC quickly",
+      "I need to reach ProjexiaHub quickly",
       "Emergency contact",
       "Time sensitive request",
     ],
@@ -228,9 +228,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-international",
     category: "contact",
     intent: "contact",
-    question: "Can I contact MECTEC from another country?",
+    question: "Can I contact ProjexiaHub from another country?",
     variations: [
-      "Can I contact MECTEC from another country",
+      "Can I contact ProjexiaHub from another country",
       "International contact",
       "Can I email from outside the country",
       "Do you work with international clients",
@@ -238,7 +238,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["international", "country", "overseas", "email", "contact"],
     answer:
-      "You can use the email or contact options provided on the website to reach MECTEC. Project feasibility and arrangements may depend on location, shipping and other factors.",
+      "You can use the email or contact options provided on the website to reach ProjexiaHub. Project feasibility and arrangements may depend on location, shipping and other factors.",
     priority: 10,
   },
 
@@ -253,7 +253,7 @@ export const CONTACT_HELP: HelpEntry[] = [
       "I want to talk to a human",
       "Can a real person answer me",
       "Is there a human I can contact",
-      "Can someone from MECTEC help me",
+      "Can someone from ProjexiaHub help me",
     ],
     keywords: ["human", "person", "speak", "talk", "contact"],
     answer:
@@ -265,17 +265,17 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-help-assistant",
     category: "contact",
     intent: "contact",
-    question: "Can the Help Assistant contact MECTEC for me?",
+    question: "Can the Help Assistant contact ProjexiaHub for me?",
     variations: [
-      "Can the Help Assistant contact MECTEC for me",
+      "Can the Help Assistant contact ProjexiaHub for me",
       "Can the chatbot contact someone",
       "Can this assistant send my request",
-      "Can the chatbot email MECTEC",
-      "Can you contact MECTEC for me",
+      "Can the chatbot email ProjexiaHub",
+      "Can you contact ProjexiaHub for me",
     ],
     keywords: ["assistant", "chatbot", "contact", "email", "send"],
     answer:
-      "The Help Assistant provides instant information from MECTEC's local knowledge library. For an actual project request or direct conversation, use the request or contact options on the website.",
+      "The Help Assistant provides instant information from ProjexiaHub's local knowledge library. For an actual project request or direct conversation, use the request or contact options on the website.",
     priority: 13,
   },
 
@@ -296,7 +296,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["payment", "billing", "pay", "contact", "project"],
     answer:
-      "Payment arrangements are handled directly with MECTEC and are not defined by the Help Assistant. Use the contact options on the website to discuss payment for a specific project.",
+      "Payment arrangements are handled directly with ProjexiaHub and are not defined by the Help Assistant. Use the contact options on the website to discuss payment for a specific project.",
     priority: 13,
   },
 
@@ -314,7 +314,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["warranty", "repair", "problem", "contact", "project"],
     answer:
-      "Warranty terms depend on the specific project and current MECTEC policy. Use the contact options on the website to discuss a warranty or repair question directly.",
+      "Warranty terms depend on the specific project and current ProjexiaHub policy. Use the contact options on the website to discuss a warranty or repair question directly.",
     priority: 13,
   },
 
@@ -322,9 +322,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-feedback",
     category: "contact",
     intent: "contact",
-    question: "How do I send feedback about MECTEC?",
+    question: "How do I send feedback about ProjexiaHub?",
     variations: [
-      "How do I send feedback about MECTEC",
+      "How do I send feedback about ProjexiaHub",
       "Give feedback",
       "How to report a problem",
       "Send a suggestion",
@@ -340,17 +340,17 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-careers",
     category: "contact",
     intent: "contact",
-    question: "Can I work with or join MECTEC?",
+    question: "Can I work with or join ProjexiaHub?",
     variations: [
-      "Can I work with or join MECTEC",
-      "Careers at MECTEC",
+      "Can I work with or join ProjexiaHub",
+      "Careers at ProjexiaHub",
       "Jobs",
       "Can I join your team",
       "Internship",
     ],
     keywords: ["careers", "jobs", "join", "team", "internship"],
     answer:
-      "Career, collaboration or internship opportunities depend on current MECTEC needs and policies. Use the contact options on the website to express your interest and provide relevant details.",
+      "Career, collaboration or internship opportunities depend on current ProjexiaHub needs and policies. Use the contact options on the website to express your interest and provide relevant details.",
     priority: 9,
   },
 
@@ -358,9 +358,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-partnership",
     category: "contact",
     intent: "contact",
-    question: "Can my business partner with MECTEC?",
+    question: "Can my business partner with ProjexiaHub?",
     variations: [
-      "Can my business partner with MECTEC",
+      "Can my business partner with ProjexiaHub",
       "Partnership",
       "Business collaboration",
       "Work together",
@@ -368,7 +368,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["partnership", "business", "collaboration", "work", "together"],
     answer:
-      "Partnership and collaboration opportunities can be discussed directly with MECTEC. Use the contact options on the website and explain the proposed partnership or collaboration.",
+      "Partnership and collaboration opportunities can be discussed directly with ProjexiaHub. Use the contact options on the website and explain the proposed partnership or collaboration.",
     priority: 10,
   },
 
@@ -376,10 +376,10 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-address",
     category: "contact",
     intent: "contact",
-    question: "What is the MECTEC address?",
+    question: "What is the ProjexiaHub address?",
     variations: [
-      "What is the MECTEC address",
-      "Where is MECTEC located",
+      "What is the ProjexiaHub address",
+      "Where is ProjexiaHub located",
       "What is your address",
       "Where can I visit",
       "Shop address",
@@ -387,7 +387,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["address", "location", "visit", "shop", "where"],
     answer:
-      "MECTEC location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location information.",
+      "ProjexiaHub location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location information.",
     priority: 15,
   },
 
@@ -395,9 +395,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-hours",
     category: "contact",
     intent: "contact",
-    question: "When can I contact MECTEC?",
+    question: "When can I contact ProjexiaHub?",
     variations: [
-      "When can I contact MECTEC",
+      "When can I contact ProjexiaHub",
       "Contact hours",
       "When are you available",
       "What time can I call",
@@ -406,7 +406,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["contact", "hours", "available", "time", "support"],
     answer:
-      "MECTEC is normally open Monday through Thursday and Saturday through Sunday from 10:00 AM to 10:00 PM. Friday is officially closed unless there is urgent or unusually high workload. For specific contact availability, use the website contact options.",
+      "ProjexiaHub is normally open Monday through Thursday and Saturday through Sunday from 10:00 AM to 10:00 PM. Friday is officially closed unless there is urgent or unusually high workload. For specific contact availability, use the website contact options.",
     priority: 15,
   },
 
@@ -424,7 +424,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["contact", "form", "help", "guide", "message"],
     answer:
-      "Use the Contact section to reach MECTEC. Provide a clear subject, message and any relevant project details so the request can be routed correctly.",
+      "Use the Contact section to reach ProjexiaHub. Provide a clear subject, message and any relevant project details so the request can be routed correctly.",
     priority: 10,
   },
 
@@ -432,9 +432,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-message-tips",
     category: "contact",
     intent: "contact",
-    question: "What should I include in a message to MECTEC?",
+    question: "What should I include in a message to ProjexiaHub?",
     variations: [
-      "What should I include in a message to MECTEC",
+      "What should I include in a message to ProjexiaHub",
       "How to write a good message",
       "Contact message tips",
       "What to write in message",
@@ -450,9 +450,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-language",
     category: "contact",
     intent: "contact",
-    question: "What language should I use to contact MECTEC?",
+    question: "What language should I use to contact ProjexiaHub?",
     variations: [
-      "What language should I use to contact MECTEC",
+      "What language should I use to contact ProjexiaHub",
       "Can I write in Urdu",
       "Do you speak English",
       "Language for contact",
@@ -460,7 +460,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["language", "contact", "english", "urdu", "write"],
     answer:
-      "You can contact MECTEC in the language you are most comfortable with. If you are unsure, use English or the language shown on the website; MECTEC will respond accordingly.",
+      "You can contact ProjexiaHub in the language you are most comfortable with. If you are unsure, use English or the language shown on the website; ProjexiaHub will respond accordingly.",
     priority: 9,
   },
 
@@ -468,9 +468,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-confidential",
     category: "contact",
     intent: "contact",
-    question: "Can I contact MECTEC confidentially?",
+    question: "Can I contact ProjexiaHub confidentially?",
     variations: [
-      "Can I contact MECTEC confidentially",
+      "Can I contact ProjexiaHub confidentially",
       "Confidential contact",
       "Private message",
       "Secret project contact",
@@ -478,7 +478,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["confidential", "contact", "private", "nda", "secret"],
     answer:
-      "Confidentiality arrangements can be discussed with MECTEC. If your message contains sensitive information, mention that before sharing details.",
+      "Confidentiality arrangements can be discussed with ProjexiaHub. If your message contains sensitive information, mention that before sharing details.",
     priority: 13,
   },
 
@@ -496,7 +496,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["assistant", "question", "unanswered", "not", "covered"],
     answer:
-      "If the Help Assistant cannot answer a question, use the contact options on the website to ask MECTEC directly. Providing details helps ensure a useful reply.",
+      "If the Help Assistant cannot answer a question, use the contact options on the website to ask ProjexiaHub directly. Providing details helps ensure a useful reply.",
     priority: 13,
   },
 
@@ -532,7 +532,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["urgent", "response", "speed", "priority", "contact"],
     answer:
-      "Marking a message urgent can help MECTEC prioritize, but the actual response depends on capacity and the nature of the request. Provide enough detail for MECTEC to assess urgency accurately.",
+      "Marking a message urgent can help ProjexiaHub prioritize, but the actual response depends on capacity and the nature of the request. Provide enough detail for ProjexiaHub to assess urgency accurately.",
     priority: 10,
   },
 
@@ -558,9 +558,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-after-hours",
     category: "contact",
     intent: "contact",
-    question: "Can I contact MECTEC outside normal hours?",
+    question: "Can I contact ProjexiaHub outside normal hours?",
     variations: [
-      "Can I contact MECTEC outside normal hours",
+      "Can I contact ProjexiaHub outside normal hours",
       "After hours contact",
       "Contact at night",
       "Weekend contact",
@@ -576,17 +576,17 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-verify-official",
     category: "contact",
     intent: "contact",
-    question: "How do I verify an official MECTEC contact?",
+    question: "How do I verify an official ProjexiaHub contact?",
     variations: [
-      "How do I verify an official MECTEC contact",
-      "Is this the real MECTEC",
+      "How do I verify an official ProjexiaHub contact",
+      "Is this the real ProjexiaHub",
       "Official contact verification",
       "Scam concern contact",
       "Official email check",
     ],
     keywords: ["verify", "official", "contact", "real", "scam"],
     answer:
-      "Use contact details listed on the official MECTEC website. If a message claims to be from MECTEC but uses different details, verify through the website before responding.",
+      "Use contact details listed on the official ProjexiaHub website. If a message claims to be from ProjexiaHub but uses different details, verify through the website before responding.",
     priority: 13,
   },
 
@@ -594,9 +594,9 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-alternate-methods",
     category: "contact",
     intent: "contact",
-    question: "What other ways can I reach MECTEC?",
+    question: "What other ways can I reach ProjexiaHub?",
     variations: [
-      "What other ways can I reach MECTEC",
+      "What other ways can I reach ProjexiaHub",
       "Alternative contact",
       "Other contact methods",
       "How else to contact",
@@ -616,7 +616,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     variations: [
       "How can I make my message clearer",
       "Message clarity tips",
-      "Write clearly to MECTEC",
+      "Write clearly to ProjexiaHub",
       "Improve my message",
       "Clear contact message",
     ],
@@ -658,7 +658,7 @@ export const CONTACT_HELP: HelpEntry[] = [
     ],
     keywords: ["multiple", "topics", "message", "questions", "combined"],
     answer:
-      "You can, but separating unrelated topics into distinct messages or clearly numbered points usually helps MECTEC respond accurately. Related items in one message are fine.",
+      "You can, but separating unrelated topics into distinct messages or clearly numbered points usually helps ProjexiaHub respond accurately. Related items in one message are fine.",
     priority: 10,
   },
 
@@ -666,12 +666,12 @@ export const CONTACT_HELP: HelpEntry[] = [
     id: "contact-best-practices",
     category: "contact",
     intent: "procedure",
-    question: "What are best practices for contacting MECTEC?",
+    question: "What are best practices for contacting ProjexiaHub?",
     variations: [
-      "What are best practices for contacting MECTEC",
+      "What are best practices for contacting ProjexiaHub",
       "Contact best practices",
       "How to contact efficiently",
-      "Best way to reach MECTEC",
+      "Best way to reach ProjexiaHub",
       "Contact guidelines",
     ],
     keywords: ["best", "practices", "contact", "efficiently", "guidelines"],
