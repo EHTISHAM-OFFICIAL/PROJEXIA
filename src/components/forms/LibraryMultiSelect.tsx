@@ -5,7 +5,7 @@ import { projectLibraryService } from '../../services/projectLibraryService';
 import type { ProjectLibraryItem, ProjectLibraryKind } from '../../types/projectLibrary';
 import { PROJECT_LIBRARY_STARTER } from '../../constants/projectLibraryStarter';
 
-const normalizeLibraryName = (value: string) => value.trim().toLocaleLowerCase().replace(/\\s+/g, ' ');
+const normalizeLibraryName = (value: string) => value.trim().toLocaleLowerCase();
 
 export function LibraryMultiSelect({
   kind,
@@ -63,7 +63,6 @@ export function LibraryMultiSelect({
     };
   }, []);
 
-  const normalized = (value: string) => value.trim().toLocaleLowerCase().replace(/\s+/g, ' ');
   const filtered = useMemo(() => {
     const term = search.trim().toLocaleLowerCase();
     return items.filter((item) =>
