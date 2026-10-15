@@ -24,7 +24,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["how", "doing", "well", "okay", "everything", "going"],
     answer:
-      "I'm doing great! 👋 Thanks for asking. I'm here and ready to help you with MECTEC, whether you need information about projects, electronics, services, pricing, or troubleshooting.",
+      "I'm doing great! 👋 Thanks for asking. I'm here and ready to help you with ProjexiaHub, whether you need information about projects, electronics, services, pricing, or troubleshooting.",
     priority: 100,
   },
 
@@ -61,7 +61,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["day", "was", "how", "been", "went"],
     answer:
-      "Can't complain — always ready to help! 😊 How about you? What brings you to MECTEC today?",
+      "Can't complain — always ready to help! 😊 How about you? What brings you to ProjexiaHub today?",
     priority: 100,
   },
 
@@ -183,7 +183,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["goodbye", "bye", "later"],
     answer:
-      "Goodbye! 👋 Thanks for visiting MECTEC. Have a great day, and feel free to come back whenever you need help.",
+      "Goodbye! 👋 Thanks for visiting ProjexiaHub. Have a great day, and feel free to come back whenever you need help.",
     priority: 100,
   },
 
@@ -201,7 +201,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["night", "goodnight"],
     answer:
-      "Good night! 🌙 Take care, and feel free to visit MECTEC again whenever you need help.",
+      "Good night! 🌙 Take care, and feel free to visit ProjexiaHub again whenever you need help.",
     priority: 100,
   },
 
@@ -219,7 +219,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["bye", "later", "next", "time"],
     answer:
-      "Bye for now! 👋 Feel free to come back anytime you need help from MECTEC.",
+      "Bye for now! 👋 Feel free to come back anytime you need help from ProjexiaHub.",
     priority: 100,
   },
 
@@ -237,7 +237,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["farewell", "adieu", "goodbye"],
     answer:
-      "Farewell! 👋 Thanks for stopping by MECTEC. Feel free to return anytime.",
+      "Farewell! 👋 Thanks for stopping by ProjexiaHub. Feel free to return anytime.",
     priority: 100,
   },
 
@@ -260,7 +260,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["happy", "good", "mood", "great"],
     answer:
-      "That's great to hear! 😊 What would you like to do next? I can help with MECTEC, electronics, project ideas or general technical questions.",
+      "That's great to hear! 😊 What would you like to do next? I can help with ProjexiaHub, electronics, project ideas or general technical questions.",
     priority: 100,
   },
 
@@ -279,7 +279,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["excited", "wait", "great", "forward"],
     answer:
-      "That's great to hear! 😊 The best next step is to describe your project idea and requirements so MECTEC can understand what you want to build. Use the Project Request option on the website to get started.",
+      "That's great to hear! 😊 The best next step is to describe your project idea and requirements so ProjexiaHub can understand what you want to build. Use the Project Request option on the website to get started.",
     priority: 100,
   },
 
@@ -337,7 +337,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["wow", "surprising", "amazing", "incredible"],
     answer:
-      "Glad it caught your interest! 😊 If you want to explore more, I can share information about MECTEC projects, services, or technical topics.",
+      "Glad it caught your interest! 😊 If you want to explore more, I can share information about ProjexiaHub projects, services, or technical topics.",
     priority: 100,
   },
 
@@ -377,7 +377,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["frustrated", "stuck", "annoyed", "hard", "problem"],
     answer:
-      "That can be really frustrating. 😕 If you describe what is happening, I can help with troubleshooting topics such as power, wiring, communication, sensors, firmware or general circuit debugging. For project-specific help, you can also contact MECTEC.",
+      "That can be really frustrating. 😕 If you describe what is happening, I can help with troubleshooting topics such as power, wiring, communication, sensors, firmware or general circuit debugging. For project-specific help, you can also contact ProjexiaHub.",
     priority: 100,
   },
 
@@ -433,7 +433,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["annoyed", "irritated", "bothered", "annoying"],
     answer:
-      "Understood. 😕 If it's project-related, tell me what's happening and I can help with troubleshooting. If not, I'm happy to help with anything MECTEC-related whenever you're ready.",
+      "Understood. 😕 If it's project-related, tell me what's happening and I can help with troubleshooting. If not, I'm happy to help with anything ProjexiaHub-related whenever you're ready.",
     priority: 100,
   },
 
@@ -474,7 +474,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["confused", "understand", "lost", "explain", "unsure"],
     answer:
-      "No problem. Tell me what you are trying to understand or do, and I will try to explain it in a simpler way using the MECTEC knowledge library.",
+      "No problem. Tell me what you are trying to understand or do, and I will try to explain it in a simpler way using the ProjexiaHub knowledge library.",
     priority: 100,
   },
 
@@ -493,7 +493,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["sure", "unsure", "certain", "know", "idea"],
     answer:
-      "That's okay. Take your time. If you want, describe what you are considering and I can share relevant information from the MECTEC knowledge library.",
+      "That's okay. Take your time. If you want, describe what you are considering and I can share relevant information from the ProjexiaHub knowledge library.",
     priority: 100,
   },
 
@@ -600,7 +600,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     variations: ["Maybe", "Perhaps", "Possibly", "I might", "Could be"],
     keywords: ["maybe", "perhaps", "possibly", "might"],
     answer:
-      "That's fine. If you want, describe what you're considering and I'll share relevant information from the MECTEC knowledge library.",
+      "That's fine. If you want, describe what you're considering and I'll share relevant information from the ProjexiaHub knowledge library.",
     priority: 100,
   },
 
@@ -620,7 +620,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["welcome", "problem", "worries", "okay", "fine"],
     answer:
-      "Happy to help! 😊 If you have another question about MECTEC, electronics, projects or anything else in the knowledge library, just ask.",
+      "Happy to help! 😊 If you have another question about ProjexiaHub, electronics, projects or anything else in the knowledge library, just ask.",
     priority: 100,
   },
 
@@ -775,7 +775,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["great", "job", "nice", "well", "excellent", "awesome"],
     answer:
-      "Thank you! 😊 I'm glad I could help. If you have any more questions about MECTEC or technical topics, just ask.",
+      "Thank you! 😊 I'm glad I could help. If you have any more questions about ProjexiaHub or technical topics, just ask.",
     priority: 100,
   },
 
@@ -813,7 +813,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["take", "care", "safe", "easy"],
     answer:
-      "You too! 😊 Take care and visit MECTEC again whenever you need help.",
+      "You too! 😊 Take care and visit ProjexiaHub again whenever you need help.",
     priority: 100,
   },
 
@@ -913,7 +913,7 @@ export const CASUAL_HELP: HelpEntry[] = [
       "Glad to meet you",
     ],
     keywords: ["nice", "meet", "pleasure", "glad"],
-    answer: "Nice to meet you too! 😊 Welcome to MECTEC. How can I help you?",
+    answer: "Nice to meet you too! 😊 Welcome to ProjexiaHub. How can I help you?",
     priority: 100,
   },
 
@@ -951,7 +951,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["bored", "free", "nothing", "time"],
     answer:
-      "If you're looking for something to do, you could explore the MECTEC Projects section or start thinking about a project idea. 😊 I can also answer questions about electronics, embedded systems, sensors, IoT and more.",
+      "If you're looking for something to do, you could explore the ProjexiaHub Projects section or start thinking about a project idea. 😊 I can also answer questions about electronics, embedded systems, sensors, IoT and more.",
     priority: 100,
   },
 
@@ -970,7 +970,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["busy", "time", "occupied", "later"],
     answer:
-      "No worries. 😊 Come back whenever you have time, and I'll be here to help with MECTEC or technical questions.",
+      "No worries. 😊 Come back whenever you have time, and I'll be here to help with ProjexiaHub or technical questions.",
     priority: 100,
   },
 
@@ -1006,7 +1006,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["just", "testing", "trying", "checking", "out"],
     answer:
-      "No problem! 😊 Feel free to try anything. If you want to test me on something real, ask about MECTEC services, projects, or any technical topic in the knowledge library.",
+      "No problem! 😊 Feel free to try anything. If you want to test me on something real, ask about ProjexiaHub services, projects, or any technical topic in the knowledge library.",
     priority: 100,
   },
 
@@ -1027,7 +1027,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["joke", "funny", "laugh"],
     answer:
-      "I'm here mainly for MECTEC and technical information, so I don't have a joke library. 😊 But I can help with electronics, projects, troubleshooting or website questions if you have one.",
+      "I'm here mainly for ProjexiaHub and technical information, so I don't have a joke library. 😊 But I can help with electronics, projects, troubleshooting or website questions if you have one.",
     priority: 100,
   },
 
@@ -1044,7 +1044,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["funny", "humour", "joke", "sense"],
     answer:
-      "Not my strongest suit — I'm mostly here to help with MECTEC and technical questions. 😊 But I try to keep things friendly.",
+      "Not my strongest suit — I'm mostly here to help with ProjexiaHub and technical questions. 😊 But I try to keep things friendly.",
     priority: 100,
   },
 
@@ -1061,7 +1061,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["sing", "song", "music", "play"],
     answer:
-      "I can't sing. 😊 But I can help with electronics, sensors, microcontrollers, IoT, automation and other MECTEC topics.",
+      "I can't sing. 😊 But I can help with electronics, sensors, microcontrollers, IoT, automation and other ProjexiaHub topics.",
     priority: 100,
   },
 
@@ -1118,7 +1118,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["good", "question", "nice", "great"],
     answer:
-      "Thanks! 😊 If you'd like, ask another and I'll do my best to help from the MECTEC knowledge library.",
+      "Thanks! 😊 If you'd like, ask another and I'll do my best to help from the ProjexiaHub knowledge library.",
     priority: 100,
   },
 
@@ -1157,7 +1157,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["disagree", "agree", "differently", "convinced"],
     answer:
-      "That's fair. 😊 If you tell me more about your view, I can share what the MECTEC knowledge library says on the topic.",
+      "That's fair. 😊 If you tell me more about your view, I can share what the ProjexiaHub knowledge library says on the topic.",
     priority: 100,
   },
 
@@ -1193,7 +1193,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["understand", "explain", "again", "sense", "lost"],
     answer:
-      "No problem. Tell me which part is unclear and I'll try to rephrase it simply. If it's a deep topic, I can point you to related MECTEC information.",
+      "No problem. Tell me which part is unclear and I'll try to rephrase it simply. If it's a deep topic, I can point you to related ProjexiaHub information.",
     priority: 100,
   },
 
@@ -1267,7 +1267,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     ],
     keywords: ["whatever", "matter", "any", "anything", "up"],
     answer:
-      "Alright. 😊 If you'd like, tell me what you're looking for and I'll pick something relevant from the MECTEC knowledge library.",
+      "Alright. 😊 If you'd like, tell me what you're looking for and I'll pick something relevant from the ProjexiaHub knowledge library.",
     priority: 100,
   },
 
@@ -1370,7 +1370,7 @@ export const CASUAL_HELP: HelpEntry[] = [
     variations: ["Bad", "Not good", "That's bad", "Not great"],
     keywords: ["bad", "not", "good", "great"],
     answer:
-      "Sorry to hear that. 😕 If it's project-related, tell me what's happening and I can help with troubleshooting. If not, I'm here if you need MECTEC info.",
+      "Sorry to hear that. 😕 If it's project-related, tell me what's happening and I can help with troubleshooting. If not, I'm here if you need ProjexiaHub info.",
     priority: 100,
   },
 
