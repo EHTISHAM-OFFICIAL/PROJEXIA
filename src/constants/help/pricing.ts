@@ -8,9 +8,9 @@ export const PRICING_HELP: HelpEntry[] = [
     id: "pricing-how-much",
     category: "pricing",
     intent: "pricing",
-    question: "How much does a MECTEC project cost?",
+    question: "How much does a ProjexiaHub project cost?",
     variations: [
-      "How much does a MECTEC project cost",
+      "How much does a ProjexiaHub project cost",
       "How much will my project cost",
       "What is the price of a project",
       "How expensive are projects",
@@ -316,7 +316,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["maintenance", "ongoing", "support", "cost", "updates"],
     answer:
-      "Maintenance and support arrangements depend on the project and MECTEC policy. These should be discussed during planning so both sides understand expectations.",
+      "Maintenance and support arrangements depend on the project and ProjexiaHub policy. These should be discussed during planning so both sides understand expectations.",
     priority: 13,
   },
 
@@ -334,7 +334,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["support", "after", "sales", "cost", "extra"],
     answer:
-      "Support terms depend on the project and agreement. Contact MECTEC directly to discuss support arrangements.",
+      "Support terms depend on the project and agreement. Contact ProjexiaHub directly to discuss support arrangements.",
     priority: 10,
   },
 
@@ -352,7 +352,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["training", "handover", "cost", "included", "fees"],
     answer:
-      "Training and handover arrangements depend on the project. Mention your requirements during planning or contact MECTEC directly.",
+      "Training and handover arrangements depend on the project. Mention your requirements during planning or contact ProjexiaHub directly.",
     priority: 10,
   },
 
@@ -370,7 +370,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["delivery", "shipping", "cost", "included", "charges"],
     answer:
-      "Delivery or shipping is typically arranged separately and may depend on location and project size. Discuss delivery options with MECTEC.",
+      "Delivery or shipping is typically arranged separately and may depend on location and project size. Discuss delivery options with ProjexiaHub.",
     priority: 10,
   },
 
@@ -573,7 +573,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["payment", "terms", "schedule", "upfront", "installment"],
     answer:
-      "Payment terms depend on the project and agreement. Contact MECTEC directly to discuss the applicable payment schedule.",
+      "Payment terms depend on the project and agreement. Contact ProjexiaHub directly to discuss the applicable payment schedule.",
     priority: 13,
   },
 
@@ -591,7 +591,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["upfront", "advance", "deposit", "payment", "required"],
     answer:
-      "Upfront or advance payment requirements depend on the project agreement. Contact MECTEC directly for the applicable terms.",
+      "Upfront or advance payment requirements depend on the project agreement. Contact ProjexiaHub directly for the applicable terms.",
     priority: 13,
   },
 
@@ -609,7 +609,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["milestone", "payment", "stages", "installment", "partial"],
     answer:
-      "Milestone or installment payment structures may be possible depending on the project. Discuss this with MECTEC during planning.",
+      "Milestone or installment payment structures may be possible depending on the project. Discuss this with ProjexiaHub during planning.",
     priority: 10,
   },
 
@@ -627,7 +627,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["invoice", "receipt", "billing", "payment", "document"],
     answer:
-      "Invoicing arrangements depend on the project and agreement. Contact MECTEC directly for billing-related questions.",
+      "Invoicing arrangements depend on the project and agreement. Contact ProjexiaHub directly for billing-related questions.",
     priority: 10,
   },
 
@@ -645,7 +645,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["tax", "vat", "included", "price", "project"],
     answer:
-      "Tax treatment depends on your location and the applicable regulations. Contact MECTEC directly for clarification.",
+      "Tax treatment depends on your location and the applicable regulations. Contact ProjexiaHub directly for clarification.",
     priority: 10,
   },
 
@@ -663,7 +663,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["currency", "payment", "dollars", "local", "accept"],
     answer:
-      "Currency and payment methods depend on the arrangement. Contact MECTEC directly for the applicable options.",
+      "Currency and payment methods depend on the arrangement. Contact ProjexiaHub directly for the applicable options.",
     priority: 10,
   },
 
@@ -681,7 +681,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["refund", "cancel", "payment", "money"],
     answer:
-      "The Help Assistant does not define refund or cancellation terms. For a specific project, contact MECTEC directly for the applicable arrangement.",
+      "The Help Assistant does not define refund or cancellation terms. For a specific project, contact ProjexiaHub directly for the applicable arrangement.",
     priority: 13,
   },
 
@@ -699,7 +699,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["cancel", "cancellation", "project", "terms", "stop"],
     answer:
-      "Cancellation terms depend on the project agreement and progress. Contact MECTEC directly to discuss the applicable arrangement.",
+      "Cancellation terms depend on the project agreement and progress. Contact ProjexiaHub directly to discuss the applicable arrangement.",
     priority: 13,
   },
 
@@ -756,7 +756,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["breakdown", "cost", "estimate", "itemized", "quote"],
     answer:
-      "Detailed cost breakdowns depend on the project and agreement. Contact MECTEC directly to discuss how costs are structured.",
+      "Detailed cost breakdowns depend on the project and agreement. Contact ProjexiaHub directly to discuss how costs are structured.",
     priority: 10,
   },
 
@@ -792,7 +792,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["faster", "rush", "urgent", "cost", "expedite"],
     answer:
-      "Urgent or expedited projects may be possible depending on scope and capacity. Contact MECTEC directly to discuss timing and any effect on cost.",
+      "Urgent or expedited projects may be possible depending on scope and capacity. Contact ProjexiaHub directly to discuss timing and any effect on cost.",
     priority: 10,
   },
 
@@ -803,7 +803,7 @@ export const PRICING_HELP: HelpEntry[] = [
     question: "Are your prices competitive?",
     variations: [
       "Are your prices competitive",
-      "Is MECTEC expensive",
+      "Is ProjexiaHub expensive",
       "How do your prices compare",
       "Price comparison",
       "Are you affordable",
@@ -882,7 +882,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["negotiable", "negotiate", "discount", "flexibility", "price"],
     answer:
-      "Some flexibility may exist depending on scope, quantity and requirements. Discuss options directly with MECTEC.",
+      "Some flexibility may exist depending on scope, quantity and requirements. Discuss options directly with ProjexiaHub.",
     priority: 10,
   },
 
@@ -918,7 +918,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["discount", "student", "school", "nonprofit", "affordable"],
     answer:
-      "Discounts or special pricing depend on current MECTEC policy. Contact MECTEC directly to discuss your situation.",
+      "Discounts or special pricing depend on current ProjexiaHub policy. Contact ProjexiaHub directly to discuss your situation.",
     priority: 10,
   },
 
@@ -936,7 +936,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["bulk", "discount", "quantity", "multiple", "price"],
     answer:
-      "Per-unit cost typically decreases with quantity. Contact MECTEC with the expected quantity for an accurate estimate.",
+      "Per-unit cost typically decreases with quantity. Contact ProjexiaHub with the expected quantity for an accurate estimate.",
     priority: 13,
   },
 
@@ -975,7 +975,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["replacement", "order", "duplicate", "build", "unit"],
     answer:
-      "Replacement or duplicate units can be discussed depending on the original design and component availability. Contact MECTEC for pricing.",
+      "Replacement or duplicate units can be discussed depending on the original design and component availability. Contact ProjexiaHub for pricing.",
     priority: 10,
   },
 
@@ -993,7 +993,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["upgrade", "cost", "features", "modify", "enhancement"],
     answer:
-      "Upgrade cost depends on the change and the existing design. Discuss the desired changes with MECTEC for an estimate.",
+      "Upgrade cost depends on the change and the existing design. Discuss the desired changes with ProjexiaHub for an estimate.",
     priority: 10,
   },
 
@@ -1086,7 +1086,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["support", "duration", "period", "warranty", "delivery"],
     answer:
-      "Support duration depends on the project agreement and MECTEC policy. Contact MECTEC directly for the applicable terms.",
+      "Support duration depends on the project agreement and ProjexiaHub policy. Contact ProjexiaHub directly for the applicable terms.",
     priority: 13,
   },
 
@@ -1104,7 +1104,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["warranty", "guarantee", "repair", "broken", "terms"],
     answer:
-      "Warranty terms depend on the specific project and current MECTEC policy. Please contact MECTEC directly for the applicable terms.",
+      "Warranty terms depend on the specific project and current ProjexiaHub policy. Please contact ProjexiaHub directly for the applicable terms.",
     priority: 13,
   },
 
@@ -1122,7 +1122,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["repair", "cost", "fix", "pricing", "charges"],
     answer:
-      "Repair cost depends on the fault and the project. Contact MECTEC with details about the problem for an accurate assessment.",
+      "Repair cost depends on the fault and the project. Contact ProjexiaHub with details about the problem for an accurate assessment.",
     priority: 13,
   },
 
@@ -1194,7 +1194,7 @@ export const PRICING_HELP: HelpEntry[] = [
     ],
     keywords: ["consultation", "free", "quotes", "advice", "cost"],
     answer:
-      "Consultation and quotation arrangements depend on MECTEC policy. Contact MECTEC directly to discuss.",
+      "Consultation and quotation arrangements depend on ProjexiaHub policy. Contact ProjexiaHub directly to discuss.",
     priority: 10,
   },
 
