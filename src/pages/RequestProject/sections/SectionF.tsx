@@ -14,7 +14,7 @@ export function SectionF({ form }: { form: UseFormReturn<ProjectRequestFormValue
       id="budget"
       step={6}
       title="Budget"
-      description="A range is not a commitment. It helps MECTEC suggest components that actually fit."
+      description="A range is not a commitment. It helps the team suggest components that actually fit."
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Budget range" htmlFor="budgetRange" error={errors.budgetRange?.message}>
