@@ -82,7 +82,7 @@ const COLOR_GROUPS: {
   },
   {
     title: "Brand",
-    description: "Your main MECTEC identity and interactive accent colors.",
+    description: "Your main site identity and interactive accent colors.",
     fields: [
       {
         key: "accent",
