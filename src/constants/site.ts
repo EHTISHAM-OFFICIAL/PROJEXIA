@@ -3,11 +3,11 @@
  * Values marked TODO are placeholders — replace them before going live.
  */
 export const SITE = {
-  name: "MECTEC",
+  name: "ProjexiaHub",
   tagline: "Custom electronics design and development",
   description:
-    "MECTEC designs and builds custom electronics: embedded systems, IoT devices, automation, robotics, and working prototypes.",
-  url: "https://mectec-shop.web.app",
+    "ProjexiaHub designs and builds custom electronics: embedded systems, IoT devices, automation, robotics, and working prototypes.",
+  url: "https://projexiahub.web.app",
   email: "ehtishamofficial28@gmail.com", // TODO: replace with your real address
   /** International format without '+' or spaces, e.g. 923001234567. Leave empty to hide. */
   whatsapp: "03015168091", // TODO
@@ -31,8 +31,9 @@ export const SOCIAL_LINKS = [
   { label: "YouTube", href: "" }, // TODO
 ] as const;
 
-export const whatsappLink = (message?: string): string | null => {
-  if (!SITE.whatsapp) return null;
-  const base = `https://wa.me/${SITE.whatsapp}`;
+export const whatsappLink = (message?: string, number: string = SITE.whatsapp): string | null => {
+  const normalizedNumber = number.replace(/[^0-9]/g, "");
+  if (!normalizedNumber) return null;
+  const base = `https://wa.me/${normalizedNumber}`;
   return message ? `${base}?text=${encodeURIComponent(message)}` : base;
 };
