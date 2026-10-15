@@ -56,7 +56,7 @@ export default function Login() {
           </div>
           <h1 className="mt-8 text-center text-xl font-semibold tracking-tight">Admin sign in</h1>
           <p className="mt-2 text-center text-sm text-content-secondary">
-            This area is for managing MECTEC projects and requests.
+            This area is for managing ProjexiaHub projects and requests.
           </p>
 
           <form
