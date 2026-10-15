@@ -137,15 +137,15 @@ export function HelpChatWidget() {
     {
       id: createMessageId(),
       role: "assistant",
-      text: "Hi! I'm the MECTEC Help Assistant. Ask me about our services, electronics projects, components, website, requests, pricing, or anything else I can help you with.",
+      text: "Hi! I'm the ProjexiaHub Help Assistant. Ask me about our services, electronics projects, components, website, requests, pricing, or anything else I can help you with.",
       response: {
         answer:
-          "Hi! I'm the MECTEC Help Assistant. Ask me about our services, electronics projects, components, website, requests, pricing, or anything else I can help you with.",
+          "Hi! I'm the ProjexiaHub Help Assistant. Ask me about our services, electronics projects, components, website, requests, pricing, or anything else I can help you with.",
         suggestedQuestions: [
-          "What services does MECTEC provide?",
+          "What services does ProjexiaHub provide?",
           "How can I request a project?",
           "What information do I need to provide?",
-          "How can I contact MECTEC?",
+          "How can I contact ProjexiaHub?",
         ],
       },
     },
@@ -388,15 +388,15 @@ export function HelpChatWidget() {
       {
         id: createMessageId(),
         role: "assistant",
-        text: "Hi! I'm the MECTEC Help Assistant. What would you like to know?",
+        text: "Hi! I'm the ProjexiaHub Help Assistant. What would you like to know?",
         response: {
           answer:
-            "Hi! I'm the MECTEC Help Assistant. What would you like to know?",
+            "Hi! I'm the ProjexiaHub Help Assistant. What would you like to know?",
           suggestedQuestions: [
-            "What services does MECTEC provide?",
+            "What services does ProjexiaHub provide?",
             "How can I request a project?",
             "What information do I need to provide?",
-            "How can I contact MECTEC?",
+            "How can I contact ProjexiaHub?",
           ],
         },
       },
@@ -777,8 +777,8 @@ export function HelpChatWidget() {
           className="mectec-help-launcher"
           type="button"
           onClick={() => setIsOpen(true)}
-          aria-label="Open MECTEC Help Assistant"
-          title="MECTEC Help Assistant"
+          aria-label="Open ProjexiaHub Help Assistant"
+          title="ProjexiaHub Help Assistant"
           style={{
             position: "fixed",
             left: LAUNCHER_LEFT,
@@ -925,7 +925,7 @@ export function HelpChatWidget() {
                   lineHeight: 1.2,
                 }}
               >
-                MECTEC Help Assistant
+                ProjexiaHub Help Assistant
                 <span
                   style={{
                     width: 7,
@@ -1356,8 +1356,8 @@ export function HelpChatWidget() {
               }}
               onKeyDown={handleInputKeyDown}
               disabled={isTyping}
-              placeholder="Ask MECTEC anything..."
-              aria-label="Ask MECTEC anything"
+              placeholder="Ask ProjexiaHub anything..."
+              aria-label="Ask ProjexiaHub anything"
               style={{
                 flex: 1,
 
@@ -1421,7 +1421,7 @@ export function HelpChatWidget() {
               fontSize: 10.5,
             }}
           >
-            MECTEC Help Assistant
+            ProjexiaHub Help Assistant
           </div>
         </div>
 
