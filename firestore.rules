@@ -414,7 +414,7 @@ service cloud.firestore {
     match /settings/{docId} {
       // Only explicitly public settings may be read by visitors. In particular,
       // EmailJS and imgBB overrides must never be exposed through Firestore.
-      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity'];
+      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity', 'siteProfile'];
       allow list: if false;
 
       allow write: if isAdmin();
