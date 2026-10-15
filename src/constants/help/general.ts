@@ -5,17 +5,17 @@ export const GENERAL_HELP = [
   {
     id: "general-what-is-mectec",
     category: "general",
-    question: "What is MECTEC?",
+    question: "What is ProjexiaHub?",
     variations: [
-      "What is MECTEC",
-      "Tell me about MECTEC",
-      "What does MECTEC do",
+      "What is ProjexiaHub",
+      "Tell me about ProjexiaHub",
+      "What does ProjexiaHub do",
       "What is this website",
       "What is this company",
       "What does this business do",
-      "What is MECTEC about",
-      "Can you explain MECTEC",
-      "Who is MECTEC",
+      "What is ProjexiaHub about",
+      "Can you explain ProjexiaHub",
+      "Who is ProjexiaHub",
     ],
     keywords: [
       "mectec",
@@ -26,20 +26,20 @@ export const GENERAL_HELP = [
       "projects",
     ],
     answer:
-      "MECTEC is an electronics and technology-focused business that develops practical hardware, embedded, automation, IoT and related technical projects. The website lets you explore completed projects and submit your own project idea or request.",
+      "ProjexiaHub is an electronics and technology-focused business that develops practical hardware, embedded, automation, IoT and related technical projects. The website lets you explore completed projects and submit your own project idea or request.",
     priority: 10,
   },
 
   {
     id: "general-what-does-mectec-build",
     category: "general",
-    question: "What does MECTEC build?",
+    question: "What does ProjexiaHub build?",
     variations: [
-      "What can MECTEC build",
-      "What kind of projects does MECTEC make",
+      "What can ProjexiaHub build",
+      "What kind of projects does ProjexiaHub make",
       "What systems can you build",
       "What devices can you build",
-      "What products can MECTEC develop",
+      "What products can ProjexiaHub develop",
       "What sort of electronics projects do you build",
       "What can you make",
     ],
@@ -52,21 +52,21 @@ export const GENERAL_HELP = [
       "project",
       "electronics",
     ],
-    answer: `MECTEC works on a range of electronics and technology projects, including embedded systems, automation, IoT, sensor-based systems, microcontroller projects and other custom hardware/software solutions. Current project areas include ${PROJECT_CATEGORIES.join(", ")}.`,
+    answer: `ProjexiaHub works on a range of electronics and technology projects, including embedded systems, automation, IoT, sensor-based systems, microcontroller projects and other custom hardware/software solutions. Current project areas include ${PROJECT_CATEGORIES.join(", ")}.`,
     priority: 9,
   },
 
   {
     id: "general-project-categories",
     category: "general",
-    question: "What project categories does MECTEC cover?",
+    question: "What project categories does ProjexiaHub cover?",
     variations: [
       "What categories do you have",
       "What types of projects do you accept",
       "Which project types do you build",
       "What kind of technology do you work with",
       "What services categories are available",
-      "What areas does MECTEC work in",
+      "What areas does ProjexiaHub work in",
     ],
     keywords: [
       "category",
@@ -77,18 +77,18 @@ export const GENERAL_HELP = [
       "services",
       "projects",
     ],
-    answer: `MECTEC currently works across: ${PROJECT_CATEGORIES.join(", ")}.`,
+    answer: `ProjexiaHub currently works across: ${PROJECT_CATEGORIES.join(", ")}.`,
     priority: 9,
   },
 
   {
     id: "general-is-mectec-custom",
     category: "general",
-    question: "Does MECTEC build custom projects?",
+    question: "Does ProjexiaHub build custom projects?",
     variations: [
       "Can you make a custom project",
       "Do you make custom electronics",
-      "Can MECTEC build something unique",
+      "Can ProjexiaHub build something unique",
       "Can you build my own idea",
       "Do you accept custom projects",
       "Can I request a custom system",
@@ -103,19 +103,19 @@ export const GENERAL_HELP = [
       "request",
     ],
     answer:
-      "Yes. MECTEC is designed around custom project requests. You can describe what you want the system to accomplish, even if you do not yet know the exact components or technical implementation.",
+      "Yes. ProjexiaHub is designed around custom project requests. You can describe what you want the system to accomplish, even if you do not yet know the exact components or technical implementation.",
     priority: 9,
   },
 
   {
     id: "general-who-is-site-for",
     category: "general",
-    question: "Who is MECTEC for?",
+    question: "Who is ProjexiaHub for?",
     variations: [
-      "Who can use MECTEC",
+      "Who can use ProjexiaHub",
       "Who are your services for",
-      "Can students use MECTEC",
-      "Can businesses use MECTEC",
+      "Can students use ProjexiaHub",
+      "Can businesses use ProjexiaHub",
       "Who can request a project",
       "Who do you build projects for",
     ],
@@ -129,7 +129,7 @@ export const GENERAL_HELP = [
       "project",
     ],
     answer:
-      "MECTEC can work with people who need electronics, embedded, automation, IoT or related technical projects. You can submit an idea through the request form and explain what you need.",
+      "ProjexiaHub can work with people who need electronics, embedded, automation, IoT or related technical projects. You can submit an idea through the request form and explain what you need.",
     priority: 7,
   },
 
@@ -163,12 +163,12 @@ export const GENERAL_HELP = [
   {
     id: "general-response-time",
     category: "general",
-    question: "How quickly does MECTEC respond?",
+    question: "How quickly does ProjexiaHub respond?",
     variations: [
       "How long until you reply",
       "When will I get a response",
       "How fast do you respond",
-      "When will MECTEC contact me",
+      "When will ProjexiaHub contact me",
       "How soon will you reply",
       "How quickly will someone respond",
     ],
@@ -181,7 +181,7 @@ export const GENERAL_HELP = [
       "soon",
       "time",
     ],
-    answer: `MECTEC typically replies ${SITE.responseTime} to a submitted request.`,
+    answer: `ProjexiaHub typically replies ${SITE.responseTime} to a submitted request.`,
     priority: 8,
   },
 
@@ -194,28 +194,28 @@ export const GENERAL_HELP = [
       "Can I speak to someone",
       "I want to talk to someone",
       "Is there a human I can contact",
-      "Can someone from MECTEC answer me",
-      "How do I speak with MECTEC",
+      "Can someone from ProjexiaHub answer me",
+      "How do I speak with ProjexiaHub",
     ],
     keywords: ["person", "human", "speak", "talk", "contact", "someone"],
-    answer: `Yes. The Help Assistant is only a quick information tool. For a specific project or anything that requires a real response, use the contact page or email MECTEC at ${SITE.email}.`,
+    answer: `Yes. The Help Assistant is only a quick information tool. For a specific project or anything that requires a real response, use the contact page or email ProjexiaHub at ${SITE.email}.`,
     priority: 9,
   },
 
   {
     id: "general-services-overview",
     category: "general",
-    question: "What services does MECTEC provide?",
+    question: "What services does ProjexiaHub provide?",
     variations: [
       "What services do you offer",
-      "What can MECTEC do for me",
+      "What can ProjexiaHub do for me",
       "List your services",
       "What do you provide",
       "What kind of work do you do",
     ],
     keywords: ["services", "offer", "provide", "work", "help"],
     answer:
-      "MECTEC provides electronics, embedded systems, automation, IoT, sensor-based systems, microcontroller projects, prototypes, PCB-related work and custom hardware/software development. Submit a project request for a more specific discussion.",
+      "ProjexiaHub provides electronics, embedded systems, automation, IoT, sensor-based systems, microcontroller projects, prototypes, PCB-related work and custom hardware/software development. Submit a project request for a more specific discussion.",
     priority: 10,
   },
 
@@ -257,7 +257,7 @@ export const GENERAL_HELP = [
   {
     id: "general-how-to-start-project",
     category: "general",
-    question: "How do I start a project with MECTEC?",
+    question: "How do I start a project with ProjexiaHub?",
     variations: [
       "How do I begin a project",
       "How to start a project",
@@ -292,7 +292,7 @@ export const GENERAL_HELP = [
   {
     id: "general-existing-project",
     category: "general",
-    question: "Can MECTEC improve an existing project?",
+    question: "Can ProjexiaHub improve an existing project?",
     variations: [
       "Can you modify my existing project",
       "I already have a prototype",
@@ -328,42 +328,42 @@ export const GENERAL_HELP = [
   {
     id: "general-email",
     category: "general",
-    question: "What is the MECTEC email?",
+    question: "What is the ProjexiaHub email?",
     variations: [
-      "How can I email MECTEC",
+      "How can I email ProjexiaHub",
       "What email should I use",
-      "Give me the MECTEC email",
+      "Give me the ProjexiaHub email",
       "Where can I send an email",
       "What is your email address",
     ],
     keywords: ["email", "mail", "address", "contact"],
-    answer: `MECTEC can be contacted by email at ${SITE.email}.`,
+    answer: `ProjexiaHub can be contacted by email at ${SITE.email}.`,
     priority: 10,
   },
 
   {
     id: "general-whatsapp",
     category: "general",
-    question: "Does MECTEC have WhatsApp?",
+    question: "Does ProjexiaHub have WhatsApp?",
     variations: [
-      "Can I WhatsApp MECTEC",
+      "Can I WhatsApp ProjexiaHub",
       "How do I contact you on WhatsApp",
       "Can I message you on WhatsApp",
       "Is WhatsApp available",
     ],
     keywords: ["whatsapp", "message", "contact", "chat"],
     answer: SITE.whatsapp
-      ? "Yes. MECTEC provides WhatsApp contact through the WhatsApp button available on the website."
-      : `MECTEC can be reached through the contact page and email at ${SITE.email}.`,
+      ? "Yes. ProjexiaHub provides WhatsApp contact through the WhatsApp button available on the website."
+      : `ProjexiaHub can be reached through the contact page and email at ${SITE.email}.`,
     priority: 10,
   },
 
   {
     id: "general-location",
     category: "general",
-    question: "Where is MECTEC located?",
+    question: "Where is ProjexiaHub located?",
     variations: [
-      "Where is MECTEC",
+      "Where is ProjexiaHub",
       "Where is your shop",
       "What is your address",
       "Where can I visit",
@@ -371,14 +371,14 @@ export const GENERAL_HELP = [
     ],
     keywords: ["location", "address", "shop", "where", "visit"],
     answer:
-      "MECTEC location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location information.",
+      "ProjexiaHub location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location information.",
     priority: 10,
   },
 
   {
     id: "general-hours",
     category: "general",
-    question: "When is MECTEC open?",
+    question: "When is ProjexiaHub open?",
     variations: [
       "What are your opening hours",
       "What time do you open",
@@ -389,7 +389,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["open", "hours", "timing", "visit", "close"],
     answer:
-      "MECTEC is normally open Monday through Thursday and Saturday through Sunday from 10:00 AM to 10:00 PM. Friday is officially closed, but we may operate on Fridays when there is an unusually high workload or urgent work. For Friday availability, please contact MECTEC directly.",
+      "ProjexiaHub is normally open Monday through Thursday and Saturday through Sunday from 10:00 AM to 10:00 PM. Friday is officially closed, but we may operate on Fridays when there is an unusually high workload or urgent work. For Friday availability, please contact ProjexiaHub directly.",
     priority: 10,
   },
 
@@ -399,38 +399,38 @@ export const GENERAL_HELP = [
     question: "Are you open on Friday?",
     variations: [
       "Friday opening hours",
-      "Is MECTEC open on Friday",
+      "Is ProjexiaHub open on Friday",
       "Friday shop timing",
       "Do you work on Friday",
       "Can I visit on Friday",
     ],
     keywords: ["friday", "open", "hours", "timing", "visit"],
     answer:
-      "Friday is officially closed for MECTEC, but we may operate on Fridays when there is an unusually high workload or urgent work. Please contact MECTEC directly to confirm Friday availability.",
+      "Friday is officially closed for ProjexiaHub, but we may operate on Fridays when there is an unusually high workload or urgent work. Please contact ProjexiaHub directly to confirm Friday availability.",
     priority: 10,
   },
 
   {
     id: "general-services-electronics",
     category: "general",
-    question: "Does MECTEC work on electronics projects?",
+    question: "Does ProjexiaHub work on electronics projects?",
     variations: [
       "Do you build electronics projects",
       "Can you make electronic systems",
-      "Can MECTEC develop electronics",
+      "Can ProjexiaHub develop electronics",
       "Do you work with electronic circuits",
       "Can you build hardware projects",
     ],
     keywords: ["electronics", "electronic", "hardware", "circuits", "projects"],
     answer:
-      "Yes. Electronics and embedded hardware are central areas of MECTEC projects, including sensor systems, microcontroller projects, automation and other custom electronic solutions.",
+      "Yes. Electronics and embedded hardware are central areas of ProjexiaHub projects, including sensor systems, microcontroller projects, automation and other custom electronic solutions.",
     priority: 9,
   },
 
   {
     id: "general-services-embedded",
     category: "general",
-    question: "Does MECTEC build embedded systems?",
+    question: "Does ProjexiaHub build embedded systems?",
     variations: [
       "Do you work with embedded systems",
       "Can you make embedded projects",
@@ -446,19 +446,19 @@ export const GENERAL_HELP = [
       "systems",
     ],
     answer:
-      "Yes. MECTEC works with embedded systems involving microcontrollers, sensors, actuators, communication modules and firmware.",
+      "Yes. ProjexiaHub works with embedded systems involving microcontrollers, sensors, actuators, communication modules and firmware.",
     priority: 9,
   },
 
   {
     id: "general-services-automation",
     category: "general",
-    question: "Does MECTEC build automation systems?",
+    question: "Does ProjexiaHub build automation systems?",
     variations: [
       "Can you build automation",
       "Do you make automated systems",
       "Can you automate a process",
-      "Can MECTEC automate my project",
+      "Can ProjexiaHub automate my project",
       "Do you work on control systems",
     ],
     keywords: ["automation", "automate", "control", "system", "process"],
@@ -470,7 +470,7 @@ export const GENERAL_HELP = [
   {
     id: "general-services-iot",
     category: "general",
-    question: "Does MECTEC work with IoT?",
+    question: "Does ProjexiaHub work with IoT?",
     variations: [
       "Can you build IoT projects",
       "Do you make internet connected devices",
@@ -487,7 +487,7 @@ export const GENERAL_HELP = [
   {
     id: "general-services-sensors",
     category: "general",
-    question: "Does MECTEC work with sensors?",
+    question: "Does ProjexiaHub work with sensors?",
     variations: [
       "Can you build sensor projects",
       "Do you use sensors",
@@ -504,7 +504,7 @@ export const GENERAL_HELP = [
   {
     id: "general-services-rfid",
     category: "general",
-    question: "Can MECTEC build RFID projects?",
+    question: "Can ProjexiaHub build RFID projects?",
     variations: [
       "Do you make RFID systems",
       "Can you build RFID access control",
@@ -521,7 +521,7 @@ export const GENERAL_HELP = [
   {
     id: "general-services-prototyping",
     category: "general",
-    question: "Can MECTEC help with prototypes?",
+    question: "Can ProjexiaHub help with prototypes?",
     variations: [
       "Can you make prototypes",
       "Do you build prototypes",
@@ -538,11 +538,11 @@ export const GENERAL_HELP = [
   {
     id: "general-hardware-software",
     category: "general",
-    question: "Can MECTEC handle both hardware and software?",
+    question: "Can ProjexiaHub handle both hardware and software?",
     variations: [
       "Do you develop hardware and software",
       "Can you make the circuit and code",
-      "Can MECTEC handle firmware too",
+      "Can ProjexiaHub handle firmware too",
       "Do you do both hardware and firmware",
     ],
     keywords: ["hardware", "software", "firmware", "code", "circuit"],
@@ -554,27 +554,27 @@ export const GENERAL_HELP = [
   {
     id: "general-student-projects",
     category: "general",
-    question: "Does MECTEC work on university or educational projects?",
+    question: "Does ProjexiaHub work on university or educational projects?",
     variations: [
       "Can you make university projects",
       "Do you help students",
-      "Can MECTEC build an FYP",
+      "Can ProjexiaHub build an FYP",
       "Can you make an engineering project",
     ],
     keywords: ["university", "student", "FYP", "educational", "engineering"],
     answer:
-      "MECTEC can work on educational and engineering project requirements, including prototypes, embedded systems, automation, sensors, RFID, IoT and other electronics-focused projects. Requirements should be provided before confirming feasibility.",
+      "ProjexiaHub can work on educational and engineering project requirements, including prototypes, embedded systems, automation, sensors, RFID, IoT and other electronics-focused projects. Requirements should be provided before confirming feasibility.",
     priority: 9,
   },
 
   {
     id: "general-pcb-design",
     category: "general",
-    question: "Can MECTEC design PCBs?",
+    question: "Can ProjexiaHub design PCBs?",
     variations: [
       "Can you make a PCB",
       "Do you design circuit boards",
-      "Can MECTEC convert my circuit into a PCB",
+      "Can ProjexiaHub convert my circuit into a PCB",
       "Do you do PCB layout",
     ],
     keywords: ["pcb", "design", "circuit", "board", "layout"],
@@ -596,7 +596,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["source", "code", "firmware", "ownership", "program"],
     answer:
-      "Source code, firmware and relevant schematics are handed over with the finished MECTEC build.",
+      "Source code, firmware and relevant schematics are handed over with the finished ProjexiaHub build.",
     priority: 10,
   },
 
@@ -619,7 +619,7 @@ export const GENERAL_HELP = [
   {
     id: "general-warranty",
     category: "general",
-    question: "Does MECTEC provide a warranty?",
+    question: "Does ProjexiaHub provide a warranty?",
     variations: [
       "Is there a warranty",
       "Do you offer warranty",
@@ -629,7 +629,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["warranty", "guarantee", "repair", "broken"],
     answer:
-      "The Help Assistant does not provide a warranty policy because warranty terms depend on the specific project and the current MECTEC policy. Please contact MECTEC directly for the applicable terms.",
+      "The Help Assistant does not provide a warranty policy because warranty terms depend on the specific project and the current ProjexiaHub policy. Please contact ProjexiaHub directly for the applicable terms.",
     priority: 10,
   },
 
@@ -645,7 +645,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["refund", "cancel", "payment", "money"],
     answer:
-      "The Help Assistant does not define refund or cancellation terms. For a specific project, contact MECTEC directly for the applicable arrangement.",
+      "The Help Assistant does not define refund or cancellation terms. For a specific project, contact ProjexiaHub directly for the applicable arrangement.",
     priority: 10,
   },
 
@@ -661,7 +661,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["payment", "pay", "money", "method"],
     answer:
-      "Payment arrangements are not defined by the Help Assistant. For a specific project, contact MECTEC to discuss the applicable payment arrangement.",
+      "Payment arrangements are not defined by the Help Assistant. For a specific project, contact ProjexiaHub to discuss the applicable payment arrangement.",
     priority: 10,
   },
 
@@ -677,14 +677,14 @@ export const GENERAL_HELP = [
     ],
     keywords: ["custom", "features", "requirements", "project"],
     answer:
-      "Yes. MECTEC projects can be based on custom requirements. Describe the required behavior and features in the project request so the scope can be understood accurately.",
+      "Yes. ProjexiaHub projects can be based on custom requirements. Describe the required behavior and features in the project request so the scope can be understood accurately.",
     priority: 9,
   },
 
   {
     id: "general-arduino",
     category: "general",
-    question: "Can MECTEC program Arduino boards?",
+    question: "Can ProjexiaHub program Arduino boards?",
     variations: [
       "Can you write Arduino code",
       "Do you program Arduino",
@@ -700,7 +700,7 @@ export const GENERAL_HELP = [
   {
     id: "general-esp32",
     category: "general",
-    question: "Can MECTEC program ESP32 boards?",
+    question: "Can ProjexiaHub program ESP32 boards?",
     variations: [
       "Can you develop ESP32 firmware",
       "ESP32 programming",
@@ -716,7 +716,7 @@ export const GENERAL_HELP = [
   {
     id: "general-raspberry-pi",
     category: "general",
-    question: "Does MECTEC work with Raspberry Pi?",
+    question: "Does ProjexiaHub work with Raspberry Pi?",
     variations: [
       "Can you build Raspberry Pi projects",
       "Do you use Raspberry Pi",
@@ -732,11 +732,11 @@ export const GENERAL_HELP = [
   {
     id: "general-sensor-selection",
     category: "general",
-    question: "Can MECTEC select sensors for my project?",
+    question: "Can ProjexiaHub select sensors for my project?",
     variations: [
       "Can you choose sensors",
       "Who decides which sensors to use",
-      "Can MECTEC recommend the right sensor",
+      "Can ProjexiaHub recommend the right sensor",
       "Can you pick components",
     ],
     keywords: ["sensor", "selection", "choose", "recommend", "components"],
@@ -748,10 +748,10 @@ export const GENERAL_HELP = [
   {
     id: "general-motor-control",
     category: "general",
-    question: "Can MECTEC build motor-control systems?",
+    question: "Can ProjexiaHub build motor-control systems?",
     variations: [
       "Can you control motors",
-      "Can MECTEC automate motors",
+      "Can ProjexiaHub automate motors",
       "Can you build a motor controller",
       "Do you work with motors",
     ],
@@ -839,7 +839,7 @@ export const GENERAL_HELP = [
       "What do you do with my request",
     ],
     keywords: ["after", "submit", "submission", "next", "request", "form"],
-    answer: `After submission, the request can be reviewed and followed up through MECTEC's normal contact process. MECTEC typically replies ${SITE.responseTime}.`,
+    answer: `After submission, the request can be reviewed and followed up through ProjexiaHub's normal contact process. ProjexiaHub typically replies ${SITE.responseTime}.`,
     priority: 9,
   },
 
@@ -848,20 +848,20 @@ export const GENERAL_HELP = [
     category: "general",
     question: "What if I do not get a response?",
     variations: [
-      "No reply from MECTEC",
+      "No reply from ProjexiaHub",
       "I did not hear back",
       "My email was not answered",
       "No response to my request",
     ],
     keywords: ["response", "reply", "answer", "request", "contact"],
-    answer: `MECTEC typically replies ${SITE.responseTime} to submitted requests. If you have not received a response, check the contact details were correct, look in your spam folder and send a polite follow-up with your original message details.`,
+    answer: `ProjexiaHub typically replies ${SITE.responseTime} to submitted requests. If you have not received a response, check the contact details were correct, look in your spam folder and send a polite follow-up with your original message details.`,
     priority: 9,
   },
 
   {
     id: "general-existing-project-upgrade",
     category: "general",
-    question: "Can MECTEC upgrade my existing circuit?",
+    question: "Can ProjexiaHub upgrade my existing circuit?",
     variations: [
       "Can you upgrade my project",
       "Can you modify my circuit",
@@ -877,7 +877,7 @@ export const GENERAL_HELP = [
   {
     id: "general-electronics-basics",
     category: "general",
-    question: "Does MECTEC explain electronics basics?",
+    question: "Does ProjexiaHub explain electronics basics?",
     variations: [
       "Can you teach electronics",
       "Do you explain how circuits work",
@@ -1047,7 +1047,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["warranty", "guarantee", "difference", "work", "fails"],
     answer:
-      "Warranty and guarantee terms depend on the specific project and current MECTEC policy. Contact MECTEC directly for the applicable terms.",
+      "Warranty and guarantee terms depend on the specific project and current ProjexiaHub policy. Contact ProjexiaHub directly for the applicable terms.",
     priority: 8,
   },
 
@@ -1063,7 +1063,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["delivery", "ship", "receive", "location", "options"],
     answer:
-      "Delivery arrangements depend on the project and location. Contact MECTEC directly to discuss how the finished project will be delivered.",
+      "Delivery arrangements depend on the project and location. Contact ProjexiaHub directly to discuss how the finished project will be delivered.",
     priority: 8,
   },
 
@@ -1095,7 +1095,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["installation", "install", "site", "setup", "service"],
     answer:
-      "Installation arrangements depend on the project scope and location. Contact MECTEC directly to discuss on-site requirements.",
+      "Installation arrangements depend on the project scope and location. Contact ProjexiaHub directly to discuss on-site requirements.",
     priority: 8,
   },
 
@@ -1111,7 +1111,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["training", "teach", "learn", "handover", "use"],
     answer:
-      "Training or handover arrangements depend on the project. Mention your requirements in the project request or contact MECTEC directly.",
+      "Training or handover arrangements depend on the project. Mention your requirements in the project request or contact ProjexiaHub directly.",
     priority: 7,
   },
 
@@ -1175,7 +1175,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["support", "after", "delivery", "post", "help"],
     answer:
-      "Support arrangements depend on the project and current MECTEC policy. Contact MECTEC directly to discuss post-project support.",
+      "Support arrangements depend on the project and current ProjexiaHub policy. Contact ProjexiaHub directly to discuss post-project support.",
     priority: 9,
   },
 
@@ -1191,7 +1191,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["maintenance", "service", "long", "term", "project"],
     answer:
-      "Maintenance arrangements depend on the project. Contact MECTEC directly to discuss maintenance requirements.",
+      "Maintenance arrangements depend on the project. Contact ProjexiaHub directly to discuss maintenance requirements.",
     priority: 8,
   },
 
@@ -1207,14 +1207,14 @@ export const GENERAL_HELP = [
     ],
     keywords: ["repair", "fix", "broken", "service", "circuit"],
     answer:
-      "Repair feasibility depends on the project and the fault. Provide details about the problem and any relevant photos or measurements when contacting MECTEC.",
+      "Repair feasibility depends on the project and the fault. Provide details about the problem and any relevant photos or measurements when contacting ProjexiaHub.",
     priority: 9,
   },
 
   {
     id: "general-components",
     category: "general",
-    question: "Can MECTEC supply components?",
+    question: "Can ProjexiaHub supply components?",
     variations: [
       "Do you provide parts",
       "Can you buy components for me",
@@ -1223,7 +1223,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["components", "parts", "supply", "source", "procurement"],
     answer:
-      "Component sourcing can be part of a project depending on the arrangement. Discuss your requirements in the project request or contact MECTEC directly.",
+      "Component sourcing can be part of a project depending on the arrangement. Discuss your requirements in the project request or contact ProjexiaHub directly.",
     priority: 8,
   },
 
@@ -1246,7 +1246,7 @@ export const GENERAL_HELP = [
   {
     id: "general-wireless",
     category: "general",
-    question: "Can MECTEC build wireless projects?",
+    question: "Can ProjexiaHub build wireless projects?",
     variations: [
       "Do you make wireless devices",
       "Can you build WiFi projects",
@@ -1262,7 +1262,7 @@ export const GENERAL_HELP = [
   {
     id: "general-cellular",
     category: "general",
-    question: "Can MECTEC build cellular projects?",
+    question: "Can ProjexiaHub build cellular projects?",
     variations: [
       "Do you work with 4G modules",
       "Can you make a GSM project",
@@ -1278,7 +1278,7 @@ export const GENERAL_HELP = [
   {
     id: "general-lora",
     category: "general",
-    question: "Can MECTEC build LoRa projects?",
+    question: "Can ProjexiaHub build LoRa projects?",
     variations: [
       "Do you make LoRa devices",
       "Can you build long range wireless",
@@ -1294,7 +1294,7 @@ export const GENERAL_HELP = [
   {
     id: "general-ai-ml",
     category: "general",
-    question: "Can MECTEC build AI or machine learning projects?",
+    question: "Can ProjexiaHub build AI or machine learning projects?",
     variations: [
       "Do you work with AI",
       "Can you make machine learning projects",
@@ -1310,7 +1310,7 @@ export const GENERAL_HELP = [
   {
     id: "general-robotics",
     category: "general",
-    question: "Can MECTEC build robotics projects?",
+    question: "Can ProjexiaHub build robotics projects?",
     variations: [
       "Do you make robots",
       "Can you build a robot",
@@ -1326,7 +1326,7 @@ export const GENERAL_HELP = [
   {
     id: "general-drone",
     category: "general",
-    question: "Can MECTEC build drone projects?",
+    question: "Can ProjexiaHub build drone projects?",
     variations: [
       "Do you make drones",
       "Can you build a UAV",
@@ -1342,7 +1342,7 @@ export const GENERAL_HELP = [
   {
     id: "general-smart-home",
     category: "general",
-    question: "Can MECTEC build smart home projects?",
+    question: "Can ProjexiaHub build smart home projects?",
     variations: [
       "Do you make smart home devices",
       "Can you automate my home",
@@ -1358,7 +1358,7 @@ export const GENERAL_HELP = [
   {
     id: "general-industrial",
     category: "general",
-    question: "Can MECTEC build industrial projects?",
+    question: "Can ProjexiaHub build industrial projects?",
     variations: [
       "Do you work on industrial systems",
       "Industrial automation project",
@@ -1374,7 +1374,7 @@ export const GENERAL_HELP = [
   {
     id: "general-medical",
     category: "general",
-    question: "Can MECTEC build medical projects?",
+    question: "Can ProjexiaHub build medical projects?",
     variations: [
       "Do you make medical devices",
       "Medical electronics project",
@@ -1383,14 +1383,14 @@ export const GENERAL_HELP = [
     ],
     keywords: ["medical", "healthcare", "device", "electronics", "safety"],
     answer:
-      "Medical and healthcare-related electronics may involve additional regulatory, safety and reliability requirements. Discuss the specific application with MECTEC.",
+      "Medical and healthcare-related electronics may involve additional regulatory, safety and reliability requirements. Discuss the specific application with ProjexiaHub.",
     priority: 7,
   },
 
   {
     id: "general-automotive",
     category: "general",
-    question: "Can MECTEC build automotive projects?",
+    question: "Can ProjexiaHub build automotive projects?",
     variations: [
       "Do you work on automotive electronics",
       "Car electronics project",
@@ -1399,14 +1399,14 @@ export const GENERAL_HELP = [
     ],
     keywords: ["automotive", "car", "vehicle", "electronics", "control"],
     answer:
-      "Automotive projects may involve specific voltage ranges, communication protocols, environmental requirements and safety standards. Discuss the specific application with MECTEC.",
+      "Automotive projects may involve specific voltage ranges, communication protocols, environmental requirements and safety standards. Discuss the specific application with ProjexiaHub.",
     priority: 7,
   },
 
   {
     id: "general-agriculture",
     category: "general",
-    question: "Can MECTEC build agriculture projects?",
+    question: "Can ProjexiaHub build agriculture projects?",
     variations: [
       "Do you make agriculture systems",
       "Smart farming project",
@@ -1422,7 +1422,7 @@ export const GENERAL_HELP = [
   {
     id: "general-security",
     category: "general",
-    question: "Can MECTEC build security projects?",
+    question: "Can ProjexiaHub build security projects?",
     variations: [
       "Do you make security systems",
       "Alarm system project",
@@ -1438,7 +1438,7 @@ export const GENERAL_HELP = [
   {
     id: "general-monitoring",
     category: "general",
-    question: "Can MECTEC build monitoring systems?",
+    question: "Can ProjexiaHub build monitoring systems?",
     variations: [
       "Do you make monitoring devices",
       "Remote monitoring project",
@@ -1454,7 +1454,7 @@ export const GENERAL_HELP = [
   {
     id: "general-control",
     category: "general",
-    question: "Can MECTEC build control systems?",
+    question: "Can ProjexiaHub build control systems?",
     variations: [
       "Do you make control systems",
       "Process control project",
@@ -1470,7 +1470,7 @@ export const GENERAL_HELP = [
   {
     id: "general-data-logging",
     category: "general",
-    question: "Can MECTEC build data logging systems?",
+    question: "Can ProjexiaHub build data logging systems?",
     variations: [
       "Do you make data loggers",
       "Sensor data logging project",
@@ -1486,7 +1486,7 @@ export const GENERAL_HELP = [
   {
     id: "general-display",
     category: "general",
-    question: "Can MECTEC add a display to my project?",
+    question: "Can ProjexiaHub add a display to my project?",
     variations: [
       "Can you add a screen",
       "Display for my project",
@@ -1502,7 +1502,7 @@ export const GENERAL_HELP = [
   {
     id: "general-user-interface",
     category: "general",
-    question: "Can MECTEC design a user interface for my project?",
+    question: "Can ProjexiaHub design a user interface for my project?",
     variations: [
       "Can you make a user interface",
       "Buttons and display design",
@@ -1518,7 +1518,7 @@ export const GENERAL_HELP = [
   {
     id: "general-mobile-app",
     category: "general",
-    question: "Can MECTEC build a mobile app for my project?",
+    question: "Can ProjexiaHub build a mobile app for my project?",
     variations: [
       "Can you make an app",
       "Mobile app for device",
@@ -1527,14 +1527,14 @@ export const GENERAL_HELP = [
     ],
     keywords: ["mobile", "app", "android", "ios", "control"],
     answer:
-      "Mobile app development depends on the project scope. Some projects can use existing apps or web interfaces; others may need a custom app. Discuss requirements with MECTEC.",
+      "Mobile app development depends on the project scope. Some projects can use existing apps or web interfaces; others may need a custom app. Discuss requirements with ProjexiaHub.",
     priority: 8,
   },
 
   {
     id: "general-web-dashboard",
     category: "general",
-    question: "Can MECTEC build a web dashboard?",
+    question: "Can ProjexiaHub build a web dashboard?",
     variations: [
       "Can you make a web interface",
       "Dashboard for my device",
@@ -1550,7 +1550,7 @@ export const GENERAL_HELP = [
   {
     id: "general-cloud",
     category: "general",
-    question: "Can MECTEC connect my project to the cloud?",
+    question: "Can ProjexiaHub connect my project to the cloud?",
     variations: [
       "Can you use cloud services",
       "Cloud connected device",
@@ -1566,7 +1566,7 @@ export const GENERAL_HELP = [
   {
     id: "general-api",
     category: "general",
-    question: "Can MECTEC integrate with an API?",
+    question: "Can ProjexiaHub integrate with an API?",
     variations: [
       "Can you use an API",
       "API integration project",
@@ -1582,7 +1582,7 @@ export const GENERAL_HELP = [
   {
     id: "general-database",
     category: "general",
-    question: "Can MECTEC work with databases?",
+    question: "Can ProjexiaHub work with databases?",
     variations: [
       "Can you store data in a database",
       "Database integration",
@@ -1598,7 +1598,7 @@ export const GENERAL_HELP = [
   {
     id: "general-analytics",
     category: "general",
-    question: "Can MECTEC provide data analytics?",
+    question: "Can ProjexiaHub provide data analytics?",
     variations: [
       "Can you analyze data",
       "Data analytics project",
@@ -1614,7 +1614,7 @@ export const GENERAL_HELP = [
   {
     id: "general-notifications",
     category: "general",
-    question: "Can MECTEC add notifications to my project?",
+    question: "Can ProjexiaHub add notifications to my project?",
     variations: [
       "Can you send alerts",
       "Notification system",
@@ -1774,7 +1774,7 @@ export const GENERAL_HELP = [
   {
     id: "general-certification",
     category: "general",
-    question: "Can MECTEC help with certification?",
+    question: "Can ProjexiaHub help with certification?",
     variations: [
       "Do you handle certification",
       "CE FCC certification",
@@ -1783,7 +1783,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["certification", "ce", "fcc", "compliance", "testing"],
     answer:
-      "Certification requirements and support depend on the product and target market. Discuss certification needs with MECTEC during planning.",
+      "Certification requirements and support depend on the product and target market. Discuss certification needs with ProjexiaHub during planning.",
     priority: 8,
   },
 
@@ -1799,7 +1799,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["ip", "intellectual", "property", "ownership", "design"],
     answer:
-      "Intellectual property arrangements depend on the project agreement. Discuss IP ownership with MECTEC before starting the project.",
+      "Intellectual property arrangements depend on the project agreement. Discuss IP ownership with ProjexiaHub before starting the project.",
     priority: 9,
   },
 
@@ -1815,7 +1815,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["nda", "confidential", "agreement", "protect", "idea"],
     answer:
-      "Confidentiality arrangements can be discussed with MECTEC. Use the contact options to raise this before sharing sensitive information.",
+      "Confidentiality arrangements can be discussed with ProjexiaHub. Use the contact options to raise this before sharing sensitive information.",
     priority: 8,
   },
 
@@ -1831,14 +1831,14 @@ export const GENERAL_HELP = [
     ],
     keywords: ["idea", "protect", "confidential", "ownership", "project"],
     answer:
-      "Discuss confidentiality and IP arrangements with MECTEC before sharing sensitive details. Legal protection depends on your jurisdiction and circumstances.",
+      "Discuss confidentiality and IP arrangements with ProjexiaHub before sharing sensitive details. Legal protection depends on your jurisdiction and circumstances.",
     priority: 9,
   },
 
   {
     id: "general-competition",
     category: "general",
-    question: "Can MECTEC build competition projects?",
+    question: "Can ProjexiaHub build competition projects?",
     variations: [
       "Competition project",
       "Hackathon project",
@@ -1854,7 +1854,7 @@ export const GENERAL_HELP = [
   {
     id: "general-bulk",
     category: "general",
-    question: "Can MECTEC produce multiple units?",
+    question: "Can ProjexiaHub produce multiple units?",
     variations: [
       "Can you make multiple copies",
       "Bulk production",
@@ -1870,7 +1870,7 @@ export const GENERAL_HELP = [
   {
     id: "general-manufacturing",
     category: "general",
-    question: "Can MECTEC help with manufacturing?",
+    question: "Can ProjexiaHub help with manufacturing?",
     variations: [
       "Manufacturing support",
       "Produce my design",
@@ -1879,7 +1879,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["manufacturing", "production", "assembly", "pcb", "design"],
     answer:
-      "Manufacturing support depends on the project and scope. PCB fabrication, assembly and enclosure production can be discussed with MECTEC.",
+      "Manufacturing support depends on the project and scope. PCB fabrication, assembly and enclosure production can be discussed with ProjexiaHub.",
     priority: 8,
   },
 
