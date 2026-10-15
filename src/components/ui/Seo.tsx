@@ -114,7 +114,7 @@ function buildSiteSchema(siteName: string, description: string) {
   };
 }
 
-function buildOrganizationSchema(siteName: string, description: string, email: string, phone: string, showEmail: boolean, showPhone: boolean) {
+function buildOrganizationSchema(siteName: string, description: string, email: string, phone: string, address: string, showEmail: boolean, showPhone: boolean, showAddress: boolean) {
   return {
     "@type": "Organization",
     "@id": `${SITE.url}/#organization`,
@@ -124,6 +124,7 @@ function buildOrganizationSchema(siteName: string, description: string, email: s
     description,
     ...(showEmail && email ? { email } : {}),
     ...(showPhone && phone ? { telephone: phone } : {}),
+    ...(showAddress && address ? { address } : {}),
   };
 }
 
@@ -292,8 +293,10 @@ export function Seo({
           settings.description,
           settings.email,
           settings.phone,
+          settings.address,
           settings.showEmail,
           settings.showPhone,
+          settings.showAddress,
         ),
         buildSiteSchema(brandName, settings.description),
       );
@@ -345,8 +348,10 @@ export function Seo({
     settings.description,
     settings.email,
     settings.phone,
+    settings.address,
     settings.showEmail,
     settings.showPhone,
+    settings.showAddress,
     metaDescription,
     url,
     absoluteImage,
