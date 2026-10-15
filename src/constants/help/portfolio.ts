@@ -8,9 +8,9 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     id: "portfolio-what-is",
     category: "portfolio",
     intent: "capability",
-    question: "Where can I see MECTEC projects?",
+    question: "Where can I see ProjexiaHub projects?",
     variations: [
-      "Where can I see MECTEC projects",
+      "Where can I see ProjexiaHub projects",
       "Show me your projects",
       "Where is the portfolio",
       "Can I see previous work",
@@ -19,7 +19,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["projects", "portfolio", "examples", "previous", "work"],
     answer:
-      "Visit the Projects section of the MECTEC website to explore available project entries and case studies.",
+      "Visit the Projects section of the ProjexiaHub website to explore available project entries and case studies.",
     priority: 15,
   },
 
@@ -27,9 +27,9 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     id: "portfolio-project-details",
     category: "portfolio",
     intent: "definition",
-    question: "What information is available about MECTEC projects?",
+    question: "What information is available about ProjexiaHub projects?",
     variations: [
-      "What information is available about MECTEC projects",
+      "What information is available about ProjexiaHub projects",
       "What do project pages show",
       "Can I see how projects work",
       "Do projects have technical details",
@@ -45,9 +45,9 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     id: "portfolio-specific",
     category: "portfolio",
     intent: "capability",
-    question: "Can the Help Assistant explain a specific MECTEC project?",
+    question: "Can the Help Assistant explain a specific ProjexiaHub project?",
     variations: [
-      "Can the Help Assistant explain a specific MECTEC project",
+      "Can the Help Assistant explain a specific ProjexiaHub project",
       "Can you tell me about a project",
       "Explain one of your projects",
       "Can the chatbot answer project questions",
@@ -55,7 +55,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["project", "portfolio", "assistant", "explain"],
     answer:
-      "The Help Assistant can answer questions that are included in its local knowledge library. Specific project information can be added to the library as the MECTEC portfolio grows.",
+      "The Help Assistant can answer questions that are included in its local knowledge library. Specific project information can be added to the library as the ProjexiaHub portfolio grows.",
     priority: 13,
   },
 
@@ -127,7 +127,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["similar", "projects", "examples", "relevant", "mine"],
     answer:
-      "You can browse the Projects section for related work. If no close match exists, the Help Assistant and MECTEC can still discuss the new requirements.",
+      "You can browse the Projects section for related work. If no close match exists, the Help Assistant and ProjexiaHub can still discuss the new requirements.",
     priority: 13,
   },
 
@@ -145,7 +145,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["industry", "field", "sector", "projects", "experience"],
     answer:
-      "Project coverage depends on the MECTEC portfolio. Check the Projects section for related work or contact MECTEC to discuss your sector.",
+      "Project coverage depends on the ProjexiaHub portfolio. Check the Projects section for related work or contact ProjexiaHub to discuss your sector.",
     priority: 10,
   },
 
@@ -163,7 +163,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["find", "project", "search", "specific", "website"],
     answer:
-      "Use the Projects section and any available filtering or navigation controls. If the specific project is not listed, contact MECTEC directly.",
+      "Use the Projects section and any available filtering or navigation controls. If the specific project is not listed, contact ProjexiaHub directly.",
     priority: 10,
   },
 
@@ -184,7 +184,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["technologies", "platforms", "tools", "stack", "projects"],
     answer:
-      "MECTEC projects can involve microcontrollers, embedded firmware, sensors, communication modules, PCB design, IoT, automation and related technologies depending on the project.",
+      "ProjexiaHub projects can involve microcontrollers, embedded firmware, sensors, communication modules, PCB design, IoT, automation and related technologies depending on the project.",
     priority: 13,
   },
 
@@ -393,13 +393,13 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     id: "portfolio-images",
     category: "portfolio",
     intent: "capability",
-    question: "Are there photos of MECTEC projects?",
+    question: "Are there photos of ProjexiaHub projects?",
     variations: [
-      "Are there photos of MECTEC projects",
+      "Are there photos of ProjexiaHub projects",
       "Project photos",
       "Can I see images of builds",
       "Gallery of projects",
-      "Pictures of MECTEC work",
+      "Pictures of ProjexiaHub work",
     ],
     keywords: ["photos", "images", "gallery", "pictures", "projects"],
     answer:
@@ -417,7 +417,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
       "Project videos",
       "Can I watch a demo",
       "Video of build",
-      "MECTEC project demo",
+      "ProjexiaHub project demo",
     ],
     keywords: ["video", "demo", "project", "watch", "build"],
     answer:
@@ -638,7 +638,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
       "How often is the portfolio updated",
       "New projects added",
       "When is portfolio updated",
-      "Latest MECTEC work",
+      "Latest ProjexiaHub work",
       "Recent projects",
     ],
     keywords: ["updated", "new", "recent", "latest", "portfolio"],
@@ -697,7 +697,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["standard", "products", "designs", "lineup", "builds"],
     answer:
-      "MECTEC focuses on custom and project-based work. Standard product availability should be confirmed with MECTEC directly.",
+      "ProjexiaHub focuses on custom and project-based work. Standard product availability should be confirmed with ProjexiaHub directly.",
     priority: 9,
   },
 
@@ -754,7 +754,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["publish", "portfolio", "images", "share", "repost"],
     answer:
-      "Permission to republish project information depends on the project and MECTEC policy. Contact MECTEC before using project content externally.",
+      "Permission to republish project information depends on the project and ProjexiaHub policy. Contact ProjexiaHub before using project content externally.",
     priority: 10,
   },
 
@@ -762,17 +762,17 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     id: "portfolio-attribution",
     category: "portfolio",
     intent: "compatibility",
-    question: "Do I need to attribute MECTEC if I reference a project?",
+    question: "Do I need to attribute ProjexiaHub if I reference a project?",
     variations: [
-      "Do I need to attribute MECTEC if I reference a project",
+      "Do I need to attribute ProjexiaHub if I reference a project",
       "Attribution required",
-      "Credit MECTEC",
+      "Credit ProjexiaHub",
       "Reference project source",
       "Cite portfolio",
     ],
     keywords: ["attribution", "credit", "reference", "cite", "portfolio"],
     answer:
-      "Attribution and usage terms depend on the project and MECTEC policy. Contact MECTEC if you plan to reference project content.",
+      "Attribution and usage terms depend on the project and ProjexiaHub policy. Contact ProjexiaHub if you plan to reference project content.",
     priority: 9,
   },
 
@@ -790,7 +790,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["reuse", "design", "portfolio", "copy", "licensing"],
     answer:
-      "Reuse of project designs depends on IP and licensing terms. Contact MECTEC before reusing any design or content.",
+      "Reuse of project designs depends on IP and licensing terms. Contact ProjexiaHub before reusing any design or content.",
     priority: 13,
   },
 
@@ -808,7 +808,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["open", "source", "portfolio", "projects", "hardware"],
     answer:
-      "Some projects may be open source or include shared resources. Check individual project entries and contact MECTEC for clarity.",
+      "Some projects may be open source or include shared resources. Check individual project entries and contact ProjexiaHub for clarity.",
     priority: 10,
   },
 
@@ -844,7 +844,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["collaboration", "portfolio", "project", "work", "partnership"],
     answer:
-      "Collaboration opportunities depend on the project and MECTEC policy. Use the contact options to discuss possibilities.",
+      "Collaboration opportunities depend on the project and ProjexiaHub policy. Use the contact options to discuss possibilities.",
     priority: 9,
   },
 
@@ -878,7 +878,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
       "Can I suggest a project idea for the portfolio",
       "Suggest project",
       "Propose new build",
-      "Idea for MECTEC",
+      "Idea for ProjexiaHub",
       "Request new project",
     ],
     keywords: ["suggest", "project", "idea", "portfolio", "request"],
@@ -901,7 +901,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["match", "portfolio", "needs", "compare", "relevant"],
     answer:
-      "Review the Projects section for related work. If nothing matches exactly, describe your requirements and MECTEC can evaluate the project.",
+      "Review the Projects section for related work. If nothing matches exactly, describe your requirements and ProjexiaHub can evaluate the project.",
     priority: 10,
   },
 
@@ -919,7 +919,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["look", "portfolio", "review", "evaluate", "projects"],
     answer:
-      "Look for projects similar to your requirements, the technologies used, the level of documentation and the results achieved. Then discuss your specific needs with MECTEC.",
+      "Look for projects similar to your requirements, the technologies used, the level of documentation and the results achieved. Then discuss your specific needs with ProjexiaHub.",
     priority: 13,
   },
 
@@ -937,7 +937,7 @@ export const PORTFOLIO_HELP: HelpEntry[] = [
     ],
     keywords: ["best", "practices", "portfolio", "use", "tips"],
     answer:
-      "Use the portfolio to understand capabilities and style, identify similar work, and reference examples in your request. Then discuss your exact requirements directly with MECTEC.",
+      "Use the portfolio to understand capabilities and style, identify similar work, and reference examples in your request. Then discuss your exact requirements directly with ProjexiaHub.",
     priority: 13,
   },
 ];
