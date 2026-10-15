@@ -104,12 +104,17 @@ export const projectLibraryService = {
       return true;
     });
     if (!missing.length) return 0;
-    const batch = writeBatch(db);
-    for (const item of missing) {
-      const ref = doc(libraryRef);
-      batch.set(ref, { ...item, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+    // Firestore limits each batch to 500 writes. Chunk the expanded catalog
+    // so a first-time seed can safely contain well over 500 entries.
+    const batchSize = 450;
+    for (let start = 0; start < missing.length; start += batchSize) {
+      const batch = writeBatch(db);
+      for (const item of missing.slice(start, start + batchSize)) {
+        const ref = doc(libraryRef);
+        batch.set(ref, { ...item, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+      }
+      await batch.commit();
     }
-    await batch.commit();
     return missing.length;
   },
 };
