@@ -2,8 +2,10 @@ import { ArrowRight, Mail } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { ButtonLink } from '../ui/Button';
 import { SITE } from '../../constants/site';
+import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 export function RequestCta() {
+  const { settings } = useSiteSettings();
   return (
     <section className="py-16 sm:py-24">
       <Container>
@@ -14,7 +16,7 @@ export function RequestCta() {
               Have a project in mind?
             </h2>
             <p className="mt-4 max-w-prose text-base leading-relaxed text-content-secondary">
-              Tell MECTEC what you want to build. The request form takes a few minutes and covers
+              Tell {settings.name} what you want to build. The request form takes a few minutes and covers
               the technical details up front, so the first reply is a real answer rather than a
               round of questions. Expect a response {SITE.responseTime}.
             </p>
