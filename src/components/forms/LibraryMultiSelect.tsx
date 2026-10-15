@@ -16,7 +16,7 @@ export function LibraryMultiSelect({
 }: {
   kind: ProjectLibraryKind;
   values: string[];
-  onChange: (values: string[], addedItem?: ProjectLibraryItem) => void;
+  onChange: (values: string[], addedItem?: ProjectLibraryItem, selectedItems?: ProjectLibraryItem[]) => void;
   label: string;
   placeholder?: string;
 }) {
@@ -78,7 +78,9 @@ export function LibraryMultiSelect({
     const clean = name.trim();
     if (clean && !values.some((value) => normalizeLibraryName(value) === normalizeLibraryName(clean))) {
       const selectedItem = items.find((item) => normalizeLibraryName(item.name) === normalizeLibraryName(clean));
-      onChange([...values, clean], selectedItem);
+      const nextValues = [...values, clean];
+      const selectedItems = nextValues.map((value) => items.find((item) => normalizeLibraryName(item.name) === normalizeLibraryName(value))).filter((item): item is ProjectLibraryItem => Boolean(item));
+      onChange(nextValues, selectedItem, selectedItems);
     }
     setCustom('');
     setSearch('');
