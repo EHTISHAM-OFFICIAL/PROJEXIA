@@ -88,7 +88,12 @@ export const projectLibraryService = {
   async seedStarterCatalog(): Promise<number> {
     const existing = await getDocs(libraryRef);
     const keys = new Set(existing.docs.map((entry) => `${String(entry.data().kind ?? '')}::${normalizeName(String(entry.data().name ?? ''))}`));
-    const missing = PROJECT_LIBRARY_STARTER.filter((item) => !keys.has(`${item.kind}::${normalizeName(item.name)}`));
+    const missing = PROJECT_LIBRARY_STARTER.filter((item) => {
+      const key = `${item.kind}::${normalizeName(item.name)}`;
+      if (keys.has(key)) return false;
+      keys.add(key);
+      return true;
+    });
     if (!missing.length) return 0;
     const batch = writeBatch(db);
     for (const item of missing) {
