@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { ButtonLink } from '../ui/Button';
+import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 const INDICATORS = [
   { label: 'PWR', tone: 'bg-state-success' },
@@ -9,6 +10,7 @@ const INDICATORS = [
 ] as const;
 
 export function Hero() {
+  const { settings } = useSiteSettings();
   return (
     <section className="relative overflow-hidden border-b border-line">
       <div className="absolute inset-0 grid-backdrop" aria-hidden="true" />
@@ -29,7 +31,7 @@ export function Hero() {
               />
             </h1>
             <p className="mt-6 max-w-prose text-lg leading-relaxed text-content-secondary">
-              MECTEC designs and builds custom electronics — embedded systems, IoT devices,
+              {settings.name} designs and builds custom electronics — embedded systems, IoT devices,
               automation and robotics. From a rough idea to a tested prototype you can hold in
               your hand.
             </p>
