@@ -8,9 +8,9 @@ export const WEBSITE_HELP: HelpEntry[] = [
     id: "website-navigation",
     category: "website",
     intent: "general",
-    question: "How do I navigate the MECTEC website?",
+    question: "How do I navigate the ProjexiaHub website?",
     variations: [
-      "How do I navigate the MECTEC website",
+      "How do I navigate the ProjexiaHub website",
       "How to use the website",
       "Where are the website sections",
       "How do I find different pages",
@@ -18,7 +18,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["navigate", "navigation", "website", "menu", "sections"],
     answer:
-      "The website navigation provides access to the main sections such as Projects, Project Request and Contact. Use the navigation menu to move between sections, and use the Help Assistant for quick answers about MECTEC and related technical topics.",
+      "The website navigation provides access to the main sections such as Projects, Project Request and Contact. Use the navigation menu to move between sections, and use the Help Assistant for quick answers about ProjexiaHub and related technical topics.",
     priority: 90,
   },
 
@@ -32,11 +32,11 @@ export const WEBSITE_HELP: HelpEntry[] = [
       "How do I find projects",
       "Where can I browse projects",
       "Show me the portfolio",
-      "Where are MECTEC projects",
+      "Where are ProjexiaHub projects",
     ],
     keywords: ["projects", "page", "portfolio", "browse"],
     answer:
-      "Use the Projects section in the website navigation to browse MECTEC project entries.",
+      "Use the Projects section in the website navigation to browse ProjexiaHub project entries.",
     priority: 90,
   },
 
@@ -54,7 +54,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["request", "form", "project", "submit"],
     answer:
-      "Use the project request option in the MECTEC website navigation to open the request form.",
+      "Use the project request option in the ProjexiaHub website navigation to open the request form.",
     priority: 100,
   },
 
@@ -66,13 +66,13 @@ export const WEBSITE_HELP: HelpEntry[] = [
     variations: [
       "Where is the contact page",
       "How do I find contact",
-      "Where can I contact MECTEC",
+      "Where can I contact ProjexiaHub",
       "Show me contact information",
       "Where is contact",
     ],
     keywords: ["contact", "page", "email", "whatsapp"],
     answer:
-      "Use the Contact option in the website navigation to find MECTEC contact information and available communication options.",
+      "Use the Contact option in the website navigation to find ProjexiaHub contact information and available communication options.",
     priority: 100,
   },
 
@@ -147,7 +147,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["assistant", "help", "chatbot", "questions", "answer"],
     answer:
-      "The Help Assistant provides instant answers from MECTEC's local knowledge library. It covers MECTEC information, project requests, services, electronics, embedded systems, components, sensors, automation, IoT, troubleshooting and related topics included in the library.",
+      "The Help Assistant provides instant answers from ProjexiaHub's local knowledge library. It covers ProjexiaHub information, project requests, services, electronics, embedded systems, components, sensors, automation, IoT, troubleshooting and related topics included in the library.",
     priority: 100,
   },
 
@@ -174,7 +174,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
       "politics",
     ],
     answer:
-      "The Help Assistant is intentionally limited to information in the MECTEC knowledge library. Questions outside its supported topics may receive a fallback response instead of an invented answer.",
+      "The Help Assistant is intentionally limited to information in the ProjexiaHub knowledge library. Questions outside its supported topics may receive a fallback response instead of an invented answer.",
     priority: 100,
   },
 
@@ -193,7 +193,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["ai", "artificial", "intelligence", "api", "server", "chatbot"],
     answer:
-      "The MECTEC Help Assistant is a local rule-based knowledge system. Its answers come from the website's built-in knowledge library rather than a generative AI service.",
+      "The ProjexiaHub Help Assistant is a local rule-based knowledge system. Its answers come from the website's built-in knowledge library rather than a generative AI service.",
     priority: 100,
   },
 
@@ -247,7 +247,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["accuracy", "assistant", "answers", "reliability", "trust"],
     answer:
-      "The assistant returns predefined answers from the local knowledge library. It does not generate new information. For project-specific or high-impact decisions, confirm with MECTEC directly.",
+      "The assistant returns predefined answers from the local knowledge library. It does not generate new information. For project-specific or high-impact decisions, confirm with ProjexiaHub directly.",
     priority: 100,
   },
 
@@ -265,7 +265,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["updates", "assistant", "library", "knowledge", "improvements"],
     answer:
-      "The knowledge library can be updated as MECTEC adds new topics and information. The most current answers appear when the library is updated.",
+      "The knowledge library can be updated as ProjexiaHub adds new topics and information. The most current answers appear when the library is updated.",
     priority: 90,
   },
 
@@ -283,7 +283,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["topics", "assistant", "coverage", "knowledge", "library"],
     answer:
-      "The assistant covers MECTEC information, project requests, services, pricing, electronics, embedded systems, microcontrollers, components, sensors, motors, RFID, PCB, firmware, IoT, automation and troubleshooting topics present in the library.",
+      "The assistant covers ProjexiaHub information, project requests, services, pricing, electronics, embedded systems, microcontrollers, components, sensors, motors, RFID, PCB, firmware, IoT, automation and troubleshooting topics present in the library.",
     priority: 100,
   },
 
@@ -337,7 +337,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["assistant", "human", "support", "replace", "chatbot"],
     answer:
-      "No. The Help Assistant is a quick reference tool. For project-specific decisions, quotations or direct support, contact MECTEC through the website contact options.",
+      "No. The Help Assistant is a quick reference tool. For project-specific decisions, quotations or direct support, contact ProjexiaHub through the website contact options.",
     priority: 100,
   },
 
@@ -358,7 +358,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["request", "form", "help", "guide", "fill"],
     answer:
-      "Describe the project goal, key features, any hardware or code you already have, and any budget or deadline constraints. More useful detail helps MECTEC understand the request.",
+      "Describe the project goal, key features, any hardware or code you already have, and any budget or deadline constraints. More useful detail helps ProjexiaHub understand the request.",
     priority: 100,
   },
 
@@ -412,7 +412,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["contact", "form", "help", "guide", "message"],
     answer:
-      "Use the Contact section to reach MECTEC. Provide a clear subject, message and any relevant project details so the request can be routed correctly.",
+      "Use the Contact section to reach ProjexiaHub. Provide a clear subject, message and any relevant project details so the request can be routed correctly.",
     priority: 90,
   },
 
@@ -430,7 +430,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["form", "error", "submit", "request", "working"],
     answer:
-      "Try again, check required fields and refresh the page. If the problem continues, contact MECTEC directly with the details.",
+      "Try again, check required fields and refresh the page. If the problem continues, contact ProjexiaHub directly with the details.",
     priority: 90,
   },
 
@@ -448,7 +448,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["contact", "form", "broken", "error", "message"],
     answer:
-      "Try refreshing the page or using another browser. If the problem continues, use the email contact option or report the issue to MECTEC.",
+      "Try refreshing the page or using another browser. If the problem continues, use the email contact option or report the issue to ProjexiaHub.",
     priority: 80,
   },
 
@@ -463,7 +463,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     variations: [
       "Where can I find the email link",
       "Email on website",
-      "Where to find MECTEC email",
+      "Where to find ProjexiaHub email",
       "Contact email page",
       "Email link location",
     ],
@@ -498,7 +498,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     question: "Is there a map on the website?",
     variations: [
       "Is there a map on the website",
-      "Map on MECTEC site",
+      "Map on ProjexiaHub site",
       "Location map website",
       "Where is the map",
       "Google maps link",
@@ -518,7 +518,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
       "Where are the social media links",
       "Social links on website",
       "Facebook Instagram links",
-      "Follow MECTEC",
+      "Follow ProjexiaHub",
       "Social media icons",
     ],
     keywords: ["social", "links", "facebook", "instagram", "follow"],
@@ -534,13 +534,13 @@ export const WEBSITE_HELP: HelpEntry[] = [
     id: "website-mobile",
     category: "website",
     intent: "compatibility",
-    question: "Does the MECTEC website work on mobile?",
+    question: "Does the ProjexiaHub website work on mobile?",
     variations: [
-      "Does the MECTEC website work on mobile",
+      "Does the ProjexiaHub website work on mobile",
       "Can I use the website on my phone",
       "Is the site mobile friendly",
       "Does it work on tablets",
-      "Mobile access to MECTEC",
+      "Mobile access to ProjexiaHub",
     ],
     keywords: ["mobile", "phone", "tablet", "responsive", "device"],
     answer:
@@ -576,7 +576,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
       "What browser is supported",
       "Why is the website not loading",
       "Browser compatibility",
-      "Best browser for MECTEC",
+      "Best browser for ProjexiaHub",
     ],
     keywords: [
       "browser",
@@ -616,9 +616,9 @@ export const WEBSITE_HELP: HelpEntry[] = [
     id: "website-account",
     category: "website",
     intent: "general",
-    question: "Do I need an account to use MECTEC?",
+    question: "Do I need an account to use ProjexiaHub?",
     variations: [
-      "Do I need an account to use MECTEC",
+      "Do I need an account to use ProjexiaHub",
       "How do I create an account",
       "Do I need to sign up",
       "Can I submit a project without an account",
@@ -626,7 +626,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["account", "login", "signup", "register", "user"],
     answer:
-      "The need for an account depends on the current website features. Basic browsing and project request submission may be available without a full account system. Check the website interface or contact MECTEC for the latest requirements.",
+      "The need for an account depends on the current website features. Basic browsing and project request submission may be available without a full account system. Check the website interface or contact ProjexiaHub for the latest requirements.",
     priority: 70,
   },
 
@@ -658,11 +658,11 @@ export const WEBSITE_HELP: HelpEntry[] = [
       "Is my data safe",
       "Website privacy",
       "What happens to my submitted information",
-      "Data protection on MECTEC",
+      "Data protection on ProjexiaHub",
     ],
     keywords: ["privacy", "data", "information", "security"],
     answer:
-      "Information handling depends on the website's current policies. For specific privacy or data questions, contact MECTEC directly through the contact options provided on the website.",
+      "Information handling depends on the website's current policies. For specific privacy or data questions, contact ProjexiaHub directly through the contact options provided on the website.",
     priority: 80,
   },
 
@@ -680,7 +680,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["privacy", "policy", "data", "gdpr", "website"],
     answer:
-      "Privacy policy location depends on the current website. If not clearly listed, contact MECTEC for information about data handling.",
+      "Privacy policy location depends on the current website. If not clearly listed, contact ProjexiaHub for information about data handling.",
     priority: 80,
   },
 
@@ -698,7 +698,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["terms", "conditions", "legal", "website", "use"],
     answer:
-      "Terms and conditions location depends on the current website. If you cannot find them, contact MECTEC for clarification.",
+      "Terms and conditions location depends on the current website. If you cannot find them, contact ProjexiaHub for clarification.",
     priority: 80,
   },
 
@@ -724,13 +724,13 @@ export const WEBSITE_HELP: HelpEntry[] = [
     id: "website-blog",
     category: "website",
     intent: "general",
-    question: "Does MECTEC have a blog?",
+    question: "Does ProjexiaHub have a blog?",
     variations: [
-      "Does MECTEC have a blog",
+      "Does ProjexiaHub have a blog",
       "Blog on website",
       "Articles page",
       "News section",
-      "MECTEC blog",
+      "ProjexiaHub blog",
     ],
     keywords: ["blog", "articles", "news", "website", "section"],
     answer:
@@ -794,7 +794,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["error", "broken", "loading", "issue", "website"],
     answer:
-      "Try refreshing the page, checking your internet connection, using an updated browser and clearing the cache if necessary. If the problem continues, contact MECTEC through the provided contact options and describe what happened.",
+      "Try refreshing the page, checking your internet connection, using an updated browser and clearing the cache if necessary. If the problem continues, contact ProjexiaHub through the provided contact options and describe what happened.",
     priority: 80,
   },
 
@@ -812,7 +812,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["slow", "loading", "speed", "page", "website"],
     answer:
-      "Loading speed depends on your connection, device and the current website state. If the issue continues, try refreshing, switching browsers or reporting the problem to MECTEC.",
+      "Loading speed depends on your connection, device and the current website state. If the issue continues, try refreshing, switching browsers or reporting the problem to ProjexiaHub.",
     priority: 80,
   },
 
@@ -830,7 +830,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["loading", "stuck", "spinner", "page", "website"],
     answer:
-      "Try refreshing the page, checking your internet connection and using an updated browser. If the issue continues, contact MECTEC and describe the page and behavior.",
+      "Try refreshing the page, checking your internet connection and using an updated browser. If the issue continues, contact ProjexiaHub and describe the page and behavior.",
     priority: 80,
   },
 
@@ -887,7 +887,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["suggest", "content", "website", "idea", "information"],
     answer:
-      "Yes. Send suggestions through the Contact section. Clear and specific ideas help MECTEC evaluate improvements.",
+      "Yes. Send suggestions through the Contact section. Clear and specific ideas help ProjexiaHub evaluate improvements.",
     priority: 80,
   },
 
@@ -908,7 +908,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["find", "project", "search", "specific", "website"],
     answer:
-      "Use the Projects section and any available filtering or navigation controls. If the specific project is not listed, contact MECTEC directly.",
+      "Use the Projects section and any available filtering or navigation controls. If the specific project is not listed, contact ProjexiaHub directly.",
     priority: 90,
   },
 
@@ -947,7 +947,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["status", "request", "track", "submission", "progress"],
     answer:
-      "The current website may not provide a request tracking feature. Contact MECTEC through the provided options to check the status of a submitted request.",
+      "The current website may not provide a request tracking feature. Contact ProjexiaHub through the provided options to check the status of a submitted request.",
     priority: 90,
   },
 
@@ -978,7 +978,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
       "Are there videos on the website",
       "Videos of projects",
       "Project demo videos",
-      "Watch MECTEC videos",
+      "Watch ProjexiaHub videos",
       "Video content website",
     ],
     keywords: ["videos", "projects", "demo", "watch", "website"],
@@ -1004,7 +1004,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["assistant", "use", "chatbot", "best", "when"],
     answer:
-      "Use the assistant for quick questions about MECTEC, services, pricing overview, electronics, embedded systems, sensors, motors, RFID, PCB, firmware, IoT and troubleshooting. For project-specific decisions, use the contact options.",
+      "Use the assistant for quick questions about ProjexiaHub, services, pricing overview, electronics, embedded systems, sensors, motors, RFID, PCB, firmware, IoT and troubleshooting. For project-specific decisions, use the contact options.",
     priority: 100,
   },
 
@@ -1018,7 +1018,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
       "Website best practices",
       "How to use the site well",
       "Website usage tips",
-      "Best way to use MECTEC site",
+      "Best way to use ProjexiaHub site",
     ],
     keywords: ["best", "practices", "website", "tips", "use"],
     answer:
@@ -1058,7 +1058,7 @@ export const WEBSITE_HELP: HelpEntry[] = [
     ],
     keywords: ["suggest", "improvement", "website", "idea", "feedback"],
     answer:
-      "Yes. Send suggestions through the Contact section. Clear and specific ideas help MECTEC evaluate improvements.",
+      "Yes. Send suggestions through the Contact section. Clear and specific ideas help ProjexiaHub evaluate improvements.",
     priority: 80,
   },
 ];
