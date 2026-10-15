@@ -2,7 +2,7 @@ export const FAQ_ITEMS = [
   {
     question: 'How does a project actually start?',
     answer:
-      'Fill in the request form with as much or as little technical detail as you have. MECTEC replies with a real scope and, where possible, a rough cost — not a form-letter asking for more information.',
+      'Fill in the request form with as much or as little technical detail as you have. the studio replies with a real scope and, where possible, a rough cost — not a form-letter asking for more information.',
   },
   {
     question: 'Do I get the source code and schematics when it\u2019s done?',
