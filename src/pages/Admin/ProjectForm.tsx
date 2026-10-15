@@ -380,7 +380,7 @@ export default function ProjectForm() {
             <LibraryMultiSelect kind="tag" label="tags" values={draft.tags.filter(Boolean)} onChange={(values) => update('tags', values)} />
           </FieldSet>
 
-          <FieldSet legend="Components" hint="Add reusable components first, then edit quantities, types, and notes below.">
+          <FieldSet legend="Components" hint="Selecting a library component prefills Type from its Component type and Notes from its Component notes. Review both, then set the project-specific quantity and details below.">
             <LibraryMultiSelect
               kind="component"
               label="components"
@@ -411,7 +411,7 @@ export default function ProjectForm() {
             />
           </FieldSet>
 
-          <FieldSet legend="Specifications" hint="Select common specification labels, then enter the values that are actually correct for this project.">
+          <FieldSet legend="Specifications" hint="Selecting a library label can prefill its suggested value. Verify every value for this specific build; you can edit both label and value below.">
             <LibraryMultiSelect
               kind="specification"
               label="specifications"
