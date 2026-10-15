@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { SITE } from "../../constants/site";
+import { useSiteSettings } from "../../contexts/SiteSettingsContext";
 
 interface SeoProps {
   title: string;
@@ -67,7 +68,7 @@ function titleCaseSegment(segment: string): string {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function buildBreadcrumbSchema(path: string, pageTitle: string) {
+function buildBreadcrumbSchema(path: string, pageTitle: string, siteName: string) {
   const normalizedPath = cleanPath(path);
   if (normalizedPath === "/") return null;
 
@@ -76,7 +77,7 @@ function buildBreadcrumbSchema(path: string, pageTitle: string) {
     {
       "@type": "ListItem",
       position: 1,
-      name: SITE.name,
+      name: siteName,
       item: SITE.url,
     },
   ];
@@ -99,29 +100,30 @@ function buildBreadcrumbSchema(path: string, pageTitle: string) {
   };
 }
 
-function buildSiteSchema() {
+function buildSiteSchema(siteName: string, description: string) {
   return {
     "@type": "WebSite",
     "@id": `${SITE.url}/#website`,
     url: SITE.url,
-    name: SITE.name,
-    alternateName: "MECTEC Electronics",
-    description: SITE.description,
+    name: siteName,
+    alternateName: `${siteName} Electronics`,
+    description,
     publisher: {
       "@id": `${SITE.url}/#organization`,
     },
   };
 }
 
-function buildOrganizationSchema() {
+function buildOrganizationSchema(siteName: string, description: string, email: string, phone: string, showEmail: boolean, showPhone: boolean) {
   return {
     "@type": "Organization",
     "@id": `${SITE.url}/#organization`,
-    name: SITE.name,
-    alternateName: "MECTEC Electronics",
+    name: siteName,
+    alternateName: `${siteName} Electronics`,
     url: SITE.url,
-    description: SITE.description,
-    ...(SITE.email ? { email: SITE.email } : {}),
+    description,
+    ...(showEmail && email ? { email } : {}),
+    ...(showPhone && phone ? { telephone: phone } : {}),
   };
 }
 
@@ -154,8 +156,12 @@ export function Seo({
   modifiedTime,
   schema,
 }: SeoProps) {
-  const fullTitle = title;
-  const metaDescription = (description ?? SITE.description).trim();
+  const { settings } = useSiteSettings();
+  const brandName = settings.name.trim() || SITE.name;
+  const fullTitle = title.replace(/MECTEC|ProjexiaHub/gi, brandName);
+  const metaDescription = (description ?? settings.description ?? SITE.description)
+    .replace(/MECTEC|ProjexiaHub/gi, brandName)
+    .trim();
   const normalizedPath = cleanPath(path ?? "/");
   const url = `${SITE.url}${normalizedPath === "/" ? "/" : normalizedPath}`;
   const absoluteImage = absoluteUrl(image);
@@ -163,6 +169,8 @@ export function Seo({
   useEffect(() => {
     document.documentElement.lang = "en";
     document.title = fullTitle;
+    setMeta('meta[name="application-name"]', "name", "application-name", brandName);
+    setMeta('meta[name="apple-mobile-web-app-title"]', "name", "apple-mobile-web-app-title", brandName);
 
     setMeta('meta[name="description"]', "name", "description", metaDescription);
     setMeta(
@@ -193,7 +201,7 @@ export function Seo({
       'meta[property="og:site_name"]',
       "property",
       "og:site_name",
-      SITE.name,
+      brandName,
     );
     setMeta(
       'meta[property="og:locale"]',
@@ -278,10 +286,24 @@ export function Seo({
 
     const graph: Array<Record<string, unknown>> = [];
     if (normalizedPath === "/") {
-      graph.push(buildOrganizationSchema(), buildSiteSchema());
+      graph.push(
+        buildOrganizationSchema(
+          brandName,
+          settings.description,
+          settings.email,
+          settings.phone,
+          settings.showEmail,
+          settings.showPhone,
+        ),
+        buildSiteSchema(brandName, settings.description),
+      );
     }
 
-    const breadcrumb = buildBreadcrumbSchema(normalizedPath, title);
+    const breadcrumb = buildBreadcrumbSchema(
+      normalizedPath,
+      title.replace(/MECTEC|ProjexiaHub/gi, brandName),
+      brandName,
+    );
     if (breadcrumb) graph.push(breadcrumb);
 
     if (type === "article") {
@@ -296,7 +318,7 @@ export function Seo({
         },
         publisher: {
           "@type": "Organization",
-          name: SITE.name,
+          name: brandName,
           url: SITE.url,
         },
         ...(absoluteImage ? { image: [absoluteImage] } : {}),
@@ -318,6 +340,13 @@ export function Seo({
     );
   }, [
     fullTitle,
+    brandName,
+    settings.name,
+    settings.description,
+    settings.email,
+    settings.phone,
+    settings.showEmail,
+    settings.showPhone,
     metaDescription,
     url,
     absoluteImage,
