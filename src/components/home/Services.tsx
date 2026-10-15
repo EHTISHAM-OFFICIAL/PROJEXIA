@@ -1,5 +1,6 @@
 import { Bot, Cpu, Radio, Wrench } from 'lucide-react';
 import { Section, SectionHeading } from '../ui/Section';
+import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 const SERVICES = [
   {
@@ -29,11 +30,12 @@ const SERVICES = [
 ];
 
 export function Services() {
+  const { settings } = useSiteSettings();
   return (
     <Section className="border-b border-line">
       <SectionHeading
         title="Custom electronics services"
-        description="MECTEC develops embedded systems, IoT devices, automation and robotics prototypes, from an initial idea through testing and handover."
+        description={`${settings.name} develops embedded systems, IoT devices, automation and robotics prototypes, from an initial idea through testing and handover.`}
       />
       <div className="mt-12 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2">
         {SERVICES.map((service) => (
