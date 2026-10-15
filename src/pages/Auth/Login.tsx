@@ -53,7 +53,7 @@ export default function Login() {
     const normalizedEmail = resetEmail.trim().toLowerCase();
 
     if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      setResetError('Enter the email address linked to your MECTEC account.');
+      setResetError('Enter the email address linked to your ProjexiaHub account.');
       return;
     }
 
@@ -80,7 +80,7 @@ export default function Login() {
               </Link>
               <h1 className="mt-8 text-3xl font-semibold tracking-tight">Welcome back</h1>
               <p className="mt-3 text-sm leading-relaxed text-content-secondary">
-                Sign in to manage your MECTEC project requests.
+                Sign in to manage your ProjexiaHub project requests.
               </p>
             </div>
 
