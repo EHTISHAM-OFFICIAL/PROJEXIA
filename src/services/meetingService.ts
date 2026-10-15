@@ -39,7 +39,7 @@ export const meetingService = {
     });
 
     const message = [
-      'NEW MECTEC MEETING REQUEST', '',
+      'NEW ProjexiaHub MEETING REQUEST', '',
       'Name: ' + values.fullName, 'Email: ' + values.email,
       'Phone: ' + (values.phone?.trim() || 'Not provided'),
       'WhatsApp: ' + (values.whatsapp?.trim() || 'Not provided'),
@@ -57,7 +57,7 @@ export const meetingService = {
     await emailNotificationService.notify({
       subject: 'New meeting request — ' + values.fullName,
       message, replyTo: values.email, name: values.fullName, email: values.email,
-      title: 'MECTEC Meeting Request', throwOnError: false,
+      title: 'ProjexiaHub Meeting Request', throwOnError: false,
     });
     return ref.id;
   },
