@@ -6,7 +6,7 @@ export type ProjectDifficulty = 'beginner' | 'intermediate' | 'advanced';
 export interface ProjectComponent {
   name: string;
   category: string;
-  quantity: number;
+  quantity: string | number;
   notes: string;
 }
 
