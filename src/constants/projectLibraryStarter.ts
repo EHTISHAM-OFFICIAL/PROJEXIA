@@ -1,4 +1,4 @@
-import type { ProjectLibraryDraft, ProjectLibraryKind } from '../../types/projectLibrary';
+import type { ProjectLibraryDraft, ProjectLibraryKind } from '../types/projectLibrary';
 
 const entries: [ProjectLibraryKind, string, string][] = [
   ...(['Arduino Uno','Arduino Mega 2560','Arduino Nano','Arduino Leonardo','ESP32 DevKit','ESP32-S3','ESP8266 NodeMCU','Raspberry Pi Pico','Raspberry Pi 4','Raspberry Pi Zero 2 W','STM32 Blue Pill','STM32 Nucleo','ATmega328P','PIC16F877A','Teensy 4.1','BBC micro:bit'].map((name) => ['component', name, 'Microcontrollers'] as [ProjectLibraryKind,string,string])),
