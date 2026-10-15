@@ -18,7 +18,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["source", "code", "firmware", "ownership"],
     answer:
-      "Yes. Source code, firmware and relevant schematics are handed over with the finished MECTEC build.",
+      "Yes. Source code, firmware and relevant schematics are handed over with the finished ProjexiaHub build.",
     priority: 15,
   },
 
@@ -72,7 +72,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["hardware", "ownership", "prototype", "project", "own"],
     answer:
-      "Hardware ownership depends on the project agreement. Clarify this with MECTEC during planning.",
+      "Hardware ownership depends on the project agreement. Clarify this with ProjexiaHub during planning.",
     priority: 13,
   },
 
@@ -90,7 +90,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["components", "parts", "ownership", "project", "own"],
     answer:
-      "Component ownership depends on the project arrangement. Discuss this with MECTEC if it matters for your project.",
+      "Component ownership depends on the project arrangement. Discuss this with ProjexiaHub if it matters for your project.",
     priority: 10,
   },
 
@@ -108,7 +108,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["source", "code", "ownership", "firmware", "rights"],
     answer:
-      "Source code ownership depends on the project agreement. Discuss source code and IP terms with MECTEC before starting.",
+      "Source code ownership depends on the project agreement. Discuss source code and IP terms with ProjexiaHub before starting.",
     priority: 15,
   },
 
@@ -126,7 +126,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["schematics", "ownership", "design", "circuit", "rights"],
     answer:
-      "Schematic ownership depends on the project agreement. Clarify this with MECTEC during planning.",
+      "Schematic ownership depends on the project agreement. Clarify this with ProjexiaHub during planning.",
     priority: 13,
   },
 
@@ -144,7 +144,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["pcb", "design", "files", "ownership", "gerber"],
     answer:
-      "PCB design file ownership depends on the project agreement. Discuss this with MECTEC if you need the design files.",
+      "PCB design file ownership depends on the project agreement. Discuss this with ProjexiaHub if you need the design files.",
     priority: 13,
   },
 
@@ -162,7 +162,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["bom", "bill", "materials", "ownership", "handover"],
     answer:
-      "BOM handover depends on the project agreement. Discuss this with MECTEC if you need the component list.",
+      "BOM handover depends on the project agreement. Discuss this with ProjexiaHub if you need the component list.",
     priority: 10,
   },
 
@@ -180,7 +180,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["manufacturing", "files", "gerber", "production", "data"],
     answer:
-      "Manufacturing file handover depends on the project agreement. Discuss this with MECTEC if you plan to produce the design independently.",
+      "Manufacturing file handover depends on the project agreement. Discuss this with ProjexiaHub if you plan to produce the design independently.",
     priority: 13,
   },
 
@@ -309,7 +309,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["ip", "intellectual", "property", "ownership", "design"],
     answer:
-      "Intellectual property arrangements depend on the project agreement. Discuss IP ownership with MECTEC before starting the project.",
+      "Intellectual property arrangements depend on the project agreement. Discuss IP ownership with ProjexiaHub before starting the project.",
     priority: 15,
   },
 
@@ -327,7 +327,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["nda", "confidential", "agreement", "protect", "idea"],
     answer:
-      "Confidentiality arrangements can be discussed with MECTEC. Use the contact options to raise this before sharing sensitive information.",
+      "Confidentiality arrangements can be discussed with ProjexiaHub. Use the contact options to raise this before sharing sensitive information.",
     priority: 13,
   },
 
@@ -345,7 +345,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["idea", "protect", "confidential", "ownership", "project"],
     answer:
-      "Discuss confidentiality and IP arrangements with MECTEC before sharing sensitive details. Legal protection depends on your jurisdiction and circumstances.",
+      "Discuss confidentiality and IP arrangements with ProjexiaHub before sharing sensitive details. Legal protection depends on your jurisdiction and circumstances.",
     priority: 13,
   },
 
@@ -363,7 +363,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["confidential", "private", "information", "protect", "project"],
     answer:
-      "Confidentiality arrangements can be discussed with MECTEC. Raise any confidentiality requirements before sharing sensitive information.",
+      "Confidentiality arrangements can be discussed with ProjexiaHub. Raise any confidentiality requirements before sharing sensitive information.",
     priority: 13,
   },
 
@@ -381,7 +381,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["commercial", "use", "sell", "business", "license"],
     answer:
-      "Commercial use arrangements depend on the project agreement and IP terms. Discuss your intended use with MECTEC.",
+      "Commercial use arrangements depend on the project agreement and IP terms. Discuss your intended use with ProjexiaHub.",
     priority: 13,
   },
 
@@ -399,7 +399,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["resell", "product", "distribution", "rights", "sell"],
     answer:
-      "Resale and distribution arrangements depend on the project agreement. Clarify this with MECTEC before proceeding.",
+      "Resale and distribution arrangements depend on the project agreement. Clarify this with ProjexiaHub before proceeding.",
     priority: 13,
   },
 
@@ -417,7 +417,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["reproduce", "copies", "design", "rights", "build"],
     answer:
-      "Reproduction rights depend on the project agreement and IP terms. Clarify this with MECTEC before reproducing the design.",
+      "Reproduction rights depend on the project agreement and IP terms. Clarify this with ProjexiaHub before reproducing the design.",
     priority: 13,
   },
 
@@ -435,7 +435,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["modify", "delivered", "change", "hardware", "source"],
     answer:
-      "Modification rights depend on the project agreement and IP terms. Discuss this with MECTEC if important.",
+      "Modification rights depend on the project agreement and IP terms. Discuss this with ProjexiaHub if important.",
     priority: 10,
   },
 
@@ -453,7 +453,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["license", "licensing", "firmware", "software", "design"],
     answer:
-      "Licensing arrangements depend on the project and IP terms. Clarify how the design and code may be used with MECTEC.",
+      "Licensing arrangements depend on the project and IP terms. Clarify how the design and code may be used with ProjexiaHub.",
     priority: 13,
   },
 
@@ -507,7 +507,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["exclusivity", "non", "compete", "exclusive", "project"],
     answer:
-      "Exclusivity or non-compete terms depend on the project agreement. Discuss this with MECTEC during planning.",
+      "Exclusivity or non-compete terms depend on the project agreement. Discuss this with ProjexiaHub during planning.",
     priority: 10,
   },
 
@@ -518,9 +518,9 @@ export const POLICIES_HELP: HelpEntry[] = [
     id: "policy-warranty",
     category: "policies",
     intent: "compatibility",
-    question: "Does MECTEC provide a warranty?",
+    question: "Does ProjexiaHub provide a warranty?",
     variations: [
-      "Does MECTEC provide a warranty",
+      "Does ProjexiaHub provide a warranty",
       "Is there a warranty",
       "Do you offer warranty",
       "How long is the warranty",
@@ -529,7 +529,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["warranty", "guarantee", "repair", "broken"],
     answer:
-      "The Help Assistant does not provide a warranty policy because warranty terms depend on the specific project and the current MECTEC policy. Please contact MECTEC directly for the applicable terms.",
+      "The Help Assistant does not provide a warranty policy because warranty terms depend on the specific project and the current ProjexiaHub policy. Please contact ProjexiaHub directly for the applicable terms.",
     priority: 15,
   },
 
@@ -547,7 +547,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["warranty", "guarantee", "difference", "work", "fails"],
     answer:
-      "Warranty and guarantee terms depend on the specific project and current MECTEC policy. Contact MECTEC directly for the applicable terms.",
+      "Warranty and guarantee terms depend on the specific project and current ProjexiaHub policy. Contact ProjexiaHub directly for the applicable terms.",
     priority: 10,
   },
 
@@ -565,7 +565,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["refund", "cancel", "payment", "money"],
     answer:
-      "The Help Assistant does not define refund or cancellation terms. For a specific project, contact MECTEC directly for the applicable arrangement.",
+      "The Help Assistant does not define refund or cancellation terms. For a specific project, contact ProjexiaHub directly for the applicable arrangement.",
     priority: 15,
   },
 
@@ -583,7 +583,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["return", "policy", "device", "project", "send"],
     answer:
-      "Return arrangements depend on the project agreement. Contact MECTEC directly for the applicable policy.",
+      "Return arrangements depend on the project agreement. Contact ProjexiaHub directly for the applicable policy.",
     priority: 13,
   },
 
@@ -601,7 +601,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["exchange", "project", "swap", "replace", "policy"],
     answer:
-      "Exchange arrangements depend on the project agreement. Contact MECTEC directly to discuss.",
+      "Exchange arrangements depend on the project agreement. Contact ProjexiaHub directly to discuss.",
     priority: 10,
   },
 
@@ -619,7 +619,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["defect", "faulty", "broken", "arrival", "policy"],
     answer:
-      "Defect handling depends on the project agreement and warranty terms. Contact MECTEC directly with details of the issue.",
+      "Defect handling depends on the project agreement and warranty terms. Contact ProjexiaHub directly with details of the issue.",
     priority: 13,
   },
 
@@ -637,7 +637,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["firmware", "bug", "software", "code", "policy"],
     answer:
-      "Bug handling depends on the project agreement and support terms. Contact MECTEC with a clear description of the problem.",
+      "Bug handling depends on the project agreement and support terms. Contact ProjexiaHub with a clear description of the problem.",
     priority: 13,
   },
 
@@ -655,7 +655,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["hardware", "failure", "component", "board", "policy"],
     answer:
-      "Hardware failure handling depends on the project agreement and warranty terms. Contact MECTEC directly for support.",
+      "Hardware failure handling depends on the project agreement and warranty terms. Contact ProjexiaHub directly for support.",
     priority: 13,
   },
 
@@ -673,7 +673,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["repair", "policy", "fix", "broken", "service"],
     answer:
-      "Repair policies depend on the specific project and the fault. Contact MECTEC directly with details for the applicable arrangement.",
+      "Repair policies depend on the specific project and the fault. Contact ProjexiaHub directly with details for the applicable arrangement.",
     priority: 13,
   },
 
@@ -694,7 +694,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["support", "after", "delivery", "post", "help"],
     answer:
-      "Support arrangements depend on the project and current MECTEC policy. Contact MECTEC directly to discuss post-project support.",
+      "Support arrangements depend on the project and current ProjexiaHub policy. Contact ProjexiaHub directly to discuss post-project support.",
     priority: 13,
   },
 
@@ -730,7 +730,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["support", "duration", "period", "warranty", "delivery"],
     answer:
-      "Support duration depends on the project agreement and MECTEC policy. Contact MECTEC directly for the applicable terms.",
+      "Support duration depends on the project agreement and ProjexiaHub policy. Contact ProjexiaHub directly for the applicable terms.",
     priority: 13,
   },
 
@@ -748,7 +748,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["maintenance", "service", "long", "term", "project"],
     answer:
-      "Maintenance arrangements depend on the project. Contact MECTEC directly to discuss maintenance requirements.",
+      "Maintenance arrangements depend on the project. Contact ProjexiaHub directly to discuss maintenance requirements.",
     priority: 13,
   },
 
@@ -766,7 +766,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["updates", "changes", "features", "modify", "policy"],
     answer:
-      "Update and modification arrangements depend on the project. Contact MECTEC directly to discuss future changes.",
+      "Update and modification arrangements depend on the project. Contact ProjexiaHub directly to discuss future changes.",
     priority: 13,
   },
 
@@ -838,7 +838,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["data", "privacy", "information", "secure", "policy"],
     answer:
-      "Information handling depends on the website's current policies. For specific privacy or data questions, contact MECTEC directly.",
+      "Information handling depends on the website's current policies. For specific privacy or data questions, contact ProjexiaHub directly.",
     priority: 13,
   },
 
@@ -891,9 +891,9 @@ export const POLICIES_HELP: HelpEntry[] = [
     id: "policy-certification",
     category: "policies",
     intent: "compatibility",
-    question: "Can MECTEC help with certification?",
+    question: "Can ProjexiaHub help with certification?",
     variations: [
-      "Can MECTEC help with certification",
+      "Can ProjexiaHub help with certification",
       "Do you handle certification",
       "CE FCC certification",
       "Product certification",
@@ -901,7 +901,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["certification", "ce", "fcc", "compliance", "testing"],
     answer:
-      "Certification requirements and support depend on the product and target market. Discuss certification needs with MECTEC during planning.",
+      "Certification requirements and support depend on the product and target market. Discuss certification needs with ProjexiaHub during planning.",
     priority: 13,
   },
 
@@ -976,7 +976,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["bulk", "order", "policy", "quantity", "multiple"],
     answer:
-      "Bulk order terms depend on the project and quantity. Contact MECTEC directly to discuss pricing and scheduling.",
+      "Bulk order terms depend on the project and quantity. Contact ProjexiaHub directly to discuss pricing and scheduling.",
     priority: 13,
   },
 
@@ -994,7 +994,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["deadline", "urgent", "timeline", "policy", "commitment"],
     answer:
-      "Deadlines are considered during planning. Whether they can be met depends on scope, components and current capacity. Contact MECTEC directly for specific timelines.",
+      "Deadlines are considered during planning. Whether they can be met depends on scope, components and current capacity. Contact ProjexiaHub directly for specific timelines.",
     priority: 13,
   },
 
@@ -1012,7 +1012,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["deadline", "guarantee", "commit", "timeline", "delivery"],
     answer:
-      "Deadline commitments depend on the project and agreement. Contact MECTEC to discuss realistic timelines for your specific project.",
+      "Deadline commitments depend on the project and agreement. Contact ProjexiaHub to discuss realistic timelines for your specific project.",
     priority: 13,
   },
 
@@ -1030,7 +1030,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["delivery", "policy", "ship", "project", "terms"],
     answer:
-      "Delivery arrangements depend on the project and location. Contact MECTEC directly to discuss how the finished project will be delivered.",
+      "Delivery arrangements depend on the project and location. Contact ProjexiaHub directly to discuss how the finished project will be delivered.",
     priority: 13,
   },
 
@@ -1048,7 +1048,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["payment", "pay", "money", "method"],
     answer:
-      "Payment arrangements are not defined by the Help Assistant. For a specific project, contact MECTEC to discuss the applicable payment arrangement.",
+      "Payment arrangements are not defined by the Help Assistant. For a specific project, contact ProjexiaHub to discuss the applicable payment arrangement.",
     priority: 13,
   },
 
@@ -1068,7 +1068,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["pricing", "policy", "cost", "price", "quote"],
     answer:
-      "Pricing is based on the project scope, components, development effort and timeline. Contact MECTEC for a project-specific estimate.",
+      "Pricing is based on the project scope, components, development effort and timeline. Contact ProjexiaHub for a project-specific estimate.",
     priority: 13,
   },
 
@@ -1086,7 +1086,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["quote", "validity", "price", "period", "expiry"],
     answer:
-      "Quote validity depends on component pricing and availability. Contact MECTEC directly for details on a specific quote.",
+      "Quote validity depends on component pricing and availability. Contact ProjexiaHub directly for details on a specific quote.",
     priority: 10,
   },
 
@@ -1107,7 +1107,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["custom", "features", "requirements", "project"],
     answer:
-      "Yes. MECTEC projects can be based on custom requirements. Describe the required behavior and features in the project request so the scope can be understood accurately.",
+      "Yes. ProjexiaHub projects can be based on custom requirements. Describe the required behavior and features in the project request so the scope can be understood accurately.",
     priority: 13,
   },
 
@@ -1143,7 +1143,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["out", "scope", "work", "extra", "additional"],
     answer:
-      "Work outside the original scope is typically handled as a new request or change order. Contact MECTEC to discuss scope, cost and timeline.",
+      "Work outside the original scope is typically handled as a new request or change order. Contact ProjexiaHub to discuss scope, cost and timeline.",
     priority: 13,
   },
 
@@ -1161,7 +1161,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["cancel", "cancellation", "policy", "project", "order"],
     answer:
-      "Cancellation terms depend on the project stage and agreement. Contact MECTEC directly to discuss.",
+      "Cancellation terms depend on the project stage and agreement. Contact ProjexiaHub directly to discuss.",
     priority: 13,
   },
 
@@ -1179,7 +1179,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["escalate", "issue", "complaint", "dispute", "resolution"],
     answer:
-      "If an issue cannot be resolved through normal contact, request escalation with MECTEC. Provide clear details and documentation.",
+      "If an issue cannot be resolved through normal contact, request escalation with ProjexiaHub. Provide clear details and documentation.",
     priority: 10,
   },
 
@@ -1191,13 +1191,13 @@ export const POLICIES_HELP: HelpEntry[] = [
     variations: [
       "What is the dispute resolution policy",
       "Dispute resolution",
-      "Conflict with MECTEC",
+      "Conflict with ProjexiaHub",
       "Problem with project",
       "Disagreement policy",
     ],
     keywords: ["dispute", "resolution", "conflict", "problem", "policy"],
     answer:
-      "Dispute resolution arrangements depend on the project agreement and applicable laws. Contact MECTEC directly to discuss any issue.",
+      "Dispute resolution arrangements depend on the project agreement and applicable laws. Contact ProjexiaHub directly to discuss any issue.",
     priority: 10,
   },
 
@@ -1215,7 +1215,7 @@ export const POLICIES_HELP: HelpEntry[] = [
     ],
     keywords: ["training", "policy", "handover", "project", "provide"],
     answer:
-      "Training and handover arrangements depend on the project. Mention your requirements during planning or contact MECTEC directly.",
+      "Training and handover arrangements depend on the project. Mention your requirements during planning or contact ProjexiaHub directly.",
     priority: 10,
   },
 
