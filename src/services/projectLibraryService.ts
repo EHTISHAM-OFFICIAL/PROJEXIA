@@ -49,7 +49,7 @@ export const projectLibraryService = {
     const starterByName = new Map(
       PROJECT_LIBRARY_STARTER
         .filter((item) => item.kind === kind)
-        .map((item) => [normalizeName(item.name), item])
+        .map((item) => [normalizeName(item.name), item] as const)
     );
     const stored = snapshot.docs.map((entry) => {
       const item = toItem(entry.id, entry.data());
