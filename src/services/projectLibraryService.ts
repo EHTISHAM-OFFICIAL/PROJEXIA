@@ -45,10 +45,11 @@ export const projectLibraryService = {
   },
 
   async listByKind(kind: ProjectLibraryKind, includeInactive = false): Promise<ProjectLibraryItem[]> {
-    const snapshot = await getDocs(query(libraryRef, where('kind', '==', kind), orderBy('name', 'asc')));
+    const snapshot = await getDocs(query(libraryRef, where('kind', '==', kind)));
     return snapshot.docs
       .map((entry) => toItem(entry.id, entry.data()))
-      .filter((item) => includeInactive || item.active);
+      .filter((item) => includeInactive || item.active)
+      .sort((a, b) => a.name.localeCompare(b.name));
   },
 
   async save(draft: ProjectLibraryDraft, id?: string): Promise<void> {
