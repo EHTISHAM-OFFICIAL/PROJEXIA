@@ -10,7 +10,7 @@ import { ErrorState } from '../../components/ui/ErrorState';
 import { Field, FieldSet } from '../../components/forms/Field';
 import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
 import { Checkbox } from '../../components/forms/Choice';
-import { ListEditor, TableEditor } from '../../components/forms/ListEditor';
+import { TableEditor } from '../../components/forms/ListEditor';
 import { LibraryMultiSelect } from '../../components/forms/LibraryMultiSelect';
 import { ImageUploadField } from '../../components/forms/ImageUploadField';
 import { useProjectById } from '../../hooks/useProject';
