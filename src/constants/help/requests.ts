@@ -20,13 +20,13 @@ export const REQUEST_HELP: HelpEntry[] = [
       "Where can I request a project",
       "Where can I submit a project",
       "How do I start a project request",
-      "How can I ask MECTEC for a project",
+      "How can I ask ProjexiaHub for a project",
       "How do I get a project made",
       "How can I get a project made",
     ],
     keywords: ["project", "request", "submit", "send", "form"],
     answer:
-      "Use the Project Request option in the MECTEC website navigation to open the project request form. Fill in the available project details and submit your request.",
+      "Use the Project Request option in the ProjexiaHub website navigation to open the project request form. Fill in the available project details and submit your request.",
     priority: 20,
   },
 
@@ -38,13 +38,13 @@ export const REQUEST_HELP: HelpEntry[] = [
     variations: [
       "How do I start a project",
       "How can I start a project",
-      "How do I start a project with MECTEC",
+      "How do I start a project with ProjexiaHub",
       "How do I begin a project",
       "How to start a project",
       "I want to start a project",
       "How do I request work",
       "Start a new project",
-      "I want MECTEC to build something",
+      "I want ProjexiaHub to build something",
       "Where do I start",
       "How do I commission a project",
       "I want to order a custom project",
@@ -129,7 +129,7 @@ export const REQUEST_HELP: HelpEntry[] = [
       "Do I need to choose the components",
       "Do I have to select components",
       "Who chooses the components",
-      "Can MECTEC choose the parts",
+      "Can ProjexiaHub choose the parts",
       "I do not know which components to buy",
       "Can you recommend hardware",
       "Do I need to specify Arduino or ESP32",
@@ -401,7 +401,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["help", "form", "assistance", "guidance", "request"],
     answer:
-      "Yes. If you need help with the form, use the contact options to reach MECTEC for guidance.",
+      "Yes. If you need help with the form, use the contact options to reach ProjexiaHub for guidance.",
     priority: 10,
   },
 
@@ -419,7 +419,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["update", "edit", "change", "request", "submit"],
     answer:
-      "If you need to update your request, contact MECTEC with the new information. Changes can be considered as part of the project discussion.",
+      "If you need to update your request, contact ProjexiaHub with the new information. Changes can be considered as part of the project discussion.",
     priority: 15,
   },
 
@@ -437,7 +437,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["duplicate", "submit", "twice", "multiple", "request"],
     answer:
-      "If you submitted the same request more than once, contact MECTEC to clarify. They can consolidate the information and continue from a single request.",
+      "If you submitted the same request more than once, contact ProjexiaHub to clarify. They can consolidate the information and continue from a single request.",
     priority: 10,
   },
 
@@ -455,7 +455,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["confirmation", "submit", "receipt", "email", "request"],
     answer:
-      "Confirmation behavior depends on the form and platform. If you are unsure whether the request was received, contact MECTEC directly.",
+      "Confirmation behavior depends on the form and platform. If you are unsure whether the request was received, contact ProjexiaHub directly.",
     priority: 10,
   },
 
@@ -475,7 +475,7 @@ export const REQUEST_HELP: HelpEntry[] = [
       "Reply timeframe",
     ],
     keywords: ["response", "reply", "time", "request", "hear"],
-    answer: `MECTEC typically replies ${SITE.responseTime} to submitted requests.`,
+    answer: `ProjexiaHub typically replies ${SITE.responseTime} to submitted requests.`,
     priority: 15,
   },
 
@@ -494,7 +494,7 @@ export const REQUEST_HELP: HelpEntry[] = [
       "What is the next step",
     ],
     keywords: ["after", "submit", "submission", "next", "request", "form"],
-    answer: `After submission, the request can be reviewed and followed up through MECTEC's normal contact process. MECTEC typically replies ${SITE.responseTime}.`,
+    answer: `After submission, the request can be reviewed and followed up through ProjexiaHub's normal contact process. ProjexiaHub typically replies ${SITE.responseTime}.`,
     priority: 15,
   },
 
@@ -523,13 +523,13 @@ export const REQUEST_HELP: HelpEntry[] = [
     question: "What if I do not get a response?",
     variations: [
       "What if I do not get a response",
-      "No reply from MECTEC",
+      "No reply from ProjexiaHub",
       "I did not hear back",
       "Request ignored",
       "No response to my request",
     ],
     keywords: ["response", "reply", "request", "contact", "hear"],
-    answer: `MECTEC typically replies ${SITE.responseTime}. If you have not received a response, check your spam folder, verify contact details and send a polite follow-up.`,
+    answer: `ProjexiaHub typically replies ${SITE.responseTime}. If you have not received a response, check your spam folder, verify contact details and send a polite follow-up.`,
     priority: 13,
   },
 
@@ -565,7 +565,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["completion", "finished", "delivery", "notice", "project"],
     answer:
-      "Completion and delivery arrangements depend on the project. Contact MECTEC for specific information about your request.",
+      "Completion and delivery arrangements depend on the project. Contact ProjexiaHub for specific information about your request.",
     priority: 13,
   },
 
@@ -604,7 +604,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["cancel", "request", "withdraw", "stop", "project"],
     answer:
-      "Cancellation terms depend on the project stage and agreement. Contact MECTEC as soon as possible to discuss.",
+      "Cancellation terms depend on the project stage and agreement. Contact ProjexiaHub as soon as possible to discuss.",
     priority: 13,
   },
 
@@ -622,7 +622,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["modify", "update", "request", "change", "amend"],
     answer:
-      "Yes. Contact MECTEC with the updated information. Changes can be considered as part of the project discussion.",
+      "Yes. Contact ProjexiaHub with the updated information. Changes can be considered as part of the project discussion.",
     priority: 13,
   },
 
@@ -633,9 +633,9 @@ export const REQUEST_HELP: HelpEntry[] = [
     id: "request-preferred-contact",
     category: "requests",
     intent: "project_request",
-    question: "Can I choose how MECTEC contacts me?",
+    question: "Can I choose how ProjexiaHub contacts me?",
     variations: [
-      "Can I choose how MECTEC contacts me",
+      "Can I choose how ProjexiaHub contacts me",
       "Preferred contact method",
       "Email or phone",
       "How will you reply",
@@ -643,7 +643,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["contact", "preferred", "email", "phone", "reply"],
     answer:
-      "Contact preference can be indicated where the form allows. Otherwise, MECTEC will use the contact details provided.",
+      "Contact preference can be indicated where the form allows. Otherwise, ProjexiaHub will use the contact details provided.",
     priority: 10,
   },
 
@@ -661,7 +661,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["privacy", "confidential", "secure", "request", "information"],
     answer:
-      "Information handling depends on the website's current policies. For specific privacy questions, contact MECTEC directly.",
+      "Information handling depends on the website's current policies. For specific privacy questions, contact ProjexiaHub directly.",
     priority: 13,
   },
 
@@ -679,7 +679,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["nda", "confidential", "request", "protect", "idea"],
     answer:
-      "Confidentiality arrangements can be discussed with MECTEC. Contact MECTEC before sharing sensitive information if an NDA is required.",
+      "Confidentiality arrangements can be discussed with ProjexiaHub. Contact ProjexiaHub before sharing sensitive information if an NDA is required.",
     priority: 13,
   },
 
@@ -697,7 +697,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["idea", "protect", "ownership", "request", "property"],
     answer:
-      "Discuss confidentiality and IP arrangements with MECTEC before sharing sensitive details. Legal protection depends on your jurisdiction and circumstances.",
+      "Discuss confidentiality and IP arrangements with ProjexiaHub before sharing sensitive details. Legal protection depends on your jurisdiction and circumstances.",
     priority: 13,
   },
 
@@ -718,7 +718,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["project", "types", "request", "accepted", "anything"],
     answer:
-      "MECTEC can work on a wide range of electronics, embedded, automation, IoT, sensor, RFID and custom hardware/software projects. Describe your requirement and it can be evaluated.",
+      "ProjexiaHub can work on a wide range of electronics, embedded, automation, IoT, sensor, RFID and custom hardware/software projects. Describe your requirement and it can be evaluated.",
     priority: 15,
   },
 
@@ -754,7 +754,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["copy", "clone", "replicate", "existing", "product"],
     answer:
-      "Copying existing products may involve intellectual property and legal considerations. Discuss the specific situation with MECTEC before proceeding.",
+      "Copying existing products may involve intellectual property and legal considerations. Discuss the specific situation with ProjexiaHub before proceeding.",
     priority: 10,
   },
 
@@ -808,7 +808,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["schematic", "circuit", "diagram", "wiring", "upload"],
     answer:
-      "Yes. Providing a schematic or wiring diagram helps MECTEC understand the existing design and any changes required.",
+      "Yes. Providing a schematic or wiring diagram helps ProjexiaHub understand the existing design and any changes required.",
     priority: 13,
   },
 
@@ -1155,9 +1155,9 @@ export const REQUEST_HELP: HelpEntry[] = [
     id: "request-startup",
     category: "requests",
     intent: "project_request",
-    question: "Can MECTEC help with a startup product?",
+    question: "Can ProjexiaHub help with a startup product?",
     variations: [
-      "Can MECTEC help with a startup product",
+      "Can ProjexiaHub help with a startup product",
       "Startup project",
       "MVP development",
       "New product idea",
@@ -1204,7 +1204,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["problem", "form", "submit", "error", "issue"],
     answer:
-      "If the form does not work, try again later or contact MECTEC directly with the details of the problem.",
+      "If the form does not work, try again later or contact ProjexiaHub directly with the details of the problem.",
     priority: 13,
   },
 
@@ -1222,7 +1222,7 @@ export const REQUEST_HELP: HelpEntry[] = [
     ],
     keywords: ["alternative", "form", "email", "submit", "project"],
     answer:
-      "If the form is not suitable, contact MECTEC through the website contact options and provide the project details there.",
+      "If the form is not suitable, contact ProjexiaHub through the website contact options and provide the project details there.",
     priority: 10,
   },
 
