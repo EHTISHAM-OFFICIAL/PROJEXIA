@@ -19,8 +19,10 @@ import {
 import { useDebounce } from '../../hooks/useDebounce';
 import { PROJECTS_PER_PAGE } from '../../constants/projectOptions';
 import type { ProjectFilters as Filters } from '../../types/project';
+import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 export default function Projects() {
+  const { settings } = useSiteSettings();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, loading, error, reload } = usePublishedProjects();
 
@@ -56,7 +58,7 @@ export default function Projects() {
     <>
       <Seo
         title="Electronics Projects & Prototypes"
-        description="Electronics projects built by MECTEC — embedded systems, IoT devices, automation and robotics, documented as case studies."
+        description={`Electronics projects built by ${settings.name} — embedded systems, IoT devices, automation and robotics, documented as case studies.`}
         path="/projects"
       />
 
