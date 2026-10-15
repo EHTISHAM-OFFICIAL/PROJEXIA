@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSiteSettings } from "../../contexts/SiteSettingsContext";
 import {
   findHelpAnswer,
   suggestWhileTyping,
@@ -126,6 +127,7 @@ function createMessageId() {
 
 export function HelpChatWidget() {
   const navigate = useNavigate();
+  const { settings } = useSiteSettings();
 
   /* -------------------------------------------------------
      CHAT STATE
@@ -137,15 +139,15 @@ export function HelpChatWidget() {
     {
       id: createMessageId(),
       role: "assistant",
-      text: "Hi! I'm the ProjexiaHub Help Assistant. Ask me about our services, electronics projects, components, website, requests, pricing, or anything else I can help you with.",
+      text: "Hi! I'm your Help Assistant. Ask me about our services, electronics projects, components, website, requests, pricing, or anything else I can help you with.",
       response: {
         answer:
-          "Hi! I'm the ProjexiaHub Help Assistant. Ask me about our services, electronics projects, components, website, requests, pricing, or anything else I can help you with.",
+          "Hi! I'm your Help Assistant. Ask me about our services, electronics projects, components, website, requests, pricing, or anything else I can help you with.",
         suggestedQuestions: [
-          "What services does ProjexiaHub provide?",
+          "What services does the studio provide?",
           "How can I request a project?",
           "What information do I need to provide?",
-          "How can I contact ProjexiaHub?",
+          "How can I contact the studio?",
         ],
       },
     },
@@ -388,15 +390,15 @@ export function HelpChatWidget() {
       {
         id: createMessageId(),
         role: "assistant",
-        text: "Hi! I'm the ProjexiaHub Help Assistant. What would you like to know?",
+        text: "Hi! I'm your Help Assistant. What would you like to know?",
         response: {
           answer:
-            "Hi! I'm the ProjexiaHub Help Assistant. What would you like to know?",
+            "Hi! I'm your Help Assistant. What would you like to know?",
           suggestedQuestions: [
-            "What services does ProjexiaHub provide?",
+            "What services does the studio provide?",
             "How can I request a project?",
             "What information do I need to provide?",
-            "How can I contact ProjexiaHub?",
+            "How can I contact the studio?",
           ],
         },
       },
@@ -777,8 +779,8 @@ export function HelpChatWidget() {
           className="mectec-help-launcher"
           type="button"
           onClick={() => setIsOpen(true)}
-          aria-label="Open ProjexiaHub Help Assistant"
-          title="ProjexiaHub Help Assistant"
+          aria-label={`Open ${settings.name} Help Assistant`}
+          title={`${settings.name} Help Assistant`}
           style={{
             position: "fixed",
             left: LAUNCHER_LEFT,
@@ -925,7 +927,7 @@ export function HelpChatWidget() {
                   lineHeight: 1.2,
                 }}
               >
-                ProjexiaHub Help Assistant
+                {settings.name} Help Assistant
                 <span
                   style={{
                     width: 7,
@@ -1356,8 +1358,8 @@ export function HelpChatWidget() {
               }}
               onKeyDown={handleInputKeyDown}
               disabled={isTyping}
-              placeholder="Ask ProjexiaHub anything..."
-              aria-label="Ask ProjexiaHub anything"
+              placeholder={`Ask ${settings.name} anything...`}
+              aria-label={`Ask ${settings.name} anything`}
               style={{
                 flex: 1,
 
@@ -1421,7 +1423,7 @@ export function HelpChatWidget() {
               fontSize: 10.5,
             }}
           >
-            ProjexiaHub Help Assistant
+            {settings.name} Help Assistant
           </div>
         </div>
 
