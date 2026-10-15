@@ -46,8 +46,17 @@ export const projectLibraryService = {
 
   async listByKind(kind: ProjectLibraryKind, includeInactive = false): Promise<ProjectLibraryItem[]> {
     const snapshot = await getDocs(query(libraryRef, where('kind', '==', kind)));
-    return snapshot.docs
-      .map((entry) => toItem(entry.id, entry.data()))
+    const stored = snapshot.docs.map((entry) => toItem(entry.id, entry.data()));
+    const storedNames = new Set(stored.map((item) => normalizeName(item.name)));
+    // Starter entries remain available as suggestions before the admin seeds them
+    // into Firestore. Existing records (including inactive ones) take precedence.
+    const starter = PROJECT_LIBRARY_STARTER
+      .filter((item) => item.kind === kind && !storedNames.has(normalizeName(item.name)))
+      .map((item, index) => ({
+        ...item,
+        id: `starter-${kind}-${index}`,
+      }));
+    return [...stored, ...starter]
       .filter((item) => includeInactive || item.active)
       .sort((a, b) => a.name.localeCompare(b.name));
   },
