@@ -41,6 +41,33 @@ const entries: [ProjectLibraryKind, string, string][] = [
   ...(['RFID Access Control','Wireless Sensor Node','Smart Energy Meter','Motorized Mechanism','Environmental Data Logger','Remote Monitoring Dashboard','Battery-Powered Device','IoT Gateway','Sensor Calibration Tool','Automated Test Fixture','PCB Controller','Embedded Vision System','Smart Irrigation Controller','Power Supply Monitor','Industrial Interface Module'].map((name) => ['subcategory', name, 'Project subcategories'] as [ProjectLibraryKind,string,string])),
 ];
 
+function starterComponentUnit(name: string) {
+  const normalized = name.toLocaleLowerCase();
+  if (/jumper wire|dupont|wire assortment|jumper wire set|connector set|resistor assortment|capacitor assortment|smd component assortment|crimp connector kit|jst-xh connector set|screw and spacer set|perfboard standoff set|heat-shrink tubing/.test(normalized)) return 'set';
+  if (/solder wire|solder wick/.test(normalized)) return 'roll';
+  if (/cable|wire spool|ribbon cable|tubing|sleeving/.test(normalized)) return 'm';
+  if (/resistor|capacitor|diode|transistor|led\b|fuse|screw|standoff|spacer|header pin|jumper cap/.test(normalized)) return 'pc';
+  if (/battery|cell|motor|sensor|module|board|display|controller|driver|relay|switch|adapter|regulator|connector|ic\b|microcontroller|arduino|esp32|raspberry pi|stm32|solenoid|pump|fan|antenna/.test(normalized)) return 'pc';
+  return '';
+}
+
+function starterComponentNotes(name: string, category: string) {
+  const normalized = `${name} ${category}`.toLocaleLowerCase();
+  if (/wire|cable|jumper|tubing|sleeving|solder/.test(normalized)) return 'Check length, gauge, insulation, and current rating for the intended load.';
+  if (/motor|servo|stepper|pump|solenoid|actuator|fan/.test(normalized)) return 'Verify rated voltage, stall or starting current, driver compatibility, and mechanical load before use.';
+  if (/battery|charger|bms|power|regulator|converter|supply/.test(normalized)) return 'Verify input/output voltage, current limits, polarity, and required protection before connecting.';
+  if (/sensor|thermocouple|load cell|encoder|rfid|fingerprint|gps|gnss/.test(normalized)) return 'Check pinout, supply and logic voltage, interface, measurement range, and calibration requirements.';
+  if (/display|lcd|tft|oled|e-paper|matrix/.test(normalized)) return 'Confirm pinout, interface, logic voltage, resolution, and required driver library.';
+  if (/microcontroller|arduino|esp32|stm32|raspberry pi|module|transceiver|ethernet|bluetooth|wifi|wi-fi|lora|gsm/.test(normalized)) return 'Confirm the exact board revision, pinout, supply voltage, logic levels, and interface requirements.';
+  return 'Verify the exact part number, pinout, ratings, and compatibility with the circuit before assembly.';
+}
+
 export const PROJECT_LIBRARY_STARTER: ProjectLibraryDraft[] = entries.map(([kind, name, category]) => ({
-  kind, name, category, description: '', unit: '', defaultValue: '', active: true,
+  kind,
+  name,
+  category,
+  description: kind === 'component' ? starterComponentNotes(name, category) : '',
+  unit: kind === 'component' ? starterComponentUnit(name) : '',
+  defaultValue: '',
+  active: true,
 }));
