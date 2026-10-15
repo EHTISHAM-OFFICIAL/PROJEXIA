@@ -55,6 +55,7 @@ const staticUrls = [
 ];
 
 const urls = new Map(staticUrls.map((entry) => [entry.path, entry]));
+let db;
 
 async function addPublished(collectionName, prefix, priority) {
   const snapshot = await getDocs(query(collection(db, collectionName), where('published', '==', true)));
@@ -90,7 +91,7 @@ const required = Object.entries(firebaseConfig).filter(([, value]) => !value);
 try {
   if (!required.length) {
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    db = getFirestore(app);
     await addPublished('projects', '/projects', '0.8');
     await addPublished('posts', '/blog', '0.7');
   } else {
