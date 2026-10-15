@@ -107,8 +107,16 @@ export default function ProjectLibrary() {
         >
           <TextInput maxLength={80} value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} placeholder={draft.kind === 'component' ? 'e.g. Sensor, controller, motor driver' : 'e.g. Microcontrollers'} />
         </Field>
-        <Field label="Unit" hint={draft.kind === 'specification' ? 'Unit for this specification, such as V, mA, mm, or °C.' : 'Optional measurement unit, if relevant.'}>
-          <TextInput maxLength={30} value={draft.unit} onChange={(event) => setDraft({ ...draft, unit: event.target.value })} placeholder="e.g. V, mA, mm" />
+        <Field
+          label={draft.kind === 'component' ? 'Default quantity unit' : 'Unit'}
+          hint={draft.kind === 'component' ? 'Used to prefill a useful quantity such as “1 set”, “1 pc”, “1 roll”, or “1 m”.' : draft.kind === 'specification' ? 'Appended to a suggested specification value when appropriate, e.g. V, mA, mm, or °C.' : 'Optional measurement unit, if relevant.'}
+        >
+          <TextInput
+            maxLength={30}
+            value={draft.unit}
+            onChange={(event) => setDraft({ ...draft, unit: event.target.value })}
+            placeholder={draft.kind === 'component' ? 'e.g. pc, set, pair, roll, m' : 'e.g. V, mA, mm'}
+          />
         </Field>
         <Field
           label={draft.kind === 'specification' ? 'Suggested specification value' : 'Suggested default value'}
