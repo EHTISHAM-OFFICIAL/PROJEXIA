@@ -45,7 +45,7 @@ function starterComponentUnit(name: string) {
   const normalized = name.toLocaleLowerCase();
   if (/jumper wire|dupont|wire assortment|jumper wire set|connector set|resistor assortment|capacitor assortment|smd component assortment|crimp connector kit|jst-xh connector set|screw and spacer set|perfboard standoff set|heat-shrink tubing/.test(normalized)) return 'set';
   if (/solder wire|solder wick/.test(normalized)) return 'roll';
-  if (/cable|wire spool|ribbon cable|tubing|sleeving/.test(normalized)) return 'm';
+  if (/cable|wire spool|\\bwire\\b|ribbon cable|tubing|sleeving/.test(normalized)) return 'm';
   if (/resistor|capacitor|diode|transistor|led\b|fuse|screw|standoff|spacer|header pin|jumper cap/.test(normalized)) return 'pc';
   if (/battery|cell|motor|sensor|module|board|display|controller|driver|relay|switch|adapter|regulator|connector|ic\b|microcontroller|arduino|esp32|raspberry pi|stm32|solenoid|pump|fan|antenna/.test(normalized)) return 'pc';
   return '';
