@@ -67,9 +67,9 @@ const EMPTY_SPEC: ProjectSpecification = { label: '', value: '' };
 const defaultComponentQuantity = (name: string, unit: string) => {
   const normalized = name.toLocaleLowerCase();
   if (unit.trim()) return `1 ${unit.trim()}`;
-  if (/wire|jumper|dupont|assortment|assorted|kit|set|heat-shrink|heat shrink|connector set/.test(normalized)) return '1 set';
   if (/solder wire|solder wick|soldering wire/.test(normalized)) return '1 roll';
-  if (/cable|wire spool|tubing|sleeving/.test(normalized)) return '1 m';
+  if (/dupont|jumper wire|wire assortment|jumper wire set|connector set|assortment|assorted|kit|set|heat-shrink|heat shrink/.test(normalized)) return '1 set';
+  if (/cable|wire spool|\bwire\b|tubing|sleeving/.test(normalized)) return '1 m';
   if (/resistor|capacitor|diode|transistor|led\b|fuse|screw|standoff|spacer|header pin|jumper cap/.test(normalized)) return '1 pc';
   if (/battery|cell|motor|sensor|module|board|display|controller|driver|relay|switch|adapter|regulator|connector|ic\b|integrated circuit|microcontroller|arduino|esp32|raspberry pi|stm32/.test(normalized)) return '1 pc';
   return '1 pc';
