@@ -33,6 +33,7 @@ const AdminForgotPassword = lazy(() => import('../pages/Admin/ForgotPassword'));
 const AdminDashboard = lazy(() => import('../pages/Admin/Dashboard'));
 const AdminProjectsList = lazy(() => import('../pages/Admin/ProjectsList'));
 const AdminProjectForm = lazy(() => import('../pages/Admin/ProjectForm'));
+const AdminProjectLibrary = lazy(() => import('../pages/Admin/ProjectLibrary'));
 const AdminRequestsList = lazy(() => import('../pages/Admin/RequestsList'));
 const AdminMeetingRequests = lazy(() => import('../pages/Admin/MeetingRequests'));
 const AdminMeetingDetail = lazy(() => import('../pages/Admin/MeetingDetail'));
@@ -90,6 +91,7 @@ export function AppRoutes() {
             <Route path="projects" element={<AdminProjectsList />} />
             <Route path="projects/new" element={<AdminProjectForm />} />
             <Route path="projects/:id/edit" element={<AdminProjectForm />} />
+            <Route path="project-library" element={<AdminProjectLibrary />} />
             <Route path="requests" element={<AdminRequestsList />} />
             <Route path="requests/trash" element={<AdminRequestTrash />} />
             <Route path="requests/:id" element={<AdminRequestDetail />} />
