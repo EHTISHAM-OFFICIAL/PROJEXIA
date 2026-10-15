@@ -62,8 +62,27 @@ const EMPTY_DRAFT: ProjectDraft = {
   completedAt: null,
 };
 
-const EMPTY_COMPONENT: ProjectComponent = { name: '', category: '', quantity: 1, notes: '' };
+const EMPTY_COMPONENT: ProjectComponent = { name: '', category: '', quantity: '1 pc', notes: '' };
 const EMPTY_SPEC: ProjectSpecification = { label: '', value: '' };
+const defaultComponentQuantity = (name: string, unit: string) => {
+  const normalized = name.toLocaleLowerCase();
+  if (unit.trim()) return `1 ${unit.trim()}`;
+  if (/wire|jumper|dupont|assortment|assorted|kit|set|heat-shrink|heat shrink|connector set/.test(normalized)) return '1 set';
+  if (/solder wire|solder wick|soldering wire/.test(normalized)) return '1 roll';
+  if (/cable|wire spool|tubing|sleeving/.test(normalized)) return '1 m';
+  if (/resistor|capacitor|diode|transistor|led\b|fuse|screw|standoff|spacer|header pin|jumper cap/.test(normalized)) return '1 pc';
+  if (/battery|cell|motor|sensor|module|board|display|controller|driver|relay|switch|adapter|regulator|connector|ic\b|integrated circuit|microcontroller|arduino|esp32|raspberry pi|stm32/.test(normalized)) return '1 pc';
+  return '1 pc';
+};
+
+const specificationValue = (defaultValue: string, unit: string) => {
+  const value = defaultValue.trim();
+  const suffix = unit.trim();
+  if (!value) return '';
+  if (!suffix || value.toLocaleLowerCase().endsWith(suffix.toLocaleLowerCase())) return value;
+  return `${value} ${suffix}`;
+};
+
 
 export default function ProjectForm() {
   const { id } = useParams<{ id: string }>();
@@ -385,14 +404,15 @@ export default function ProjectForm() {
               kind="component"
               label="components"
               values={draft.components.filter((component) => component.name.trim()).map((component) => component.name)}
-              onChange={(names, addedItem) => update('components', names.map((name) => {
+              onChange={(names, _addedItem, selectedItems) => update('components', names.map((name) => {
                 const existingComponent = draft.components.find((component) => component.name.trim().toLocaleLowerCase() === name.trim().toLocaleLowerCase());
                 if (existingComponent) return existingComponent;
-                const libraryItem = addedItem && addedItem.name.trim().toLocaleLowerCase() === name.trim().toLocaleLowerCase() ? addedItem : undefined;
+                const libraryItem = selectedItems?.find((item) => item.name.trim().toLocaleLowerCase() === name.trim().toLocaleLowerCase());
                 return {
                   ...EMPTY_COMPONENT,
                   name,
                   category: libraryItem?.category ?? '',
+                  quantity: defaultComponentQuantity(name, libraryItem?.unit ?? ''),
                   notes: libraryItem?.description ?? '',
                 };
               }))}
@@ -405,7 +425,7 @@ export default function ProjectForm() {
               columns={[
                 { key: 'name', label: 'Name' },
                 { key: 'category', label: 'Type' },
-                { key: 'quantity', label: 'Qty', type: 'number', width: 'w-20' },
+                { key: 'quantity', label: 'Quantity', width: 'w-28' },
                 { key: 'notes', label: 'Notes' },
               ]}
             />
@@ -416,11 +436,11 @@ export default function ProjectForm() {
               kind="specification"
               label="specifications"
               values={draft.specifications.filter((spec) => spec.label.trim()).map((spec) => spec.label)}
-              onChange={(labels, addedItem) => update('specifications', labels.map((label) => {
+              onChange={(labels, _addedItem, selectedItems) => update('specifications', labels.map((label) => {
                 const existingSpec = draft.specifications.find((spec) => spec.label.trim().toLocaleLowerCase() === label.trim().toLocaleLowerCase());
                 if (existingSpec) return existingSpec;
-                const libraryItem = addedItem && addedItem.name.trim().toLocaleLowerCase() === label.trim().toLocaleLowerCase() ? addedItem : undefined;
-                return { ...EMPTY_SPEC, label, value: libraryItem?.defaultValue ?? '' };
+                const libraryItem = selectedItems?.find((item) => item.name.trim().toLocaleLowerCase() === label.trim().toLocaleLowerCase());
+                return { ...EMPTY_SPEC, label, value: libraryItem ? specificationValue(libraryItem.defaultValue, libraryItem.unit) : '' };
               }))}
             />
             <TableEditor<ProjectSpecification>
