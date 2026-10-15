@@ -1,6 +1,8 @@
 import { Container } from '../ui/Container';
+import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 export function Intro() {
+  const { settings } = useSiteSettings();
   return (
     <section className="border-b border-line py-16 sm:py-20">
       <Container>
@@ -10,7 +12,7 @@ export function Intro() {
           </h2>
           <div className="flex flex-col gap-4 text-base leading-relaxed text-content-secondary">
             <p>
-              MECTEC is a custom electronics design and development studio in Pakistan. The work
+              {settings.name} is a custom electronics design and development studio in Pakistan. The work
               covers circuit design, embedded firmware, IoT connectivity, automation, robotics,
               prototyping and the documentation needed to keep a system useful after handover.
             </p>
