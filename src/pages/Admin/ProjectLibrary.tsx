@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Archive, Check, Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { ArrowLeft, Archive, Check, Database, Pencil, Search, Trash2 } from 'lucide-react';
 import { Seo } from '../../components/ui/Seo';
 import { Alert } from '../../components/ui/Alert';
 import { Field } from '../../components/forms/Field';
@@ -35,6 +35,7 @@ export default function ProjectLibrary() {
   const [showInactive, setShowInactive] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [seeding, setSeeding] = useState(false);
 
   const reload = async () => {
     setLoading(true);
@@ -63,6 +64,16 @@ export default function ProjectLibrary() {
     setDraft({ name: item.name, kind: item.kind, category: item.category, description: item.description, unit: item.unit, defaultValue: item.defaultValue, active: item.active });
     setNotice(''); setError('');
   };
+  const seedCatalog = async () => {
+    setError(''); setNotice(''); setSeeding(true);
+    try {
+      const count = await projectLibraryService.seedStarterCatalog();
+      setNotice(count ? `Added ${count} starter library items. Existing entries were preserved.` : 'The starter catalog is already present; no duplicates were added.');
+      await reload();
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Could not add the starter catalog.');
+    } finally { setSeeding(false); }
+  };
   const toggleActive = async (item: ProjectLibraryItem) => {
     try { await projectLibraryService.setActive(item.id, !item.active); await reload(); }
     catch { setError('Could not update this library item.'); }
@@ -82,6 +93,10 @@ export default function ProjectLibrary() {
         <p className="mt-1.5 max-w-2xl text-sm text-content-secondary">Manage reusable options for project creation. Deactivating an item hides it from new selections; saved project data remains unchanged.</p>
       </header>
       {(error || notice) && <div className="mt-5"><Alert tone={error ? 'danger' : 'success'}>{error || notice}</Alert></div>}
+      <div className="mt-6 flex flex-col gap-3 rounded-xl border border-line bg-surface-raised p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div><h2 className="font-semibold">Starter electronics catalog</h2><p className="mt-1 text-sm text-content-secondary">Add common electronics components, specifications, technologies, tools, tags, and features. Existing library entries are preserved.</p></div>
+        <Button type="button" variant="secondary" onClick={() => void seedCatalog()} disabled={seeding}><Database size={15} /> {seeding ? "Adding catalog…" : "Add starter catalog"}</Button>
+      </div>
       <form onSubmit={submit} className="mt-7 grid gap-4 rounded-xl border border-line p-4 sm:grid-cols-2">
         <h2 className="sm:col-span-2 text-lg font-semibold">{editingId ? 'Edit library item' : 'Add library item'}</h2>
         <Field label="Name" required><TextInput required maxLength={120} value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} /></Field>
