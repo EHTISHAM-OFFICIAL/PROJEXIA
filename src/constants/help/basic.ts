@@ -27,7 +27,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["hi", "hello", "hey", "greeting", "salam", "assalam", "aoa"],
     answer:
-      "Hi! Welcome to MECTEC. 👋 How can I help you today? You can ask about our projects, services, pricing, electronics, components, Arduino, ESP32, sensors, motors, RFID, PCB design, firmware, IoT, automation, or troubleshooting.",
+      "Hi! Welcome to ProjexiaHub. 👋 How can I help you today? You can ask about our projects, services, pricing, electronics, components, Arduino, ESP32, sensors, motors, RFID, PCB design, firmware, IoT, automation, or troubleshooting.",
     priority: 100,
   },
 
@@ -45,7 +45,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "Have a good morning",
     ],
     keywords: ["morning", "good", "greeting"],
-    answer: "Good morning! ☀️ Welcome to MECTEC. How can I help you today?",
+    answer: "Good morning! ☀️ Welcome to ProjexiaHub. How can I help you today?",
     priority: 100,
   },
 
@@ -62,7 +62,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "Afternoon greeting",
     ],
     keywords: ["afternoon", "good", "greeting"],
-    answer: "Good afternoon! 👋 Welcome to MECTEC. What can I help you with?",
+    answer: "Good afternoon! 👋 Welcome to ProjexiaHub. What can I help you with?",
     priority: 100,
   },
 
@@ -79,7 +79,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "Evening greeting",
     ],
     keywords: ["evening", "good", "greeting"],
-    answer: "Good evening! 🌆 Welcome to MECTEC. How can I assist you today?",
+    answer: "Good evening! 🌆 Welcome to ProjexiaHub. How can I assist you today?",
     priority: 100,
   },
 
@@ -98,7 +98,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["salam", "assalam", "alaikum", "aoa", "greeting"],
     answer:
-      "Wa Alaikum Assalam! 👋 Welcome to MECTEC. How can I help you today?",
+      "Wa Alaikum Assalam! 👋 Welcome to ProjexiaHub. How can I help you today?",
     priority: 100,
   },
 
@@ -109,17 +109,17 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-opening-hours",
     category: "general",
     intent: "hours",
-    question: "When is MECTEC open?",
+    question: "When is ProjexiaHub open?",
     variations: [
-      "When is MECTEC open",
+      "When is ProjexiaHub open",
       "When is your shop open",
       "When is the shop open",
-      "When does MECTEC open",
+      "When does ProjexiaHub open",
       "When do you open",
       "What time do you open",
-      "What time does MECTEC open",
+      "What time does ProjexiaHub open",
       "What are your opening hours",
-      "What are MECTEC opening hours",
+      "What are ProjexiaHub opening hours",
       "What are your business hours",
       "What are your working hours",
       "What time do you close",
@@ -128,12 +128,12 @@ export const BASIC_HELP: HelpEntry[] = [
       "What are your shop timings",
       "Shop timing",
       "Shop timings",
-      "MECTEC timing",
-      "MECTEC timings",
+      "ProjexiaHub timing",
+      "ProjexiaHub timings",
       "Are you open today",
       "Are you open",
       "Is the shop open",
-      "Is MECTEC open",
+      "Is ProjexiaHub open",
       "When can I visit",
       "When can I come",
     ],
@@ -151,7 +151,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "visit",
     ],
     answer:
-      "MECTEC is normally open Monday through Thursday and Saturday through Sunday from 10:00 AM to 10:00 PM. Friday is officially closed, but we may operate on Fridays when there is an unusually high workload or urgent work. For Friday availability, please contact MECTEC directly.",
+      "ProjexiaHub is normally open Monday through Thursday and Saturday through Sunday from 10:00 AM to 10:00 PM. Friday is officially closed, but we may operate on Fridays when there is an unusually high workload or urgent work. For Friday availability, please contact ProjexiaHub directly.",
     priority: 100,
   },
 
@@ -163,7 +163,7 @@ export const BASIC_HELP: HelpEntry[] = [
     variations: [
       "Are you open on Friday",
       "Friday opening hours",
-      "Is MECTEC open on Friday",
+      "Is ProjexiaHub open on Friday",
       "Friday shop timing",
       "Do you work on Friday",
       "Can I visit on Friday",
@@ -174,7 +174,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["friday", "open", "hours", "timing", "visit", "closed"],
     answer:
-      "Friday is officially closed for MECTEC, but we may operate on Fridays when there is an unusually high workload or urgent work. Please contact MECTEC directly to confirm Friday availability.",
+      "Friday is officially closed for ProjexiaHub, but we may operate on Fridays when there is an unusually high workload or urgent work. Please contact ProjexiaHub directly to confirm Friday availability.",
     priority: 100,
   },
 
@@ -197,7 +197,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["saturday", "sunday", "weekend", "open", "hours"],
     answer:
-      "MECTEC is normally open on Saturday and Sunday from 10:00 AM to 10:00 PM. For any changes or special conditions, contact MECTEC directly.",
+      "ProjexiaHub is normally open on Saturday and Sunday from 10:00 AM to 10:00 PM. For any changes or special conditions, contact ProjexiaHub directly.",
     priority: 100,
   },
 
@@ -209,7 +209,7 @@ export const BASIC_HELP: HelpEntry[] = [
     variations: [
       "Are you open on Saturday",
       "Saturday opening hours",
-      "Is MECTEC open on Saturday",
+      "Is ProjexiaHub open on Saturday",
       "Saturday shop timing",
       "Do you work on Saturday",
       "Can I visit on Saturday",
@@ -219,7 +219,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["saturday", "open", "hours", "timing", "visit"],
     answer:
-      "MECTEC is normally open on Saturday from 10:00 AM to 10:00 PM. For specific availability, contact MECTEC directly.",
+      "ProjexiaHub is normally open on Saturday from 10:00 AM to 10:00 PM. For specific availability, contact ProjexiaHub directly.",
     priority: 100,
   },
 
@@ -231,7 +231,7 @@ export const BASIC_HELP: HelpEntry[] = [
     variations: [
       "Are you open on Sunday",
       "Sunday opening hours",
-      "Is MECTEC open on Sunday",
+      "Is ProjexiaHub open on Sunday",
       "Sunday shop timing",
       "Do you work on Sunday",
       "Can I visit on Sunday",
@@ -241,7 +241,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["sunday", "open", "hours", "timing", "visit"],
     answer:
-      "MECTEC is normally open on Sunday from 10:00 AM to 10:00 PM. For specific availability, contact MECTEC directly.",
+      "ProjexiaHub is normally open on Sunday from 10:00 AM to 10:00 PM. For specific availability, contact ProjexiaHub directly.",
     priority: 100,
   },
 
@@ -263,7 +263,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["weekday", "monday", "tuesday", "wednesday", "thursday", "open"],
     answer:
-      "MECTEC is normally open Monday through Thursday from 10:00 AM to 10:00 PM. For specific availability, contact MECTEC directly.",
+      "ProjexiaHub is normally open Monday through Thursday from 10:00 AM to 10:00 PM. For specific availability, contact ProjexiaHub directly.",
     priority: 100,
   },
 
@@ -275,7 +275,7 @@ export const BASIC_HELP: HelpEntry[] = [
     variations: [
       "Are you open on Monday",
       "Monday opening hours",
-      "Is MECTEC open on Monday",
+      "Is ProjexiaHub open on Monday",
       "Monday shop timing",
       "Do you work on Monday",
       "Monday availability",
@@ -283,7 +283,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["monday", "open", "hours", "timing"],
     answer:
-      "MECTEC is normally open on Monday from 10:00 AM to 10:00 PM. For specific availability, contact MECTEC directly.",
+      "ProjexiaHub is normally open on Monday from 10:00 AM to 10:00 PM. For specific availability, contact ProjexiaHub directly.",
     priority: 90,
   },
 
@@ -295,7 +295,7 @@ export const BASIC_HELP: HelpEntry[] = [
     variations: [
       "Are you open on Tuesday",
       "Tuesday opening hours",
-      "Is MECTEC open on Tuesday",
+      "Is ProjexiaHub open on Tuesday",
       "Tuesday shop timing",
       "Do you work on Tuesday",
       "Tuesday availability",
@@ -303,7 +303,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["tuesday", "open", "hours", "timing"],
     answer:
-      "MECTEC is normally open on Tuesday from 10:00 AM to 10:00 PM. For specific availability, contact MECTEC directly.",
+      "ProjexiaHub is normally open on Tuesday from 10:00 AM to 10:00 PM. For specific availability, contact ProjexiaHub directly.",
     priority: 90,
   },
 
@@ -315,7 +315,7 @@ export const BASIC_HELP: HelpEntry[] = [
     variations: [
       "Are you open on Wednesday",
       "Wednesday opening hours",
-      "Is MECTEC open on Wednesday",
+      "Is ProjexiaHub open on Wednesday",
       "Wednesday shop timing",
       "Do you work on Wednesday",
       "Wednesday availability",
@@ -323,7 +323,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["wednesday", "open", "hours", "timing"],
     answer:
-      "MECTEC is normally open on Wednesday from 10:00 AM to 10:00 PM. For specific availability, contact MECTEC directly.",
+      "ProjexiaHub is normally open on Wednesday from 10:00 AM to 10:00 PM. For specific availability, contact ProjexiaHub directly.",
     priority: 90,
   },
 
@@ -335,7 +335,7 @@ export const BASIC_HELP: HelpEntry[] = [
     variations: [
       "Are you open on Thursday",
       "Thursday opening hours",
-      "Is MECTEC open on Thursday",
+      "Is ProjexiaHub open on Thursday",
       "Thursday shop timing",
       "Do you work on Thursday",
       "Thursday availability",
@@ -343,7 +343,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["thursday", "open", "hours", "timing"],
     answer:
-      "MECTEC is normally open on Thursday from 10:00 AM to 10:00 PM. For specific availability, contact MECTEC directly.",
+      "ProjexiaHub is normally open on Thursday from 10:00 AM to 10:00 PM. For specific availability, contact ProjexiaHub directly.",
     priority: 90,
   },
 
@@ -364,7 +364,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["today", "open", "hours", "timing", "visit"],
     answer:
-      "MECTEC is normally open Monday through Thursday and Saturday through Sunday from 10:00 AM to 10:00 PM. Friday is officially closed unless there is urgent or unusually high workload. For today's actual availability, please contact MECTEC directly.",
+      "ProjexiaHub is normally open Monday through Thursday and Saturday through Sunday from 10:00 AM to 10:00 PM. Friday is officially closed unless there is urgent or unusually high workload. For today's actual availability, please contact ProjexiaHub directly.",
     priority: 100,
   },
 
@@ -376,14 +376,14 @@ export const BASIC_HELP: HelpEntry[] = [
     variations: [
       "Are you open right now",
       "Are you open now",
-      "Is MECTEC open right now",
+      "Is ProjexiaHub open right now",
       "Current opening status",
       "Are you currently open",
       "Is the shop open now",
     ],
     keywords: ["open", "now", "current", "status", "right"],
     answer:
-      "Current opening status depends on the day and time. Normal hours are 10:00 AM to 10:00 PM, Monday through Thursday and Saturday through Sunday. Contact MECTEC directly if unsure.",
+      "Current opening status depends on the day and time. Normal hours are 10:00 AM to 10:00 PM, Monday through Thursday and Saturday through Sunday. Contact ProjexiaHub directly if unsure.",
     priority: 100,
   },
 
@@ -396,14 +396,14 @@ export const BASIC_HELP: HelpEntry[] = [
       "What time do you close",
       "Closing time",
       "When do you close",
-      "What time does MECTEC close",
+      "What time does ProjexiaHub close",
       "Shop closing time",
       "Last time to visit",
       "What time do you shut",
     ],
     keywords: ["close", "closing", "time", "shop", "visit", "shut"],
     answer:
-      "MECTEC normally closes at 10:00 PM on operating days. Friday is officially closed unless there is urgent or unusually high workload. Please contact MECTEC directly if you need confirmation for a specific day.",
+      "ProjexiaHub normally closes at 10:00 PM on operating days. Friday is officially closed unless there is urgent or unusually high workload. Please contact ProjexiaHub directly if you need confirmation for a specific day.",
     priority: 100,
   },
 
@@ -422,7 +422,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["holiday", "open", "hours", "public", "special"],
     answer:
-      "Holiday hours may differ from normal opening hours. Contact MECTEC directly to confirm availability on a specific holiday.",
+      "Holiday hours may differ from normal opening hours. Contact ProjexiaHub directly to confirm availability on a specific holiday.",
     priority: 90,
   },
 
@@ -441,7 +441,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["ramadan", "timing", "hours", "schedule", "fasting"],
     answer:
-      "Ramadan hours may differ from normal opening hours. Contact MECTEC directly to confirm the schedule during Ramadan.",
+      "Ramadan hours may differ from normal opening hours. Contact ProjexiaHub directly to confirm the schedule during Ramadan.",
     priority: 90,
   },
 
@@ -460,7 +460,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["lunch", "break", "midday", "closure", "hours"],
     answer:
-      "MECTEC does not currently have a listed lunch closure. For specific timing on a particular day, contact MECTEC directly.",
+      "ProjexiaHub does not currently have a listed lunch closure. For specific timing on a particular day, contact ProjexiaHub directly.",
     priority: 80,
   },
 
@@ -479,7 +479,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["early", "open", "before", "morning", "hours"],
     answer:
-      "Normal opening is 10:00 AM. For early visits or special arrangements, contact MECTEC directly.",
+      "Normal opening is 10:00 AM. For early visits or special arrangements, contact ProjexiaHub directly.",
     priority: 80,
   },
 
@@ -498,7 +498,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["late", "close", "evening", "night", "hours"],
     answer:
-      "Normal closing is 10:00 PM. For late visits or special arrangements, contact MECTEC directly.",
+      "Normal closing is 10:00 PM. For late visits or special arrangements, contact ProjexiaHub directly.",
     priority: 80,
   },
 
@@ -518,7 +518,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["appointment", "visit", "walk", "schedule", "book"],
     answer:
-      "Appointment requirements depend on the purpose of your visit and current workload. For general information, visiting during normal opening hours is usually suitable. For a specific project discussion, contacting MECTEC first can help ensure someone is available.",
+      "Appointment requirements depend on the purpose of your visit and current workload. For general information, visiting during normal opening hours is usually suitable. For a specific project discussion, contacting ProjexiaHub first can help ensure someone is available.",
     priority: 90,
   },
 
@@ -529,27 +529,27 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-location",
     category: "general",
     intent: "location",
-    question: "Where is MECTEC located?",
+    question: "Where is ProjexiaHub located?",
     variations: [
-      "Where is MECTEC located",
-      "Where is MECTEC",
+      "Where is ProjexiaHub located",
+      "Where is ProjexiaHub",
       "Where is your shop",
-      "Where is the MECTEC shop",
+      "Where is the ProjexiaHub shop",
       "Where are you located",
       "What is your location",
       "What's your location",
-      "Where can I find MECTEC",
+      "Where can I find ProjexiaHub",
       "Where can I find your shop",
       "Where can I find the shop",
       "What is your address",
       "What's your address",
-      "What is the MECTEC address",
+      "What is the ProjexiaHub address",
       "What is the shop address",
       "Shop address",
-      "MECTEC address",
+      "ProjexiaHub address",
       "Give me your address",
       "How can I find your shop",
-      "How do I find MECTEC",
+      "How do I find ProjexiaHub",
     ],
     keywords: [
       "location",
@@ -561,7 +561,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "mectec",
     ],
     answer:
-      "MECTEC location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location information.",
+      "ProjexiaHub location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location information.",
     priority: 100,
   },
 
@@ -569,18 +569,18 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-location-landmark",
     category: "general",
     intent: "location",
-    question: "What is near MECTEC?",
+    question: "What is near ProjexiaHub?",
     variations: [
-      "What is near MECTEC",
-      "Landmark near MECTEC",
+      "What is near ProjexiaHub",
+      "Landmark near ProjexiaHub",
       "How do I recognize the shop",
       "Nearby landmark",
       "How to find the shop easily",
-      "What is around MECTEC",
+      "What is around ProjexiaHub",
     ],
     keywords: ["landmark", "near", "location", "find", "shop"],
     answer:
-      "MECTEC location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location and landmark information.",
+      "ProjexiaHub location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location and landmark information.",
     priority: 90,
   },
 
@@ -588,18 +588,18 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-location-directions",
     category: "general",
     intent: "location",
-    question: "How do I get directions to MECTEC?",
+    question: "How do I get directions to ProjexiaHub?",
     variations: [
-      "How do I get directions to MECTEC",
-      "Directions to MECTEC",
+      "How do I get directions to ProjexiaHub",
+      "Directions to ProjexiaHub",
       "How to reach your shop",
       "Give me directions",
-      "How do I drive to MECTEC",
-      "How to find MECTEC location",
+      "How do I drive to ProjexiaHub",
+      "How to find ProjexiaHub location",
     ],
     keywords: ["directions", "route", "reach", "location", "map"],
     answer:
-      "MECTEC location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location information and directions.",
+      "ProjexiaHub location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location information and directions.",
     priority: 90,
   },
 
@@ -607,9 +607,9 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-location-map",
     category: "general",
     intent: "location",
-    question: "Is there a map to MECTEC?",
+    question: "Is there a map to ProjexiaHub?",
     variations: [
-      "Is there a map to MECTEC",
+      "Is there a map to ProjexiaHub",
       "Map of shop location",
       "Google Maps link",
       "Can I see location on map",
@@ -625,10 +625,10 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-location-parking",
     category: "general",
     intent: "location",
-    question: "Is there parking near MECTEC?",
+    question: "Is there parking near ProjexiaHub?",
     variations: [
-      "Is there parking near MECTEC",
-      "Parking at MECTEC",
+      "Is there parking near ProjexiaHub",
+      "Parking at ProjexiaHub",
       "Can I park nearby",
       "Parking availability",
       "Where to park",
@@ -644,10 +644,10 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-location-public-transport",
     category: "general",
     intent: "location",
-    question: "Can I reach MECTEC by public transport?",
+    question: "Can I reach ProjexiaHub by public transport?",
     variations: [
-      "Can I reach MECTEC by public transport",
-      "Public transport to MECTEC",
+      "Can I reach ProjexiaHub by public transport",
+      "Public transport to ProjexiaHub",
       "Bus route",
       "Metro nearby",
       "How to reach by bus",
@@ -666,19 +666,19 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-contact-via-website",
     category: "general",
     intent: "contact",
-    question: "How can I contact MECTEC?",
+    question: "How can I contact ProjexiaHub?",
     variations: [
-      "How can I contact MECTEC",
+      "How can I contact ProjexiaHub",
       "How do I reach you",
       "Contact options",
       "How to get in touch",
-      "Can I contact MECTEC online",
+      "Can I contact ProjexiaHub online",
       "Where can I send a message",
-      "How to reach MECTEC",
+      "How to reach ProjexiaHub",
     ],
     keywords: ["contact", "reach", "message", "email", "website"],
     answer:
-      "Use the Contact section of the MECTEC website to find the available communication options. For project-specific questions, the project request form is usually the best starting point.",
+      "Use the Contact section of the ProjexiaHub website to find the available communication options. For project-specific questions, the project request form is usually the best starting point.",
     priority: 100,
   },
 
@@ -686,18 +686,18 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-contact-email",
     category: "general",
     intent: "contact",
-    question: "What is the MECTEC email?",
+    question: "What is the ProjexiaHub email?",
     variations: [
-      "What is the MECTEC email",
-      "How can I email MECTEC",
+      "What is the ProjexiaHub email",
+      "How can I email ProjexiaHub",
       "What email should I use",
-      "Give me the MECTEC email",
+      "Give me the ProjexiaHub email",
       "Where can I send an email",
       "What is your email address",
     ],
     keywords: ["email", "mail", "address", "contact"],
     answer:
-      "MECTEC can be contacted by email. The exact email address is shown in the Contact section of the website.",
+      "ProjexiaHub can be contacted by email. The exact email address is shown in the Contact section of the website.",
     priority: 100,
   },
 
@@ -705,10 +705,10 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-contact-whatsapp",
     category: "general",
     intent: "contact",
-    question: "Does MECTEC have WhatsApp?",
+    question: "Does ProjexiaHub have WhatsApp?",
     variations: [
-      "Does MECTEC have WhatsApp",
-      "Can I WhatsApp MECTEC",
+      "Does ProjexiaHub have WhatsApp",
+      "Can I WhatsApp ProjexiaHub",
       "How do I contact you on WhatsApp",
       "Can I message you on WhatsApp",
       "Is WhatsApp available",
@@ -716,7 +716,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["whatsapp", "message", "contact", "chat"],
     answer:
-      "MECTEC provides WhatsApp contact through the WhatsApp button available on the website, where supported. Otherwise, use the contact page for other options.",
+      "ProjexiaHub provides WhatsApp contact through the WhatsApp button available on the website, where supported. Otherwise, use the contact page for other options.",
     priority: 100,
   },
 
@@ -724,10 +724,10 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-contact-phone",
     category: "general",
     intent: "contact",
-    question: "What is the MECTEC phone number?",
+    question: "What is the ProjexiaHub phone number?",
     variations: [
-      "What is the MECTEC phone number",
-      "Can I call MECTEC",
+      "What is the ProjexiaHub phone number",
+      "Can I call ProjexiaHub",
       "What is your phone number",
       "How do I call you",
       "Do you have a contact number",
@@ -735,7 +735,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["phone", "call", "number", "contact"],
     answer:
-      "MECTEC contact details are available through the Contact section of the website. You can also reach MECTEC by email.",
+      "ProjexiaHub contact details are available through the Contact section of the website. You can also reach ProjexiaHub by email.",
     priority: 100,
   },
 
@@ -750,7 +750,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "I want to talk to a human",
       "Can a real person answer me",
       "Is there a human I can contact",
-      "Can someone from MECTEC help me",
+      "Can someone from ProjexiaHub help me",
     ],
     keywords: ["human", "person", "speak", "talk", "contact"],
     answer:
@@ -762,11 +762,11 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-contact-urgent",
     category: "general",
     intent: "contact",
-    question: "How do I contact MECTEC for an urgent matter?",
+    question: "How do I contact ProjexiaHub for an urgent matter?",
     variations: [
-      "How do I contact MECTEC for an urgent matter",
+      "How do I contact ProjexiaHub for an urgent matter",
       "Urgent contact",
-      "I need to reach MECTEC quickly",
+      "I need to reach ProjexiaHub quickly",
       "Emergency contact",
       "Time sensitive request",
     ],
@@ -780,9 +780,9 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-response-time",
     category: "general",
     intent: "contact",
-    question: "How quickly will MECTEC reply?",
+    question: "How quickly will ProjexiaHub reply?",
     variations: [
-      "How quickly will MECTEC reply",
+      "How quickly will ProjexiaHub reply",
       "When will I get a reply",
       "How long for a response",
       "Reply time",
@@ -791,7 +791,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["reply", "response", "contact", "time", "quickly"],
     answer:
-      "MECTEC typically replies within its normal response time to submitted requests. For the latest information, use the contact options provided on the website.",
+      "ProjexiaHub typically replies within its normal response time to submitted requests. For the latest information, use the contact options provided on the website.",
     priority: 90,
   },
 
@@ -809,7 +809,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["contact", "form", "message", "submit", "request"],
     answer:
-      "Use the Contact section of the website to find the contact form or available contact options. Provide clear details about your question or project so MECTEC can respond appropriately.",
+      "Use the Contact section of the website to find the contact form or available contact options. Provide clear details about your question or project so ProjexiaHub can respond appropriately.",
     priority: 90,
   },
 
@@ -817,17 +817,17 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-contact-social",
     category: "general",
     intent: "contact",
-    question: "Does MECTEC have social media?",
+    question: "Does ProjexiaHub have social media?",
     variations: [
-      "Does MECTEC have social media",
+      "Does ProjexiaHub have social media",
       "Are you on Facebook",
       "Do you have Instagram",
       "Social media links",
-      "Where can I follow MECTEC",
+      "Where can I follow ProjexiaHub",
     ],
     keywords: ["social", "media", "facebook", "instagram", "follow"],
     answer:
-      "Social media availability depends on the current MECTEC online presence. Check the website or contact MECTEC directly for the latest official channels.",
+      "Social media availability depends on the current ProjexiaHub online presence. Check the website or contact ProjexiaHub directly for the latest official channels.",
     priority: 80,
   },
 
@@ -876,18 +876,18 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-services-overview",
     category: "general",
     intent: "capability",
-    question: "What services does MECTEC provide?",
+    question: "What services does ProjexiaHub provide?",
     variations: [
-      "What services does MECTEC provide",
+      "What services does ProjexiaHub provide",
       "What do you offer",
       "What services are available",
-      "What can MECTEC do for me",
+      "What can ProjexiaHub do for me",
       "List your services",
       "What can you help with",
     ],
     keywords: ["services", "offer", "provide", "available", "help"],
     answer:
-      "MECTEC works on electronics, embedded systems, automation, IoT, sensor-based projects, microcontroller projects, prototypes, PCB-related work and custom hardware/software solutions. Submit a project request with your requirements for a more specific discussion.",
+      "ProjexiaHub works on electronics, embedded systems, automation, IoT, sensor-based projects, microcontroller projects, prototypes, PCB-related work and custom hardware/software solutions. Submit a project request with your requirements for a more specific discussion.",
     priority: 100,
   },
 
@@ -895,9 +895,9 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-project-request-start",
     category: "general",
     intent: "project_request",
-    question: "How do I start a project with MECTEC?",
+    question: "How do I start a project with ProjexiaHub?",
     variations: [
-      "How do I start a project with MECTEC",
+      "How do I start a project with ProjexiaHub",
       "I want to start a project",
       "How to begin a project",
       "How do I request work",
@@ -934,19 +934,19 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-general-mectec",
     category: "general",
     intent: "definition",
-    question: "What is MECTEC?",
+    question: "What is ProjexiaHub?",
     variations: [
-      "What is MECTEC",
-      "Tell me about MECTEC",
-      "What does MECTEC do",
+      "What is ProjexiaHub",
+      "Tell me about ProjexiaHub",
+      "What does ProjexiaHub do",
       "What is this company",
-      "Who is MECTEC",
-      "Explain MECTEC",
-      "What is MECTEC about",
+      "Who is ProjexiaHub",
+      "Explain ProjexiaHub",
+      "What is ProjexiaHub about",
     ],
     keywords: ["mectec", "company", "business", "what", "about"],
     answer:
-      "MECTEC is an electronics and technology-focused business that develops practical hardware, embedded, automation, IoT and related technical projects. The website lets you explore completed projects and submit your own project idea or request.",
+      "ProjexiaHub is an electronics and technology-focused business that develops practical hardware, embedded, automation, IoT and related technical projects. The website lets you explore completed projects and submit your own project idea or request.",
     priority: 100,
   },
 
@@ -961,7 +961,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "I want to talk to a human",
       "Can a real person answer me",
       "Is there a human I can contact",
-      "Can someone from MECTEC help me",
+      "Can someone from ProjexiaHub help me",
     ],
     keywords: ["human", "person", "speak", "talk", "contact"],
     answer:
@@ -984,7 +984,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["student", "university", "fyp", "project", "help"],
     answer:
-      "Yes. MECTEC can work on student and educational projects. Provide the project requirements and deadline through the project request form.",
+      "Yes. ProjexiaHub can work on student and educational projects. Provide the project requirements and deadline through the project request form.",
     priority: 90,
   },
 
@@ -1003,7 +1003,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["custom", "idea", "project", "build", "unique"],
     answer:
-      "Yes. MECTEC accepts custom project requests. Describe what you want the system to do, and the technical approach can be worked out from the requirements.",
+      "Yes. ProjexiaHub accepts custom project requests. Describe what you want the system to do, and the technical approach can be worked out from the requirements.",
     priority: 100,
   },
 
@@ -1076,7 +1076,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["source", "code", "firmware", "ownership"],
     answer:
-      "Yes. Source code, firmware and relevant schematics are handed over with the finished MECTEC build.",
+      "Yes. Source code, firmware and relevant schematics are handed over with the finished ProjexiaHub build.",
     priority: 100,
   },
 
@@ -1112,7 +1112,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["projects", "portfolio", "previous", "work", "examples"],
     answer:
-      "Visit the Projects section of the MECTEC website to explore available project entries and case studies.",
+      "Visit the Projects section of the ProjexiaHub website to explore available project entries and case studies.",
     priority: 100,
   },
 
@@ -1142,13 +1142,13 @@ export const BASIC_HELP: HelpEntry[] = [
     variations: [
       "Where is the contact page",
       "How do I find contact",
-      "Where can I contact MECTEC",
+      "Where can I contact ProjexiaHub",
       "Show me contact information",
       "Where is contact",
     ],
     keywords: ["contact", "page", "email", "whatsapp"],
     answer:
-      "Use the Contact option in the website navigation to find MECTEC contact information and available communication options.",
+      "Use the Contact option in the website navigation to find ProjexiaHub contact information and available communication options.",
     priority: 100,
   },
 
@@ -1169,7 +1169,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["assistant", "help", "chatbot", "questions", "answer"],
     answer:
-      "The Help Assistant provides instant answers from MECTEC's local knowledge library. It covers MECTEC information, project requests, services, electronics, embedded systems, components, sensors, automation, IoT, troubleshooting and related topics included in the library.",
+      "The Help Assistant provides instant answers from ProjexiaHub's local knowledge library. It covers ProjexiaHub information, project requests, services, electronics, embedded systems, components, sensors, automation, IoT, troubleshooting and related topics included in the library.",
     priority: 100,
   },
 
@@ -1196,7 +1196,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "politics",
     ],
     answer:
-      "The Help Assistant is intentionally limited to information in the MECTEC knowledge library. Questions outside its supported topics may receive a fallback response instead of an invented answer.",
+      "The Help Assistant is intentionally limited to information in the ProjexiaHub knowledge library. Questions outside its supported topics may receive a fallback response instead of an invented answer.",
     priority: 100,
   },
 
@@ -1214,7 +1214,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["assistant", "question", "covered", "cannot", "answer"],
     answer:
-      "If your question is not covered, use the contact options on the website to ask MECTEC directly. Providing detail helps ensure a useful reply.",
+      "If your question is not covered, use the contact options on the website to ask ProjexiaHub directly. Providing detail helps ensure a useful reply.",
     priority: 100,
   },
   // ─────────────────────────────────────────────────────────────
@@ -1308,7 +1308,7 @@ export const BASIC_HELP: HelpEntry[] = [
     variations: ["Maybe", "Perhaps", "I am not sure", "Possibly", "I might"],
     keywords: ["maybe", "perhaps", "unsure", "possibly"],
     answer:
-      "That's okay. Take your time. If you want, describe what you are considering and I can share relevant information from the MECTEC knowledge library.",
+      "That's okay. Take your time. If you want, describe what you are considering and I can share relevant information from the ProjexiaHub knowledge library.",
     priority: 100,
   },
 
@@ -1328,7 +1328,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["goodbye", "bye", "later"],
     answer:
-      "Goodbye! 👋 Thanks for visiting MECTEC. Have a great day, and feel free to come back whenever you need help.",
+      "Goodbye! 👋 Thanks for visiting ProjexiaHub. Have a great day, and feel free to come back whenever you need help.",
     priority: 100,
   },
 
@@ -1348,7 +1348,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["welcome", "problem", "worries", "okay", "fine"],
     answer:
-      "Happy to help! 😊 If you have another question about MECTEC, electronics, projects or anything else in the knowledge library, just ask.",
+      "Happy to help! 😊 If you have another question about ProjexiaHub, electronics, projects or anything else in the knowledge library, just ask.",
     priority: 100,
   },
 
@@ -1419,7 +1419,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["take", "care", "safe", "easy"],
     answer:
-      "You too! 😊 Take care and visit MECTEC again whenever you need help.",
+      "You too! 😊 Take care and visit ProjexiaHub again whenever you need help.",
     priority: 100,
   },
 
@@ -1441,7 +1441,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["help", "assist", "purpose", "assistant", "how"],
     answer:
-      "I can answer questions about MECTEC, its projects, services, pricing, timelines, and technical topics like electronics, sensors, microcontrollers, motors, RFID, PCB design, firmware, IoT, automation and troubleshooting. For anything project-specific, use the contact options to reach MECTEC directly.",
+      "I can answer questions about ProjexiaHub, its projects, services, pricing, timelines, and technical topics like electronics, sensors, microcontrollers, motors, RFID, PCB design, firmware, IoT, automation and troubleshooting. For anything project-specific, use the contact options to reach ProjexiaHub directly.",
     priority: 100,
   },
 
@@ -1459,7 +1459,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["ask", "questions", "topics", "cover", "knowledge"],
     answer:
-      "You can ask about MECTEC's services, project requests, pricing, timelines, policies, the portfolio, and technical topics such as electronics, microcontrollers, sensors, motors, RFID, PCB design, firmware, IoT and automation.",
+      "You can ask about ProjexiaHub's services, project requests, pricing, timelines, policies, the portfolio, and technical topics such as electronics, microcontrollers, sensors, motors, RFID, PCB design, firmware, IoT and automation.",
     priority: 100,
   },
 
@@ -1478,7 +1478,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["bot", "robot", "human", "real", "machine"],
     answer:
-      "Yes, I'm the MECTEC Help Assistant — a local knowledge-based bot. For a real person, use the contact options on the website.",
+      "Yes, I'm the ProjexiaHub Help Assistant — a local knowledge-based bot. For a real person, use the contact options on the website.",
     priority: 100,
   },
 
@@ -1497,7 +1497,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["ai", "chatgpt", "generative", "intelligence", "powered"],
     answer:
-      "No. The MECTEC Help Assistant is a local rule-based knowledge system. Its answers come from the website's built-in knowledge library rather than a generative AI service.",
+      "No. The ProjexiaHub Help Assistant is a local rule-based knowledge system. Its answers come from the website's built-in knowledge library rather than a generative AI service.",
     priority: 100,
   },
 
@@ -1515,7 +1515,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["internet", "search", "google", "online", "connected"],
     answer:
-      "No. I answer from the MECTEC local knowledge library and do not browse the internet or search online services.",
+      "No. I answer from the ProjexiaHub local knowledge library and do not browse the internet or search online services.",
     priority: 100,
   },
 
@@ -1533,7 +1533,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["language", "urdu", "english", "speak", "multilingual"],
     answer:
-      "The Help Assistant is primarily designed for English. You can still message MECTEC directly in the language you are most comfortable with using the contact options on the website.",
+      "The Help Assistant is primarily designed for English. You can still message ProjexiaHub directly in the language you are most comfortable with using the contact options on the website.",
     priority: 90,
   },
 
@@ -1590,7 +1590,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["electronics", "electronic", "hardware", "circuits", "projects"],
     answer:
-      "Yes. Electronics and embedded hardware are central areas of MECTEC projects, including sensor systems, microcontroller projects, automation and other custom electronic solutions.",
+      "Yes. Electronics and embedded hardware are central areas of ProjexiaHub projects, including sensor systems, microcontroller projects, automation and other custom electronic solutions.",
     priority: 100,
   },
 
@@ -1608,7 +1608,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["embedded", "microcontroller", "firmware", "systems"],
     answer:
-      "Yes. MECTEC works with embedded systems involving microcontrollers, sensors, actuators, communication modules and firmware.",
+      "Yes. ProjexiaHub works with embedded systems involving microcontrollers, sensors, actuators, communication modules and firmware.",
     priority: 100,
   },
 
@@ -1657,7 +1657,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "Do you design PCBs",
       "Can you make a PCB",
       "Do you design circuit boards",
-      "Can MECTEC convert my circuit into a PCB",
+      "Can ProjexiaHub convert my circuit into a PCB",
       "PCB design help",
     ],
     keywords: ["pcb", "design", "circuit", "board", "layout"],
@@ -1770,7 +1770,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["student", "university", "fyp", "educational", "help"],
     answer:
-      "MECTEC can work on educational and engineering project requirements, including prototypes, embedded systems, automation, sensors, RFID, IoT and other electronics-focused projects. Requirements should be provided before confirming feasibility.",
+      "ProjexiaHub can work on educational and engineering project requirements, including prototypes, embedded systems, automation, sensors, RFID, IoT and other electronics-focused projects. Requirements should be provided before confirming feasibility.",
     priority: 90,
   },
 
@@ -1809,7 +1809,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["after", "submit", "submission", "next", "request"],
     answer:
-      "After submission, the request is reviewed and followed up through MECTEC's normal contact process. Response time depends on the current workload.",
+      "After submission, the request is reviewed and followed up through ProjexiaHub's normal contact process. Response time depends on the current workload.",
     priority: 100,
   },
 
@@ -1910,14 +1910,14 @@ export const BASIC_HELP: HelpEntry[] = [
     question: "What if I do not get a response?",
     variations: [
       "What if I do not get a response",
-      "No reply from MECTEC",
+      "No reply from ProjexiaHub",
       "I did not hear back",
       "My email was not answered",
       "No response to my request",
     ],
     keywords: ["response", "reply", "answer", "request", "contact"],
     answer:
-      "MECTEC typically replies within its normal response time to submitted requests. If you have not received a response, check the contact details were correct, look in your spam folder and send a polite follow-up with your original message details.",
+      "ProjexiaHub typically replies within its normal response time to submitted requests. If you have not received a response, check the contact details were correct, look in your spam folder and send a polite follow-up with your original message details.",
     priority: 100,
   },
 
@@ -1989,7 +1989,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["repair", "fix", "broken", "service", "circuit"],
     answer:
-      "Repair feasibility depends on the project and the fault. Provide details about the problem and any relevant photos or measurements when contacting MECTEC.",
+      "Repair feasibility depends on the project and the fault. Provide details about the problem and any relevant photos or measurements when contacting ProjexiaHub.",
     priority: 90,
   },
 
@@ -2007,7 +2007,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["maintenance", "service", "long", "term", "project"],
     answer:
-      "Maintenance arrangements depend on the project. Contact MECTEC directly to discuss maintenance requirements.",
+      "Maintenance arrangements depend on the project. Contact ProjexiaHub directly to discuss maintenance requirements.",
     priority: 90,
   },
 
@@ -2030,7 +2030,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["help", "assistance", "please", "need"],
     answer:
-      "Of course! 😊 Tell me what you need help with. I can answer questions about MECTEC, electronics, embedded systems, sensors, IoT, firmware, PCB design, troubleshooting and more.",
+      "Of course! 😊 Tell me what you need help with. I can answer questions about ProjexiaHub, electronics, embedded systems, sensors, IoT, firmware, PCB design, troubleshooting and more.",
     priority: 100,
   },
 
@@ -2049,7 +2049,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["question", "ask", "quick", "something"],
     answer:
-      "Sure! 😊 Go ahead and ask. I'll answer based on the MECTEC knowledge library.",
+      "Sure! 😊 Go ahead and ask. I'll answer based on the ProjexiaHub knowledge library.",
     priority: 100,
   },
 
@@ -2085,7 +2085,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["next", "step", "action", "now", "proceed"],
     answer:
-      "Tell me your goal — whether it is a project, a question, or exploring the portfolio — and I'll point you to the next step in the MECTEC knowledge library. For anything project-specific, use the contact or project request options.",
+      "Tell me your goal — whether it is a project, a question, or exploring the portfolio — and I'll point you to the next step in the ProjexiaHub knowledge library. For anything project-specific, use the contact or project request options.",
     priority: 100,
   },
 
@@ -2122,7 +2122,7 @@ export const BASIC_HELP: HelpEntry[] = [
     ],
     keywords: ["who", "what", "name", "yourself", "introduce"],
     answer:
-      "I'm the MECTEC Help Assistant — a local knowledge-based bot for the MECTEC website. I answer questions from the MECTEC knowledge library. What can I help you with?",
+      "I'm the ProjexiaHub Help Assistant — a local knowledge-based bot for the ProjexiaHub website. I answer questions from the ProjexiaHub knowledge library. What can I help you with?",
     priority: 100,
   },
 
@@ -2130,17 +2130,17 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-purpose-of-mectec",
     category: "general",
     intent: "purpose",
-    question: "What is the purpose of MECTEC?",
+    question: "What is the purpose of ProjexiaHub?",
     variations: [
-      "What is the purpose of MECTEC",
-      "Why does MECTEC exist",
-      "What is MECTEC for",
-      "What is the point of MECTEC",
-      "Why use MECTEC",
+      "What is the purpose of ProjexiaHub",
+      "Why does ProjexiaHub exist",
+      "What is ProjexiaHub for",
+      "What is the point of ProjexiaHub",
+      "Why use ProjexiaHub",
     ],
     keywords: ["purpose", "mectec", "why", "point", "use"],
     answer:
-      "MECTEC exists to design and build practical electronics and technology projects for individuals and businesses that need custom hardware, firmware or automation solutions.",
+      "ProjexiaHub exists to design and build practical electronics and technology projects for individuals and businesses that need custom hardware, firmware or automation solutions.",
     priority: 90,
   },
 
@@ -2166,17 +2166,17 @@ export const BASIC_HELP: HelpEntry[] = [
     id: "basic-latest",
     category: "general",
     intent: "general",
-    question: "What is new at MECTEC?",
+    question: "What is new at ProjexiaHub?",
     variations: [
-      "What is new at MECTEC",
+      "What is new at ProjexiaHub",
       "Any new projects",
       "Latest updates",
-      "What is the latest at MECTEC",
+      "What is the latest at ProjexiaHub",
       "New offerings",
     ],
     keywords: ["new", "latest", "updates", "mectec", "offerings"],
     answer:
-      "New projects and updates appear in the Projects section of the website. For announcements or news, check the website or contact MECTEC directly.",
+      "New projects and updates appear in the Projects section of the website. For announcements or news, check the website or contact ProjexiaHub directly.",
     priority: 90,
   },
 

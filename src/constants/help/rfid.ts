@@ -863,7 +863,7 @@ export const RFID_HELP: HelpEntry[] = [
       "Can RFID be used for a door lock",
       "Can I unlock a door with an RFID card",
       "Can RFID make a door lock",
-      "Can MECTEC build an RFID door lock",
+      "Can ProjexiaHub build an RFID door lock",
       "RFID access control",
       "RFID door lock",
     ],

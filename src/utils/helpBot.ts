@@ -112,9 +112,38 @@ interface ScoredEntry {
 const FALLBACK_ANSWER =
   "I don't have a specific answer for that yet. You can use the Project Request form or contact ProjexiaHub directly for a real reply.";
 
-const MECTEC_TIME_ZONE = "Asia/Karachi";
-const MECTEC_OPEN_HOUR = 10;
-const MECTEC_CLOSE_HOUR = 22;
+/**
+ * Offer safe next steps when the matcher cannot answer confidently.
+ * Suggestions are drawn from the local knowledge base; the bot never
+ * presents a weak match as a factual answer.
+ */
+function createClarificationResponse(scored: readonly ScoredEntry[] = []): HelpResponse {
+  const candidates = scored
+    .filter((item) => item.questionSimilarity >= 0.18 || item.questionPhraseCoverage >= 0.25)
+    .slice(0, 8)
+    .map((item) => item.entry.question)
+    .filter((question, index, all) =>
+      Boolean(question) && all.findIndex((candidate) => normalize(candidate) === normalize(question)) === index,
+    )
+    .slice(0, 3);
+
+  return {
+    answer: candidates.length
+      ? "I’m not confident I understood that well enough to give you a reliable answer. Try rephrasing it, or choose one of these related questions and I’ll narrow it down."
+      : FALLBACK_ANSWER,
+    suggestedQuestions: candidates.length
+      ? candidates
+      : [
+          "What services does ProjexiaHub provide?",
+          "How can I submit a project request?",
+          "How can I contact ProjexiaHub?",
+        ],
+  };
+}
+
+const ProjexiaHub_TIME_ZONE = "Asia/Karachi";
+const ProjexiaHub_OPEN_HOUR = 10;
+const ProjexiaHub_CLOSE_HOUR = 22;
 
 const MIN_KEYWORD_TOKEN_LENGTH = 4;
 
@@ -212,12 +241,12 @@ const NAVIGATION_ACTIONS: Record<NavigationIntent, HelpAction> = {
   },
 
   about: {
-    label: "About MECTEC",
+    label: "About ProjexiaHub",
     path: ROUTES.about,
   },
 
   contact: {
-    label: "Contact MECTEC",
+    label: "Contact ProjexiaHub",
     path: ROUTES.contact,
   },
 
@@ -1330,7 +1359,7 @@ function detectIntent(question: string): HelpIntent | null {
   /*
    * PROJECT REQUEST MUST BE CHECKED BEFORE GENERIC CONTACT.
    *
-   * "Where should I contact MECTEC about a project?"
+   * "Where should I contact ProjexiaHub about a project?"
    *
    * is a project-request/navigation question.
    */
@@ -2617,8 +2646,8 @@ function cleanAnswer(answer: string): string {
    *
    * Examples:
    *   "Yes, I'm ..."  -> "I'm ..."
-   *   "Yes. MECTEC ..." -> "MECTEC ..."
-   *   "Yes — MECTEC ..." -> "MECTEC ..."
+   *   "Yes. ProjexiaHub ..." -> "ProjexiaHub ..."
+   *   "Yes — ProjexiaHub ..." -> "ProjexiaHub ..."
    *
    * Keep this centralized so every knowledge/direct response gets
    * the same cleanup before it reaches the chat UI.
@@ -2667,13 +2696,13 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
   if (/\bhow are you\b/i.test(normalizedQuestion)) {
     return {
       answer:
-        "I'm doing well and ready to help you with MECTEC, electronics, projects, services and the website.",
+        "I'm doing well and ready to help you with ProjexiaHub, electronics, projects, services and the website.",
 
       suggestedQuestions: [
         "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "What is Arduino?",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -2682,12 +2711,12 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
   if (/^(good morning)$/i.test(normalizedQuestion)) {
     return {
       answer:
-        "Good morning! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
+        "Good morning! 👋 I'm the ProjexiaHub Help Assistant. I can help you with ProjexiaHub services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
       suggestedQuestions: [
         "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "What is Arduino?",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -2695,12 +2724,12 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
   if (/^(good afternoon)$/i.test(normalizedQuestion)) {
     return {
       answer:
-        "Good afternoon! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
+        "Good afternoon! 👋 I'm the ProjexiaHub Help Assistant. I can help you with ProjexiaHub services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
       suggestedQuestions: [
         "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "What is Arduino?",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -2708,12 +2737,12 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
   if (/^(good evening)$/i.test(normalizedQuestion)) {
     return {
       answer:
-        "Good evening! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
+        "Good evening! 👋 I'm the ProjexiaHub Help Assistant. I can help you with ProjexiaHub services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
       suggestedQuestions: [
         "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "What is Arduino?",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -2726,26 +2755,26 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
   ) {
     return {
       answer:
-        "Wa Alaikum Assalam! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
+        "Wa Alaikum Assalam! 👋 I'm the ProjexiaHub Help Assistant. I can help you with ProjexiaHub services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
 
       suggestedQuestions: [
         "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "What is Arduino?",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
 
   return {
     answer:
-      "Hi! 👋 I'm the MECTEC Help Assistant. I can help you with MECTEC services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
+      "Hi! 👋 I'm the ProjexiaHub Help Assistant. I can help you with ProjexiaHub services, project requests, electronics, microcontrollers, sensors, automation, the website and more.",
 
     suggestedQuestions: [
       "What services does ProjexiaHub provide?",
       "Can I request a custom project?",
       "What is Arduino?",
-      "How can I contact MECTEC?",
+      "How can I contact ProjexiaHub?",
     ],
   };
 }
@@ -2754,13 +2783,13 @@ function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
   if (/\b(what is your name|who are you)\b/i.test(normalizedQuestion)) {
     return {
       answer:
-        "I'm the MECTEC Help Assistant. I provide local answers about MECTEC, its services, projects, electronics and website features.",
+        "I'm the ProjexiaHub Help Assistant. I provide local answers about ProjexiaHub, its services, projects, electronics and website features.",
 
       suggestedQuestions: [
         "What services does ProjexiaHub provide?",
         "Can I request a project?",
-        "How can I contact MECTEC?",
-        "Show me MECTEC projects.",
+        "How can I contact ProjexiaHub?",
+        "Show me ProjexiaHub projects.",
       ],
     };
   }
@@ -2771,13 +2800,13 @@ function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
   ) {
     return {
       answer:
-        "I can help you understand MECTEC services, request a project, explore previous projects, learn about electronics and microcontrollers, troubleshoot common issues, and find relevant pages on the website.",
+        "I can help you understand ProjexiaHub services, request a project, explore previous projects, learn about electronics and microcontrollers, troubleshoot common issues, and find relevant pages on the website.",
 
       suggestedQuestions: [
         "What services does ProjexiaHub provide?",
         "Can I request a custom project?",
         "Show me your projects.",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -2785,7 +2814,7 @@ function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
   /*
    * IMPORTANT:
    *
-   * "What is MECTEC?" gets the About page, NOT a
+   * "What is ProjexiaHub?" gets the About page, NOT a
    * nonexistent /services route.
    */
   if (
@@ -2795,7 +2824,7 @@ function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
   ) {
     return {
       answer:
-        "MECTEC is an electronics-focused business and project platform. You can learn more about MECTEC, its work and its purpose on the About page.",
+        "ProjexiaHub is an electronics-focused business and project platform. You can learn more about ProjexiaHub, its work and its purpose on the About page.",
 
       action: NAVIGATION_ACTIONS.about,
 
@@ -2803,7 +2832,7 @@ function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
         "What services does ProjexiaHub provide?",
         "Can I request a project?",
         "Show me your projects.",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -2824,7 +2853,7 @@ function getPakistanDateParts(offsetDays = 0): {
   const base = new Date();
 
   const dateParts = new Intl.DateTimeFormat("en-US", {
-    timeZone: MECTEC_TIME_ZONE,
+    timeZone: ProjexiaHub_TIME_ZONE,
     year: "numeric",
     month: "numeric",
     day: "numeric",
@@ -2889,7 +2918,7 @@ function getDateResponse(normalizedQuestion: string): HelpResponse | null {
 
 function getCurrentPakistanTime(): string {
   return new Intl.DateTimeFormat("en-US", {
-    timeZone: MECTEC_TIME_ZONE,
+    timeZone: ProjexiaHub_TIME_ZONE,
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
@@ -2909,7 +2938,7 @@ function getDynamicHoursResponse(
    * - "Are you closed today?"
    *
    * The answer is calculated from Pakistan time and the
-   * configured MECTEC weekly schedule instead of relying on
+   * configured ProjexiaHub weekly schedule instead of relying on
    * a separate knowledge entry for every day/wording.
    */
   const asksGenericHours =
@@ -2963,7 +2992,7 @@ function getDynamicHoursResponse(
   const now = new Date();
 
   const currentParts = new Intl.DateTimeFormat("en-US", {
-    timeZone: MECTEC_TIME_ZONE,
+    timeZone: ProjexiaHub_TIME_ZONE,
     weekday: "long",
     hour: "numeric",
     minute: "numeric",
@@ -2982,8 +3011,8 @@ function getDynamicHoursResponse(
   );
 
   const currentMinutes = currentHour * 60 + currentMinute;
-  const openMinutes = MECTEC_OPEN_HOUR * 60;
-  const closeMinutes = MECTEC_CLOSE_HOUR * 60;
+  const openMinutes = ProjexiaHub_OPEN_HOUR * 60;
+  const closeMinutes = ProjexiaHub_CLOSE_HOUR * 60;
 
   const weekdayNames = [
     "sunday",
@@ -3042,18 +3071,18 @@ function getDynamicHoursResponse(
         : targetWeekday;
 
   /*
-   * Friday is officially closed, with the existing MECTEC rule
+   * Friday is officially closed, with the existing ProjexiaHub rule
    * that urgent/high-workload operation may still occur.
    */
   if (isFriday) {
     return {
       answer:
-        `MECTEC is officially closed on Friday. However, we may operate on Fridays when there is an unusually high workload or urgent work. For ${targetLabel} availability, please contact MECTEC directly.`,
+        `ProjexiaHub is officially closed on Friday. However, we may operate on Fridays when there is an unusually high workload or urgent work. For ${targetLabel} availability, please contact ProjexiaHub directly.`,
       action: NAVIGATION_ACTIONS.contact,
       suggestedQuestions: [
-        "What are MECTEC's normal opening hours?",
+        "What are ProjexiaHub's normal opening hours?",
         "Are you open tomorrow?",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -3068,7 +3097,7 @@ function getDynamicHoursResponse(
   if (isFutureOrSpecificDay) {
     return {
       answer:
-        `MECTEC is scheduled to be open ${targetLabel} from 10:00 AM to 10:00 PM (Pakistan time).`,
+        `ProjexiaHub is scheduled to be open ${targetLabel} from 10:00 AM to 10:00 PM (Pakistan time).`,
     };
   }
 
@@ -3081,13 +3110,13 @@ function getDynamicHoursResponse(
   if (isOpen) {
     return {
       answer:
-        `MECTEC's listed business hours are 10:00 AM to 10:00 PM. It is currently ${currentTime} in Pakistan, so the shop is within its listed opening hours.`,
+        `ProjexiaHub's listed business hours are 10:00 AM to 10:00 PM. It is currently ${currentTime} in Pakistan, so the shop is within its listed opening hours.`,
     };
   }
 
   return {
     answer:
-      `MECTEC's listed business hours are 10:00 AM to 10:00 PM. It is currently ${currentTime} in Pakistan, so the shop is currently outside its listed opening hours.`,
+      `ProjexiaHub's listed business hours are 10:00 AM to 10:00 PM. It is currently ${currentTime} in Pakistan, so the shop is currently outside its listed opening hours.`,
   };
 }
 
@@ -3159,7 +3188,7 @@ function detectNavigation(question: string): NavigationMatch | null {
       intent: "request_project",
 
       answer:
-        "For a new project, the Project Request page is the best starting point. You can submit your requirements there so MECTEC can understand what you want built.",
+        "For a new project, the Project Request page is the best starting point. You can submit your requirements there so ProjexiaHub can understand what you want built.",
 
       action: NAVIGATION_ACTIONS.request_project,
 
@@ -3167,7 +3196,7 @@ function detectNavigation(question: string): NavigationMatch | null {
         "What information do I need to provide?",
         "How much does a project cost?",
         "How long does a project take?",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -3203,7 +3232,7 @@ function detectNavigation(question: string): NavigationMatch | null {
       suggestedQuestions: [
         "How do I submit a project?",
         "What information do I need to provide?",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -3244,15 +3273,15 @@ function detectNavigation(question: string): NavigationMatch | null {
       intent: "projects",
 
       answer:
-        "You can browse MECTEC's projects and previous work on the Projects page.",
+        "You can browse ProjexiaHub's projects and previous work on the Projects page.",
 
       action: NAVIGATION_ACTIONS.projects,
 
       suggestedQuestions: [
         "Can I request a custom project?",
         "What services does ProjexiaHub provide?",
-        "How can I contact MECTEC?",
-        "Tell me about MECTEC.",
+        "How can I contact ProjexiaHub?",
+        "Tell me about ProjexiaHub.",
       ],
     };
   }
@@ -3278,14 +3307,14 @@ function detectNavigation(question: string): NavigationMatch | null {
     return {
       intent: "blog",
 
-      answer: "You can read MECTEC's articles and posts on the Blog page.",
+      answer: "You can read ProjexiaHub's articles and posts on the Blog page.",
 
       action: NAVIGATION_ACTIONS.blog,
 
       suggestedQuestions: [
         "Show me your projects.",
-        "Tell me about MECTEC.",
-        "How can I contact MECTEC?",
+        "Tell me about ProjexiaHub.",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -3322,7 +3351,7 @@ function detectNavigation(question: string): NavigationMatch | null {
       intent: "contact",
 
       answer:
-        "You can use MECTEC's Contact page to find the available ways to get in touch with MECTEC.",
+        "You can use ProjexiaHub's Contact page to find the available ways to get in touch with ProjexiaHub.",
 
       action: NAVIGATION_ACTIONS.contact,
 
@@ -3330,7 +3359,7 @@ function detectNavigation(question: string): NavigationMatch | null {
         "Can I request a project?",
         "Where can I view your projects?",
         "How can I track my request?",
-        "Tell me about MECTEC.",
+        "Tell me about ProjexiaHub.",
       ],
     };
   }
@@ -3356,7 +3385,7 @@ function detectNavigation(question: string): NavigationMatch | null {
       intent: "about",
 
       answer:
-        "You can learn more about MECTEC, its purpose and its work on the About page.",
+        "You can learn more about ProjexiaHub, its purpose and its work on the About page.",
 
       action: NAVIGATION_ACTIONS.about,
 
@@ -3364,7 +3393,7 @@ function detectNavigation(question: string): NavigationMatch | null {
         "What services does ProjexiaHub provide?",
         "Show me your projects.",
         "Can I request a custom project?",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -3386,7 +3415,7 @@ function detectNavigation(question: string): NavigationMatch | null {
     return {
       intent: "home",
 
-      answer: "You can return to the MECTEC home page using the button below.",
+      answer: "You can return to the ProjexiaHub home page using the button below.",
 
       action: NAVIGATION_ACTIONS.home,
 
@@ -3394,7 +3423,7 @@ function detectNavigation(question: string): NavigationMatch | null {
         "Show me your projects.",
         "What services does ProjexiaHub provide?",
         "Can I request a project?",
-        "How can I contact MECTEC?",
+        "How can I contact ProjexiaHub?",
       ],
     };
   }
@@ -3522,7 +3551,7 @@ const FALLBACK_SUGGESTIONS = [
   "What is Arduino?",
   "Can I request a custom project?",
   "What services does ProjexiaHub provide?",
-  "How can I contact MECTEC?",
+  "How can I contact ProjexiaHub?",
 ];
 
 function getSuggestedQuestions(
@@ -3536,7 +3565,7 @@ function getSuggestedQuestions(
     pool.push(
       "What information do I need to provide for a project?",
       "How long does a project usually take?",
-      "How can I contact MECTEC?",
+      "How can I contact ProjexiaHub?",
     );
   }
 
@@ -3875,9 +3904,7 @@ function createHelpResponse(question: string): HelpResponse | null {
   const best = scored[0];
 
   if (!best) {
-    return {
-      answer: FALLBACK_ANSWER,
-    };
+    return createClarificationResponse(scored);
   }
 
   /*
@@ -3891,9 +3918,7 @@ function createHelpResponse(question: string): HelpResponse | null {
     !best.exactQuestionMatch &&
     !best.exactVariationMatch
   ) {
-    return {
-      answer: FALLBACK_ANSWER,
-    };
+    return createClarificationResponse(scored);
   }
 
   /*
@@ -3908,9 +3933,7 @@ function createHelpResponse(question: string): HelpResponse | null {
     !best.exactQuestionMatch &&
     !best.exactVariationMatch
   ) {
-    return {
-      answer: FALLBACK_ANSWER,
-    };
+    return createClarificationResponse(scored);
   }
 
   /*
@@ -3928,9 +3951,7 @@ function createHelpResponse(question: string): HelpResponse | null {
     !best.exactQuestionMatch &&
     !best.exactVariationMatch
   ) {
-    return {
-      answer: FALLBACK_ANSWER,
-    };
+    return createClarificationResponse(scored);
   }
 
   /*
@@ -3941,9 +3962,7 @@ function createHelpResponse(question: string): HelpResponse | null {
   const confidence = computeConfidence(best, isFollowUp);
 
   if (!meetsThreshold(best, confidence, detectedIntent, detectedTopic)) {
-    return {
-      answer: FALLBACK_ANSWER,
-    };
+    return createClarificationResponse(scored);
   }
 
   /*

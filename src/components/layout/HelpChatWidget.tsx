@@ -18,7 +18,7 @@ import {
    CONFIGURATION
    ========================================================= */
 
-const CHAT_WINDOW_POSITION: "center" | "left" | "right" = "right";
+const CHAT_WINDOW_POSITION: "center" | "left" | "right" = "left";
 
 const WINDOW_HORIZONTAL = "20px";
 const WINDOW_BOTTOM = "20px";

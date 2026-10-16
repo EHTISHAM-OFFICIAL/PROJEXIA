@@ -17,7 +17,7 @@ export const FIRMWARE_HELP: HelpEntry[] = [
   {
     id: "arduino-programming",
     category: "firmware",
-    question: "Can MECTEC program Arduino boards?",
+    question: "Can ProjexiaHub program Arduino boards?",
     variations: [
       "Can you write Arduino code?",
       "Do you program Arduino?",
@@ -30,7 +30,7 @@ export const FIRMWARE_HELP: HelpEntry[] = [
   {
     id: "esp32-programming",
     category: "firmware",
-    question: "Can MECTEC program ESP32 boards?",
+    question: "Can ProjexiaHub program ESP32 boards?",
     variations: [
       "Can you develop ESP32 firmware?",
       "ESP32 programming",
@@ -60,7 +60,7 @@ export const FIRMWARE_HELP: HelpEntry[] = [
     variations: [
       "Can you debug my code?",
       "My firmware is not working",
-      "Can MECTEC fix embedded software?",
+      "Can ProjexiaHub fix embedded software?",
     ],
     keywords: ["firmware", "bug", "debug", "code", "software"],
     answer:

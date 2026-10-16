@@ -79,7 +79,7 @@ const WEBSITE_KNOWLEDGE: HelpEntry[] = [
 ];
 
 /**
- * Complete local MECTEC knowledge base.
+ * Complete local ProjexiaHub knowledge base.
  *
  * No external AI API, paid service, database, or network request
  * is required by the chatbot.

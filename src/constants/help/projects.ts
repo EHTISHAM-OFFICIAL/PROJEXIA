@@ -8,13 +8,13 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-types",
     category: "projects",
     intent: "capability",
-    question: "What kind of projects can MECTEC build?",
+    question: "What kind of projects can ProjexiaHub build?",
     variations: [
-      "What kind of projects can MECTEC build",
-      "What projects does MECTEC make",
-      "What can MECTEC build",
+      "What kind of projects can ProjexiaHub build",
+      "What projects does ProjexiaHub make",
+      "What can ProjexiaHub build",
       "What type of electronics projects do you make",
-      "Can MECTEC build a custom electronics project",
+      "Can ProjexiaHub build a custom electronics project",
       "What systems can you develop",
     ],
     keywords: [
@@ -26,7 +26,7 @@ export const PROJECT_HELP: HelpEntry[] = [
       "develop",
     ],
     answer:
-      "MECTEC can work on a wide range of electronics and embedded projects, including automation systems, sensor-based devices, RFID systems, microcontroller projects, IoT devices, motor-control systems, prototypes, PCB-based products, and custom hardware/software solutions. The exact approach depends on your requirements.",
+      "ProjexiaHub can work on a wide range of electronics and embedded projects, including automation systems, sensor-based devices, RFID systems, microcontroller projects, IoT devices, motor-control systems, prototypes, PCB-based products, and custom hardware/software solutions. The exact approach depends on your requirements.",
     priority: 14,
   },
 
@@ -34,17 +34,17 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-custom",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build a completely custom project?",
+    question: "Can ProjexiaHub build a completely custom project?",
     variations: [
-      "Can MECTEC build a completely custom project",
+      "Can ProjexiaHub build a completely custom project",
       "Can you make a custom electronics project",
-      "Can MECTEC build my own idea",
+      "Can ProjexiaHub build my own idea",
       "I have an idea can you build it",
       "Can you develop something from scratch",
     ],
     keywords: ["custom", "idea", "scratch", "project", "prototype"],
     answer:
-      "Yes. You can describe your idea, requirements, expected behavior, available components, budget range, and deadline. MECTEC can then evaluate the project and determine a suitable hardware, firmware, and implementation approach.",
+      "Yes. You can describe your idea, requirements, expected behavior, available components, budget range, and deadline. ProjexiaHub can then evaluate the project and determine a suitable hardware, firmware, and implementation approach.",
     priority: 15,
   },
 
@@ -52,9 +52,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-idea-only",
     category: "projects",
     intent: "capability",
-    question: "I only have an idea. Can MECTEC help?",
+    question: "I only have an idea. Can ProjexiaHub help?",
     variations: [
-      "I only have an idea. Can MECTEC help",
+      "I only have an idea. Can ProjexiaHub help",
       "I do not have a circuit yet",
       "I only have a project concept",
       "Can you turn my idea into a project",
@@ -70,13 +70,13 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-existing",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC improve an existing project?",
+    question: "Can ProjexiaHub improve an existing project?",
     variations: [
-      "Can MECTEC improve an existing project",
+      "Can ProjexiaHub improve an existing project",
       "Can you modify my existing project",
       "Can you fix and improve my project",
       "I already have a prototype",
-      "Can MECTEC upgrade my circuit",
+      "Can ProjexiaHub upgrade my circuit",
     ],
     keywords: ["existing", "prototype", "modify", "upgrade", "improve", "fix"],
     answer:
@@ -88,9 +88,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-prototype",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC make prototypes?",
+    question: "Can ProjexiaHub make prototypes?",
     variations: [
-      "Can MECTEC make prototypes",
+      "Can ProjexiaHub make prototypes",
       "Do you build prototypes",
       "Can you prototype an electronics idea",
       "Can you make a working prototype",
@@ -105,12 +105,12 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-hardware-software",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC handle both hardware and software?",
+    question: "Can ProjexiaHub handle both hardware and software?",
     variations: [
-      "Can MECTEC handle both hardware and software",
+      "Can ProjexiaHub handle both hardware and software",
       "Do you develop hardware and software",
       "Can you make the circuit and code",
-      "Can MECTEC handle firmware too",
+      "Can ProjexiaHub handle firmware too",
     ],
     keywords: ["hardware", "software", "firmware", "code", "circuit"],
     answer:
@@ -122,18 +122,18 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-purpose",
     category: "projects",
     intent: "purpose",
-    question: "What does MECTEC do for projects?",
+    question: "What does ProjexiaHub do for projects?",
     variations: [
-      "What does MECTEC do for projects",
-      "What does MECTEC provide",
-      "What is MECTEC's role in a project",
+      "What does ProjexiaHub do for projects",
+      "What does ProjexiaHub provide",
+      "What is ProjexiaHub's role in a project",
       "What do you handle in a project",
       "What is included in a project",
-      "MECTEC project scope",
+      "ProjexiaHub project scope",
     ],
     keywords: ["mectec", "project", "scope", "provide", "role"],
     answer:
-      "For a typical project, MECTEC can handle design, component selection, prototyping, firmware development, testing, documentation, and handover. The exact scope depends on the project and is defined during planning.",
+      "For a typical project, ProjexiaHub can handle design, component selection, prototyping, firmware development, testing, documentation, and handover. The exact scope depends on the project and is defined during planning.",
     priority: 13,
   },
 
@@ -144,12 +144,12 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-arduino",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build Arduino projects?",
+    question: "Can ProjexiaHub build Arduino projects?",
     variations: [
-      "Can MECTEC build Arduino projects",
+      "Can ProjexiaHub build Arduino projects",
       "Do you make Arduino projects",
       "Can you program Arduino",
-      "Can MECTEC build a microcontroller project",
+      "Can ProjexiaHub build a microcontroller project",
     ],
     keywords: ["arduino", "project", "microcontroller", "embedded", "code"],
     answer:
@@ -161,12 +161,12 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-esp32",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build ESP32 projects?",
+    question: "Can ProjexiaHub build ESP32 projects?",
     variations: [
-      "Can MECTEC build ESP32 projects",
+      "Can ProjexiaHub build ESP32 projects",
       "Do you make ESP32 projects",
       "Can you build a WiFi project with ESP32",
-      "Can MECTEC program ESP32",
+      "Can ProjexiaHub program ESP32",
     ],
     keywords: ["esp32", "project", "wifi", "bluetooth", "iot"],
     answer:
@@ -178,12 +178,12 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-raspberry-pi",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build Raspberry Pi projects?",
+    question: "Can ProjexiaHub build Raspberry Pi projects?",
     variations: [
-      "Can MECTEC build Raspberry Pi projects",
+      "Can ProjexiaHub build Raspberry Pi projects",
       "Do you work with Raspberry Pi",
       "Can you build a Pi project",
-      "Can MECTEC program Raspberry Pi",
+      "Can ProjexiaHub program Raspberry Pi",
     ],
     keywords: ["raspberry", "pi", "project", "linux", "computer"],
     answer:
@@ -195,9 +195,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-iot",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build IoT projects?",
+    question: "Can ProjexiaHub build IoT projects?",
     variations: [
-      "Can MECTEC build IoT projects",
+      "Can ProjexiaHub build IoT projects",
       "Do you make IoT systems",
       "Can you create a WiFi project",
       "Can you make an internet-connected device",
@@ -212,12 +212,12 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-automation",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build automation systems?",
+    question: "Can ProjexiaHub build automation systems?",
     variations: [
-      "Can MECTEC build automation systems",
+      "Can ProjexiaHub build automation systems",
       "Do you make automation projects",
       "Can you automate a device",
-      "Can MECTEC build automatic control systems",
+      "Can ProjexiaHub build automatic control systems",
     ],
     keywords: ["automation", "automatic", "control", "relay", "system"],
     answer:
@@ -229,12 +229,12 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-sensor",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build sensor-based projects?",
+    question: "Can ProjexiaHub build sensor-based projects?",
     variations: [
-      "Can MECTEC build sensor-based projects",
+      "Can ProjexiaHub build sensor-based projects",
       "Do you work with sensors",
       "Can you make a sensor system",
-      "Can MECTEC combine multiple sensors",
+      "Can ProjexiaHub combine multiple sensors",
     ],
     keywords: ["sensor", "sensors", "measurement", "monitoring"],
     answer:
@@ -246,9 +246,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-rfid",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build RFID projects?",
+    question: "Can ProjexiaHub build RFID projects?",
     variations: [
-      "Can MECTEC build RFID projects",
+      "Can ProjexiaHub build RFID projects",
       "Do you make RFID systems",
       "Can you make RFID door locks",
       "Can you build RFID attendance systems",
@@ -263,12 +263,12 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-pcb",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC design a PCB for my project?",
+    question: "Can ProjexiaHub design a PCB for my project?",
     variations: [
-      "Can MECTEC design a PCB for my project",
+      "Can ProjexiaHub design a PCB for my project",
       "Can you make a PCB",
       "Do you design circuit boards",
-      "Can MECTEC convert my circuit into a PCB",
+      "Can ProjexiaHub convert my circuit into a PCB",
     ],
     keywords: ["pcb", "design", "circuit", "board", "layout"],
     answer:
@@ -280,12 +280,12 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-firmware",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC write firmware for my project?",
+    question: "Can ProjexiaHub write firmware for my project?",
     variations: [
-      "Can MECTEC write firmware for my project",
+      "Can ProjexiaHub write firmware for my project",
       "Do you write firmware",
       "Can you program my device",
-      "Can MECTEC develop embedded software",
+      "Can ProjexiaHub develop embedded software",
     ],
     keywords: ["firmware", "code", "program", "embedded", "software"],
     answer:
@@ -297,9 +297,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-robotics",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build robotics projects?",
+    question: "Can ProjexiaHub build robotics projects?",
     variations: [
-      "Can MECTEC build robotics projects",
+      "Can ProjexiaHub build robotics projects",
       "Do you make robots",
       "Can you build a robot",
       "Robotics project",
@@ -314,9 +314,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-drone",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build drone projects?",
+    question: "Can ProjexiaHub build drone projects?",
     variations: [
-      "Can MECTEC build drone projects",
+      "Can ProjexiaHub build drone projects",
       "Do you make drones",
       "Can you build a UAV",
       "Can you work on flight controllers",
@@ -331,9 +331,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-smart-home",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build smart home projects?",
+    question: "Can ProjexiaHub build smart home projects?",
     variations: [
-      "Can MECTEC build smart home projects",
+      "Can ProjexiaHub build smart home projects",
       "Do you make smart home devices",
       "Can you automate my home",
       "Smart home project",
@@ -348,9 +348,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-industrial",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build industrial projects?",
+    question: "Can ProjexiaHub build industrial projects?",
     variations: [
-      "Can MECTEC build industrial projects",
+      "Can ProjexiaHub build industrial projects",
       "Do you work on industrial systems",
       "Industrial automation project",
       "Can you build industrial controllers",
@@ -365,16 +365,16 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-medical",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build medical projects?",
+    question: "Can ProjexiaHub build medical projects?",
     variations: [
-      "Can MECTEC build medical projects",
+      "Can ProjexiaHub build medical projects",
       "Do you make medical devices",
       "Medical electronics project",
       "Can you build medical equipment",
     ],
     keywords: ["medical", "healthcare", "device", "electronics", "safety"],
     answer:
-      "Medical and healthcare-related electronics may involve additional regulatory, safety, and reliability requirements. Discuss the specific application with MECTEC.",
+      "Medical and healthcare-related electronics may involve additional regulatory, safety, and reliability requirements. Discuss the specific application with ProjexiaHub.",
     priority: 9,
   },
 
@@ -382,16 +382,16 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-automotive",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build automotive projects?",
+    question: "Can ProjexiaHub build automotive projects?",
     variations: [
-      "Can MECTEC build automotive projects",
+      "Can ProjexiaHub build automotive projects",
       "Do you work on automotive electronics",
       "Car electronics project",
       "Can you build vehicle systems",
     ],
     keywords: ["automotive", "car", "vehicle", "electronics", "control"],
     answer:
-      "Automotive projects may involve specific voltage ranges, communication protocols, environmental requirements, and safety standards. Discuss the specific application with MECTEC.",
+      "Automotive projects may involve specific voltage ranges, communication protocols, environmental requirements, and safety standards. Discuss the specific application with ProjexiaHub.",
     priority: 9,
   },
 
@@ -399,9 +399,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-agriculture",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build agriculture projects?",
+    question: "Can ProjexiaHub build agriculture projects?",
     variations: [
-      "Can MECTEC build agriculture projects",
+      "Can ProjexiaHub build agriculture projects",
       "Do you make agriculture systems",
       "Smart farming project",
       "Irrigation automation",
@@ -416,9 +416,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-security",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build security projects?",
+    question: "Can ProjexiaHub build security projects?",
     variations: [
-      "Can MECTEC build security projects",
+      "Can ProjexiaHub build security projects",
       "Do you make security systems",
       "Alarm system project",
       "Access control system",
@@ -433,9 +433,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-monitoring",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build monitoring systems?",
+    question: "Can ProjexiaHub build monitoring systems?",
     variations: [
-      "Can MECTEC build monitoring systems",
+      "Can ProjexiaHub build monitoring systems",
       "Do you make monitoring devices",
       "Remote monitoring project",
       "Sensor monitoring system",
@@ -450,9 +450,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-control",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build control systems?",
+    question: "Can ProjexiaHub build control systems?",
     variations: [
-      "Can MECTEC build control systems",
+      "Can ProjexiaHub build control systems",
       "Do you make control systems",
       "Process control project",
       "Closed loop control",
@@ -467,9 +467,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-data-logging",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build data logging systems?",
+    question: "Can ProjexiaHub build data logging systems?",
     variations: [
-      "Can MECTEC build data logging systems",
+      "Can ProjexiaHub build data logging systems",
       "Do you make data loggers",
       "Sensor data logging project",
       "Data acquisition system",
@@ -484,9 +484,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-display",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC add a display to my project?",
+    question: "Can ProjexiaHub add a display to my project?",
     variations: [
-      "Can MECTEC add a display to my project",
+      "Can ProjexiaHub add a display to my project",
       "Can you add a screen",
       "Display for my project",
       "Can you use an LCD or OLED",
@@ -501,9 +501,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-user-interface",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC design a user interface?",
+    question: "Can ProjexiaHub design a user interface?",
     variations: [
-      "Can MECTEC design a user interface",
+      "Can ProjexiaHub design a user interface",
       "Can you make a user interface",
       "Buttons and display design",
       "How will I control the system",
@@ -518,16 +518,16 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-mobile-app",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build a mobile app?",
+    question: "Can ProjexiaHub build a mobile app?",
     variations: [
-      "Can MECTEC build a mobile app",
+      "Can ProjexiaHub build a mobile app",
       "Can you make an app",
       "Mobile app for device",
       "Phone control app",
     ],
     keywords: ["mobile", "app", "android", "ios", "control"],
     answer:
-      "Mobile app development depends on the project scope. Some projects can use existing apps or web interfaces; others may need a custom app. Discuss requirements with MECTEC.",
+      "Mobile app development depends on the project scope. Some projects can use existing apps or web interfaces; others may need a custom app. Discuss requirements with ProjexiaHub.",
     priority: 10,
   },
 
@@ -535,9 +535,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-web-dashboard",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build a web dashboard?",
+    question: "Can ProjexiaHub build a web dashboard?",
     variations: [
-      "Can MECTEC build a web dashboard",
+      "Can ProjexiaHub build a web dashboard",
       "Can you make a web interface",
       "Dashboard for my device",
       "Web control panel",
@@ -552,9 +552,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-cloud",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC connect my project to the cloud?",
+    question: "Can ProjexiaHub connect my project to the cloud?",
     variations: [
-      "Can MECTEC connect my project to the cloud",
+      "Can ProjexiaHub connect my project to the cloud",
       "Can you use cloud services",
       "Cloud connected device",
       "IoT cloud platform",
@@ -569,16 +569,16 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-student",
     category: "projects",
     intent: "capability",
-    question: "Does MECTEC work on university or educational projects?",
+    question: "Does ProjexiaHub work on university or educational projects?",
     variations: [
-      "Does MECTEC work on university or educational projects",
+      "Does ProjexiaHub work on university or educational projects",
       "Can you make university projects",
       "Do you help students",
-      "Can MECTEC build an FYP",
+      "Can ProjexiaHub build an FYP",
     ],
     keywords: ["university", "student", "FYP", "educational", "engineering"],
     answer:
-      "MECTEC can work on educational and engineering project requirements, including prototypes, embedded systems, automation, sensors, RFID, IoT, and other electronics-focused projects. Requirements should be provided before confirming feasibility.",
+      "ProjexiaHub can work on educational and engineering project requirements, including prototypes, embedded systems, automation, sensors, RFID, IoT, and other electronics-focused projects. Requirements should be provided before confirming feasibility.",
     priority: 13,
   },
 
@@ -586,9 +586,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-competition",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC build competition projects?",
+    question: "Can ProjexiaHub build competition projects?",
     variations: [
-      "Can MECTEC build competition projects",
+      "Can ProjexiaHub build competition projects",
       "Competition project",
       "Hackathon project",
       "Science fair project",
@@ -661,12 +661,12 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-component-selection",
     category: "projects",
     intent: "procedure",
-    question: "Can MECTEC select the components for my project?",
+    question: "Can ProjexiaHub select the components for my project?",
     variations: [
-      "Can MECTEC select the components for my project",
+      "Can ProjexiaHub select the components for my project",
       "Can you choose components",
       "Who decides which components to use",
-      "Can MECTEC recommend the right sensor or microcontroller",
+      "Can ProjexiaHub recommend the right sensor or microcontroller",
     ],
     keywords: [
       "components",
@@ -695,7 +695,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     ],
     keywords: ["existing", "code", "design", "circuit", "hardware"],
     answer:
-      "Yes. Existing code, circuit diagrams, or prototypes can be reviewed and, where practical, used or adapted. Providing these materials helps MECTEC understand the starting point.",
+      "Yes. Existing code, circuit diagrams, or prototypes can be reviewed and, where practical, used or adapted. Providing these materials helps ProjexiaHub understand the starting point.",
     priority: 13,
   },
 
@@ -925,7 +925,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     variations: [
       "How is a project developed",
       "Project development process",
-      "How does MECTEC build a project",
+      "How does ProjexiaHub build a project",
       "What are the project phases",
       "Development workflow",
       "Project workflow",
@@ -1046,7 +1046,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     ],
     keywords: ["source", "code", "firmware", "ownership", "program"],
     answer:
-      "Source code, firmware and relevant schematics are handed over with the finished MECTEC build.",
+      "Source code, firmware and relevant schematics are handed over with the finished ProjexiaHub build.",
     priority: 15,
   },
 
@@ -1084,7 +1084,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     ],
     keywords: ["training", "teach", "learn", "handover", "use"],
     answer:
-      "Training or handover arrangements depend on the project. Mention your requirements in the project request or contact MECTEC directly.",
+      "Training or handover arrangements depend on the project. Mention your requirements in the project request or contact ProjexiaHub directly.",
     priority: 10,
   },
 
@@ -1103,7 +1103,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     ],
     keywords: ["delivery", "ship", "receive", "location", "options"],
     answer:
-      "Delivery arrangements depend on the project and location. Contact MECTEC directly to discuss how the finished project will be delivered.",
+      "Delivery arrangements depend on the project and location. Contact ProjexiaHub directly to discuss how the finished project will be delivered.",
     priority: 10,
   },
 
@@ -1120,7 +1120,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     ],
     keywords: ["installation", "install", "site", "setup", "service"],
     answer:
-      "Installation arrangements depend on the project scope and location. Contact MECTEC directly to discuss on-site requirements.",
+      "Installation arrangements depend on the project scope and location. Contact ProjexiaHub directly to discuss on-site requirements.",
     priority: 10,
   },
 
@@ -1140,7 +1140,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     ],
     keywords: ["support", "after", "delivery", "post", "help"],
     answer:
-      "Support arrangements depend on the project and current MECTEC policy. Contact MECTEC directly to discuss post-project support.",
+      "Support arrangements depend on the project and current ProjexiaHub policy. Contact ProjexiaHub directly to discuss post-project support.",
     priority: 13,
   },
 
@@ -1157,7 +1157,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     ],
     keywords: ["maintenance", "service", "long", "term", "project"],
     answer:
-      "Maintenance arrangements depend on the project. Contact MECTEC directly to discuss maintenance requirements.",
+      "Maintenance arrangements depend on the project. Contact ProjexiaHub directly to discuss maintenance requirements.",
     priority: 10,
   },
 
@@ -1174,7 +1174,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     ],
     keywords: ["repair", "fix", "broken", "service", "circuit"],
     answer:
-      "Repair feasibility depends on the project and the fault. Provide details about the problem and any relevant photos or measurements when contacting MECTEC.",
+      "Repair feasibility depends on the project and the fault. Provide details about the problem and any relevant photos or measurements when contacting ProjexiaHub.",
     priority: 13,
   },
 
@@ -1225,7 +1225,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     ],
     keywords: ["ip", "intellectual", "property", "ownership", "design"],
     answer:
-      "Intellectual property arrangements depend on the project agreement. Discuss IP ownership with MECTEC before starting the project.",
+      "Intellectual property arrangements depend on the project agreement. Discuss IP ownership with ProjexiaHub before starting the project.",
     priority: 13,
   },
 
@@ -1242,7 +1242,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     ],
     keywords: ["nda", "confidential", "agreement", "protect", "idea"],
     answer:
-      "Confidentiality arrangements can be discussed with MECTEC. Use the contact options to raise this before sharing sensitive information.",
+      "Confidentiality arrangements can be discussed with ProjexiaHub. Use the contact options to raise this before sharing sensitive information.",
     priority: 13,
   },
 
@@ -1259,7 +1259,7 @@ export const PROJECT_HELP: HelpEntry[] = [
     ],
     keywords: ["idea", "protect", "confidential", "ownership", "project"],
     answer:
-      "Discuss confidentiality and IP arrangements with MECTEC before sharing sensitive details. Legal protection depends on your jurisdiction and circumstances.",
+      "Discuss confidentiality and IP arrangements with ProjexiaHub before sharing sensitive details. Legal protection depends on your jurisdiction and circumstances.",
     priority: 13,
   },
 
@@ -1270,9 +1270,9 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-bulk",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC produce multiple units?",
+    question: "Can ProjexiaHub produce multiple units?",
     variations: [
-      "Can MECTEC produce multiple units",
+      "Can ProjexiaHub produce multiple units",
       "Can you make multiple copies",
       "Do you do small batch production",
       "Can you produce quantity",
@@ -1287,16 +1287,16 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-manufacturing",
     category: "projects",
     intent: "capability",
-    question: "Can MECTEC help with manufacturing?",
+    question: "Can ProjexiaHub help with manufacturing?",
     variations: [
-      "Can MECTEC help with manufacturing",
+      "Can ProjexiaHub help with manufacturing",
       "Manufacturing support",
       "Produce my design",
       "PCB assembly service",
     ],
     keywords: ["manufacturing", "production", "assembly", "pcb", "design"],
     answer:
-      "Manufacturing support depends on the project and scope. PCB fabrication, assembly, and enclosure production can be discussed with MECTEC.",
+      "Manufacturing support depends on the project and scope. PCB fabrication, assembly, and enclosure production can be discussed with ProjexiaHub.",
     priority: 10,
   },
 
@@ -1321,16 +1321,16 @@ export const PROJECT_HELP: HelpEntry[] = [
     id: "project-certification",
     category: "projects",
     intent: "compatibility",
-    question: "Can MECTEC help with certification?",
+    question: "Can ProjexiaHub help with certification?",
     variations: [
-      "Can MECTEC help with certification",
+      "Can ProjexiaHub help with certification",
       "Do you handle certification",
       "CE FCC certification",
       "Product certification",
     ],
     keywords: ["certification", "ce", "fcc", "compliance", "testing"],
     answer:
-      "Certification requirements and support depend on the product and target market. Discuss certification needs with MECTEC during planning.",
+      "Certification requirements and support depend on the product and target market. Discuss certification needs with ProjexiaHub during planning.",
     priority: 10,
   },
 
