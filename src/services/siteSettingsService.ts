@@ -12,6 +12,10 @@ export interface SiteSettings {
   showPhone: boolean;
   showWhatsapp: boolean;
   showAddress: boolean;
+  siteLogoUrl: string;
+  faviconUrl: string;
+  showSiteLogo: boolean;
+  showFavicon: boolean;
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
@@ -26,6 +30,10 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   showPhone: true,
   showWhatsapp: true,
   showAddress: true,
+  siteLogoUrl: "/icons/logo-mark.svg",
+  faviconUrl: "/favicon.svg",
+  showSiteLogo: true,
+  showFavicon: true,
 };
 
 const SITE_SETTINGS_DOC = doc(db, "settings", "siteProfile");
@@ -53,6 +61,10 @@ export function normalizeSiteSettings(value: unknown): SiteSettings {
     showPhone: typeof source.showPhone === "boolean" ? source.showPhone : DEFAULT_SITE_SETTINGS.showPhone,
     showWhatsapp: typeof source.showWhatsapp === "boolean" ? source.showWhatsapp : DEFAULT_SITE_SETTINGS.showWhatsapp,
     showAddress: typeof source.showAddress === "boolean" ? source.showAddress : DEFAULT_SITE_SETTINGS.showAddress,
+    siteLogoUrl: typeof source.siteLogoUrl === "string" && source.siteLogoUrl.trim() ? source.siteLogoUrl.trim() : DEFAULT_SITE_SETTINGS.siteLogoUrl,
+    faviconUrl: typeof source.faviconUrl === "string" && source.faviconUrl.trim() ? source.faviconUrl.trim() : DEFAULT_SITE_SETTINGS.faviconUrl,
+    showSiteLogo: typeof source.showSiteLogo === "boolean" ? source.showSiteLogo : DEFAULT_SITE_SETTINGS.showSiteLogo,
+    showFavicon: typeof source.showFavicon === "boolean" ? source.showFavicon : DEFAULT_SITE_SETTINGS.showFavicon,
   };
 }
 
