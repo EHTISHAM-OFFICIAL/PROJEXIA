@@ -185,7 +185,7 @@ Request attachments are **not** publicly readable — they can contain private d
 
 ## Request reference numbers
 
-Requests get a reference like `ProjexiaHub-2026-K4T9RQ`: the year plus six random characters from a 31-character alphabet with look-alikes (`I`, `L`, `O`, `0`, `1`) removed.
+Requests get a reference like `PROJEXIA-2026-K4T9RQ`: the year plus six random characters from a 31-character alphabet with look-alikes (`I`, `L`, `O`, `0`, `1`) removed.
 
 **This is random, not sequential** — a deliberate change from the original plan. A true counter (`0001`, `0002`, …) needs a shared document that unauthenticated visitors can write to, which is an obvious target: one script can burn through your numbering or lock the document with contention. Six random characters give about 27 billion combinations per year, so collisions are not a practical concern, and an unguessable reference is a small privacy win.
 

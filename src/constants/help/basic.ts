@@ -559,6 +559,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "located",
       "find",
       "mectec",
+    "projexiahub",
     ],
     answer:
       "ProjexiaHub location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location information.",
@@ -2138,7 +2139,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "What is the point of ProjexiaHub",
       "Why use ProjexiaHub",
     ],
-    keywords: ["purpose", "mectec", "why", "point", "use"],
+    keywords: ["purpose", "mectec", "projexiahub", "why", "point", "use"],
     answer:
       "ProjexiaHub exists to design and build practical electronics and technology projects for individuals and businesses that need custom hardware, firmware or automation solutions.",
     priority: 90,
@@ -2174,7 +2175,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "What is the latest at ProjexiaHub",
       "New offerings",
     ],
-    keywords: ["new", "latest", "updates", "mectec", "offerings"],
+    keywords: ["new", "latest", "updates", "mectec", "projexiahub", "offerings"],
     answer:
       "New projects and updates appear in the Projects section of the website. For announcements or news, check the website or contact ProjexiaHub directly.",
     priority: 90,

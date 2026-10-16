@@ -131,7 +131,7 @@ export const PROJECT_HELP: HelpEntry[] = [
       "What is included in a project",
       "ProjexiaHub project scope",
     ],
-    keywords: ["mectec", "project", "scope", "provide", "role"],
+    keywords: ["mectec", "projexiahub", "project", "scope", "provide", "role"],
     answer:
       "For a typical project, ProjexiaHub can handle design, component selection, prototyping, firmware development, testing, documentation, and handover. The exact scope depends on the project and is defined during planning.",
     priority: 13,

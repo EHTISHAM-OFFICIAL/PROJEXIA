@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// MECTEC Firestore security rules.
+// ProjexiaHub Firestore security rules.
 //
 // Principle: the browser bundle is public and can be modified by anyone, so
 // nothing in the React app is a security control. These rules are the only real

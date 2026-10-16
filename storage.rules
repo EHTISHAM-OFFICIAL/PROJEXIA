@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// MECTEC Cloud Storage security rules.
+// ProjexiaHub Cloud Storage security rules.
 //
 // These mirror ATTACHMENT_RULES and PROJECT_IMAGE_RULES in
 // src/constants/requestOptions.ts. The constants give fast feedback in the
