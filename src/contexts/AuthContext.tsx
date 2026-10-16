@@ -74,7 +74,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const loadId = ++accountLoadId.current;
     setRefreshingAccount(true);
-    setLoading(true);
     setAccountError(null);
     try {
       const [admin, nextProfile] = await Promise.all([
@@ -92,10 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAccountError('Could not refresh your account details. Please check your connection and try again.');
       }
     } finally {
-      if (accountLoadId.current === loadId) {
-        setRefreshingAccount(false);
-        setLoading(false);
-      }
+      if (accountLoadId.current === loadId) setRefreshingAccount(false);
     }
   }, [user]);
 
