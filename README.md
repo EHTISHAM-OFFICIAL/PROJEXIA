@@ -1,4 +1,4 @@
-# MECTEC
+# ProjexiaHub
 
 Electronics project showcase and client request platform. React + TypeScript + Firebase, built to be run and maintained by one developer.
 
@@ -109,7 +109,7 @@ Then delete `scripts/seed.mjs`.
 The current production site is hosted on Firebase Hosting at:
 
 ```
-https://mectec-shop.web.app/
+https://projexiahub.web.app/
 ```
 
 This URL is already configured as the site's canonical URL, Open Graph URL, JSON-LD URL, robots.txt sitemap URL, and sitemap base URL.
@@ -185,7 +185,7 @@ Request attachments are **not** publicly readable — they can contain private d
 
 ## Request reference numbers
 
-Requests get a reference like `MECTEC-2026-K4T9RQ`: the year plus six random characters from a 31-character alphabet with look-alikes (`I`, `L`, `O`, `0`, `1`) removed.
+Requests get a reference like `ProjexiaHub-2026-K4T9RQ`: the year plus six random characters from a 31-character alphabet with look-alikes (`I`, `L`, `O`, `0`, `1`) removed.
 
 **This is random, not sequential** — a deliberate change from the original plan. A true counter (`0001`, `0002`, …) needs a shared document that unauthenticated visitors can write to, which is an obvious target: one script can burn through your numbering or lock the document with contention. Six random characters give about 27 billion combinations per year, so collisions are not a practical concern, and an unguessable reference is a small privacy win.
 

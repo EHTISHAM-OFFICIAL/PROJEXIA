@@ -206,7 +206,7 @@ Build an RFID-based electronics project
 
 RFID door locks demonstrate how identification, microcontrollers, firmware, motor control, and physical hardware can work together in a single system.
 
-If you have an idea for an RFID access-control system or another custom electronics project, you can describe your requirements through the MECTEC Project Request form: /request-project.`,
+If you have an idea for an RFID access-control system or another custom electronics project, you can describe your requirements through the ProjexiaHub Project Request form: /request-project.`,
   coverImageUrl: null,
   published: true,
 };
