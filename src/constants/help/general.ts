@@ -19,6 +19,7 @@ export const GENERAL_HELP = [
     ],
     keywords: [
       "mectec",
+      "projexiahub",
       "company",
       "business",
       "website",

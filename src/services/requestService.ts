@@ -42,7 +42,7 @@ const statusLookupRef = (requestNumber: string) =>
   doc(db, "requestStatusLookup", requestNumber);
 
 /**
- * Human-readable reference, e.g. MECTEC-2026-K4T9RQ.
+ * Human-readable reference, e.g. PROJEXIA-2026-K4T9RQ.
  *
  * Deliberately random rather than sequential. A truly sequential counter needs a
  * shared document that the public can write to, which is an abuse target, or a
@@ -57,7 +57,7 @@ function generateProjectToken(): string {
     random,
     (byte) => alphabet[byte % alphabet.length],
   ).join("");
-  return `MECTEC-${new Date().getFullYear()}-${suffix}`;
+  return `PROJEXIA-${new Date().getFullYear()}-${suffix}`;
 }
 
 function generateRequestNumber(): string {
@@ -67,7 +67,7 @@ function generateRequestNumber(): string {
     random,
     (byte) => alphabet[byte % alphabet.length],
   ).join("");
-  return `MECTEC-${new Date().getFullYear()}-${suffix}`;
+  return `PROJEXIA-${new Date().getFullYear()}-${suffix}`;
 }
 
 function dateToTimestamp(value: string | undefined): Timestamp | null {

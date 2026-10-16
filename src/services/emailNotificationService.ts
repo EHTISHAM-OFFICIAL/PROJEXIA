@@ -305,7 +305,7 @@ export const emailNotificationService = {
       message:
         "MECTEC PROJECT REQUEST TEST\n\n" +
         "Test Customer (test@example.com) submitted a sample request.\n\n" +
-        "Reference: MECTEC-TEST-000001\n" +
+        "Reference: PROJEXIA-TEST-000001\n" +
         "Category: Embedded Systems\n" +
         "Project type: Prototype\n" +
         "Urgency: Normal\n\n" +
@@ -331,7 +331,7 @@ export const emailNotificationService = {
       name: "MECTEC Project Request Test",
       email: config.toEmail,
       title: "Smart Energy Generator",
-      requestNumber: "MECTEC-TEST-000001",
+      requestNumber: "PROJEXIA-TEST-000001",
       throwOnError: true,
       maxAttempts: 3,
     });

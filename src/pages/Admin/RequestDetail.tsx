@@ -537,7 +537,7 @@ export default function RequestDetail() {
                       id="projectToken"
                       value={projectToken}
                       onChange={(event) => setProjectToken(event.target.value)}
-                      placeholder="MECTEC-2026-ABSFDW"
+                      placeholder="PROJEXIA-2026-ABSFDW"
                       autoComplete="off"
                       spellCheck={false}
                     />

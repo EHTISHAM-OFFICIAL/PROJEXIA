@@ -1052,7 +1052,7 @@ const INTENT_PATTERNS: IntentPatternGroup[] = [
     patterns: [
       /\b(shop|store|opening|closing|business|working)\s+(hours|timing|timings|time)\b/i,
       /\bwhat time do you (open|close)\b/i,
-      /\bwhen (do|does) (you|mectec|your shop) (open|close)\b/i,
+      /\bwhen (do|does) (you|(?:mectec|projexiahub)|your shop) (open|close)\b/i,
       /\bare you open\b/i,
       /\bwhen are you open\b/i,
       /\bwhat time are you open\b/i,
@@ -1070,7 +1070,7 @@ const INTENT_PATTERNS: IntentPatternGroup[] = [
       /\bwhere can i contact\b/i,
       /\bwhere should i contact\b/i,
       /\bwho should i contact\b/i,
-      /\bcontact (you|mectec|us)\b/i,
+      /\bcontact (you|(?:mectec|projexiahub)|us)\b/i,
       /\bcontact (information|details)\b/i,
       /\bhow do i get in touch\b/i,
       /\bhow can i reach\b/i,
@@ -1083,10 +1083,10 @@ const INTENT_PATTERNS: IntentPatternGroup[] = [
   {
     intent: "location",
     patterns: [
-      /\bwhere (is|are) (mectec|your shop|you located)\b/i,
+      /\bwhere (is|are) ((?:mectec|projexiahub)|your shop|you located)\b/i,
       /\bwhat is your (address|location)\b/i,
       /\bwhere can i find\b/i,
-      /\bhow do i (find|reach) (mectec|your shop)\b/i,
+      /\bhow do i (find|reach) ((?:mectec|projexiahub)|your shop)\b/i,
     ],
   },
 
@@ -1111,7 +1111,7 @@ const INTENT_PATTERNS: IntentPatternGroup[] = [
       /\border (a|my) project\b/i,
       /\bsubmit (a|my) project\b/i,
       /\bcan you build (a|my) project\b/i,
-      /\bcan mectec build (a|my) project\b/i,
+      /\bcan (?:mectec|projexiahub) build (a|my) project\b/i,
       /\bi want a project\b/i,
       /\bcommission (a|my) project\b/i,
     ],
@@ -1288,10 +1288,10 @@ const INTENT_PATTERNS: IntentPatternGroup[] = [
   {
     intent: "general",
     patterns: [
-      /\bmectec\b/i,
+      /\b(?:mectec|projexiahub)\b/i,
       /\byour website\b/i,
-      /\babout mectec\b/i,
-      /\bwhat does mectec do\b/i,
+      /\babout (?:mectec|projexiahub)\b/i,
+      /\bwhat does (?:mectec|projexiahub) do\b/i,
     ],
   },
 ];
@@ -1364,14 +1364,14 @@ function detectIntent(question: string): HelpIntent | null {
    * is a project-request/navigation question.
    */
   if (
-    /\bwhere should i contact mectec about (a|my|the) project\b/i.test(
+    /\bwhere should i contact (?:mectec|projexiahub) about (a|my|the) project\b/i.test(
       normalized,
     ) ||
-    /\bwhere can i contact mectec about (a|my|the) project\b/i.test(
+    /\bwhere can i contact (?:mectec|projexiahub) about (a|my|the) project\b/i.test(
       normalized,
     ) ||
-    /\bhow do i contact mectec about (a|my|the) project\b/i.test(normalized) ||
-    /\bhow can i contact mectec about (a|my|the) project\b/i.test(normalized)
+    /\bhow do i contact (?:mectec|projexiahub) about (a|my|the) project\b/i.test(normalized) ||
+    /\bhow can i contact (?:mectec|projexiahub) about (a|my|the) project\b/i.test(normalized)
   ) {
     scores.set("project_request", (scores.get("project_request") ?? 0) + 40);
 
@@ -2818,9 +2818,9 @@ function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
    * nonexistent /services route.
    */
   if (
-    /\bwhat is mectec\b/i.test(normalizedQuestion) ||
-    /\btell me about mectec\b/i.test(normalizedQuestion) ||
-    /\bwho is mectec\b/i.test(normalizedQuestion)
+    /\bwhat is (?:mectec|projexiahub)\b/i.test(normalizedQuestion) ||
+    /\btell me about (?:mectec|projexiahub)\b/i.test(normalizedQuestion) ||
+    /\bwho is (?:mectec|projexiahub)\b/i.test(normalizedQuestion)
   ) {
     return {
       answer:
@@ -2942,11 +2942,11 @@ function getDynamicHoursResponse(
    * a separate knowledge entry for every day/wording.
    */
   const asksGenericHours =
-    /\b(shop|store|business|mectec)\s+(hours|timing|timings|time)\b/i.test(
+    /\b(shop|store|business|(?:mectec|projexiahub))\s+(hours|timing|timings|time)\b/i.test(
       normalizedQuestion,
     ) ||
     /\bwhat time do you (open|close)\b/i.test(normalizedQuestion) ||
-    /\bwhen (do|does) (you|mectec|your shop) (open|close)\b/i.test(
+    /\bwhen (do|does) (you|(?:mectec|projexiahub)|your shop) (open|close)\b/i.test(
       normalizedQuestion,
     ) ||
     /\bare you open\b/i.test(normalizedQuestion) ||
@@ -3166,18 +3166,18 @@ function detectNavigation(question: string): NavigationMatch | null {
     /\b(project|my project|a project)\b.*\b(request|submit|order|commission)\b/i.test(
       normalized,
     ) ||
-    /\bcan (you|mectec) build (my|a|the) project\b/i.test(normalized) ||
-    /\bwhere should i contact mectec about (a|my|the) project\b/i.test(
+    /\bcan (you|(?:mectec|projexiahub)) build (my|a|the) project\b/i.test(normalized) ||
+    /\bwhere should i contact (?:mectec|projexiahub) about (a|my|the) project\b/i.test(
       normalized,
     ) ||
-    /\bwhere can i contact mectec about (a|my|the) project\b/i.test(
+    /\bwhere can i contact (?:mectec|projexiahub) about (a|my|the) project\b/i.test(
       normalized,
     ) ||
-    /\bhow should i contact mectec about (a|my|the) project\b/i.test(
+    /\bhow should i contact (?:mectec|projexiahub) about (a|my|the) project\b/i.test(
       normalized,
     ) ||
-    /\bhow can i contact mectec about (a|my|the) project\b/i.test(normalized) ||
-    /\bhow do i contact mectec about (a|my|the) project\b/i.test(normalized) ||
+    /\bhow can i contact (?:mectec|projexiahub) about (a|my|the) project\b/i.test(normalized) ||
+    /\bhow do i contact (?:mectec|projexiahub) about (a|my|the) project\b/i.test(normalized) ||
     /\bproject request form\b/i.test(normalized) ||
     /\brequest form\b/i.test(normalized);
 
@@ -3263,8 +3263,8 @@ function detectNavigation(question: string): NavigationMatch | null {
     /\bview your projects\b/i.test(normalized) ||
     /\bsee your projects\b/i.test(normalized) ||
     /\bshow me your projects\b/i.test(normalized) ||
-    /\bwhat projects has mectec\b/i.test(normalized) ||
-    /\bwhat projects does mectec\b/i.test(normalized);
+    /\bwhat projects has (?:mectec|projexiahub)\b/i.test(normalized) ||
+    /\bwhat projects does (?:mectec|projexiahub)\b/i.test(normalized);
 
   if (isProjectPortfolio) {
     clearTechnicalContext();
@@ -3335,7 +3335,7 @@ function detectNavigation(question: string): NavigationMatch | null {
     /\bwho should i contact\b/i.test(normalized) ||
     /\bhow can i reach\b/i.test(normalized) ||
     /\bhow do i reach\b/i.test(normalized) ||
-    /\bget in touch with mectec\b/i.test(normalized) ||
+    /\bget in touch with (?:mectec|projexiahub)\b/i.test(normalized) ||
     /\bcontact information\b/i.test(normalized) ||
     /\bcontact details\b/i.test(normalized) ||
     /\bphone number\b/i.test(normalized) ||
@@ -3370,13 +3370,13 @@ function detectNavigation(question: string): NavigationMatch | null {
    * ---------------------------------------------------------
    */
   const isAbout =
-    /\btell me about mectec\b/i.test(normalized) ||
-    /\bwho is mectec\b/i.test(normalized) ||
-    /\babout mectec\b/i.test(normalized) ||
+    /\btell me about (?:mectec|projexiahub)\b/i.test(normalized) ||
+    /\bwho is (?:mectec|projexiahub)\b/i.test(normalized) ||
+    /\babout (?:mectec|projexiahub)\b/i.test(normalized) ||
     /\babout the company\b/i.test(normalized) ||
-    /\bwhat is mectec\b/i.test(normalized) ||
-    /\blearn more about mectec\b/i.test(normalized) ||
-    /\bwhat does mectec do\b/i.test(normalized);
+    /\bwhat is (?:mectec|projexiahub)\b/i.test(normalized) ||
+    /\blearn more about (?:mectec|projexiahub)\b/i.test(normalized) ||
+    /\bwhat does (?:mectec|projexiahub) do\b/i.test(normalized);
 
   if (isAbout) {
     clearTechnicalContext();

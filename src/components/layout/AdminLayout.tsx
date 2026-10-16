@@ -149,19 +149,19 @@ export function AdminLayout() {
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-accent/10 text-accent">
               <ShieldCheck size={22} aria-hidden="true" />
             </div>
-            <p className="mt-5 text-sm font-medium text-accent">MECTEC Admin</p>
+            <p className="mt-5 text-sm font-medium text-accent">ProjexiaHub Admin</p>
             <h1 id="admin-welcome-title" className="mt-1 text-2xl font-semibold tracking-tight">
               Welcome back
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-content-secondary">
-              You are entering the private MECTEC administration area. Customer requests can contain
+              You are entering the private ProjexiaHub administration area. Customer requests can contain
               personal contact details, project information, internal notes and quoted amounts.
             </p>
 
             <div className="mt-5 rounded-lg border border-state-warning/30 bg-state-warning/5 p-4">
               <p className="text-sm font-semibold">Administrator disclaimer</p>
               <p className="mt-1 text-sm leading-relaxed text-content-secondary">
-                Use this area only for legitimate MECTEC administration. Keep customer information
+                Use this area only for legitimate ProjexiaHub administration. Keep customer information
                 confidential, review changes carefully, and remember that request status updates can
                 be visible to customers. Deleted requests are moved to recoverable trash rather than
                 being permanently removed.

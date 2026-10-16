@@ -944,7 +944,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "Explain ProjexiaHub",
       "What is ProjexiaHub about",
     ],
-    keywords: ["mectec", "company", "business", "what", "about"],
+    keywords: ["mectec", "projexiahub", "company", "business", "what", "about"],
     answer:
       "ProjexiaHub is an electronics and technology-focused business that develops practical hardware, embedded, automation, IoT and related technical projects. The website lets you explore completed projects and submit your own project idea or request.",
     priority: 100,
