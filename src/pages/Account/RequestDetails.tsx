@@ -164,7 +164,7 @@ export default function RequestDetails() {
                 <p className="text-xs font-medium uppercase tracking-wide text-content-muted">Project token</p>
                 <p className="mt-2 font-mono text-sm font-semibold tracking-wide">{request.projectToken}</p>
                 <p className="mt-1.5 text-xs leading-relaxed text-content-muted">
-                  Keep this token available if MECTEC needs to authorize an administrative trash action for this request.
+                  Keep this token available if ProjexiaHub needs to authorize an administrative trash action for this request.
                 </p>
               </div>
             )}

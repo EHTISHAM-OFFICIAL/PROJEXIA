@@ -129,7 +129,7 @@ function buildOrganizationSchema(siteName: string, description: string, email: s
 }
 
 function setJsonLd(data: Record<string, unknown> | null) {
-  const id = "mectec-seo-jsonld";
+  const id = "projexiahub-seo-jsonld";
   const existing = document.getElementById(id) as HTMLScriptElement | null;
 
   if (!data) {

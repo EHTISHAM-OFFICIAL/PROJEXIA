@@ -228,7 +228,7 @@ export default function RequestDetail() {
             />
             <div className="mt-4 flex flex-wrap gap-2">
               <a
-                href={`mailto:${contact.email}?subject=${encodeURIComponent(`MECTEC ${request.requestNumber} — ${project.title}`)}`}
+                href={`mailto:${contact.email}?subject=${encodeURIComponent(`ProjexiaHub ${request.requestNumber} — ${project.title}`)}`}
                 className="inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-surface-raised px-3.5 text-sm transition-colors hover:border-line-strong"
               >
                 <Mail size={15} aria-hidden="true" />

@@ -70,7 +70,7 @@ async function resolveConfig(): Promise<EmailNotificationConfig | null> {
     },
   };
 
-  console.info("[MECTEC email] configuration diagnostics", diagnostics);
+  console.info("[ProjexiaHub email] configuration diagnostics", diagnostics);
 
   return isConfigured ? normalized : null;
 }
@@ -110,7 +110,7 @@ export const emailNotificationService = {
         }
       : null;
 
-    console.info("[MECTEC email] notification started", {
+    console.info("[ProjexiaHub email] notification started", {
       diagnosticId,
       startedAt: new Date(startedAt).toISOString(),
       subject: params.subject,
@@ -123,7 +123,7 @@ export const emailNotificationService = {
       const error = new Error(
         "Email notifications are not configured. Check the EmailJS settings.",
       );
-      console.error("[MECTEC email] configuration failure", {
+      console.error("[ProjexiaHub email] configuration failure", {
         diagnosticId,
         error: error.message,
       });
@@ -175,7 +175,7 @@ export const emailNotificationService = {
         const responseText = await response.text().catch(() => "");
         const requestDurationMs = Date.now() - requestStartedAt;
 
-        console.info("[MECTEC email] EmailJS response received", {
+        console.info("[ProjexiaHub email] EmailJS response received", {
           diagnosticId,
           attempt,
           status: response.status,
@@ -190,7 +190,7 @@ export const emailNotificationService = {
           );
         }
 
-        console.info("[MECTEC email] notification accepted by EmailJS", {
+        console.info("[ProjexiaHub email] notification accepted by EmailJS", {
           diagnosticId,
           attempt,
           totalDurationMs: Date.now() - startedAt,
@@ -200,7 +200,7 @@ export const emailNotificationService = {
       } catch (error) {
         lastError = error;
 
-        console.error("[MECTEC email] attempt failed", {
+        console.error("[ProjexiaHub email] attempt failed", {
           diagnosticId,
           attempt,
           maxAttempts,
@@ -218,7 +218,7 @@ export const emailNotificationService = {
       }
     }
 
-    console.error("[MECTEC email] notification failed after all attempts", {
+    console.error("[ProjexiaHub email] notification failed after all attempts", {
       diagnosticId,
       attempts: maxAttempts,
       totalDurationMs: Date.now() - startedAt,
@@ -243,7 +243,7 @@ export const emailNotificationService = {
 
     // These values are intentionally the browser-safe EmailJS configuration:
     // service ID, template ID and public key are required by EmailJS's client
-    // API, and toEmail is MECTEC's public business recipient. No customer
+    // API, and toEmail is ProjexiaHub's public business recipient. No customer
     // request data, admin notes, passwords, or private account information is
     // stored here.
     await setDoc(

@@ -106,7 +106,7 @@ export default function TrackRequest() {
     <>
       <Seo
         title="Track a request"
-        description="Check the status of a project request you submitted to MECTEC."
+        description="Check the status of a project request you submitted to ProjexiaHub."
         path="/track-request"
         noIndex
       />
