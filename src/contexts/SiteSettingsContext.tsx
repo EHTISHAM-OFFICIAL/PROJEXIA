@@ -46,9 +46,20 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
     const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
     const nextIcon = icon ?? document.createElement("link");
     nextIcon.rel = "icon";
-    nextIcon.type = settings.showFavicon && settings.faviconUrl.endsWith(".svg")
+    const iconPath = iconHref.split("?")[0].toLowerCase();
+    const iconType = iconPath.endsWith(".svg")
       ? "image/svg+xml"
-      : "image/png";
+      : iconPath.endsWith(".ico")
+        ? "image/x-icon"
+        : iconPath.endsWith(".webp")
+          ? "image/webp"
+          : iconPath.endsWith(".jpg") || iconPath.endsWith(".jpeg")
+            ? "image/jpeg"
+            : iconPath.endsWith(".png")
+              ? "image/png"
+              : "";
+    if (iconType) nextIcon.type = iconType;
+    else nextIcon.removeAttribute("type");
     nextIcon.href = iconHref;
     if (!icon) document.head.appendChild(nextIcon);
 
