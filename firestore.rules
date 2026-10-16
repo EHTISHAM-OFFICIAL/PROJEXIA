@@ -448,11 +448,16 @@ service cloud.firestore {
         ])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
-        && request.resource.data.name.size() <= 120
         && request.resource.data.kind in [
           'component', 'specification', 'tag', 'feature', 'technology', 'tool',
           'objective', 'challenge', 'category', 'subcategory', 'protocol', 'application'
         ]
+        // Challenge names are descriptive engineering statements, so allow
+        // longer text there while keeping compact names for other library kinds.
+        && (
+          (request.resource.data.kind == 'challenge' && request.resource.data.name.size() <= 300)
+          || (request.resource.data.kind != 'challenge' && request.resource.data.name.size() <= 120)
+        )
         && request.resource.data.category is string
         && request.resource.data.description is string
         && request.resource.data.unit is string
