@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CheckCircle2, Globe2, ImageIcon, Save, Upload } from "lucide-react";
+import { CheckCircle2, Globe2, ImageIcon, Save } from "lucide-react";
 import { Alert } from "../../components/ui/Alert";
 import { Button } from "../../components/ui/Button";
 import { Field } from "../../components/forms/Field";
@@ -58,7 +58,7 @@ export function SiteIdentitySettings() {
     setSaved(false);
 
     if (!file.type.startsWith("image/")) {
-      setLogoError("Choose an image file (PNG, JPG, WebP, or SVG if supported by the image host).");
+      setLogoError("Choose a PNG, JPG, or WebP image file.");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -150,8 +150,8 @@ export function SiteIdentitySettings() {
               )}
             </div>
             <label className="mt-4 block text-xs font-medium text-content-secondary" htmlFor="siteLogoFile">Upload website logo</label>
-            <input id="siteLogoFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" disabled={logoUploading !== null} onChange={(event) => { void handleLogoUpload("site", event.target.files?.[0]); event.currentTarget.value = ""; }} className="mt-2 block w-full text-xs text-content-secondary file:mr-3 file:rounded-lg file:border-0 file:bg-surface-raised file:px-3 file:py-2 file:text-content hover:file:bg-surface" />
-            <p className="mt-2 text-xs text-content-muted">{logoUploading === "site" ? "Uploading logo…" : "Recommended: transparent PNG or SVG, square or near-square."}</p>
+            <input id="siteLogoFile" type="file" accept="image/png,image/jpeg,image/webp" disabled={logoUploading !== null} onChange={(event) => { void handleLogoUpload("site", event.target.files?.[0]); event.currentTarget.value = ""; }} className="mt-2 block w-full text-xs text-content-secondary file:mr-3 file:rounded-lg file:border-0 file:bg-surface-raised file:px-3 file:py-2 file:text-content hover:file:bg-surface" />
+            <p className="mt-2 text-xs text-content-muted">{logoUploading === "site" ? "Uploading logo…" : "Recommended: transparent PNG or WebP, square or near-square."}</p>
             <Field label="Logo image URL" htmlFor="siteLogoUrl" hint="You can also paste a publicly accessible image URL.">
               <TextInput id="siteLogoUrl" type="url" value={draft.siteLogoUrl} onChange={(event) => update("siteLogoUrl", event.target.value)} />
             </Field>
@@ -170,7 +170,7 @@ export function SiteIdentitySettings() {
               )}
             </div>
             <label className="mt-4 block text-xs font-medium text-content-secondary" htmlFor="faviconFile">Upload favicon</label>
-            <input id="faviconFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,.ico" disabled={logoUploading !== null} onChange={(event) => { void handleLogoUpload("favicon", event.target.files?.[0]); event.currentTarget.value = ""; }} className="mt-2 block w-full text-xs text-content-secondary file:mr-3 file:rounded-lg file:border-0 file:bg-surface-raised file:px-3 file:py-2 file:text-content hover:file:bg-surface" />
+            <input id="faviconFile" type="file" accept="image/png,image/jpeg,image/webp" disabled={logoUploading !== null} onChange={(event) => { void handleLogoUpload("favicon", event.target.files?.[0]); event.currentTarget.value = ""; }} className="mt-2 block w-full text-xs text-content-secondary file:mr-3 file:rounded-lg file:border-0 file:bg-surface-raised file:px-3 file:py-2 file:text-content hover:file:bg-surface" />
             <p className="mt-2 text-xs text-content-muted">{logoUploading === "favicon" ? "Uploading favicon…" : "Recommended: square PNG or SVG, ideally 48 × 48 or larger."}</p>
             <Field label="Favicon image URL" htmlFor="faviconUrl" hint="Must be a publicly accessible image URL.">
               <TextInput id="faviconUrl" type="url" value={draft.faviconUrl} onChange={(event) => update("faviconUrl", event.target.value)} />
