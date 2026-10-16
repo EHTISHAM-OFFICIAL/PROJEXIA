@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { User } from 'firebase/auth';
 import { authService } from '../services/authService';
 import { getUserProfile, signInWithUsername } from '../services/userService';
@@ -32,6 +32,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = authService.onAuthChange(async (nextUser) => {
       const loadId = ++accountLoadId.current;
       setUser(nextUser);
+      setProfile(null);
+      setIsAdmin(false);
       setAccountError(null);
 
       if (!nextUser) {
@@ -66,12 +68,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, []);
 
-  const refreshAccount = async () => {
+  const refreshAccount = useCallback(async () => {
     const currentUser = user;
     if (!currentUser) return;
 
     const loadId = ++accountLoadId.current;
     setRefreshingAccount(true);
+    setLoading(true);
     setAccountError(null);
     try {
       const [admin, nextProfile] = await Promise.all([
@@ -89,9 +92,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAccountError('Could not refresh your account details. Please check your connection and try again.');
       }
     } finally {
-      if (accountLoadId.current === loadId) setRefreshingAccount(false);
+      if (accountLoadId.current === loadId) {
+        setRefreshingAccount(false);
+        setLoading(false);
+      }
     }
-  };
+  }, [user]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -124,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await authService.signOut();
       },
     }),
-    [user, profile, isAdmin, loading, refreshingAccount, accountError],
+    [user, profile, isAdmin, loading, refreshingAccount, accountError, refreshAccount],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
