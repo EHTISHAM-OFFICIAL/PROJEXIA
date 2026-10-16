@@ -99,7 +99,7 @@ export default function ProjectLibrary() {
       </div>
       <form onSubmit={submit} className="mt-7 grid gap-4 rounded-xl border border-line p-4 sm:grid-cols-2">
         <h2 className="sm:col-span-2 text-lg font-semibold">{editingId ? 'Edit library item' : 'Add library item'}</h2>
-        <Field label="Name" required><TextInput required maxLength={120} value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} /></Field>
+        <Field label="Name" required><TextInput required maxLength={draft.kind === 'challenge' ? 300 : 120} value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} /></Field>
         <Field label="Type" required><Select options={KINDS} value={draft.kind} onChange={(event) => setDraft({ ...draft, kind: event.target.value as ProjectLibraryKind })} /></Field>
         <Field
           label={draft.kind === 'component' ? 'Component type' : 'Category'}
