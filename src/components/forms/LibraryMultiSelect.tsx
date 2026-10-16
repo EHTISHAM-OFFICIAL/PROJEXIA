@@ -80,6 +80,12 @@ export function LibraryMultiSelect({
   const add = async (name: string) => {
     const clean = name.trim();
     if (!clean) return;
+    const maxNameLength = kind === 'challenge' ? 300 : 120;
+    if (clean.length > maxNameLength) {
+      setCustomSaveError(`This ${label.toLocaleLowerCase()} entry is too long. Use ${maxNameLength} characters or fewer.`);
+      setCustomSaveNotice('');
+      return;
+    }
 
     const selectedItem = items.find((item) => normalizeLibraryName(item.name) === normalizeLibraryName(clean));
     const alreadyInProject = values.some((value) => normalizeLibraryName(value) === normalizeLibraryName(clean));
@@ -179,6 +185,7 @@ export function LibraryMultiSelect({
           onClick={() => setIsOpen(true)}
           onKeyDown={handleSearchKeyDown}
           placeholder={placeholder}
+          maxLength={kind === 'challenge' ? 300 : undefined}
           className="pl-9 pr-9"
           role="combobox"
           aria-label={`Search ${label}`}
@@ -224,6 +231,7 @@ export function LibraryMultiSelect({
       <div className="flex gap-2">
         <TextInput
           value={custom}
+          maxLength={kind === 'challenge' ? 300 : undefined}
           onChange={(event) => setCustom(event.target.value)}
           onFocus={() => setIsOpen(true)}
           onKeyDown={(event) => {
