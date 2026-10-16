@@ -85,6 +85,10 @@ export const projectLibraryService = {
   async addCustom(draft: ProjectLibraryDraft): Promise<ProjectLibraryItem> {
     const name = draft.name.trim();
     if (!name) throw new Error('Enter a name for this library item.');
+    const maxNameLength = draft.kind === 'challenge' ? 300 : 120;
+    if (name.length > maxNameLength) {
+      throw new Error(`Names for ${draft.kind} items must be ${maxNameLength} characters or fewer.`);
+    }
 
     const existing = await getDocs(query(libraryRef, where('kind', '==', draft.kind)));
     const match = existing.docs.find((entry) =>
@@ -131,6 +135,10 @@ export const projectLibraryService = {
   async save(draft: ProjectLibraryDraft, id?: string): Promise<void> {
     const name = draft.name.trim();
     if (!name) throw new Error('Enter a name for this library item.');
+    const maxNameLength = draft.kind === 'challenge' ? 300 : 120;
+    if (name.length > maxNameLength) {
+      throw new Error(`Names for ${draft.kind} items must be ${maxNameLength} characters or fewer.`);
+    }
     const existing = await getDocs(query(libraryRef, where('kind', '==', draft.kind)));
     const duplicate = existing.docs.some((entry) =>
       entry.id !== id && normalizeName(String(entry.data().name ?? '')) === normalizeName(name)
