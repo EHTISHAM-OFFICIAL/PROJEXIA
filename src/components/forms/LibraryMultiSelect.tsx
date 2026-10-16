@@ -87,7 +87,9 @@ export function LibraryMultiSelect({
     setCustomSaveNotice('');
 
     let resolvedItem = selectedItem;
-    const shouldSaveCustom = !selectedItem && ['component', 'objective', 'challenge'].includes(kind);
+    // Every selector backed by Project Data Library should capture newly typed values,
+    // not just a small subset such as objectives/challenges/components.
+    const shouldSaveCustom = !selectedItem;
     if (shouldSaveCustom && !alreadyInProject) {
       setSavingCustom(true);
       try {
@@ -105,7 +107,15 @@ export function LibraryMultiSelect({
           : [...current, resolvedItem!].sort((a, b) => a.name.localeCompare(b.name)));
         setCustomSaveNotice(`Saved “${clean}” to the reusable library.`);
       } catch (caught) {
-        setCustomSaveError(caught instanceof Error ? caught.message : 'Could not save this custom item to the reusable library.');
+        const code = typeof caught === 'object' && caught !== null && 'code' in caught
+          ? String((caught as { code?: unknown }).code ?? '')
+          : '';
+        const message = code === 'permission-denied'
+          ? 'Firestore blocked this library write. Deploy the current Firestore rules to the same Firebase project as this website and confirm your signed-in account has an admins/{uid} document. Run: firebase deploy --only firestore:rules --project projexiahub'
+          : caught instanceof Error
+            ? caught.message
+            : 'Could not save this custom item to the reusable library.';
+        setCustomSaveError(message);
         setSavingCustom(false);
         return;
       } finally {
