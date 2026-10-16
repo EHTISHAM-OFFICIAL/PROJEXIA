@@ -252,10 +252,10 @@ export default function RequestProject() {
         <Seo title="Login required" path="/request-project" noIndex />
         <Container className="py-20 sm:py-28">
           <div className="mx-auto max-w-xl rounded-card border border-line bg-surface p-8 text-center sm:p-12">
-            <p className="text-sm font-medium text-accent">MECTEC project requests</p>
+            <p className="text-sm font-medium text-accent">ProjexiaHub project requests</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">Log in to continue</h1>
             <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-content-secondary">
-              A MECTEC account is required to submit a project request. This lets you securely
+              A ProjexiaHub account is required to submit a project request. This lets you securely
               access your own requests and gives you a limited editing window after submission.
             </p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
@@ -274,7 +274,7 @@ export default function RequestProject() {
     <>
       <Seo
         title="Request a Custom Electronics Project"
-        description="Tell MECTEC what you want to build. Submit a detailed project brief covering technical requirements, budget and timeline for a more useful first reply."
+        description="Tell ProjexiaHub what you want to build. Submit a detailed project brief covering technical requirements, budget and timeline for a more useful first reply."
         path="/request-project"
       />
 
@@ -285,7 +285,7 @@ export default function RequestProject() {
           </h1>
           <p className="mt-5 max-w-prose text-base leading-relaxed text-content-secondary">
             Ten short sections. Only a handful of fields are required — skip anything technical you
-            aren't sure about, and MECTEC will fill in the gaps when replying. Expect a response{' '}
+            aren't sure about, and ProjexiaHub will fill in the gaps when replying. Expect a response{' '}
             {SITE.responseTime}.
           </p>
         </Container>

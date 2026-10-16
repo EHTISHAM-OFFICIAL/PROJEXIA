@@ -13,8 +13,8 @@ export default function Home() {
   return (
     <>
       <Seo
-        title="MECTEC — Custom Electronics Design & Development in Pakistan"
-        description="MECTEC designs and builds custom electronics in Pakistan, including embedded systems, IoT devices, automation, robotics, PCB work and working prototypes."
+        title="ProjexiaHub — Custom Electronics Design & Development in Pakistan"
+        description="ProjexiaHub designs and builds custom electronics in Pakistan, including embedded systems, IoT devices, automation, robotics, PCB work and working prototypes."
         path="/"
       />
       <Hero />

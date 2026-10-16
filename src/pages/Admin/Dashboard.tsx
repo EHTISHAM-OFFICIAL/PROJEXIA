@@ -38,7 +38,7 @@ export default function Dashboard() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
           <p className="mt-1.5 text-sm text-content-secondary">
-            Everything currently in the MECTEC system.
+            Everything currently in the ProjexiaHub system.
           </p>
         </div>
         <ButtonLink to="/admin/projects/new" size="sm">

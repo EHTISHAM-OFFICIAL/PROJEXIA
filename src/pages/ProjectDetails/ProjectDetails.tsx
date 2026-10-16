@@ -245,7 +245,7 @@ export default function ProjectDetails() {
             <div className="card mt-5 p-5">
               <h2 className="text-base font-semibold tracking-tight">Want something like this?</h2>
               <p className="mt-2 text-sm leading-relaxed text-content-secondary">
-                MECTEC can adapt this build to your requirements, or design something new.
+                ProjexiaHub can adapt this build to your requirements, or design something new.
               </p>
               <ButtonLink to="/request-project" size="sm" className="mt-4 w-full">
                 Request a similar project

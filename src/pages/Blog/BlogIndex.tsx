@@ -15,8 +15,8 @@ export default function BlogIndex() {
   return (
     <>
       <Seo
-        title="MECTEC Electronics Blog"
-        description="Electronics guides, project build logs and practical notes from MECTEC on embedded systems, IoT, automation, robotics and prototyping."
+        title="ProjexiaHub Electronics Blog"
+        description="Electronics guides, project build logs and practical notes from ProjexiaHub on embedded systems, IoT, automation, robotics and prototyping."
         path="/blog"
       />
 

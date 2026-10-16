@@ -83,7 +83,7 @@ export default function Register() {
               </Link>
               <h1 className="mt-8 text-3xl font-semibold tracking-tight">Create your account</h1>
               <p className="mt-3 text-sm leading-relaxed text-content-secondary">
-                One account for your MECTEC project requests.
+                One account for your ProjexiaHub project requests.
               </p>
             </div>
 

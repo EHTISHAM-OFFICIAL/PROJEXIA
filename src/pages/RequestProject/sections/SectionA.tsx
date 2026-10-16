@@ -15,7 +15,7 @@ export function SectionA({ form }: { form: UseFormReturn<ProjectRequestFormValue
       id="contact"
       step={1}
       title="How to reach you"
-      description="So MECTEC can reply. Your details are never published or shared."
+      description="So ProjexiaHub can reply. Your details are never published or shared."
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Full name" htmlFor="fullName" required error={errors.fullName?.message}>
