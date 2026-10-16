@@ -63,12 +63,6 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
     nextIcon.href = iconHref;
     if (!icon) document.head.appendChild(nextIcon);
 
-    const appleIcon = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]');
-    if (appleIcon) {
-      appleIcon.href = settings.showFavicon
-        ? settings.faviconUrl
-        : "/favicon.ico";
-    }
   }, [settings.faviconUrl, settings.showFavicon]);
 
   const saveSettings = useCallback(async (nextSettings: SiteSettings) => {
