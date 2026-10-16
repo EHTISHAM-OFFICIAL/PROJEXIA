@@ -13,7 +13,7 @@ export function Wordmark({ size = "md" }: WordmarkProps) {
     <span className="inline-flex items-center gap-2.5">
       {settings.showSiteLogo && (
         <img
-          src={settings.siteLogoUrl || "/icons/logo-mark.svg"}
+          src={settings.siteLogoUrl || "/icons/logo-mark.svg?v=2"}
           alt=""
           width={32}
           height={32}
