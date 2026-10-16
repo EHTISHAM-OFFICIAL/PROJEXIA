@@ -226,7 +226,7 @@ export function LibraryMultiSelect({
           aria-label={`Custom ${label}`}
         />
         <button type="button" onClick={() => void add(custom)} disabled={!custom.trim() || savingCustom} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-line px-3 text-sm disabled:opacity-40">
-          <Check size={14} /> Add
+          <Check size={14} /> {savingCustom ? 'Saving…' : 'Add'}
         </button>
       </div>
       {search.trim() && !exactMatch && !alreadySelected && (
