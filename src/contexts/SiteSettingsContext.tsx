@@ -39,6 +39,27 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  useEffect(() => {
+    const iconHref = settings.showFavicon
+      ? settings.faviconUrl
+      : "/favicon.ico";
+    const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    const nextIcon = icon ?? document.createElement("link");
+    nextIcon.rel = "icon";
+    nextIcon.type = settings.showFavicon && settings.faviconUrl.endsWith(".svg")
+      ? "image/svg+xml"
+      : "image/png";
+    nextIcon.href = iconHref;
+    if (!icon) document.head.appendChild(nextIcon);
+
+    const appleIcon = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]');
+    if (appleIcon) {
+      appleIcon.href = settings.showFavicon
+        ? settings.faviconUrl
+        : "/favicon.ico";
+    }
+  }, [settings.faviconUrl, settings.showFavicon]);
+
   const saveSettings = useCallback(async (nextSettings: SiteSettings) => {
     await saveSiteSettings(nextSettings);
     setSettings(nextSettings);
