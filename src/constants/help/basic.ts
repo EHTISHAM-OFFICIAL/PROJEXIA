@@ -559,7 +559,7 @@ export const BASIC_HELP: HelpEntry[] = [
       "located",
       "find",
       "mectec",
-    "projexiahub",
+      "projexiahub",
     ],
     answer:
       "ProjexiaHub location details are not listed in the Help Assistant yet. Please use the Contact section of the website for the latest location information.",
