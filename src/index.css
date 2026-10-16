@@ -6,7 +6,7 @@
 
 /*
 
-* MECTEC GLOBAL THEME
+* ProjexiaHub GLOBAL THEME
 *
 * Both themes are controlled entirely through CSS variables.
 * Tailwind's semantic color classes continue to work because the
@@ -24,7 +24,7 @@
 
 :root {
   /* ================================================================
-MECTEC DARK THEME
+ProjexiaHub DARK THEME
 ================================================================ */
 
   /* Main surfaces */
@@ -36,7 +36,7 @@ MECTEC DARK THEME
   --color-line: 42 46 54;
   --color-line-strong: 65 70 80;
 
-  /* MECTEC primary copper accent */
+  /* ProjexiaHub primary copper accent */
   --color-accent: 232 126 54;
   --color-accent-hover: 248 148 72;
   --color-accent-subtle: rgba(232, 126, 54, 0.14);
@@ -65,7 +65,7 @@ MECTEC DARK THEME
 
 [data-theme="light"] {
   /* ================================================================
-MECTEC LIGHT THEME
+ProjexiaHub LIGHT THEME
 ================================================================ */
 
   /* Main surfaces */
@@ -77,7 +77,7 @@ MECTEC LIGHT THEME
   --color-line: 224 221 215;
   --color-line-strong: 196 191 182;
 
-  /* MECTEC primary copper accent */
+  /* ProjexiaHub primary copper accent */
   --color-accent: 198 91 35;
   --color-accent-hover: 171 72 25;
   --color-accent-subtle: rgba(198, 91, 35, 0.1);
@@ -241,7 +241,7 @@ disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   /* ================================================================
-MECTEC ANNOUNCEMENT MARQUEE
+ProjexiaHub ANNOUNCEMENT MARQUEE
 ================================================================ */
 
   .mectec-marquee {
@@ -260,7 +260,7 @@ MECTEC ANNOUNCEMENT MARQUEE
 }
 
 /* ================================================================
-MECTEC ANNOUNCEMENT MARQUEE KEYFRAMES
+ProjexiaHub ANNOUNCEMENT MARQUEE KEYFRAMES
 ================================================================ */
 
 @keyframes mectec-marquee {

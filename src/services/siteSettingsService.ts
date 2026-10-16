@@ -44,15 +44,20 @@ export function normalizeSiteSettings(value: unknown): SiteSettings {
       ? (value as Record<string, unknown>)
       : {};
 
+  const savedName = typeof source.name === "string" ? source.name.trim() : "";
+  const name =
+    !savedName || /^(mectec|mectec electronics)$/i.test(savedName)
+      ? DEFAULT_SITE_SETTINGS.name
+      : savedName;
+  const savedDescription =
+    typeof source.description === "string" ? source.description.trim() : "";
+  const description = savedDescription
+    ? savedDescription.replace(/mectec/gi, name)
+    : DEFAULT_SITE_SETTINGS.description;
+
   return {
-    name:
-      typeof source.name === "string" && source.name.trim()
-        ? source.name.trim()
-        : DEFAULT_SITE_SETTINGS.name,
-    description:
-      typeof source.description === "string" && source.description.trim()
-        ? source.description.trim()
-        : DEFAULT_SITE_SETTINGS.description,
+    name,
+    description,
     email: typeof source.email === "string" ? source.email : DEFAULT_SITE_SETTINGS.email,
     phone: typeof source.phone === "string" ? source.phone : DEFAULT_SITE_SETTINGS.phone,
     whatsapp: typeof source.whatsapp === "string" ? source.whatsapp : DEFAULT_SITE_SETTINGS.whatsapp,
