@@ -26,6 +26,9 @@ export function LibraryMultiSelect({
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [loadError, setLoadError] = useState('');
+  const [customSaveError, setCustomSaveError] = useState('');
+  const [customSaveNotice, setCustomSaveNotice] = useState('');
+  const [savingCustom, setSavingCustom] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -74,13 +77,51 @@ export function LibraryMultiSelect({
   const exactMatch = items.some((item) => normalizeLibraryName(item.name) === normalizeLibraryName(search));
   const alreadySelected = values.some((value) => normalizeLibraryName(value) === normalizeLibraryName(search));
 
-  const add = (name: string) => {
+  const add = async (name: string) => {
     const clean = name.trim();
-    if (clean && !values.some((value) => normalizeLibraryName(value) === normalizeLibraryName(clean))) {
-      const selectedItem = items.find((item) => normalizeLibraryName(item.name) === normalizeLibraryName(clean));
+    if (!clean) return;
+
+    const selectedItem = items.find((item) => normalizeLibraryName(item.name) === normalizeLibraryName(clean));
+    const alreadyInProject = values.some((value) => normalizeLibraryName(value) === normalizeLibraryName(clean));
+    setCustomSaveError('');
+    setCustomSaveNotice('');
+
+    let resolvedItem = selectedItem;
+    const shouldSaveCustom = !selectedItem && ['component', 'objective', 'challenge'].includes(kind);
+    if (shouldSaveCustom && !alreadyInProject) {
+      setSavingCustom(true);
+      try {
+        resolvedItem = await projectLibraryService.addCustom({
+          name: clean,
+          kind,
+          category: '',
+          description: '',
+          unit: '',
+          defaultValue: '',
+          active: true,
+        });
+        setItems((current) => current.some((item) => normalizeLibraryName(item.name) === normalizeLibraryName(clean))
+          ? current
+          : [...current, resolvedItem!].sort((a, b) => a.name.localeCompare(b.name)));
+        setCustomSaveNotice(`Saved “${clean}” to the reusable library.`);
+      } catch (caught) {
+        setCustomSaveError(caught instanceof Error ? caught.message : 'Could not save this custom item to the reusable library.');
+        setSavingCustom(false);
+        return;
+      } finally {
+        setSavingCustom(false);
+      }
+    }
+
+    if (!alreadyInProject) {
       const nextValues = [...values, clean];
-      const selectedItems = nextValues.map((value) => items.find((item) => normalizeLibraryName(item.name) === normalizeLibraryName(value))).filter((item): item is ProjectLibraryItem => Boolean(item));
-      onChange(nextValues, selectedItem, selectedItems);
+      const availableItems = resolvedItem && !items.some((item) => item.id === resolvedItem!.id)
+        ? [...items, resolvedItem]
+        : items;
+      const selectedItems = nextValues
+        .map((value) => availableItems.find((item) => normalizeLibraryName(item.name) === normalizeLibraryName(value)))
+        .filter((item): item is ProjectLibraryItem => Boolean(item));
+      onChange(nextValues, resolvedItem, selectedItems);
     }
     setCustom('');
     setSearch('');
@@ -140,6 +181,8 @@ export function LibraryMultiSelect({
       </div>
 
       {loadError && <p className="text-xs text-state-warning">{loadError}</p>}
+      {customSaveError && <p role="alert" className="text-xs text-state-danger">{customSaveError}</p>}
+      {customSaveNotice && <p role="status" className="text-xs text-state-success">{customSaveNotice}</p>}
 
       {isOpen && (
         <div id={`library-options-${kind}`} role="listbox" aria-label={`${label} suggestions`} className="max-h-64 overflow-auto rounded-lg border border-line bg-surface shadow-lg">
@@ -176,18 +219,18 @@ export function LibraryMultiSelect({
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
               event.preventDefault();
-              add(custom);
+              void add(custom);
             }
           }}
           placeholder={`Add custom ${label.toLocaleLowerCase()}`}
           aria-label={`Custom ${label}`}
         />
-        <button type="button" onClick={() => add(custom)} disabled={!custom.trim()} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-line px-3 text-sm disabled:opacity-40">
-          <Check size={14} /> Add
+        <button type="button" onClick={() => void add(custom)} disabled={!custom.trim() || savingCustom} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-line px-3 text-sm disabled:opacity-40">
+          <Check size={14} /> {savingCustom ? 'Saving…' : 'Add'}
         </button>
       </div>
       {search.trim() && !exactMatch && !alreadySelected && (
-        <button type="button" onClick={() => add(search)} className="inline-flex w-fit items-center gap-2 rounded-md border border-line px-3 py-2 text-sm hover:bg-surface-raised">
+        <button type="button" onClick={() => void add(search)} disabled={savingCustom} className="inline-flex w-fit items-center gap-2 rounded-md border border-line px-3 py-2 text-sm hover:bg-surface-raised">
           <Plus size={14} /> Add “{search.trim()}” as a custom item
         </button>
       )}

@@ -77,6 +77,57 @@ export const projectLibraryService = {
       .sort((a, b) => a.name.localeCompare(b.name));
   },
 
+  /**
+   * Add a custom value from the project form to the shared library.
+   * Existing stored entries are reused (and reactivated if needed), while
+   * matching starter-catalog entries are reused without creating duplicates.
+   */
+  async addCustom(draft: ProjectLibraryDraft): Promise<ProjectLibraryItem> {
+    const name = draft.name.trim();
+    if (!name) throw new Error('Enter a name for this library item.');
+
+    const existing = await getDocs(query(libraryRef, where('kind', '==', draft.kind)));
+    const match = existing.docs.find((entry) =>
+      normalizeName(String(entry.data().name ?? '')) === normalizeName(name)
+    );
+    if (match) {
+      const data = match.data();
+      if (data.active === false) {
+        await updateDoc(match.ref, { active: true, updatedAt: serverTimestamp() });
+      }
+      return toItem(match.id, { ...data, active: true });
+    }
+
+    const starterIndex = PROJECT_LIBRARY_STARTER.findIndex((item) =>
+      item.kind === draft.kind && normalizeName(item.name) === normalizeName(name)
+    );
+    if (starterIndex >= 0) {
+      return { ...PROJECT_LIBRARY_STARTER[starterIndex], id: `starter-${draft.kind}-${starterIndex}` };
+    }
+
+    const payload = {
+      ...draft,
+      name,
+      category: draft.category.trim(),
+      description: draft.description.trim(),
+      unit: draft.unit.trim(),
+      defaultValue: draft.defaultValue.trim(),
+      active: true,
+      updatedAt: serverTimestamp(),
+    };
+    const created = await addDoc(libraryRef, { ...payload, createdAt: serverTimestamp() });
+    return {
+      id: created.id,
+      name,
+      kind: draft.kind,
+      category: payload.category,
+      description: payload.description,
+      unit: payload.unit,
+      defaultValue: payload.defaultValue,
+      active: true,
+    };
+  },
+
   async save(draft: ProjectLibraryDraft, id?: string): Promise<void> {
     const name = draft.name.trim();
     if (!name) throw new Error('Enter a name for this library item.');
