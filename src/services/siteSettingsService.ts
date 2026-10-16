@@ -30,8 +30,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   showPhone: true,
   showWhatsapp: true,
   showAddress: true,
-  siteLogoUrl: "/icons/logo-mark.svg",
-  faviconUrl: "/favicon.svg",
+  siteLogoUrl: "/icons/logo-mark.svg?v=2",
+  faviconUrl: "/favicon.svg?v=2",
   showSiteLogo: true,
   showFavicon: true,
 };
