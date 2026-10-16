@@ -219,7 +219,7 @@ export function LibraryMultiSelect({
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
               event.preventDefault();
-              add(custom);
+              void add(custom);
             }
           }}
           placeholder={`Add custom ${label.toLocaleLowerCase()}`}
