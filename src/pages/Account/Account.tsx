@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { LogOut, UserRound } from 'lucide-react';
+import { LogOut, RefreshCw, UserRound } from 'lucide-react';
 import { Container } from '../../components/ui/Container';
 import { Button } from '../../components/ui/Button';
 import { ButtonLink } from '../../components/ui/Button';
@@ -9,7 +9,7 @@ import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 export default function Account() {
   const { settings } = useSiteSettings();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, refreshAccount, refreshingAccount, accountError } = useAuth();
 
   if (!user) return null;
 
@@ -21,7 +21,7 @@ export default function Account() {
           <div>
             <p className="text-sm font-medium text-accent">{settings.name} account</p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-              {profile?.username || 'My account'}
+              {profile?.username || user.displayName || 'My account'}
             </h1>
             <p className="mt-3 text-sm text-content-secondary">
               Manage your project requests and account access.
@@ -49,13 +49,33 @@ export default function Account() {
             <dl className="mt-4 space-y-3 text-sm">
               <div className="flex items-start justify-between gap-4">
                 <dt className="text-content-secondary">Username</dt>
-                <dd className="min-w-0 max-w-[65%] break-words text-right font-medium text-content">{profile?.username || '—'}</dd>
+                <dd className="min-w-0 max-w-[65%] break-words text-right font-medium text-content">{profile?.username || user.displayName || '—'}</dd>
               </div>
               <div className="flex items-start justify-between gap-4">
                 <dt className="text-content-secondary">Account email</dt>
-                <dd className="min-w-0 max-w-[65%] break-all text-right font-medium text-content">{profile?.recoveryEmail || '—'}</dd>
+                <dd className="min-w-0 max-w-[65%] break-all text-right font-medium text-content">{profile?.recoveryEmail || user.email || '—'}</dd>
               </div>
             </dl>
+            <div className="mt-5 border-t border-line pt-4">
+              <p className="text-xs leading-relaxed text-content-secondary">
+                Username or email missing? Refresh your account details to reload them.
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  disabled={refreshingAccount}
+                  onClick={() => void refreshAccount()}
+                >
+                  <span className="flex items-center gap-2">
+                    <RefreshCw size={14} className={refreshingAccount ? 'animate-spin' : ''} />
+                    {refreshingAccount ? 'Refreshing…' : 'Refresh account'}
+                  </span>
+                </Button>
+                {accountError && <p role="status" className="text-xs text-content-secondary">{accountError}</p>}
+              </div>
+            </div>
           </div>
         </div>
 
