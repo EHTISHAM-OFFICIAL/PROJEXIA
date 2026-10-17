@@ -14,6 +14,8 @@ interface ProjectFiltersProps {
   filters: Filters;
   onChange: (filters: Filters) => void;
   technologies: string[];
+  difficulties: string[];
+  statuses: string[];
   /** Count of published projects per category, so chips can show "IoT (5)". */
   categoryCounts: Record<string, number>;
   totalCount: number;
@@ -24,6 +26,8 @@ export function ProjectFilters({
   filters,
   onChange,
   technologies,
+  difficulties,
+  statuses,
   categoryCounts,
   totalCount,
   resultCount,
@@ -39,6 +43,14 @@ export function ProjectFilters({
   ].filter(Boolean).length;
 
   const hasAnyFilter = activeCount > 0 || filters.search !== '';
+  const difficultyOptions = [
+    ...PROJECT_DIFFICULTIES,
+    ...difficulties.filter((value) => !PROJECT_DIFFICULTIES.some((option) => option.value === value)).map((value) => ({ value, label: value })),
+  ];
+  const statusOptions = [
+    ...PROJECT_STATUSES,
+    ...statuses.filter((value) => !PROJECT_STATUSES.some((option) => option.value === value)).map((value) => ({ value, label: value })),
+  ];
 
   // Only categories that actually have a published project — no dead-end
   // chips pointing at an empty result.
@@ -107,14 +119,14 @@ export function ProjectFilters({
           onChange={(event) => update('technology', event.target.value)}
         />
         <Select
-          options={PROJECT_DIFFICULTIES}
+          options={difficultyOptions}
           placeholder="Any difficulty"
           value={filters.difficulty}
           aria-label="Filter by difficulty"
           onChange={(event) => update('difficulty', event.target.value)}
         />
         <Select
-          options={PROJECT_STATUSES}
+          options={statusOptions}
           placeholder="Any status"
           value={filters.status}
           aria-label="Filter by status"
