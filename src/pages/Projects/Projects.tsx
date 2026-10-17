@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageIntro } from '../../components/ui/PageIntro';
 import { useSearchParams } from 'react-router-dom';
 import { FolderSearch } from 'lucide-react';
 import { Container } from '../../components/ui/Container';
@@ -64,15 +65,11 @@ export default function Projects() {
         path="/projects"
       />
 
-      <div className="border-b border-line">
-        <Container className="py-14 sm:py-20">
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Projects</h1>
-          <p className="mt-4 max-w-prose text-base leading-relaxed text-content-secondary">
-            Every build is written up as a case study: the problem, the approach, the components and
-            what the finished system does. Filter by platform, difficulty or status.
-          </p>
-        </Container>
-      </div>
+      <PageIntro
+        eyebrow="Project library"
+        title="Projects"
+        description="Every build is written up as a case study: the problem, the approach, the components and what the finished system does. Filter by platform, difficulty or status."
+      />
 
       <Container className="py-10 sm:py-12">
         <ProjectFilters
