@@ -27,9 +27,9 @@ export default function BlogIndex() {
         description="Practical electronics guides, build logs, and notes from projects in progress."
       />
 
-      <Container className="py-12">
+      <Container className="py-8 sm:py-12">
         {loading && (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {Array.from({ length: 3 }, (_, index) => (
               <Skeleton key={index} className="aspect-[4/3] w-full" />
             ))}
@@ -46,23 +46,23 @@ export default function BlogIndex() {
         )}
 
         {!loading && !error && data && data.length > 0 && (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {data.map((post) => (
               <Link
                 key={post.id}
                 to={`/blog/${post.slug}`}
-                className="card group overflow-hidden transition-colors hover:border-line-strong"
+                className="card group min-w-0 overflow-hidden transition-colors hover:border-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
               >
                 {post.coverImageUrl && (
                   <div className="aspect-[16/10] overflow-hidden bg-surface-raised">
                     <Image
                       src={post.coverImageUrl}
                       alt={post.coverImageAlt || post.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
                     />
                   </div>
                 )}
-                <div className="p-5">
+                <div className="p-4 sm:p-5">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-mono text-xs text-content-muted">{formatDate(post.createdAt)}</p>
                     {post.category && <Badge tone="neutral">{post.category}</Badge>}
