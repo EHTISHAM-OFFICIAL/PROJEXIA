@@ -64,7 +64,7 @@ export function ProjectCard({ project }: { project: Project }) {
             </ul>
           )}
 
-          <div className="mt-auto flex min-w-0 items-center justify-between gap-3 border-t border-line pt-4 mt-5">
+          <div className="mt-auto flex min-w-0 items-center justify-between gap-3 border-t border-line pt-4">
             <span className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-content-muted">
               <span>{formatShortDate(project.completedAt ?? project.createdAt)}</span>
               {project.viewCount > 0 && (
