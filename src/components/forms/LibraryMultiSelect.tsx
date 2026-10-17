@@ -217,10 +217,11 @@ export function LibraryMultiSelect({
                   type="button"
                   onClick={() => { setEditingIndex(index); setEditedValue(value); }}
                   aria-label={`Format ${value}`}
-                  title="Format text"
-                  className="shrink-0 rounded-md p-1.5 text-content-muted hover:bg-surface-raised hover:text-content"
+                  title="Open bold, italic and underline formatting tools"
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-line px-2 py-1.5 text-xs font-medium text-content-secondary hover:bg-surface-raised hover:text-content"
                 >
                   <Pencil size={14} />
+                  <span>Format text</span>
                 </button>
                 <button type="button" onClick={() => { onChange(values.filter((_, itemIndex) => itemIndex !== index)); if (editingIndex === index) setEditingIndex(null); }} aria-label={`Remove ${value}`} className="shrink-0 rounded-md p-1.5 text-content-muted hover:text-content">
                   <X size={14} />
