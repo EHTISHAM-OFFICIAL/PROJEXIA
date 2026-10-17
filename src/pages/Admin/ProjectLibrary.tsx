@@ -22,6 +22,8 @@ const KINDS: { value: ProjectLibraryKind; label: string }[] = [
   { value: 'subcategory', label: 'Subcategories' },
   { value: 'protocol', label: 'Protocols' },
   { value: 'application', label: 'Applications' },
+  { value: 'difficulty', label: 'Difficulty levels' },
+  { value: 'status', label: 'Project statuses' },
 ];
 const EMPTY: ProjectLibraryDraft = { name: '', kind: 'component', category: '', description: '', unit: '', defaultValue: '', active: true };
 
@@ -94,7 +96,7 @@ export default function ProjectLibrary() {
       </header>
       {(error || notice) && <div className="mt-5"><Alert tone={error ? 'danger' : 'success'}>{error || notice}</Alert></div>}
       <div className="mt-6 flex flex-col gap-3 rounded-xl border border-line bg-surface-raised p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><h2 className="font-semibold">Starter electronics catalog</h2><p className="mt-1 text-sm text-content-secondary">Add common electronics components, specifications, technologies, tools, tags, and features. Existing library entries are preserved.</p></div>
+        <div><h2 className="font-semibold">Starter electronics catalog</h2><p className="mt-1 text-sm text-content-secondary">Manage reusable project options, including categories, subcategories, difficulty levels, statuses, components, specifications, technologies, tools, tags, and features. Existing entries are preserved.</p></div>
         <Button type="button" variant="secondary" onClick={() => void seedCatalog()} disabled={seeding}><Database size={15} /> {seeding ? "Adding catalog…" : "Add starter catalog"}</Button>
       </div>
       <form onSubmit={submit} className="mt-7 grid gap-4 rounded-xl border border-line p-4 sm:grid-cols-2">
@@ -103,7 +105,7 @@ export default function ProjectLibrary() {
         <Field label="Type" required><Select options={KINDS} value={draft.kind} onChange={(event) => setDraft({ ...draft, kind: event.target.value as ProjectLibraryKind })} /></Field>
         <Field
           label={draft.kind === 'component' ? 'Component type' : 'Category'}
-          hint={draft.kind === 'component' ? 'This is copied into the project component Type field.' : 'Optional grouping used to organize library suggestions.'}
+          hint={draft.kind === 'component' ? 'This is copied into the project component Type field.' : 'For subcategories, use this field to link the subcategory to a parent project category. For other options, it is an optional grouping.'}
         >
           <TextInput maxLength={80} value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} placeholder={draft.kind === 'component' ? 'e.g. Sensor, controller, motor driver' : 'e.g. Microcontrollers'} />
         </Field>
