@@ -573,7 +573,7 @@ export default function ProjectForm() {
               onChange={(rows) => update('specifications', rows)}
               columns={[
                 { key: 'label', label: 'Label' },
-                { key: 'value', label: 'Value', type: 'richtext' },
+                { key: 'value', label: 'Value', type: 'richtext', inlineOnly: true },
               ]}
             />
           </FieldSet>
