@@ -548,7 +548,7 @@ export default function ProjectForm() {
                 { key: 'name', label: 'Name' },
                 { key: 'category', label: 'Type' },
                 { key: 'quantity', label: 'Quantity', width: 'w-28' },
-                { key: 'notes', label: 'Notes' },
+                { key: 'notes', label: 'Notes', type: 'richtext' },
                 { key: 'optional', label: 'Optional', type: 'checkbox', width: 'w-28' },
               ]}
             />
@@ -573,7 +573,7 @@ export default function ProjectForm() {
               onChange={(rows) => update('specifications', rows)}
               columns={[
                 { key: 'label', label: 'Label' },
-                { key: 'value', label: 'Value' },
+                { key: 'value', label: 'Value', type: 'richtext' },
               ]}
             />
           </FieldSet>
