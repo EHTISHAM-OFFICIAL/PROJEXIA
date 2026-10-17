@@ -17,7 +17,15 @@ export const PROJECT_CATEGORIES = [
 
 /** Sort alphabetically, while keeping the catch-all category at the end. */
 export function sortProjectCategories(categories: Iterable<string>): string[] {
-  return [...new Set([...categories].map((category) => category.trim()).filter(Boolean))].sort((a, b) => {
+  const unique = new Map<string, string>();
+  for (const rawCategory of categories) {
+    const category = rawCategory.trim();
+    if (!category) continue;
+    const key = category.toLocaleLowerCase();
+    if (!unique.has(key)) unique.set(key, category);
+  }
+
+  return [...unique.values()].sort((a, b) => {
     const aOther = /^(other|others)$/i.test(a);
     const bOther = /^(other|others)$/i.test(b);
     if (aOther !== bOther) return aOther ? 1 : -1;
