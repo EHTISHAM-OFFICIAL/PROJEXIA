@@ -195,7 +195,7 @@ service cloud.firestore {
           && isOptionalString(incoming.contact.phone, 30)
           && isOptionalString(incoming.contact.whatsapp, 30)
           && isString(incoming.project.title, 120)
-          && isString(incoming.project.description, 5000)
+          && isString(incoming.project.description, 10000)
           && isString(incoming.project.category, 60)
 
           // Attachments are metadata only; the files themselves live in
@@ -455,7 +455,7 @@ service cloud.firestore {
         // Project library entries can include detailed formatted text.
         // Keep a generous per-entry ceiling while respecting Firestore's
         // overall 1 MiB document-size limit.
-        && request.resource.data.name.size() <= 5000
+        && request.resource.data.name.size() <= 10000
         && request.resource.data.category is string
         && request.resource.data.description is string
         && request.resource.data.unit is string
