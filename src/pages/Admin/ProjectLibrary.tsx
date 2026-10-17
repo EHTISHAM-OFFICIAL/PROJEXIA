@@ -27,7 +27,6 @@ const KINDS: { value: ProjectLibraryKind; label: string }[] = [
   { value: 'challenge', label: 'Challenges' },
 ];
 const EMPTY: ProjectLibraryDraft = { name: '', kind: 'component', category: '', description: '', unit: '', defaultValue: '', active: true };
-const normalizeName = (value: string) => value.trim().toLocaleLowerCase().replace(/\\s+/g, ' ');
 const isCatchAll = (name: string) => /^(other|others)$/i.test(name.trim());
 
 function sortLibraryItems(items: ProjectLibraryItem[]) {
