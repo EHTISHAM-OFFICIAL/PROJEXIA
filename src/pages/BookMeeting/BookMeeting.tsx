@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PageIntro } from '../../components/ui/PageIntro';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarDays, CheckCircle2, Clock3, Video } from 'lucide-react';
@@ -70,11 +71,11 @@ export default function BookMeeting() {
   };
   return <>
     <Seo title="Book a Meeting with ProjexiaHub" description="Request a meeting with ProjexiaHub to discuss an electronics project, technical question, or existing project request." path="/book-meeting"/>
-    <div className="border-b border-line"><Container className="py-14 sm:py-20">
-      <p className="text-sm font-medium text-accent">Talk with ProjexiaHub</p>
-      <h1 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Book a Meeting</h1>
-      <p className="mt-4 max-w-2xl text-base leading-relaxed text-content-secondary">Choose a preferred time and tell us what you want to discuss. This is a meeting request, not an instant calendar booking — ProjexiaHub will review it and confirm the meeting.</p>
-    </Container></div>
+    <PageIntro
+      eyebrow="Talk with ProjexiaHub"
+      title="Book a Meeting"
+      description="Choose a preferred time and tell us what you want to discuss. This is a meeting request, not an instant calendar booking — ProjexiaHub will review it and confirm the meeting."
+    />
     <Container className="py-14"><div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-16"><div>
       {sent ? <div className="rounded-card border border-state-success/25 bg-state-success/5 p-8"><CheckCircle2 size={24} className="text-state-success"/><h2 className="mt-4 text-2xl font-semibold">Meeting request received</h2><p className="mt-3 max-w-prose text-sm leading-relaxed text-content-secondary">Thanks. ProjexiaHub will review your preferred time and contact you using the details you provided to confirm the meeting.</p><div className="mt-6 flex flex-col gap-3 sm:flex-row"><Button variant="secondary" size="sm" onClick={()=>setSent(false)}>Request another meeting</Button><ButtonLink to="/request-project" size="sm">Request a project</ButtonLink></div></div> :
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-8">{error&&<Alert tone="danger">{error}</Alert>}
