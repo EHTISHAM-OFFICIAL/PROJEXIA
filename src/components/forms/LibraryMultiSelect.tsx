@@ -184,6 +184,7 @@ export function LibraryMultiSelect({
                 <RichTextEditor
                   id={`library-entry-${kind}-${index}`}
                   rows={3}
+                  inlineOnly
                   value={editedValue}
                   onChange={setEditedValue}
                   placeholder={`Format this ${label.toLocaleLowerCase()} entry…`}
