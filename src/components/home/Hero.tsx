@@ -15,10 +15,10 @@ export function Hero() {
     <section className="relative overflow-hidden border-b border-line">
       <div className="absolute inset-0 grid-backdrop" aria-hidden="true" />
 
-      <Container className="relative py-20 sm:py-28 lg:py-32">
-        <div className="grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-10">
-          <div className="max-w-2xl animate-fade-up">
-            <h1 className="text-4xl font-semibold leading-[1.06] tracking-tight sm:text-5xl lg:text-[3.4rem]">
+      <Container className="relative py-12 sm:py-20 lg:py-32">
+        <div className="grid min-w-0 gap-8 sm:gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-10">
+          <div className="min-w-0 max-w-2xl animate-fade-up">
+            <h1 className="text-[clamp(2.15rem,8.5vw,3rem)] font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
               Turning ideas into{" "}
               <span className="bg-gradient-to-r from-accent via-accent2 to-accent bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-pan">
                 working electronic & mechanical systems
@@ -28,17 +28,17 @@ export function Hero() {
                 aria-hidden="true"
               />
             </h1>
-            <p className="mt-6 max-w-prose text-lg leading-relaxed text-content-secondary">
+            <p className="mt-4 max-w-prose text-base leading-relaxed text-content-secondary sm:mt-6 sm:text-lg">
               {settings.name} designs and builds custom electronics — embedded
               systems, IoT devices, automation and robotics. From a rough idea
               to a tested prototype you can hold in your hand.
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink to="/projects" size="lg">
+            <div className="mt-6 flex flex-col gap-3 sm:mt-9 sm:flex-row">
+              <ButtonLink to="/projects" size="lg" className="w-full sm:w-auto">
                 Explore projects
                 <ArrowRight size={17} aria-hidden="true" />
               </ButtonLink>
-              <ButtonLink to="/request-project" size="lg" variant="secondary">
+              <ButtonLink to="/request-project" size="lg" variant="secondary" className="w-full sm:w-auto">
                 Request a project
               </ButtonLink>
             </div>
@@ -48,19 +48,19 @@ export function Hero() {
               signal trace, grounded in what an electronics bench actually
               looks like, rather than generic decoration. */}
           <div
-            className="relative animate-fade-up"
+            className="relative min-w-0 animate-fade-up"
             style={{ animationDelay: "120ms" }}
           >
             <div className="overflow-hidden rounded-card border border-line bg-surface">
-              <div className="flex items-center justify-between border-b border-line px-4 py-3">
-                <span className="font-mono text-xs tracking-wide text-content-muted">
+              <div className="flex items-center justify-between gap-3 border-b border-line px-3 py-3 sm:px-4">
+                <span className="min-w-0 truncate font-mono text-[10px] tracking-wide text-content-muted sm:text-xs">
                   BENCH.TRACE — CH1
                 </span>
-                <div className="flex items-center gap-3">
+                <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                   {INDICATORS.map((indicator, index) => (
                     <span
                       key={indicator.label}
-                      className="flex items-center gap-1.5"
+                      className="flex items-center gap-1 sm:gap-1.5"
                     >
                       <span
                         className={`h-1.5 w-1.5 rounded-full ${indicator.tone} animate-pulse`}
@@ -77,7 +77,7 @@ export function Hero() {
 
               <svg
                 viewBox="0 0 400 220"
-                className="h-56 w-full sm:h-64"
+                className="h-44 w-full sm:h-64"
                 role="img"
                 aria-label="Decorative oscilloscope trace"
               >
@@ -129,8 +129,8 @@ export function Hero() {
                 />
               </svg>
 
-              <div className="flex items-center justify-between border-t border-line px-4 py-3">
-                <span className="font-mono text-xs text-content-muted">
+              <div className="flex items-center justify-center border-t border-line px-3 py-3 sm:px-4">
+                <span className="text-center font-mono text-[10px] leading-relaxed text-content-muted sm:text-xs">
                   REQUEST → BUILD → TEST → DELIVER
                 </span>
               </div>
