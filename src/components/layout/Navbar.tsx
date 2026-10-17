@@ -34,12 +34,12 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 border-b transition-colors duration-200',
-        scrolled || mobileOpen ? 'border-line bg-bg/85 backdrop-blur-md' : 'border-transparent'
+        'sticky top-0 z-50 border-b border-line/80 bg-bg/90 backdrop-blur-xl transition-[background-color,box-shadow] duration-200',
+        scrolled || mobileOpen ? 'shadow-[0_8px_24px_-18px_rgba(0,0,0,0.55)]' : 'shadow-none'
       )}
     >
       <Container>
-        <nav className="flex h-16 items-center justify-between" aria-label="Main">
+        <nav className="flex h-[4.25rem] items-center justify-between" aria-label="Main">
           <Link to="/" className="rounded-md">
             <Wordmark />
           </Link>
