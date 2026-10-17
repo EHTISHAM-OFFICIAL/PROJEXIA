@@ -22,7 +22,7 @@ export function CaseStudySection({
   );
 }
 
-function InlineText({ text }: { text: string }) {
+export function InlineText({ text, allowLinks = true }: { text: string; allowLinks?: boolean }) {
   const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\+\+[^+]+\+\+|\[[^\]]+\]\([^\)]+\))/g);
 
   return (
@@ -38,7 +38,7 @@ function InlineText({ text }: { text: string }) {
           return <em key={index}>{part.slice(1, -1)}</em>;
         }
         const link = part.match(/^\[([^\]]+)\]\(([^\)]+)\)$/);
-        if (link) {
+        if (link && allowLinks) {
           const [, label, href] = link;
           const internal = href.startsWith('/');
           return (
@@ -158,7 +158,7 @@ export function BulletList({ items }: { items: string[] }) {
       {items.map((item, index) => (
         <li key={index} className="flex gap-3 text-base leading-relaxed text-content-secondary">
           <span className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-accent" aria-hidden="true" />
-          {item}
+          <InlineText text={item} />
         </li>
       ))}
     </ul>
