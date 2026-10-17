@@ -73,7 +73,7 @@ export default function ProjectDetails() {
         modifiedTime={project.updatedAt?.toDate().toISOString() ?? null}
       />
 
-      <Container className="pt-10">
+      <Container className="pt-6 sm:pt-10">
         <Link
           to="/projects"
           className="inline-flex items-center gap-2 rounded-md py-2 text-sm text-content-secondary transition-colors hover:text-content"
@@ -83,7 +83,7 @@ export default function ProjectDetails() {
         </Link>
       </Container>
 
-      <Container className="pb-12 pt-6">
+      <Container className="pb-8 pt-4 sm:pb-12 sm:pt-6">
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone={STATUS_TONE[project.status] ?? 'neutral'}>{STATUS_LABEL[project.status] ?? project.status}</Badge>
           <Badge tone="accent">{project.category}</Badge>
@@ -91,18 +91,18 @@ export default function ProjectDetails() {
           {project.subcategory && <Badge>{project.subcategory}</Badge>}
         </div>
 
-        <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
+        <h1 className="mt-4 max-w-4xl text-3xl font-semibold leading-[1.12] tracking-tight sm:mt-5 sm:text-5xl">
           {project.title}
         </h1>
 
         {project.shortDescription && (
-          <p className="mt-5 max-w-prose text-lg leading-relaxed text-content-secondary">
+          <p className="mt-4 max-w-prose text-base leading-relaxed text-content-secondary sm:mt-5 sm:text-lg">
             {project.shortDescription}
           </p>
         )}
 
         {project.technologies.length > 0 && (
-          <ul className="mt-7 flex flex-wrap gap-2">
+          <ul className="mt-5 flex flex-wrap gap-2 sm:mt-7">
             {project.technologies.map((tech) => (
               <li key={tech}>
                 <Badge><InlineText text={tech} allowLinks={false} /></Badge>
@@ -136,13 +136,13 @@ export default function ProjectDetails() {
       </Container>
 
       {heroImage && (
-        <Container className="pb-14">
+        <Container className="pb-8 sm:pb-14">
           <div className="overflow-hidden rounded-card border border-line bg-surface-raised">
             <Image
               src={heroImage}
               alt={`${project.title} — illustrative project image`}
               eager
-              className="aspect-[16/9] w-full object-cover"
+              className="aspect-[4/3] w-full object-cover sm:aspect-[16/9]"
             />
             {media.gallery.length > 0 && (
               <div className="flex flex-col gap-3 border-t border-line bg-surface p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-5 sm:p-5">
@@ -169,9 +169,9 @@ export default function ProjectDetails() {
         </Container>
       )}
 
-      <Container className="pb-20">
-        <div className="grid min-w-0 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,340px)] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-12">
-          <div className="flex min-w-0 flex-col gap-10">
+      <Container className="pb-12 sm:pb-20">
+        <div className="grid min-w-0 gap-8 sm:gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,340px)] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-12">
+          <div className="order-2 flex min-w-0 flex-col gap-8 sm:gap-10 lg:order-1">
             <CaseStudySection title="Overview" empty={!project.description}>
               <Prose text={project.description} />
             </CaseStudySection>
@@ -246,8 +246,8 @@ export default function ProjectDetails() {
             </CaseStudySection>
           </div>
 
-          <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="card min-w-0 p-6">
+          <aside className="order-1 min-w-0 lg:sticky lg:top-24 lg:order-2 lg:self-start">
+            <div className="card min-w-0 p-4 sm:p-6">
               <h2 className="text-base font-semibold tracking-tight text-content">Project details</h2>
               <dl className="mt-4 overflow-hidden rounded-lg border border-line text-sm">
                 <DetailRow label="Status" value={STATUS_LABEL[project.status] ?? project.status} />
