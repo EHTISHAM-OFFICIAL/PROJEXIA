@@ -85,9 +85,9 @@ export default function ProjectDetails() {
 
       <Container className="pb-12 pt-6">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge tone={STATUS_TONE[project.status]}>{STATUS_LABEL[project.status]}</Badge>
+          <Badge tone={STATUS_TONE[project.status] ?? 'neutral'}>{STATUS_LABEL[project.status] ?? project.status}</Badge>
           <Badge tone="accent">{project.category}</Badge>
-          <Badge>{DIFFICULTY_LABEL[project.difficulty]}</Badge>
+          <Badge>{DIFFICULTY_LABEL[project.difficulty] ?? project.difficulty}</Badge>
           {project.subcategory && <Badge>{project.subcategory}</Badge>}
         </div>
 
@@ -250,9 +250,9 @@ export default function ProjectDetails() {
             <div className="card min-w-0 p-6">
               <h2 className="text-base font-semibold tracking-tight text-content">Project details</h2>
               <dl className="mt-4 flex flex-col gap-3.5 text-sm">
-                <DetailRow label="Status" value={STATUS_LABEL[project.status]} />
+                <DetailRow label="Status" value={STATUS_LABEL[project.status] ?? project.status} />
                 <DetailRow label="Category" value={project.category} />
-                <DetailRow label="Difficulty" value={DIFFICULTY_LABEL[project.difficulty]} />
+                <DetailRow label="Difficulty" value={DIFFICULTY_LABEL[project.difficulty] ?? project.difficulty} />
                 {project.completedAt && (
                   <DetailRow label="Completed" value={formatDate(project.completedAt)} />
                 )}
