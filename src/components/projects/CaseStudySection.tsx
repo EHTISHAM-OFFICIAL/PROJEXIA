@@ -149,7 +149,7 @@ export function Prose({ text }: { text: string }) {
 
   flushBullets();
 
-  return <div className="flex max-w-prose flex-col gap-2">{blocks}</div>;
+  return <div className="prose-content flex max-w-prose flex-col gap-2">{blocks}</div>;
 }
 
 export function BulletList({ items }: { items: string[] }) {
