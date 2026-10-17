@@ -143,7 +143,9 @@ export default function ProjectForm() {
   const categoryOptions = sortProjectCategories([...PROJECT_CATEGORIES, ...categoryLibrary, draft.category]);
   const subcategoryOptions = [...new Set([
     ...subcategoryLibrary
-      .filter((item) => !item.category || item.category === 'Project subcategories' || item.category === draft.category)
+      .filter((item) => !item.category
+        || item.category.toLocaleLowerCase() === 'project subcategories'
+        || item.category.trim().toLocaleLowerCase() === draft.category.trim().toLocaleLowerCase())
       .map((item) => item.name),
     ...(draft.subcategory ? [draft.subcategory] : []),
   ])].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
