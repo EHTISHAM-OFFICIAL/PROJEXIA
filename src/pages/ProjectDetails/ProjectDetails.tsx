@@ -283,8 +283,8 @@ export default function ProjectDetails() {
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex min-w-0 flex-col gap-1.5 border-b border-line pb-3 last:border-0 last:pb-0 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
-      <dt className="shrink-0 text-content-muted">{label}</dt>
-      <dd className="min-w-0 break-words text-left leading-relaxed text-content [overflow-wrap:anywhere] sm:text-right">{value}</dd>
+      <dt className="min-w-0 break-words text-content-muted [overflow-wrap:anywhere] sm:max-w-[45%]">{label}</dt>
+      <dd className="min-w-0 break-words text-left leading-relaxed text-content [overflow-wrap:anywhere] sm:flex-1 sm:text-right">{value}</dd>
     </div>
   );
 }
