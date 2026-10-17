@@ -41,6 +41,8 @@ export default function Projects() {
   const filtered = useFilteredProjects(data, effectiveFilters);
   const technologies = useTechnologyOptions(data);
   const categoryCounts = useCategoryCounts(data);
+  const difficulties = [...new Set((data ?? []).map((project) => project.difficulty))];
+  const statuses = [...new Set((data ?? []).map((project) => project.status))];
   const visible = filtered.slice(0, visibleCount);
   const hasMore = filtered.length > visibleCount;
 
@@ -77,6 +79,8 @@ export default function Projects() {
           filters={filters}
           onChange={setFilters}
           technologies={technologies}
+          difficulties={difficulties}
+          statuses={statuses}
           categoryCounts={categoryCounts}
           totalCount={data?.length ?? 0}
           resultCount={filtered.length}
