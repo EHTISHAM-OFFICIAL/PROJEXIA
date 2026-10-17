@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PageIntro } from '../../components/ui/PageIntro';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -278,18 +279,11 @@ export default function RequestProject() {
         path="/request-project"
       />
 
-      <div className="border-b border-line">
-        <Container className="py-14 sm:py-20">
-          <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-            Request a project
-          </h1>
-          <p className="mt-5 max-w-prose text-base leading-relaxed text-content-secondary">
-            Ten short sections. Only a handful of fields are required — skip anything technical you
-            aren't sure about, and ProjexiaHub will fill in the gaps when replying. Expect a response{' '}
-            {SITE.responseTime}.
-          </p>
-        </Container>
-      </div>
+      <PageIntro
+        eyebrow="Start a project"
+        title="Request a project"
+        description={<>Ten short sections. Only a handful of fields are required — skip anything technical you aren't sure about, and ProjexiaHub will fill in the gaps when replying. Expect a response {SITE.responseTime}.</>}
+      />
 
       <Container className="py-12">
         <div className="grid gap-12 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-16">
