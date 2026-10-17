@@ -7,7 +7,16 @@ import { projectLibraryService } from '../../services/projectLibraryService';
 import type { ProjectLibraryItem, ProjectLibraryKind } from '../../types/projectLibrary';
 import { PROJECT_LIBRARY_STARTER } from '../../constants/projectLibraryStarter';
 
-const normalizeLibraryName = (value: string) => value.trim().toLocaleLowerCase();
+const normalizeLibraryName = (value: string) => value
+  .replace(/^\s{0,3}#{1,3}\s+/gm, '')
+  .replace(/^\s*-\s+/gm, '')
+  .replace(/\*\*(.*?)\*\*/g, '$1')
+  .replace(/\+\+(.*?)\+\+/g, '$1')
+  .replace(/(^|[^*])\*([^*]+)\*/g, '$1$2')
+  .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+  .trim()
+  .toLocaleLowerCase()
+  .replace(/\s+/g, ' ');
 
 export function LibraryMultiSelect({
   kind,
@@ -84,7 +93,7 @@ export function LibraryMultiSelect({
   const add = async (name: string) => {
     const clean = name.trim();
     if (!clean) return;
-    const maxNameLength = 5000;
+    const maxNameLength = 10000;
     if (clean.length > maxNameLength) {
       setCustomSaveError(`This ${label.toLocaleLowerCase()} entry is too long. Use ${maxNameLength} characters or fewer.`);
       setCustomSaveNotice('');
@@ -189,7 +198,7 @@ export function LibraryMultiSelect({
                       setEditingIndex(null);
                       setEditedValue('');
                     }}
-                    disabled={!editedValue.trim() || editedValue.length > 5000}
+                    disabled={!editedValue.trim() || editedValue.length > 10000}
                     className="inline-flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-onAccent disabled:opacity-50"
                   >
                     <Check size={14} /> Save formatting
@@ -198,7 +207,7 @@ export function LibraryMultiSelect({
                     Cancel
                   </button>
                 </div>
-                {editedValue.length > 5000 && <p role="alert" className="text-xs text-state-danger">Keep each reusable entry to 5,000 characters or fewer.</p>}
+                {editedValue.length > 10000 && <p role="alert" className="text-xs text-state-danger">Keep each reusable entry to 5,000 characters or fewer.</p>}
               </div>
             ) : (
               <div className="flex min-w-0 items-start gap-2">
@@ -232,7 +241,7 @@ export function LibraryMultiSelect({
           onClick={() => setIsOpen(true)}
           onKeyDown={handleSearchKeyDown}
           placeholder={placeholder}
-          maxLength={5000}
+          maxLength={10000}
           className="pl-9 pr-9"
           role="combobox"
           aria-label={`Search ${label}`}
@@ -278,7 +287,7 @@ export function LibraryMultiSelect({
       <div className="flex gap-2">
         <TextInput
           value={custom}
-          maxLength={5000}
+          maxLength={10000}
           onChange={(event) => setCustom(event.target.value)}
           onFocus={() => setIsOpen(true)}
           onKeyDown={(event) => {
