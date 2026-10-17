@@ -19,6 +19,7 @@ export function RichTextEditor({
   rows = 5,
   placeholder,
   inlineOnly = false,
+  showToolbar = true,
 }: {
   id: string;
   value: string;
@@ -26,6 +27,7 @@ export function RichTextEditor({
   rows?: number;
   placeholder?: string;
   inlineOnly?: boolean;
+  showToolbar?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -87,7 +89,7 @@ export function RichTextEditor({
 
   return (
     <div className="overflow-hidden rounded-lg border border-line focus-within:border-accent/70 focus-within:ring-2 focus-within:ring-accent/15">
-      <div className="flex flex-wrap items-center gap-1 border-b border-line bg-surface px-2 py-1.5">
+      {showToolbar && <div className="flex flex-wrap items-center gap-1 border-b border-line bg-surface px-2 py-1.5">
         {visibleTools.map(({ format, label, shortcut, icon: Icon }) => (
           <button
             key={format}
@@ -103,7 +105,7 @@ export function RichTextEditor({
           </button>
         ))}
         <span className="ml-auto hidden text-xs text-content-muted md:inline">Select text, then format</span>
-      </div>
+      </div>}
       <TextArea
         ref={textareaRef}
         id={id}
