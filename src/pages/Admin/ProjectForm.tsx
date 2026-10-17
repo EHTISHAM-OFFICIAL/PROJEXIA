@@ -9,6 +9,7 @@ import { Skeleton } from '../../components/ui/Skeleton';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { Field, FieldSet } from '../../components/forms/Field';
 import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
+import { RichTextEditor } from '../../components/forms/RichTextEditor';
 import { Checkbox } from '../../components/forms/Choice';
 import { TableEditor } from '../../components/forms/ListEditor';
 import { LibraryMultiSelect } from '../../components/forms/LibraryMultiSelect';
@@ -333,20 +334,22 @@ export default function ProjectForm() {
 
         <Group title="The case study">
           <Field label="Overview" htmlFor="description" hint="Blank lines create new paragraphs.">
-            <TextArea
+            <RichTextEditor
               id="description"
               rows={6}
               value={draft.description}
-              onChange={(event) => update('description', event.target.value)}
+              onChange={(value) => update('description', value)}
+              placeholder="Describe the project, its purpose, and the overall build."
             />
           </Field>
 
           <Field label="Problem statement" htmlFor="problemStatement">
-            <TextArea
+            <RichTextEditor
               id="problemStatement"
               rows={4}
               value={draft.problemStatement}
-              onChange={(event) => update('problemStatement', event.target.value)}
+              onChange={(value) => update('problemStatement', value)}
+              placeholder="What problem does this project solve?"
             />
           </Field>
 
@@ -355,20 +358,22 @@ export default function ProjectForm() {
           </FieldSet>
 
           <Field label="Solution overview" htmlFor="solutionOverview">
-            <TextArea
+            <RichTextEditor
               id="solutionOverview"
               rows={4}
               value={draft.solutionOverview}
-              onChange={(event) => update('solutionOverview', event.target.value)}
+              onChange={(value) => update('solutionOverview', value)}
+              placeholder="Summarize the design approach and solution."
             />
           </Field>
 
           <Field label="How it works" htmlFor="howItWorks">
-            <TextArea
+            <RichTextEditor
               id="howItWorks"
               rows={5}
               value={draft.howItWorks}
-              onChange={(event) => update('howItWorks', event.target.value)}
+              onChange={(value) => update('howItWorks', value)}
+              placeholder="Explain the operation step by step."
             />
           </Field>
 
@@ -381,11 +386,12 @@ export default function ProjectForm() {
           </FieldSet>
 
           <Field label="Results" htmlFor="results">
-            <TextArea
+            <RichTextEditor
               id="results"
               rows={4}
               value={draft.results}
-              onChange={(event) => update('results', event.target.value)}
+              onChange={(value) => update('results', value)}
+              placeholder="Describe the outcome, testing, or measured results."
             />
           </Field>
         </Group>
