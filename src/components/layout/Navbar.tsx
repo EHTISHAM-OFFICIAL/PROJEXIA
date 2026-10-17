@@ -39,8 +39,8 @@ export function Navbar() {
       )}
     >
       <Container>
-        <nav className="flex h-[4.25rem] items-center justify-between" aria-label="Main">
-          <Link to="/" className="rounded-md">
+        <nav className="flex h-16 items-center justify-between gap-3 sm:h-[4.25rem]" aria-label="Main">
+          <Link to="/" className="min-w-0 rounded-md" aria-label="ProjexiaHub home">
             <Wordmark />
           </Link>
 
@@ -84,7 +84,7 @@ export function Navbar() {
 
           <button
             type="button"
-            className="-mr-2 rounded-md p-2 text-content-secondary transition-colors hover:text-content md:hidden"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-content-secondary transition-colors hover:bg-surface hover:text-content md:hidden"
             onClick={() => setMobileOpen((open) => !open)}
             aria-expanded={mobileOpen}
             aria-controls="mobile-menu"
@@ -96,8 +96,11 @@ export function Navbar() {
       </Container>
 
       {mobileOpen && (
-        <div id="mobile-menu" className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line bg-bg md:hidden">
-          <Container className="py-4">
+        <div
+          id="mobile-menu"
+          className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-line bg-bg pb-[env(safe-area-inset-bottom)] md:hidden"
+        >
+          <Container className="py-3 sm:py-4">
             <ul className="flex flex-col gap-1">
               {NAV_LINKS.map((link) => (
                 <li key={link.to}>
@@ -106,7 +109,7 @@ export function Navbar() {
                     end={link.to === '/'}
                     className={({ isActive }) =>
                       cn(
-                        'block rounded-lg px-3 py-3 text-base transition-colors',
+                        'flex min-h-11 items-center rounded-lg px-3 py-3 text-base transition-colors',
                         isActive
                           ? 'bg-surface text-content'
                           : 'text-content-secondary hover:bg-surface hover:text-content'
@@ -118,21 +121,21 @@ export function Navbar() {
                 </li>
               ))}
             </ul>
-            <div className="mt-4 flex items-center justify-between rounded-lg border border-line px-3 py-2.5">
+            <div className="mt-3 flex min-h-12 items-center justify-between rounded-lg border border-line px-3 py-2.5">
               <span className="text-sm text-content-secondary">Theme</span>
               <ThemeToggle />
             </div>
-            <div className="mt-3 grid grid-cols-2 gap-2">
+            <div className="mt-3 grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
               {user ? (
-                <ButtonLink to="/account" variant="secondary" size="lg">
+                <ButtonLink to="/account" variant="secondary" size="lg" className="w-full">
                   Account
                 </ButtonLink>
               ) : (
-                <ButtonLink to="/login" variant="secondary" size="lg">
+                <ButtonLink to="/login" variant="secondary" size="lg" className="w-full">
                   Log in
                 </ButtonLink>
               )}
-              <ButtonLink to="/request-project" size="lg">
+              <ButtonLink to="/request-project" size="lg" className="w-full">
                 Request a project
               </ButtonLink>
             </div>
