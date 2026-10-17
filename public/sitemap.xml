@@ -68,6 +68,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://projexiahub.web.app/projects/egg-incubator</loc>
+    <lastmod>2026-10-16T23:35:18.563Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://projexiahub.web.app/projects/rain-detector-alarm</loc>
     <lastmod>2026-10-15T23:58:39.835Z</lastmod>
     <changefreq>weekly</changefreq>
