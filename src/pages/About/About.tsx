@@ -1,4 +1,5 @@
 import { Container } from '../../components/ui/Container';
+import { PageIntro } from '../../components/ui/PageIntro';
 import { Seo } from '../../components/ui/Seo';
 import { Section, SectionHeading } from '../../components/ui/Section';
 import { ButtonLink } from '../../components/ui/Button';
@@ -60,18 +61,12 @@ export default function About() {
         }}
       />
 
-      <div className="relative overflow-hidden border-b border-line">
-        <div className="absolute inset-0 grid-backdrop" aria-hidden="true" />
-        <Container className="relative py-16 sm:py-24">
-          <h1 className="max-w-3xl text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
-            Electronics built to be understood, not just delivered.
-          </h1>
-          <p className="mt-6 max-w-prose text-lg leading-relaxed text-content-secondary">
-            {settings.name} is an electronics design and development studio working on embedded systems, IoT
-            devices, automation and robotics.
-          </p>
-        </Container>
-      </div>
+      <PageIntro
+        eyebrow={`About ${settings.name}`}
+        title="Electronics built to be understood, not just delivered."
+        description={`${settings.name} is an electronics design and development studio working on embedded systems, IoT devices, automation and robotics.`}
+        backdrop
+      />
 
       <Section className="border-b border-line">
         <div className="grid gap-10 lg:grid-cols-[240px_1fr] lg:gap-16">
