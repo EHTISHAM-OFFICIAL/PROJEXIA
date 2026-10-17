@@ -776,7 +776,7 @@ export default function ProjectForm() {
           </Field>
         </Group>
 
-        <Group title="Visibility">
+        <Group id="project-visibility" title="Visibility">
           <div className="flex flex-col gap-3">
             <Checkbox
               id="published"
