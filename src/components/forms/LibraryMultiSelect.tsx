@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Check, ChevronDown, Plus, Search, X } from 'lucide-react';
+import { Check, ChevronDown, Pencil, Plus, Search, X } from 'lucide-react';
 import { TextInput } from './Inputs';
+import { RichTextEditor } from './RichTextEditor';
+import { InlineText } from '../projects/CaseStudySection';
 import { projectLibraryService } from '../../services/projectLibraryService';
 import type { ProjectLibraryItem, ProjectLibraryKind } from '../../types/projectLibrary';
 import { PROJECT_LIBRARY_STARTER } from '../../constants/projectLibraryStarter';
@@ -29,6 +31,8 @@ export function LibraryMultiSelect({
   const [customSaveError, setCustomSaveError] = useState('');
   const [customSaveNotice, setCustomSaveNotice] = useState('');
   const [savingCustom, setSavingCustom] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editedValue, setEditedValue] = useState('');
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -80,7 +84,7 @@ export function LibraryMultiSelect({
   const add = async (name: string) => {
     const clean = name.trim();
     if (!clean) return;
-    const maxNameLength = kind === 'challenge' ? 300 : 120;
+    const maxNameLength = 5000;
     if (clean.length > maxNameLength) {
       setCustomSaveError(`This ${label.toLocaleLowerCase()} entry is too long. Use ${maxNameLength} characters or fewer.`);
       setCustomSaveNotice('');
@@ -163,14 +167,57 @@ export function LibraryMultiSelect({
 
   return (
     <div ref={rootRef} className="flex flex-col gap-3">
-      <div className="flex flex-wrap gap-2">
-        {values.map((value) => (
-          <span key={value} className="inline-flex items-center gap-1 rounded-full border border-line bg-surface-raised px-3 py-1.5 text-sm">
-            {value}
-            <button type="button" onClick={() => onChange(values.filter((item) => item !== value))} aria-label={`Remove ${value}`} className="text-content-muted hover:text-content">
-              <X size={13} />
-            </button>
-          </span>
+      <div className="flex flex-col gap-2">
+        {values.map((value, index) => (
+          <div key={`${index}-${value}`} className="min-w-0 rounded-lg border border-line bg-surface-raised/50 p-2.5">
+            {editingIndex === index ? (
+              <div className="flex flex-col gap-2">
+                <RichTextEditor
+                  id={`library-entry-${kind}-${index}`}
+                  rows={3}
+                  value={editedValue}
+                  onChange={setEditedValue}
+                  placeholder={`Format this ${label.toLocaleLowerCase()} entry…`}
+                />
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const clean = editedValue.trim();
+                      if (!clean) return;
+                      onChange(values.map((item, itemIndex) => itemIndex === index ? clean : item));
+                      setEditingIndex(null);
+                      setEditedValue('');
+                    }}
+                    disabled={!editedValue.trim() || editedValue.length > 5000}
+                    className="inline-flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-onAccent disabled:opacity-50"
+                  >
+                    <Check size={14} /> Save formatting
+                  </button>
+                  <button type="button" onClick={() => { setEditingIndex(null); setEditedValue(''); }} className="rounded-md border border-line px-3 py-1.5 text-sm text-content-secondary">
+                    Cancel
+                  </button>
+                </div>
+                {editedValue.length > 5000 && <p role="alert" className="text-xs text-state-danger">Keep each reusable entry to 5,000 characters or fewer.</p>}
+              </div>
+            ) : (
+              <div className="flex min-w-0 items-start gap-2">
+                <span className="min-w-0 flex-1 whitespace-pre-wrap break-words text-sm text-content"><InlineText text={value} allowLinks={false} /></span>
+                <button
+                  type="button"
+                  onClick={() => { setEditingIndex(index); setEditedValue(value); }}
+                  aria-label={`Format ${value}`}
+                  title="Format text"
+                  className="shrink-0 rounded-md p-1.5 text-content-muted hover:bg-surface-raised hover:text-content"
+                >
+                  <Pencil size={14} />
+                </button>
+                <button type="button" onClick={() => { onChange(values.filter((_, itemIndex) => itemIndex !== index)); if (editingIndex === index) setEditingIndex(null); }} aria-label={`Remove ${value}`} className="shrink-0 rounded-md p-1.5 text-content-muted hover:text-content">
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+          </div>
         ))}
         {!values.length && <span className="text-sm text-content-muted">No {label.toLocaleLowerCase()} selected.</span>}
       </div>
@@ -185,7 +232,7 @@ export function LibraryMultiSelect({
           onClick={() => setIsOpen(true)}
           onKeyDown={handleSearchKeyDown}
           placeholder={placeholder}
-          maxLength={kind === 'challenge' ? 300 : undefined}
+          maxLength={5000}
           className="pl-9 pr-9"
           role="combobox"
           aria-label={`Search ${label}`}
