@@ -15,9 +15,12 @@ export function CaseStudySection({
   if (empty) return null;
 
   return (
-    <section id={id} className="scroll-mt-24 border-t border-line pt-10">
-      <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">{title}</h2>
-      <div className="mt-5">{children}</div>
+    <section id={id} className="scroll-mt-24 border-t border-line pt-8 sm:pt-9">
+      <div className="flex items-center gap-3">
+        <span className="h-5 w-1 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+        <h2 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">{title}</h2>
+      </div>
+      <div className="mt-5 min-w-0">{children}</div>
     </section>
   );
 }
