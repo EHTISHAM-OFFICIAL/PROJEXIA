@@ -41,7 +41,7 @@ export function SectionHeading({
       )}
     >
       <div className={cn('max-w-2xl', align === 'center' && 'mx-auto')}>
-        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>
+        <h2 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{title}</h2>
         {description && (
           <p className="mt-4 max-w-prose text-base leading-relaxed text-content-secondary">
             {description}
