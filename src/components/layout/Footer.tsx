@@ -13,8 +13,8 @@ export function Footer() {
   const tracked = getTrackedRequest();
 
   return (
-    <footer className="mt-24 border-t border-line bg-surface/40">
-      <Container className="py-12">
+    <footer className="mt-20 border-t border-line bg-surface/50">
+      <Container className="py-12 sm:py-14">
         <div className="flex flex-col gap-10 md:flex-row md:justify-between">
           <div className="max-w-sm">
             <Wordmark />
