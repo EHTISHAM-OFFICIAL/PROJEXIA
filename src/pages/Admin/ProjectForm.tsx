@@ -63,7 +63,7 @@ const EMPTY_DRAFT: ProjectDraft = {
   completedAt: null,
 };
 
-const EMPTY_COMPONENT: ProjectComponent = { name: '', category: '', quantity: '1 pc', notes: '' };
+const EMPTY_COMPONENT: ProjectComponent = { name: '', category: '', quantity: '1 pc', notes: '', optional: false };
 const EMPTY_SPEC: ProjectSpecification = { label: '', value: '' };
 const defaultComponentQuantity = (name: string, unit: string) => {
   const normalized = name.toLocaleLowerCase();
@@ -433,6 +433,7 @@ export default function ProjectForm() {
                 { key: 'category', label: 'Type' },
                 { key: 'quantity', label: 'Quantity', width: 'w-28' },
                 { key: 'notes', label: 'Notes' },
+                { key: 'optional', label: 'Optional', type: 'checkbox', width: 'w-28' },
               ]}
             />
           </FieldSet>
