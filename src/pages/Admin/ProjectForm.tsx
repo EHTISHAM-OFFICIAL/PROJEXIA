@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Trash2 } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Trash2 } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
 import { Seo } from '../../components/ui/Seo';
 import { Button } from '../../components/ui/Button';
@@ -290,8 +290,7 @@ export default function ProjectForm() {
           {isEdit ? 'Edit project' : 'New project'}
         </h1>
         <p className="mt-1.5 text-sm text-content-secondary">
-          Only the title and short description are required. Every other section is hidden on the
-          public page when left empty.
+          Only the title and short description are required. Every other section is optional and hidden on the public page when left empty. Open only the sections you need.
         </p>
       </header>
 
@@ -301,7 +300,7 @@ export default function ProjectForm() {
         </div>
       )}
 
-      <div className="mt-8 flex max-w-3xl flex-col gap-10">
+      <div className="mt-8 flex max-w-5xl flex-col gap-5">
         <Group title="Basics">
           <Field label="Title" htmlFor="title" required>
             <TextInput
@@ -723,10 +722,27 @@ export default function ProjectForm() {
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="border-t border-line pt-8 first:border-0 first:pt-0">
-      <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-      <div className="mt-5 flex flex-col gap-5">{children}</div>
-    </section>
+    <details open={title === 'Basics'} className="group rounded-xl border border-line bg-surface/40">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-xl px-4 py-4 transition-colors hover:bg-surface-raised/60 [&::-webkit-details-marker]:hidden sm:px-5">
+        <span className="min-w-0">
+          <span className="block text-base font-semibold tracking-tight">{title}</span>
+          <span className="mt-0.5 block text-xs text-content-muted">
+            {title === 'Basics' ? 'Project title and classification' :
+              title === 'Media' ? 'Thumbnail, hero image, gallery and video' :
+              title === 'The case study' ? 'Project story, features and results' :
+              title === 'Technical detail' ? 'Technologies, components and specifications' :
+              title === 'Links and SEO' ? 'External resources and search metadata' :
+              'Publishing and homepage visibility'}
+          </span>
+        </span>
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-content-muted transition-transform group-open:rotate-180">
+          <ChevronDown size={16} aria-hidden="true" />
+        </span>
+      </summary>
+      <div className="border-t border-line px-4 py-5 sm:px-5">
+        <div className="flex flex-col gap-5">{children}</div>
+      </div>
+    </details>
   );
 }
 
