@@ -10,7 +10,7 @@ import { Skeleton } from '../../components/ui/Skeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ProjectGallery } from '../../components/projects/ProjectGallery';
 import { ProjectGrid } from '../../components/projects/ProjectGrid';
-import { BulletList, CaseStudySection, Prose } from '../../components/projects/CaseStudySection';
+import { BulletList, CaseStudySection, InlineText, Prose } from '../../components/projects/CaseStudySection';
 import { useProject, useRelatedProjects } from '../../hooks/useProject';
 import { DIFFICULTY_LABEL, STATUS_LABEL, STATUS_TONE } from '../../constants/projectOptions';
 import { formatCurrency, formatDate } from '../../utils/formatting';
@@ -105,7 +105,7 @@ export default function ProjectDetails() {
           <ul className="mt-7 flex flex-wrap gap-2">
             {project.technologies.map((tech) => (
               <li key={tech}>
-                <Badge>{tech}</Badge>
+                <Badge><InlineText text={tech} allowLinks={false} /></Badge>
               </li>
             ))}
           </ul>
@@ -212,13 +212,13 @@ export default function ProjectDetails() {
                       <tr key={index} className="transition-colors hover:bg-surface-raised/60 [&:not(:last-child)>td]:border-b [&:not(:last-child)>td]:border-line">
                         <td className="whitespace-normal border-r border-line px-4 py-3.5 align-top leading-relaxed text-content [overflow-wrap:normal] [word-break:normal]">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span>{component.name}</span>
+                            <span><InlineText text={component.name} allowLinks={false} /></span>
                             {component.optional && <Badge tone="info" className="shrink-0">Optional</Badge>}
                           </div>
                         </td>
-                        <td className="whitespace-normal border-r border-line px-4 py-3.5 align-top leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.category || '—'}</td>
+                        <td className="whitespace-normal border-r border-line px-4 py-3.5 align-top leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.category ? <InlineText text={component.category} allowLinks={false} /> : '—'}</td>
                         <td className="whitespace-normal border-r border-line px-4 py-3.5 align-top font-mono leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.quantity}</td>
-                        <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.notes || '—'}</td>
+                        <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.notes ? <Prose text={component.notes} /> : '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -284,7 +284,7 @@ export default function ProjectDetails() {
                 <ul className="flex flex-wrap gap-1.5">
                   {project.tags.map((tag) => (
                     <li key={tag}>
-                      <Badge>{tag}</Badge>
+                      <Badge><InlineText text={tag} allowLinks={false} /></Badge>
                     </li>
                   ))}
                 </ul>
@@ -309,8 +309,8 @@ export default function ProjectDetails() {
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid min-w-0 grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] border-b border-line last:border-b-0 [&:not(:last-child)]:border-line">
-      <dt className="min-w-0 border-r border-line bg-surface-raised/60 px-3 py-3 text-xs font-medium uppercase tracking-wide text-content-muted [overflow-wrap:anywhere]">{label}</dt>
-      <dd className="min-w-0 px-3 py-3 text-sm leading-relaxed text-content [overflow-wrap:anywhere]">{value}</dd>
+      <dt className="min-w-0 border-r border-line bg-surface-raised/60 px-3 py-3 text-xs font-medium uppercase tracking-wide text-content-muted [overflow-wrap:anywhere]"><InlineText text={label} allowLinks={false} /></dt>
+      <dd className="min-w-0 px-3 py-3 text-sm leading-relaxed text-content [overflow-wrap:anywhere]"><InlineText text={value} allowLinks={false} /></dd>
     </div>
   );
 }
