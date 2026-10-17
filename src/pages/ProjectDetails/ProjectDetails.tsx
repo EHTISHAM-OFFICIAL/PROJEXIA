@@ -176,23 +176,23 @@ export default function ProjectDetails() {
             </CaseStudySection>
 
             <CaseStudySection title="Components used" empty={project.components.length === 0}>
-              <div className="overflow-x-auto rounded-card border border-line">
-                <table className="w-full min-w-[600px] table-fixed text-sm">
+              <div className="overflow-x-auto rounded-card border border-line bg-surface">
+                <table className="w-full min-w-[720px] table-fixed border-separate border-spacing-0 text-sm">
                   <thead>
-                    <tr className="border-b border-line bg-surface text-left">
-                      <th scope="col" className="w-[26%] px-4 py-3 font-medium">Component</th>
-                      <th scope="col" className="w-[18%] px-4 py-3 font-medium">Type</th>
-                      <th scope="col" className="w-[12%] px-4 py-3 font-medium">Qty</th>
-                      <th scope="col" className="w-[44%] px-4 py-3 font-medium">Notes</th>
+                    <tr className="bg-surface-raised text-left">
+                      <th scope="col" className="w-[30%] border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-secondary">Component</th>
+                      <th scope="col" className="w-[18%] border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-secondary">Type</th>
+                      <th scope="col" className="w-[12%] border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-secondary">Qty</th>
+                      <th scope="col" className="w-[40%] border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-secondary">Notes</th>
                     </tr>
                   </thead>
                   <tbody>
                     {project.components.map((component, index) => (
-                      <tr key={index} className="border-b border-line last:border-0">
-                        <td className="break-words px-4 py-3 align-top text-content [overflow-wrap:anywhere]">{component.name}</td>
-                        <td className="break-words px-4 py-3 align-top text-content-secondary [overflow-wrap:anywhere]">{component.category || '—'}</td>
-                        <td className="break-words px-4 py-3 align-top font-mono text-content-secondary [overflow-wrap:anywhere]">{component.quantity}</td>
-                        <td className="break-words px-4 py-3 align-top leading-relaxed text-content-secondary [overflow-wrap:anywhere]">{component.notes || '—'}</td>
+                      <tr key={index} className="transition-colors hover:bg-surface-raised/60">
+                        <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content [overflow-wrap:normal] [word-break:normal]">{component.name}</td>
+                        <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.category || '—'}</td>
+                        <td className="whitespace-normal px-4 py-3.5 align-top font-mono leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.quantity}</td>
+                        <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.notes || '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -282,9 +282,9 @@ export default function ProjectDetails() {
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1.5 border-b border-line pb-3 last:border-0 last:pb-0 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
-      <dt className="min-w-0 break-words text-content-muted [overflow-wrap:anywhere] sm:max-w-[45%]">{label}</dt>
-      <dd className="min-w-0 break-words text-left leading-relaxed text-content [overflow-wrap:anywhere] sm:flex-1 sm:text-right">{value}</dd>
+    <div className="flex min-w-0 flex-col gap-1.5 border-b border-line pb-3 last:border-0 last:pb-0">
+      <dt className="whitespace-normal text-xs font-medium uppercase tracking-wide text-content-muted [overflow-wrap:normal] [word-break:normal]">{label}</dt>
+      <dd className="min-w-0 whitespace-normal text-sm leading-relaxed text-content [overflow-wrap:normal] [word-break:normal]">{value}</dd>
     </div>
   );
 }
