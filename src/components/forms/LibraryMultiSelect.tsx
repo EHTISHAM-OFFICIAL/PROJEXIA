@@ -173,41 +173,49 @@ export function LibraryMultiSelect({
 
   return (
     <div ref={rootRef} className="flex flex-col gap-3">
-      <div className="flex flex-col gap-2">
-        {values.map((value, index) => (
-          <div key={`${index}-${value}`} className={`min-w-0 ${kind === 'component' ? '' : 'rounded-lg border border-line bg-surface-raised/50 p-2.5'}`}>
-            <div className="flex min-w-0 items-start gap-2">
-              <div className="min-w-0 flex-1">
-{kind === 'component' ? (
-                  <TextInput
-                    value={value}
-                    onChange={(event) => onChange(values.map((item, itemIndex) => itemIndex === index ? event.target.value : item))}
-                    placeholder={`Edit ${label.toLocaleLowerCase()}…`}
-                    aria-label={`Edit ${label.toLocaleLowerCase()} ${index + 1}`}
-                  />
-                ) : (
-                  <>
-                    <RichTextEditor
-                      id={`library-entry-${kind}-${index}`}
-                      rows={2}
-                      inlineOnly
-                      showToolbar={false}
-                      value={value}
-                      onChange={(nextValue) => onChange(values.map((item, itemIndex) => itemIndex === index ? nextValue : item))}
-                      placeholder={`Edit ${label.toLocaleLowerCase()}… Select text and press Ctrl+B, Ctrl+I or Ctrl+U.`}
-                    />
-                    <p className="mt-1 text-xs text-content-muted">Select text and use Ctrl+B (bold), Ctrl+I (italic) or Ctrl+U (underline).</p>
-                  </>
-                )}
-              </div>
-              <button type="button" onClick={() => onChange(values.filter((_, itemIndex) => itemIndex !== index))} aria-label={`Remove ${value}`} className="shrink-0 rounded-md p-1.5 text-content-muted hover:text-content">
-                <X size={14} />
+      {kind === 'component' ? (
+        <div className="flex flex-wrap gap-2">
+          {values.map((value, index) => (
+            <span key={`${index}-${value}`} className="inline-flex max-w-full items-center gap-1.5 rounded-md border border-line bg-surface-raised px-2.5 py-1.5 text-sm">
+              <span className="break-words">{value}</span>
+              <button
+                type="button"
+                onClick={() => onChange(values.filter((_, itemIndex) => itemIndex !== index))}
+                aria-label={`Remove ${value}`}
+                className="shrink-0 rounded p-0.5 text-content-muted transition-colors hover:text-state-danger"
+              >
+                <X size={13} />
               </button>
+            </span>
+          ))}
+          {!values.length && <span className="text-sm text-content-muted">No components selected yet. Search below to add components.</span>}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {values.map((value, index) => (
+            <div key={`${index}-${value}`} className="min-w-0 rounded-lg border border-line bg-surface-raised/50 p-2.5">
+              <div className="flex min-w-0 items-start gap-2">
+                <div className="min-w-0 flex-1">
+                  <RichTextEditor
+                    id={`library-entry-${kind}-${index}`}
+                    rows={2}
+                    inlineOnly
+                    showToolbar={false}
+                    value={value}
+                    onChange={(nextValue) => onChange(values.map((item, itemIndex) => itemIndex === index ? nextValue : item))}
+                    placeholder={`Edit ${label.toLocaleLowerCase()}… Select text and press Ctrl+B, Ctrl+I or Ctrl+U.`}
+                  />
+                  <p className="mt-1 text-xs text-content-muted">Select text and use Ctrl+B (bold), Ctrl+I (italic) or Ctrl+U (underline).</p>
+                </div>
+                <button type="button" onClick={() => onChange(values.filter((_, itemIndex) => itemIndex !== index))} aria-label={`Remove ${value}`} className="shrink-0 rounded-md p-1.5 text-content-muted hover:text-content">
+                  <X size={14} />
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-                {!values.length && <span className="text-sm text-content-muted">No {label.toLocaleLowerCase()} selected.</span>}
-      </div>
+          ))}
+          {!values.length && <span className="text-sm text-content-muted">No {label.toLocaleLowerCase()} selected.</span>}
+        </div>
+      )}
 
       <div className="relative">
         <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-content-muted" />
