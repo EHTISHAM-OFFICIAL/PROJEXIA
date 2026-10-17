@@ -78,8 +78,8 @@ ProjexiaHub LIGHT THEME
   --color-line-strong: 196 191 182;
 
   /* ProjexiaHub primary copper accent */
-  --color-accent: 198 91 35;
-  --color-accent-hover: 171 72 25;
+  --color-accent: 184 77 28;
+  --color-accent-hover: 158 62 20;
   --color-accent-subtle: rgba(198, 91, 35, 0.1);
 
   /* Secondary accent */
@@ -91,7 +91,7 @@ ProjexiaHub LIGHT THEME
   /* Typography */
   --color-content: 25 27 31;
   --color-content-secondary: 76 80 88;
-  --color-content-muted: 124 128 136;
+  --color-content-muted: 104 108 116;
 
   /* Semantic states */
   --color-state-success: 20 155 103;
@@ -143,19 +143,29 @@ textarea {
 }
 
 @layer base {
+  :root { color-scheme: dark; }
+
+  [data-theme="light"] { color-scheme: light; }
+
   html {
     scroll-behavior: smooth;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     @apply bg-bg text-content font-sans antialiased;
+    min-height: 100%;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
   }
 
   h1,
   h2,
   h3 {
     font-family: "Chakra Petch", Inter, system-ui, sans-serif;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
   }
 
   :focus-visible {
@@ -177,8 +187,11 @@ textarea {
   }
 
   input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.7);
     cursor: pointer;
+  }
+
+  [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
   }
 }
 
@@ -222,6 +235,40 @@ GLOBAL CARD
   .card {
     @apply rounded-card border border-line bg-surface;
     box-shadow: var(--shadow-resting);
+  }
+
+  .surface-panel {
+    @apply rounded-card border border-line bg-surface;
+    box-shadow: var(--shadow-resting);
+  }
+
+  .eyebrow {
+    @apply font-mono text-xs font-medium uppercase tracking-[0.14em] text-accent;
+  }
+
+  .prose-content {
+    color: rgb(var(--color-content-secondary));
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+  }
+
+  .prose-content h2,
+  .prose-content h3,
+  .prose-content h4 {
+    color: rgb(var(--color-content));
+    line-height: 1.25;
+    margin-top: 2em;
+    margin-bottom: 0.75em;
+  }
+
+  .prose-content a {
+    color: rgb(var(--color-accent));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .prose-content a:hover {
+    color: rgb(var(--color-accent-hover));
   }
 
   /* ================================================================
