@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, BookOpen, ExternalLink, Github, PlayCircle } from 'lucide-react';
+import { ArrowDown, ArrowLeft, BookOpen, ExternalLink, Github, Images, Info, PlayCircle } from 'lucide-react';
 import { Container } from '../../components/ui/Container';
 import { Seo } from '../../components/ui/Seo';
 import { Badge } from '../../components/ui/Badge';
@@ -140,10 +140,31 @@ export default function ProjectDetails() {
           <div className="overflow-hidden rounded-card border border-line bg-surface-raised">
             <Image
               src={heroImage}
-              alt={`${project.title} — completed build`}
+              alt={`${project.title} — illustrative project image`}
               eager
               className="aspect-[16/9] w-full object-cover"
             />
+            {media.gallery.length > 0 && (
+              <div className="flex flex-col gap-3 border-t border-line bg-surface p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-5 sm:p-5">
+                <div className="flex min-w-0 items-start gap-3">
+                  <Info size={18} className="mt-0.5 shrink-0 text-content-muted" aria-hidden="true" />
+                  <div>
+                    <p className="text-sm font-semibold text-content">Please note: illustrative images</p>
+                    <p className="mt-1 text-sm leading-relaxed text-content-secondary">
+                      The thumbnail and main image may be AI-generated and may differ from the actual build. See the gallery for real project photos and a more accurate reference.
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href="#project-gallery"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-line px-3 py-2 text-sm font-medium text-content transition-colors hover:border-line-strong hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:self-center"
+                >
+                  <Images size={15} aria-hidden="true" />
+                  View gallery
+                  <ArrowDown size={14} aria-hidden="true" />
+                </a>
+              </div>
+            )}
           </div>
         </Container>
       )}
@@ -213,7 +234,7 @@ export default function ProjectDetails() {
               <Prose text={project.results} />
             </CaseStudySection>
 
-            <CaseStudySection title="Gallery" empty={media.gallery.length === 0}>
+            <CaseStudySection id="project-gallery" title="Project gallery" empty={media.gallery.length === 0}>
               <ProjectGallery images={media.gallery} />
             </CaseStudySection>
 
