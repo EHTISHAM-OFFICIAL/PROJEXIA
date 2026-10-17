@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ChevronDown, Trash2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Eye, Trash2 } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
 import { Seo } from '../../components/ui/Seo';
 import { Button } from '../../components/ui/Button';
@@ -14,6 +14,7 @@ import { Checkbox } from '../../components/forms/Choice';
 import { TableEditor } from '../../components/forms/ListEditor';
 import { LibraryMultiSelect } from '../../components/forms/LibraryMultiSelect';
 import { ImageUploadField } from '../../components/forms/ImageUploadField';
+import { ProjectDraftPreview } from '../../components/projects/ProjectDraftPreview';
 import { useProjectById } from '../../hooks/useProject';
 import { projectService } from '../../services/projectService';
 import { imgbbService } from '../../services/imgbbService';
@@ -117,6 +118,8 @@ export default function ProjectForm() {
   const [statusInput, setStatusInput] = useState('');
   const [savingLibraryOption, setSavingLibraryOption] = useState(false);
   const [libraryNotice, setLibraryNotice] = useState('');
+  const [initialSnapshot, setInitialSnapshot] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -154,10 +157,16 @@ export default function ProjectForm() {
   ];
 
   useEffect(() => {
-    if (!isEdit || !existing.data) return;
+    if (!isEdit) {
+      setInitialSnapshot(JSON.stringify({ draft: EMPTY_DRAFT, completedDate: '' }));
+      return;
+    }
+    if (!existing.data) return;
     const { id: _ignored, viewCount: _viewCount, createdAt: _c, updatedAt: _u, ...rest } = existing.data;
+    const dateValue = toDateInputValue(existing.data.completedAt);
     setDraft(rest);
-    setCompletedDate(toDateInputValue(existing.data.completedAt));
+    setCompletedDate(dateValue);
+    setInitialSnapshot(JSON.stringify({ draft: rest, completedDate: dateValue }));
     setSlugTouched(true);
   }, [isEdit, existing.data]);
 
@@ -217,6 +226,52 @@ export default function ProjectForm() {
   };
 
   const cleanList = (items: string[]) => items.map((item) => item.trim()).filter(Boolean);
+  const currentSnapshot = JSON.stringify({ draft, completedDate });
+  const hasUnsavedChanges = initialSnapshot !== null && currentSnapshot !== initialSnapshot;
+  const sectionItems = [
+    { id: 'project-section-basics', label: 'Basics', required: true, complete: Boolean(draft.title.trim() && draft.shortDescription.trim()) },
+    { id: 'project-section-media', label: 'Media', required: false, complete: Boolean(draft.media.thumbnailUrl || draft.media.heroImageUrl || draft.media.gallery.length || draft.media.videoUrl) },
+    { id: 'project-section-story', label: 'Case study', required: false, complete: Boolean(draft.description.trim() || draft.problemStatement.trim() || draft.solutionOverview.trim() || draft.howItWorks.trim() || draft.results.trim() || draft.objectives.some(Boolean) || draft.features.some(Boolean) || draft.challenges.some(Boolean)) },
+    { id: 'project-section-technical', label: 'Technical detail', required: false, complete: Boolean(draft.technologies.some(Boolean) || draft.tags.some(Boolean) || draft.components.some((item) => item.name.trim()) || draft.specifications.some((item) => item.label.trim()) || draft.estimatedCost.amount !== null) },
+    { id: 'project-section-links', label: 'Links and SEO', required: false, complete: Boolean(draft.externalLinks.github || draft.externalLinks.documentation || draft.externalLinks.demo || draft.seo.metaTitle || draft.seo.metaDescription || draft.seo.keywords.some(Boolean)) },
+  ];
+  const requiredCompleted = [draft.title.trim(), draft.shortDescription.trim()].filter(Boolean).length;
+
+  useEffect(() => {
+    if (!hasUnsavedChanges || saving) return;
+    const warnBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    const confirmInternalNavigation = (event: MouseEvent) => {
+      if (previewOpen || !(event.target instanceof Element)) return;
+      const link = event.target.closest('a[href]') as HTMLAnchorElement | null;
+      if (!link || link.target === '_blank' || link.hasAttribute('download')) return;
+      const destination = new URL(link.href, window.location.href);
+      if (destination.origin !== window.location.origin) return;
+      if (!window.confirm('You have unsaved project changes. Leave this page and discard them?')) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    };
+    window.addEventListener('beforeunload', warnBeforeUnload);
+    document.addEventListener('click', confirmInternalNavigation, true);
+    return () => {
+      window.removeEventListener('beforeunload', warnBeforeUnload);
+      document.removeEventListener('click', confirmInternalNavigation, true);
+    };
+  }, [hasUnsavedChanges, saving, previewOpen]);
+
+  const cancelEditing = () => {
+    if (hasUnsavedChanges && !window.confirm('You have unsaved project changes. Discard them and leave the editor?')) return;
+    navigate('/admin/projects');
+  };
+
+  const openSection = (id: string) => {
+    const section = document.getElementById(id);
+    if (section instanceof HTMLDetailsElement) section.open = true;
+    section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const handleSave = async (publish?: boolean) => {
     setError(null);
@@ -285,14 +340,52 @@ export default function ProjectForm() {
         All projects
       </Link>
 
-      <header className="mt-4">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {isEdit ? 'Edit project' : 'New project'}
-        </h1>
-        <p className="mt-1.5 text-sm text-content-secondary">
-          Only the title and short description are required. Every other section is optional and hidden on the public page when left empty. Open only the sections you need.
-        </p>
+      <header className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {isEdit ? 'Edit project' : 'New project'}
+          </h1>
+          <p className="mt-1.5 max-w-2xl text-sm text-content-secondary">
+            Only the title and short description are required. Every other section is optional and hidden on the public page when left empty. Open only the sections you need.
+          </p>
+        </div>
+        <button type="button" onClick={() => setPreviewOpen(true)} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-line px-3.5 py-2.5 text-sm font-medium text-content transition-colors hover:bg-surface-raised">
+          <Eye size={16} aria-hidden="true" /> Preview draft
+        </button>
       </header>
+
+      <section className="mt-6 rounded-xl border border-line bg-surface/40 p-4 sm:p-5" aria-label="Project editor progress">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold">Editor progress</p>
+            <p className="mt-1 text-xs text-content-muted">Required details: {requiredCompleted} of 2 completed. Other sections are optional.</p>
+          </div>
+          <span className={requiredCompleted === 2 ? 'inline-flex items-center gap-1.5 text-sm font-medium text-state-success' : 'inline-flex items-center gap-1.5 text-sm font-medium text-content-secondary'}>
+            {requiredCompleted === 2 ? <CheckCircle2 size={16} aria-hidden="true" /> : <Circle size={16} aria-hidden="true" />}
+            {requiredCompleted === 2 ? 'Ready to save' : 'Required details remaining'}
+          </span>
+        </div>
+        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-raised" role="progressbar" aria-label="Required project details" aria-valuemin={0} aria-valuemax={2} aria-valuenow={requiredCompleted}>
+          <div className="h-full rounded-full bg-accent transition-[width]" style={{ width: `${requiredCompleted * 50}%` }} />
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {sectionItems.map((section) => (
+            <button key={section.id} type="button" onClick={() => openSection(section.id)} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-2 text-xs transition-colors hover:bg-surface-raised">
+              {section.required ? (section.complete ? <CheckCircle2 size={14} className="text-state-success" aria-hidden="true" /> : <Circle size={14} className="text-content-muted" aria-hidden="true" />) : (section.complete ? <CheckCircle2 size={14} className="text-state-success" aria-hidden="true" /> : <span className="h-3.5 w-3.5 rounded-full border border-line" aria-hidden="true" />)}
+              <span>{section.label}</span>
+              <span className="text-content-muted">{section.required ? (section.complete ? 'Complete' : 'Required') : (section.complete ? 'Added' : 'Optional')}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {hasUnsavedChanges && (
+        <div className="mt-4 rounded-lg border border-state-warning/40 bg-state-warning/5 px-4 py-3 text-sm text-content-secondary" role="status">
+          You have unsaved changes. Save your project before leaving, or discard them when prompted.
+        </div>
+      )}
+
+      {previewOpen && <ProjectDraftPreview draft={draft} onClose={() => setPreviewOpen(false)} />}
 
       {(error || libraryNotice) && (
         <div className="mt-6">
@@ -301,7 +394,7 @@ export default function ProjectForm() {
       )}
 
       <div className="mt-8 flex max-w-5xl flex-col gap-5">
-        <Group title="Basics">
+        <Group id="project-section-basics" title="Basics">
           <Field label="Title" htmlFor="title" required>
             <TextInput
               id="title"
@@ -413,7 +506,7 @@ export default function ProjectForm() {
           </div>
         </Group>
 
-        <Group title="Media">
+        <Group id="project-section-media" title="Media">
           <FieldSet legend="Thumbnail" hint="Shown on project cards. A 16:10 image works best.">
             <ImageUploadField
               label="Thumbnail"
@@ -457,7 +550,7 @@ export default function ProjectForm() {
           </Field>
         </Group>
 
-        <Group title="The case study">
+        <Group id="project-section-story" title="The case study">
           <Field label="Overview" htmlFor="description" hint="Blank lines create new paragraphs.">
             <RichTextEditor
               id="description"
@@ -521,7 +614,7 @@ export default function ProjectForm() {
           </Field>
         </Group>
 
-        <Group title="Technical detail">
+        <Group id="project-section-technical" title="Technical detail">
           <FieldSet legend="Technologies" hint="Used for filtering on the projects page. Select from the shared library or add custom entries.">
             <LibraryMultiSelect kind="technology" label="technologies" values={draft.technologies} onChange={(values) => update('technologies', values)} />
           </FieldSet>
@@ -614,7 +707,7 @@ export default function ProjectForm() {
           </div>
         </Group>
 
-        <Group title="Links and SEO">
+        <Group id="project-section-links" title="Links and SEO">
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="GitHub" htmlFor="github">
               <TextInput
@@ -711,7 +804,7 @@ export default function ProjectForm() {
               Save and publish
             </Button>
           )}
-          <Button variant="ghost" onClick={() => navigate('/admin/projects')} disabled={saving}>
+          <Button variant="ghost" onClick={cancelEditing} disabled={saving}>
             Cancel
           </Button>
         </div>
@@ -720,9 +813,9 @@ export default function ProjectForm() {
   );
 }
 
-function Group({ title, children }: { title: string; children: React.ReactNode }) {
+function Group({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
-    <details open={title === 'Basics'} className="group rounded-xl border border-line bg-surface/40">
+    <details id={id} open={title === 'Basics'} className="group scroll-mt-24 rounded-xl border border-line bg-surface/40">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-xl px-4 py-4 transition-colors hover:bg-surface-raised/60 [&::-webkit-details-marker]:hidden sm:px-5">
         <span className="min-w-0">
           <span className="block text-base font-semibold tracking-tight">{title}</span>
