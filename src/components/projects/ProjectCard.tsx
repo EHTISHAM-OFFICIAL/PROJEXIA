@@ -34,23 +34,23 @@ export function ProjectCard({ project }: { project: Project }) {
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col p-5">
+        <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-content-muted">
             <span>{project.category}</span>
             <span aria-hidden="true" className="text-content-muted/70">/</span>
             <span>{DIFFICULTY_LABEL[project.difficulty] ?? project.difficulty}</span>
           </div>
 
-          <h3 className="mt-2.5 text-lg font-semibold leading-snug tracking-tight text-content">
+          <h3 className="mt-2 text-lg font-semibold leading-snug tracking-tight text-content sm:mt-2.5">
             {project.title}
           </h3>
 
-          <p className="mt-2 text-sm leading-relaxed text-content-secondary">
+          <p className="mt-2 break-words text-sm leading-relaxed text-content-secondary">
             {truncate(project.shortDescription, 120)}
           </p>
 
           {visibleTech.length > 0 && (
-            <ul className="mt-4 flex flex-wrap gap-1.5">
+            <ul className="mt-3 flex flex-wrap gap-1.5 sm:mt-4">
               {visibleTech.map((tech) => (
                 <li key={tech}>
                   <Badge><InlineText text={tech} allowLinks={false} /></Badge>
@@ -64,8 +64,8 @@ export function ProjectCard({ project }: { project: Project }) {
             </ul>
           )}
 
-          <div className="mt-auto flex min-w-0 items-center justify-between gap-3 border-t border-line pt-4">
-            <span className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-content-muted">
+          <div className="mt-auto flex min-w-0 items-center justify-between gap-2 border-t border-line pt-3 sm:gap-3 sm:pt-4">
+            <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-content-muted sm:gap-x-3 sm:text-xs">
               <span>{formatShortDate(project.completedAt ?? project.createdAt)}</span>
               {project.viewCount > 0 && (
                 <span className="inline-flex items-center gap-1">
@@ -74,7 +74,7 @@ export function ProjectCard({ project }: { project: Project }) {
                 </span>
               )}
             </span>
-            <span className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-accent">
+            <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-accent sm:text-sm">
               View project
               <ArrowUpRight
                 size={15}
