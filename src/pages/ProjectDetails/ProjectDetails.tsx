@@ -201,23 +201,23 @@ export default function ProjectDetails() {
                 <table className="w-full min-w-[720px] table-fixed border-separate border-spacing-0 text-sm">
                   <thead>
                     <tr className="bg-surface-raised text-left">
-                      <th scope="col" className="w-[30%] border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-secondary">Component</th>
-                      <th scope="col" className="w-[18%] border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-secondary">Type</th>
-                      <th scope="col" className="w-[12%] border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-secondary">Qty</th>
+                      <th scope="col" className="w-[30%] border-b border-r border-line px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-secondary">Component</th>
+                      <th scope="col" className="w-[18%] border-b border-r border-line px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-secondary">Type</th>
+                      <th scope="col" className="w-[12%] border-b border-r border-line px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-secondary">Qty</th>
                       <th scope="col" className="w-[40%] border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-secondary">Notes</th>
                     </tr>
                   </thead>
                   <tbody>
                     {project.components.map((component, index) => (
-                      <tr key={index} className="transition-colors hover:bg-surface-raised/60">
-                        <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content [overflow-wrap:normal] [word-break:normal]">
+                      <tr key={index} className="transition-colors hover:bg-surface-raised/60 [&:not(:last-child)>td]:border-b [&:not(:last-child)>td]:border-line">
+                        <td className="whitespace-normal border-r border-line px-4 py-3.5 align-top leading-relaxed text-content [overflow-wrap:normal] [word-break:normal]">
                           <div className="flex flex-wrap items-center gap-2">
                             <span>{component.name}</span>
                             {component.optional && <Badge tone="info" className="shrink-0">Optional</Badge>}
                           </div>
                         </td>
-                        <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.category || '—'}</td>
-                        <td className="whitespace-normal px-4 py-3.5 align-top font-mono leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.quantity}</td>
+                        <td className="whitespace-normal border-r border-line px-4 py-3.5 align-top leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.category || '—'}</td>
+                        <td className="whitespace-normal border-r border-line px-4 py-3.5 align-top font-mono leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.quantity}</td>
                         <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.notes || '—'}</td>
                       </tr>
                     ))}
@@ -249,7 +249,7 @@ export default function ProjectDetails() {
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <div className="card min-w-0 p-6">
               <h2 className="text-base font-semibold tracking-tight text-content">Project details</h2>
-              <dl className="mt-4 flex flex-col gap-3.5 text-sm">
+              <dl className="mt-4 overflow-hidden rounded-lg border border-line text-sm">
                 <DetailRow label="Status" value={STATUS_LABEL[project.status] ?? project.status} />
                 <DetailRow label="Category" value={project.category} />
                 <DetailRow label="Difficulty" value={DIFFICULTY_LABEL[project.difficulty] ?? project.difficulty} />
@@ -308,9 +308,9 @@ export default function ProjectDetails() {
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1.5 border-b border-line pb-3 last:border-0 last:pb-0">
-      <dt className="whitespace-normal text-xs font-medium uppercase tracking-wide text-content-muted [overflow-wrap:normal] [word-break:normal]">{label}</dt>
-      <dd className="min-w-0 whitespace-normal text-sm leading-relaxed text-content [overflow-wrap:normal] [word-break:normal]">{value}</dd>
+    <div className="grid min-w-0 grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] border-b border-line last:border-b-0 [&:not(:last-child)]:border-line">
+      <dt className="min-w-0 border-r border-line bg-surface-raised/60 px-3 py-3 text-xs font-medium uppercase tracking-wide text-content-muted [overflow-wrap:anywhere]">{label}</dt>
+      <dd className="min-w-0 px-3 py-3 text-sm leading-relaxed text-content [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
 }
