@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { PageIntro } from '../../components/ui/PageIntro';
 import { Container } from '../../components/ui/Container';
 import { Seo } from '../../components/ui/Seo';
 import { Image } from '../../components/ui/Image';
@@ -20,14 +21,11 @@ export default function BlogIndex() {
         path="/blog"
       />
 
-      <div className="border-b border-line">
-        <Container className="py-14 sm:py-20">
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Blog</h1>
-          <p className="mt-4 max-w-prose text-base leading-relaxed text-content-secondary">
-            Build logs and notes on what's currently being worked on, between finished projects.
-          </p>
-        </Container>
-      </div>
+      <PageIntro
+        eyebrow="Ideas, guides & build notes"
+        title="Blog"
+        description="Practical electronics guides, build logs, and notes from projects in progress."
+      />
 
       <Container className="py-12">
         {loading && (
