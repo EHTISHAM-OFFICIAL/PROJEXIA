@@ -7,7 +7,7 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-accent text-onAccent hover:bg-accent-hover hover:shadow-[0_0_24px_-4px_theme(colors.accent.DEFAULT)]',
+  primary: 'bg-accent text-onAccent shadow-sm hover:bg-accent-hover hover:shadow-md',
   secondary:
     'bg-surface-raised text-content border border-line hover:border-line-strong hover:bg-surface',
   ghost: 'text-content-secondary hover:text-content hover:bg-surface',
@@ -21,9 +21,11 @@ const SIZES: Record<Size, string> = {
 };
 
 const BASE =
-  'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 ' +
-  'hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] ' +
-  'disabled:opacity-50 disabled:pointer-events-none disabled:hover:translate-y-0 disabled:active:scale-100';
+  'inline-flex min-w-0 items-center justify-center gap-2 rounded-xl font-medium leading-none ' +
+  'transition-[background-color,border-color,color,box-shadow,transform] duration-150 ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg ' +
+  'hover:-translate-y-px active:translate-y-0 active:scale-[0.99] ' +
+  'disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none disabled:hover:translate-y-0 disabled:active:scale-100';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
