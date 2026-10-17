@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Eye } from 'lucide-react';
 import { Badge } from '../ui/Badge';
+import { InlineText } from './CaseStudySection';
 import { Image } from '../ui/Image';
 import { DIFFICULTY_LABEL, STATUS_LABEL, STATUS_TONE } from '../../constants/projectOptions';
 import { formatCompactNumber, formatShortDate, truncate } from '../../utils/formatting';
@@ -47,7 +48,7 @@ export function ProjectCard({ project }: { project: Project }) {
             <ul className="mt-4 flex flex-wrap gap-1.5">
               {visibleTech.map((tech) => (
                 <li key={tech}>
-                  <Badge>{tech}</Badge>
+                  <Badge><InlineText text={tech} allowLinks={false} /></Badge>
                 </li>
               ))}
               {hiddenTechCount > 0 && (
