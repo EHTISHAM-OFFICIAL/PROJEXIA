@@ -95,53 +95,54 @@ export function Navbar() {
         </nav>
       </Container>
 
-      {mobileOpen && (
-        <div
-          id="mobile-menu"
-          className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-line bg-bg pb-[env(safe-area-inset-bottom)] md:hidden"
-        >
-          <Container className="py-3 sm:py-4">
-            <ul className="flex flex-col gap-1">
-              {NAV_LINKS.map((link) => (
-                <li key={link.to}>
-                  <NavLink
-                    to={link.to}
-                    end={link.to === '/'}
-                    className={({ isActive }) =>
-                      cn(
-                        'flex min-h-11 items-center rounded-lg px-3 py-3 text-base transition-colors',
-                        isActive
-                          ? 'bg-surface text-content'
-                          : 'text-content-secondary hover:bg-surface hover:text-content'
-                      )
-                    }
-                  >
-                    {link.label}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-3 flex min-h-12 items-center justify-between rounded-lg border border-line px-3 py-2.5">
-              <span className="text-sm text-content-secondary">Theme</span>
-              <ThemeToggle />
-            </div>
-            <div className="mt-3 grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
-              {user ? (
-                <ButtonLink to="/account" variant="secondary" size="lg" className="w-full">
-                  Account
-                </ButtonLink>
-              ) : (
-                <ButtonLink to="/login" variant="secondary" size="lg" className="w-full">
-                  Log in
-                </ButtonLink>
-              )}
-              <ButtonLink to="/request-project" size="lg" className="w-full">
-                Request a project
-              </ButtonLink>
-            </div>
-          </Container>
-        </div>
-      )}
     </header>
+
+    {mobileOpen && (
+      <div
+        id="mobile-menu"
+        className="fixed inset-x-0 top-16 z-[60] max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-y border-line bg-bg shadow-[0_18px_36px_-24px_rgba(0,0,0,0.55)] pb-[env(safe-area-inset-bottom)] sm:top-[4.25rem] sm:max-h-[calc(100dvh-4.25rem)] md:hidden"
+      >
+        <Container className="py-3 sm:py-4">
+          <ul className="flex flex-col gap-1">
+            {NAV_LINKS.map((link) => (
+              <li key={link.to}>
+                <NavLink
+                  to={link.to}
+                  end={link.to === '/'}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex min-h-11 items-center rounded-lg px-3 py-3 text-base transition-colors',
+                      isActive
+                        ? 'bg-surface text-content'
+                        : 'text-content-secondary hover:bg-surface hover:text-content'
+                    )
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-3 flex min-h-12 items-center justify-between rounded-lg border border-line px-3 py-2.5">
+            <span className="text-sm text-content-secondary">Theme</span>
+            <ThemeToggle />
+          </div>
+          <div className="mt-3 grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
+            {user ? (
+              <ButtonLink to="/account" variant="secondary" size="lg" className="w-full">
+                Account
+              </ButtonLink>
+            ) : (
+              <ButtonLink to="/login" variant="secondary" size="lg" className="w-full">
+                Log in
+              </ButtonLink>
+            )}
+            <ButtonLink to="/request-project" size="lg" className="w-full">
+              Request a project
+            </ButtonLink>
+          </div>
+        </Container>
+      </div>
+    )}
   );
 }
