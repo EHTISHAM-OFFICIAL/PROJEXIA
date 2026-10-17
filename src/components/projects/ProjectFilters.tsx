@@ -65,8 +65,8 @@ export function ProjectFilters({
   );
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="relative">
+    <div className="flex min-w-0 flex-col gap-4">
+      <div className="relative min-w-0">
         <Search
           size={17}
           aria-hidden="true"
@@ -82,12 +82,17 @@ export function ProjectFilters({
         />
       </div>
 
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by category">
+      <div
+        className="-mx-4 flex max-w-[calc(100%+2rem)] flex-nowrap gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:thin] sm:mx-0 sm:max-w-full sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
+        role="group"
+        aria-label="Filter by category"
+      >
         <button
           type="button"
           onClick={() => update('category', '')}
+          aria-pressed={filters.category === ''}
           className={cn(
-            'rounded-lg border px-3.5 py-2 text-sm transition-colors',
+            'min-h-11 shrink-0 rounded-lg border px-3.5 py-2 text-sm transition-colors',
             filters.category === ''
               ? 'border-accent bg-accent text-onAccent'
               : 'border-line bg-surface text-content-secondary hover:border-line-strong hover:text-content'
@@ -104,7 +109,7 @@ export function ProjectFilters({
               onClick={() => update('category', active ? '' : category)}
               aria-pressed={active}
               className={cn(
-                'rounded-lg border px-3.5 py-2 text-sm transition-colors',
+                'min-h-11 shrink-0 rounded-lg border px-3.5 py-2 text-sm transition-colors',
                 active
                   ? 'border-accent bg-accent text-onAccent'
                   : 'border-line bg-surface text-content-secondary hover:border-line-strong hover:text-content'
@@ -116,7 +121,7 @@ export function ProjectFilters({
         })}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Select
           options={technologies.map((technology) => ({ value: technology, label: plainInlineLabel(technology) }))}
           placeholder="All technologies"
@@ -146,9 +151,9 @@ export function ProjectFilters({
         />
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4">
         <p className="flex items-center gap-2 text-sm text-content-secondary">
-          <SlidersHorizontal size={15} aria-hidden="true" className="text-content-muted" />
+          <SlidersHorizontal size={15} aria-hidden="true" className="shrink-0 text-content-muted" />
           <span aria-live="polite">
             {resultCount} {resultCount === 1 ? 'project' : 'projects'}
             {activeCount > 0 && ` · ${activeCount} ${activeCount === 1 ? 'filter' : 'filters'}`}
@@ -158,7 +163,7 @@ export function ProjectFilters({
           <button
             type="button"
             onClick={() => onChange(EMPTY_FILTERS)}
-            className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-content-secondary transition-colors hover:text-content"
+            className="inline-flex min-h-10 items-center gap-1.5 rounded-md px-2 py-1 text-sm text-content-secondary transition-colors hover:text-content"
           >
             <X size={14} aria-hidden="true" />
             Clear filters
