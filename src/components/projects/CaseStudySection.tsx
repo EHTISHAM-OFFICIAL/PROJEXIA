@@ -161,7 +161,7 @@ export function BulletList({ items }: { items: string[] }) {
       {items.map((item, index) => (
         <li key={index} className="flex min-w-0 items-start gap-3 text-base leading-relaxed text-content-secondary">
           <span className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-accent" aria-hidden="true" />
-          <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
+          <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
             <InlineText text={item} />
           </span>
         </li>
