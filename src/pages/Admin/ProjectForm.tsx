@@ -17,6 +17,7 @@ import { ImageUploadField } from '../../components/forms/ImageUploadField';
 import { useProjectById } from '../../hooks/useProject';
 import { projectService } from '../../services/projectService';
 import { imgbbService } from '../../services/imgbbService';
+import { projectLibraryService } from '../../services/projectLibraryService';
 import { PROJECT_CATEGORIES } from '../../constants/categories';
 import {
   PROJECT_DIFFICULTIES,
@@ -96,6 +97,45 @@ export default function ProjectForm() {
   const [slugTouched, setSlugTouched] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [categoryLibrary, setCategoryLibrary] = useState<string[]>([]);
+  const [subcategoryLibrary, setSubcategoryLibrary] = useState<{ name: string; category: string }[]>([]);
+  const [difficultyLibrary, setDifficultyLibrary] = useState<string[]>([]);
+  const [statusLibrary, setStatusLibrary] = useState<string[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void Promise.all([
+      projectLibraryService.listByKind('category'),
+      projectLibraryService.listByKind('subcategory'),
+      projectLibraryService.listByKind('difficulty'),
+      projectLibraryService.listByKind('status'),
+    ]).then(([categories, subcategories, difficulties, statuses]) => {
+      if (cancelled) return;
+      setCategoryLibrary(categories.filter((item) => item.active).map((item) => item.name));
+      setSubcategoryLibrary(subcategories.filter((item) => item.active).map((item) => ({ name: item.name, category: item.category })));
+      setDifficultyLibrary(difficulties.filter((item) => item.active).map((item) => item.name));
+      setStatusLibrary(statuses.filter((item) => item.active).map((item) => item.name));
+    }).catch(() => {
+      // Existing built-in options remain available if the library cannot load.
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const categoryOptions = [...new Set([...PROJECT_CATEGORIES, ...categoryLibrary, draft.category].filter(Boolean))];
+  const subcategoryOptions = [...new Set([
+    ...subcategoryLibrary
+      .filter((item) => !item.category || item.category === 'Project subcategories' || item.category === draft.category)
+      .map((item) => item.name),
+    ...(draft.subcategory ? [draft.subcategory] : []),
+  ])];
+  const difficultyOptions = [
+    ...PROJECT_DIFFICULTIES,
+    ...difficultyLibrary.filter((name) => !PROJECT_DIFFICULTIES.some((option) => option.value.toLocaleLowerCase() === name.toLocaleLowerCase() || option.label.toLocaleLowerCase() === name.toLocaleLowerCase())),
+  ];
+  const statusOptions = [
+    ...PROJECT_STATUSES,
+    ...statusLibrary.filter((name) => !PROJECT_STATUSES.some((option) => option.value.toLocaleLowerCase() === name.toLocaleLowerCase() || option.label.toLocaleLowerCase() === name.toLocaleLowerCase())),
+  ];
 
   useEffect(() => {
     if (!isEdit || !existing.data) return;
@@ -246,7 +286,7 @@ export default function ProjectForm() {
             <Field label="Category" htmlFor="category" required>
               <Select
                 id="category"
-                options={PROJECT_CATEGORIES}
+                options={categoryOptions}
                 value={draft.category}
                 onChange={(event) => update('category', event.target.value)}
               />
@@ -254,7 +294,7 @@ export default function ProjectForm() {
             <Field label="Status" htmlFor="status" required>
               <Select
                 id="status"
-                options={PROJECT_STATUSES}
+                options={statusOptions}
                 value={draft.status}
                 onChange={(event) => update('status', event.target.value as ProjectStatus)}
               />
@@ -262,7 +302,7 @@ export default function ProjectForm() {
             <Field label="Difficulty" htmlFor="difficulty" required>
               <Select
                 id="difficulty"
-                options={PROJECT_DIFFICULTIES}
+                options={difficultyOptions}
                 value={draft.difficulty}
                 onChange={(event) => update('difficulty', event.target.value as ProjectDifficulty)}
               />
@@ -271,8 +311,10 @@ export default function ProjectForm() {
 
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Subcategory" htmlFor="subcategory">
-              <TextInput
+              <Select
                 id="subcategory"
+                options={subcategoryOptions}
+                placeholder="No subcategory"
                 value={draft.subcategory ?? ''}
                 onChange={(event) => update('subcategory', event.target.value || null)}
               />
