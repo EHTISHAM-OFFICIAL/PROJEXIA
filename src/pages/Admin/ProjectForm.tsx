@@ -66,6 +66,16 @@ const EMPTY_DRAFT: ProjectDraft = {
 
 const EMPTY_COMPONENT: ProjectComponent = { name: '', category: '', quantity: '1 pc', notes: '', optional: false };
 const EMPTY_SPEC: ProjectSpecification = { label: '', value: '' };
+const normalizeProjectText = (value: string) => value
+  .replace(/^\\s{0,3}#{1,3}\\s+/gm, '')
+  .replace(/^\\s*-\\s+/gm, '')
+  .replace(/\\*\\*(.*?)\\*\\*/g, '$1')
+  .replace(/\\+\\+(.*?)\\+\\+/g, '$1')
+  .replace(/(^|[^*])\\*([^*]+)\\*/g, '$1$2')
+  .replace(/\\[([^\\]]+)\\]\\([^)]+\\)/g, '$1')
+  .trim()
+  .toLocaleLowerCase()
+  .replace(/\\s+/g, ' ');
 const defaultComponentQuantity = (name: string, unit: string) => {
   const normalized = name.toLocaleLowerCase();
   if (unit.trim()) return `1 ${unit.trim()}`;
@@ -527,9 +537,9 @@ export default function ProjectForm() {
               label="components"
               values={draft.components.filter((component) => component.name.trim()).map((component) => component.name)}
               onChange={(names, _addedItem, selectedItems) => update('components', names.map((name) => {
-                const existingComponent = draft.components.find((component) => component.name.trim().toLocaleLowerCase() === name.trim().toLocaleLowerCase());
-                if (existingComponent) return existingComponent;
-                const libraryItem = selectedItems?.find((item) => item.name.trim().toLocaleLowerCase() === name.trim().toLocaleLowerCase());
+                const existingComponent = draft.components.find((component) => normalizeProjectText(component.name) === normalizeProjectText(name));
+                if (existingComponent) return { ...existingComponent, name };
+                const libraryItem = selectedItems?.find((item) => normalizeProjectText(item.name) === normalizeProjectText(name));
                 return {
                   ...EMPTY_COMPONENT,
                   name,
@@ -560,9 +570,9 @@ export default function ProjectForm() {
               label="specifications"
               values={draft.specifications.filter((spec) => spec.label.trim()).map((spec) => spec.label)}
               onChange={(labels, _addedItem, selectedItems) => update('specifications', labels.map((label) => {
-                const existingSpec = draft.specifications.find((spec) => spec.label.trim().toLocaleLowerCase() === label.trim().toLocaleLowerCase());
-                if (existingSpec) return existingSpec;
-                const libraryItem = selectedItems?.find((item) => item.name.trim().toLocaleLowerCase() === label.trim().toLocaleLowerCase());
+                const existingSpec = draft.specifications.find((spec) => normalizeProjectText(spec.label) === normalizeProjectText(label));
+                if (existingSpec) return { ...existingSpec, label };
+                const libraryItem = selectedItems?.find((item) => normalizeProjectText(item.name) === normalizeProjectText(label));
                 return { ...EMPTY_SPEC, label, value: libraryItem ? specificationValue(libraryItem.defaultValue, libraryItem.unit) : '' };
               }))}
             />
