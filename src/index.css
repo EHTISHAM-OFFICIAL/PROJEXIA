@@ -68,40 +68,40 @@ ProjexiaHub DARK THEME
 ProjexiaHub LIGHT THEME
 ================================================================ */
 
-  /* Main surfaces */
-  --color-bg: 248 247 244;
-  --color-surface: 255 255 255;
-  --color-surface-raised: 244 242 238;
+  /* Main surfaces — warm parchment, linen and soft stone (never stark white) */
+  --color-bg: 239 235 226;
+  --color-surface: 249 246 239;
+  --color-surface-raised: 232 225 212;
 
-  /* Borders */
-  --color-line: 224 221 215;
-  --color-line-strong: 196 191 182;
+  /* Borders — warm, low-contrast stone */
+  --color-line: 214 205 190;
+  --color-line-strong: 183 170 150;
 
   /* ProjexiaHub primary copper accent */
-  --color-accent: 184 77 28;
-  --color-accent-hover: 158 62 20;
-  --color-accent-subtle: rgba(198, 91, 35, 0.1);
+  --color-accent: 164 69 31;
+  --color-accent-hover: 137 54 23;
+  --color-accent-subtle: rgba(164, 69, 31, 0.11);
 
-  /* Secondary accent */
-  --color-accent2: 183 122 45;
+  /* Secondary accent — muted brass */
+  --color-accent2: 143 105 43;
 
   /* Text displayed on accent backgrounds */
-  --color-on-accent: 255 255 255;
+  --color-on-accent: 255 250 242;
 
-  /* Typography */
-  --color-content: 25 27 31;
-  --color-content-secondary: 76 80 88;
-  --color-content-muted: 104 108 116;
+  /* Typography — warm charcoal for comfortable contrast */
+  --color-content: 39 39 35;
+  --color-content-secondary: 82 79 71;
+  --color-content-muted: 105 99 89;
 
   /* Semantic states */
-  --color-state-success: 20 155 103;
-  --color-state-warning: 205 132 21;
-  --color-state-danger: 211 54 65;
-  --color-state-info: 21 137 196;
+  --color-state-success: 28 119 83;
+  --color-state-warning: 157 99 17;
+  --color-state-danger: 174 49 48;
+  --color-state-info: 29 104 143;
 
-  /* Shadows */
-  --shadow-resting: 0 1px 3px rgba(22, 20, 17, 0.08);
-  --shadow-elevated: 0 20px 45px -18px rgba(22, 20, 17, 0.18);
+  /* Soft, warm shadows */
+  --shadow-resting: 0 2px 5px rgba(68, 52, 29, 0.07);
+  --shadow-elevated: 0 18px 42px -20px rgba(68, 52, 29, 0.24);
 }
 
 /* ================================================================
@@ -158,6 +158,10 @@ textarea {
     min-height: 100%;
     line-height: 1.6;
     text-rendering: optimizeLegibility;
+    background-image:
+      radial-gradient(ellipse at 8% 0%, rgb(var(--color-accent) / 0.055), transparent 34rem),
+      radial-gradient(ellipse at 92% 24%, rgb(var(--color-accent2) / 0.035), transparent 30rem);
+    background-attachment: fixed;
   }
 
   h1,
@@ -235,11 +239,19 @@ GLOBAL CARD
   .card {
     @apply rounded-card border border-line bg-surface;
     box-shadow: var(--shadow-resting);
+    background-image: linear-gradient(145deg, rgb(var(--color-content) / 0.012), transparent 62%);
   }
 
   .surface-panel {
     @apply rounded-card border border-line bg-surface;
     box-shadow: var(--shadow-resting);
+    background-image: linear-gradient(145deg, rgb(var(--color-content) / 0.012), transparent 62%);
+  }
+
+  [data-theme="light"] .grid-backdrop {
+    background-image:
+      linear-gradient(to right, rgb(var(--color-accent) / 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--color-accent) / 0.07) 1px, transparent 1px);
   }
 
   .eyebrow {
