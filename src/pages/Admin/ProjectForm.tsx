@@ -67,15 +67,15 @@ const EMPTY_DRAFT: ProjectDraft = {
 const EMPTY_COMPONENT: ProjectComponent = { name: '', category: '', quantity: '1 pc', notes: '', optional: false };
 const EMPTY_SPEC: ProjectSpecification = { label: '', value: '' };
 const normalizeProjectText = (value: string) => value
-  .replace(/^\\s{0,3}#{1,3}\\s+/gm, '')
-  .replace(/^\\s*-\\s+/gm, '')
-  .replace(/\\*\\*(.*?)\\*\\*/g, '$1')
-  .replace(/\\+\\+(.*?)\\+\\+/g, '$1')
-  .replace(/(^|[^*])\\*([^*]+)\\*/g, '$1$2')
-  .replace(/\\[([^\\]]+)\\]\\([^)]+\\)/g, '$1')
+  .replace(/^\s{0,3}#{1,3}\s+/gm, '')
+  .replace(/^\s*-\s+/gm, '')
+  .replace(/\*\*(.*?)\*\*/g, '$1')
+  .replace(/\+\+(.*?)\+\+/g, '$1')
+  .replace(/(^|[^*])\*([^*]+)\*/g, '$1$2')
+  .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
   .trim()
   .toLocaleLowerCase()
-  .replace(/\\s+/g, ' ');
+  .replace(/\s+/g, ' ');
 const defaultComponentQuantity = (name: string, unit: string) => {
   const normalized = name.toLocaleLowerCase();
   if (unit.trim()) return `1 ${unit.trim()}`;
