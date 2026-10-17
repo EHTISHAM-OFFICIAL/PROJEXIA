@@ -24,7 +24,7 @@ export function ProjectCard({ project }: { project: Project }) {
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
           <div className="absolute left-3 top-3">
-            <Badge tone={STATUS_TONE[project.status]}>{STATUS_LABEL[project.status]}</Badge>
+            <Badge tone={STATUS_TONE[project.status] ?? 'neutral'}>{STATUS_LABEL[project.status] ?? project.status}</Badge>
           </div>
         </div>
 
@@ -32,7 +32,7 @@ export function ProjectCard({ project }: { project: Project }) {
           <div className="flex items-center gap-2 text-xs text-content-muted">
             <span>{project.category}</span>
             <span aria-hidden="true">/</span>
-            <span>{DIFFICULTY_LABEL[project.difficulty]}</span>
+            <span>{DIFFICULTY_LABEL[project.difficulty] ?? project.difficulty}</span>
           </div>
 
           <h3 className="mt-2.5 text-lg font-semibold leading-snug tracking-tight text-content">
