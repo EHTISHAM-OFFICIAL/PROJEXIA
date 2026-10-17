@@ -5,15 +5,17 @@ export function CaseStudySection({
   title,
   children,
   empty = false,
+  id,
 }: {
   title: string;
   children: ReactNode;
   empty?: boolean;
+  id?: string;
 }) {
   if (empty) return null;
 
   return (
-    <section className="border-t border-line pt-10">
+    <section id={id} className="scroll-mt-24 border-t border-line pt-10">
       <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">{title}</h2>
       <div className="mt-5">{children}</div>
     </section>
