@@ -21,13 +21,16 @@ export function CaseStudySection({
 }
 
 function InlineText({ text }: { text: string }) {
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^\)]+\))/g);
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\+\+[^+]+\+\+|\[[^\]]+\]\([^\)]+\))/g);
 
   return (
     <>
       {parts.map((part, index) => {
         if (part.startsWith('**') && part.endsWith('**')) {
           return <strong key={index} className="font-semibold text-content">{part.slice(2, -2)}</strong>;
+        }
+        if (part.startsWith('++') && part.endsWith('++')) {
+          return <u key={index} className="underline decoration-current underline-offset-2">{part.slice(2, -2)}</u>;
         }
         if (part.startsWith('*') && part.endsWith('*')) {
           return <em key={index}>{part.slice(1, -1)}</em>;
