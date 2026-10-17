@@ -1,5 +1,6 @@
 import { Plus, X } from 'lucide-react';
 import { TextInput } from './Inputs';
+import { RichTextEditor } from './RichTextEditor';
 
 /** Edits a string[] field (objectives, features, challenges, tags, technologies). */
 export function ListEditor({
@@ -69,7 +70,7 @@ export function TableEditor<T extends object>({
   label,
 }: {
   rows: T[];
-  columns: { key: Extract<keyof T, string>; label: string; type?: 'text' | 'number' | 'checkbox'; width?: string }[];
+  columns: { key: Extract<keyof T, string>; label: string; type?: 'text' | 'number' | 'checkbox' | 'richtext'; width?: string }[];
   emptyRow: T;
   onChange: (next: T[]) => void;
   label: string;
@@ -108,6 +109,16 @@ export function TableEditor<T extends object>({
                   />
                   {column.label}
                 </label>
+              ) : column.type === 'richtext' ? (
+                <>
+                  <label className="mb-1 block text-xs text-content-muted">{column.label}</label>
+                  <RichTextEditor
+                    id={`table-${label.toLocaleLowerCase().replace(/[^a-z0-9]+/g, '-')}-${index}-${column.key}`}
+                    rows={3}
+                    value={String(row[column.key] ?? '')}
+                    onChange={(value) => update(index, column.key, value)}
+                  />
+                </>
               ) : (
                 <>
                   <label className="mb-1 block text-xs text-content-muted">{column.label}</label>
