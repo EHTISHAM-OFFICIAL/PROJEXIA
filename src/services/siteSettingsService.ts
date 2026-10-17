@@ -16,6 +16,8 @@ export interface SiteSettings {
   faviconUrl: string;
   showSiteLogo: boolean;
   showFavicon: boolean;
+  showProjectCardDate: boolean;
+  showProjectCardViews: boolean;
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
@@ -34,6 +36,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   faviconUrl: "/favicon.svg?v=2",
   showSiteLogo: true,
   showFavicon: true,
+  showProjectCardDate: true,
+  showProjectCardViews: true,
 };
 
 const SITE_SETTINGS_DOC = doc(db, "settings", "siteProfile");
@@ -70,6 +74,8 @@ export function normalizeSiteSettings(value: unknown): SiteSettings {
     faviconUrl: typeof source.faviconUrl === "string" && source.faviconUrl.trim() ? source.faviconUrl.trim() : DEFAULT_SITE_SETTINGS.faviconUrl,
     showSiteLogo: typeof source.showSiteLogo === "boolean" ? source.showSiteLogo : DEFAULT_SITE_SETTINGS.showSiteLogo,
     showFavicon: typeof source.showFavicon === "boolean" ? source.showFavicon : DEFAULT_SITE_SETTINGS.showFavicon,
+    showProjectCardDate: typeof source.showProjectCardDate === "boolean" ? source.showProjectCardDate : DEFAULT_SITE_SETTINGS.showProjectCardDate,
+    showProjectCardViews: typeof source.showProjectCardViews === "boolean" ? source.showProjectCardViews : DEFAULT_SITE_SETTINGS.showProjectCardViews,
   };
 }
 
