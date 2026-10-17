@@ -149,11 +149,21 @@ export default function ProjectForm() {
   ])].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
   const difficultyOptions = [
     ...PROJECT_DIFFICULTIES,
-    ...difficultyLibrary.filter((name) => !PROJECT_DIFFICULTIES.some((option) => option.value.toLocaleLowerCase() === name.toLocaleLowerCase() || option.label.toLocaleLowerCase() === name.toLocaleLowerCase())).map((name) => ({ value: name, label: name })),
+    ...difficultyLibrary
+      .filter((name) => !PROJECT_DIFFICULTIES.some((option) => option.value.toLocaleLowerCase() === name.toLocaleLowerCase() || option.label.toLocaleLowerCase() === name.toLocaleLowerCase()))
+      .map((name) => ({ value: name, label: name })),
+    ...(draft.difficulty && !PROJECT_DIFFICULTIES.some((option) => option.value.toLocaleLowerCase() === draft.difficulty.toLocaleLowerCase() || option.label.toLocaleLowerCase() === draft.difficulty.toLocaleLowerCase()) && !difficultyLibrary.some((name) => name.toLocaleLowerCase() === draft.difficulty.toLocaleLowerCase())
+      ? [{ value: draft.difficulty, label: draft.difficulty }]
+      : []),
   ];
   const statusOptions = [
     ...PROJECT_STATUSES,
-    ...statusLibrary.filter((name) => !PROJECT_STATUSES.some((option) => option.value.toLocaleLowerCase() === name.toLocaleLowerCase() || option.label.toLocaleLowerCase() === name.toLocaleLowerCase())).map((name) => ({ value: name, label: name })),
+    ...statusLibrary
+      .filter((name) => !PROJECT_STATUSES.some((option) => option.value.toLocaleLowerCase() === name.toLocaleLowerCase() || option.label.toLocaleLowerCase() === name.toLocaleLowerCase()))
+      .map((name) => ({ value: name, label: name })),
+    ...(draft.status && !PROJECT_STATUSES.some((option) => option.value.toLocaleLowerCase() === draft.status.toLocaleLowerCase() || option.label.toLocaleLowerCase() === draft.status.toLocaleLowerCase()) && !statusLibrary.some((name) => name.toLocaleLowerCase() === draft.status.toLocaleLowerCase())
+      ? [{ value: draft.status, label: draft.status }]
+      : []),
   ];
 
   useEffect(() => {
