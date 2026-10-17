@@ -18,7 +18,7 @@ import { useProjectById } from '../../hooks/useProject';
 import { projectService } from '../../services/projectService';
 import { imgbbService } from '../../services/imgbbService';
 import { projectLibraryService } from '../../services/projectLibraryService';
-import { PROJECT_CATEGORIES } from '../../constants/categories';
+import { PROJECT_CATEGORIES, sortProjectCategories } from '../../constants/categories';
 import {
   PROJECT_DIFFICULTIES,
   PROJECT_STATUSES,
@@ -101,6 +101,12 @@ export default function ProjectForm() {
   const [subcategoryLibrary, setSubcategoryLibrary] = useState<{ name: string; category: string }[]>([]);
   const [difficultyLibrary, setDifficultyLibrary] = useState<string[]>([]);
   const [statusLibrary, setStatusLibrary] = useState<string[]>([]);
+  const [categoryInput, setCategoryInput] = useState('');
+  const [subcategoryInput, setSubcategoryInput] = useState('');
+  const [difficultyInput, setDifficultyInput] = useState('');
+  const [statusInput, setStatusInput] = useState('');
+  const [savingLibraryOption, setSavingLibraryOption] = useState(false);
+  const [libraryNotice, setLibraryNotice] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -121,13 +127,13 @@ export default function ProjectForm() {
     return () => { cancelled = true; };
   }, []);
 
-  const categoryOptions = [...new Set([...PROJECT_CATEGORIES, ...categoryLibrary, draft.category].filter(Boolean))];
+  const categoryOptions = sortProjectCategories([...PROJECT_CATEGORIES, ...categoryLibrary, draft.category]);
   const subcategoryOptions = [...new Set([
     ...subcategoryLibrary
       .filter((item) => !item.category || item.category === 'Project subcategories' || item.category === draft.category)
       .map((item) => item.name),
     ...(draft.subcategory ? [draft.subcategory] : []),
-  ])];
+  ])].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
   const difficultyOptions = [
     ...PROJECT_DIFFICULTIES,
     ...difficultyLibrary.filter((name) => !PROJECT_DIFFICULTIES.some((option) => option.value.toLocaleLowerCase() === name.toLocaleLowerCase() || option.label.toLocaleLowerCase() === name.toLocaleLowerCase())).map((name) => ({ value: name, label: name })),
@@ -154,6 +160,50 @@ export default function ProjectForm() {
       title,
       slug: slugTouched ? current.slug : slugify(title),
     }));
+  };
+
+  const addLibraryOption = async (kind: 'category' | 'subcategory' | 'difficulty' | 'status', rawName: string) => {
+    const name = rawName.trim().replace(/\s+/g, ' ');
+    if (!name) return;
+    setError(null);
+    setLibraryNotice('');
+    setSavingLibraryOption(true);
+    try {
+      const item = await projectLibraryService.addCustom({
+        name,
+        kind,
+        category: kind === 'subcategory' ? draft.category : '',
+        description: '',
+        unit: '',
+        defaultValue: '',
+        active: true,
+      });
+      if (kind === 'category') {
+        setCategoryLibrary((current) => sortProjectCategories([...current, item.name]));
+        update('category', item.name);
+        setCategoryInput('');
+      } else if (kind === 'subcategory') {
+        setSubcategoryLibrary((current) => {
+          const next = current.filter((entry) => !(entry.name.trim().toLocaleLowerCase() === item.name.toLocaleLowerCase() && entry.category === draft.category));
+          return [...next, { name: item.name, category: draft.category }].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+        });
+        update('subcategory', item.name);
+        setSubcategoryInput('');
+      } else if (kind === 'difficulty') {
+        setDifficultyLibrary((current) => [...new Set([...current, item.name])].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })));
+        update('difficulty', item.name as ProjectDifficulty);
+        setDifficultyInput('');
+      } else {
+        setStatusLibrary((current) => [...new Set([...current, item.name])].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })));
+        update('status', item.name as ProjectStatus);
+        setStatusInput('');
+      }
+      setLibraryNotice(`“${item.name}” is available in the reusable library.`);
+    } catch (caught) {
+      setError(toUserMessage(caught, 'Could not save this option to the project library.'));
+    } finally {
+      setSavingLibraryOption(false);
+    }
   };
 
   const cleanList = (items: string[]) => items.map((item) => item.trim()).filter(Boolean);
@@ -235,9 +285,9 @@ export default function ProjectForm() {
         </p>
       </header>
 
-      {error && (
+      {(error || libraryNotice) && (
         <div className="mt-6">
-          <Alert tone="danger">{error}</Alert>
+          <Alert tone={error ? 'danger' : 'success'}>{error || libraryNotice}</Alert>
         </div>
       )}
 
@@ -290,6 +340,12 @@ export default function ProjectForm() {
                 value={draft.category}
                 onChange={(event) => update('category', event.target.value)}
               />
+              <div className="mt-2 flex gap-2">
+                <TextInput value={categoryInput} maxLength={120} onChange={(event) => setCategoryInput(event.target.value)} placeholder="New category…" aria-label="New project category" />
+                <Button type="button" variant="secondary" disabled={!categoryInput.trim() || savingLibraryOption} onClick={() => void addLibraryOption('category', categoryInput)}>
+                  {savingLibraryOption ? 'Saving…' : 'Add to library'}
+                </Button>
+              </div>
             </Field>
             <Field label="Status" htmlFor="status" required>
               <Select
@@ -298,6 +354,12 @@ export default function ProjectForm() {
                 value={draft.status}
                 onChange={(event) => update('status', event.target.value as ProjectStatus)}
               />
+              <div className="mt-2 flex gap-2">
+                <TextInput value={statusInput} maxLength={120} onChange={(event) => setStatusInput(event.target.value)} placeholder="New status…" aria-label="New project status" />
+                <Button type="button" variant="secondary" disabled={!statusInput.trim() || savingLibraryOption} onClick={() => void addLibraryOption('status', statusInput)}>
+                  {savingLibraryOption ? 'Saving…' : 'Add to library'}
+                </Button>
+              </div>
             </Field>
             <Field label="Difficulty" htmlFor="difficulty" required>
               <Select
@@ -306,6 +368,12 @@ export default function ProjectForm() {
                 value={draft.difficulty}
                 onChange={(event) => update('difficulty', event.target.value as ProjectDifficulty)}
               />
+              <div className="mt-2 flex gap-2">
+                <TextInput value={difficultyInput} maxLength={120} onChange={(event) => setDifficultyInput(event.target.value)} placeholder="New difficulty…" aria-label="New difficulty level" />
+                <Button type="button" variant="secondary" disabled={!difficultyInput.trim() || savingLibraryOption} onClick={() => void addLibraryOption('difficulty', difficultyInput)}>
+                  {savingLibraryOption ? 'Saving…' : 'Add to library'}
+                </Button>
+              </div>
             </Field>
           </div>
 
@@ -318,6 +386,12 @@ export default function ProjectForm() {
                 value={draft.subcategory ?? ''}
                 onChange={(event) => update('subcategory', event.target.value || null)}
               />
+              <div className="mt-2 flex gap-2">
+                <TextInput value={subcategoryInput} maxLength={120} onChange={(event) => setSubcategoryInput(event.target.value)} placeholder="New subcategory…" aria-label="New project subcategory" />
+                <Button type="button" variant="secondary" disabled={!subcategoryInput.trim() || savingLibraryOption} onClick={() => void addLibraryOption('subcategory', subcategoryInput)}>
+                  {savingLibraryOption ? 'Saving…' : 'Add to library'}
+                </Button>
+              </div>
             </Field>
             <Field label="Completion date" htmlFor="completedAt">
               <TextInput
