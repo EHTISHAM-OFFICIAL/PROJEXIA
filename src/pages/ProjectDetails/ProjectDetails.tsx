@@ -189,7 +189,12 @@ export default function ProjectDetails() {
                   <tbody>
                     {project.components.map((component, index) => (
                       <tr key={index} className="transition-colors hover:bg-surface-raised/60">
-                        <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content [overflow-wrap:normal] [word-break:normal]">{component.name}</td>
+                        <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content [overflow-wrap:normal] [word-break:normal]">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span>{component.name}</span>
+                            {component.optional && <Badge tone="info" className="shrink-0">Optional</Badge>}
+                          </div>
+                        </td>
                         <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.category || '—'}</td>
                         <td className="whitespace-normal px-4 py-3.5 align-top font-mono leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.quantity}</td>
                         <td className="whitespace-normal px-4 py-3.5 align-top leading-relaxed text-content-secondary [overflow-wrap:normal] [word-break:normal]">{component.notes || '—'}</td>
