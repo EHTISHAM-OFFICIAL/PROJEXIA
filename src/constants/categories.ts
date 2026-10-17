@@ -1,18 +1,28 @@
 /**
- * Project categories. Adding a category here makes it available everywhere:
- * project filters, the admin editor, and the request form.
+ * Built-in project categories. Custom categories are stored in Firestore's
+ * projectLibrary collection; this list provides reliable defaults/fallbacks.
  */
 export const PROJECT_CATEGORIES = [
   'Arduino',
+  'Automation',
+  'Electronics',
+  'Embedded Systems',
   'ESP32',
   'IoT',
   'Robotics',
-  'Automation',
-  'Embedded Systems',
   'Sensors',
   'Smart Home',
-  'Electronics',
   'Other',
 ] as const;
+
+/** Sort alphabetically, while keeping the catch-all category at the end. */
+export function sortProjectCategories(categories: Iterable<string>): string[] {
+  return [...new Set([...categories].map((category) => category.trim()).filter(Boolean))].sort((a, b) => {
+    const aOther = /^(other|others)$/i.test(a);
+    const bOther = /^(other|others)$/i.test(b);
+    if (aOther !== bOther) return aOther ? 1 : -1;
+    return a.localeCompare(b, undefined, { sensitivity: 'base' });
+  });
+}
 
 export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
