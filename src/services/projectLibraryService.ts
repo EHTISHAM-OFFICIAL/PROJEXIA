@@ -85,7 +85,7 @@ export const projectLibraryService = {
   async addCustom(draft: ProjectLibraryDraft): Promise<ProjectLibraryItem> {
     const name = draft.name.trim();
     if (!name) throw new Error('Enter a name for this library item.');
-    const maxNameLength = 5000;
+    const maxNameLength = 10000;
     if (name.length > maxNameLength) {
       throw new Error(`Names for ${draft.kind} items must be ${maxNameLength} characters or fewer.`);
     }
@@ -135,7 +135,7 @@ export const projectLibraryService = {
   async save(draft: ProjectLibraryDraft, id?: string): Promise<void> {
     const name = draft.name.trim();
     if (!name) throw new Error('Enter a name for this library item.');
-    const maxNameLength = 5000;
+    const maxNameLength = 10000;
     if (name.length > maxNameLength) {
       throw new Error(`Names for ${draft.kind} items must be ${maxNameLength} characters or fewer.`);
     }
