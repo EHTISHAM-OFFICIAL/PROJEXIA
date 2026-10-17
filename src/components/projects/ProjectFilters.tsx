@@ -10,6 +10,12 @@ import type { ProjectFilters as Filters, ProjectSortKey } from '../../types/proj
 import { EMPTY_FILTERS } from '../../hooks/useProjects';
 import { cn } from '../../utils/cn';
 
+const plainInlineLabel = (value: string) => value
+  .replace(/\*\*(.*?)\*\*/g, '$1')
+  .replace(/\+\+(.*?)\+\+/g, '$1')
+  .replace(/(^|[^*])\*([^*]+)\*/g, '$1$2')
+  .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+
 interface ProjectFiltersProps {
   filters: Filters;
   onChange: (filters: Filters) => void;
@@ -112,7 +118,7 @@ export function ProjectFilters({
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Select
-          options={technologies}
+          options={technologies.map((technology) => ({ value: technology, label: plainInlineLabel(technology) }))}
           placeholder="All technologies"
           value={filters.technology}
           aria-label="Filter by technology"
