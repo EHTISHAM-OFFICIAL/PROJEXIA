@@ -154,7 +154,7 @@ export default function ProjectsList() {
                     <Badge tone={project.published ? 'success' : 'neutral'}>
                       {project.published ? 'Published' : 'Draft'}
                     </Badge>
-                    <Badge tone={STATUS_TONE[project.status]}>{STATUS_LABEL[project.status]}</Badge>
+                    <Badge tone={STATUS_TONE[project.status] ?? 'neutral'}>{STATUS_LABEL[project.status] ?? project.status}</Badge>
                   </div>
                   <p className="mt-1 truncate font-mono text-xs text-content-muted">
                     /projects/{project.slug} · {project.category} ·{' '}
