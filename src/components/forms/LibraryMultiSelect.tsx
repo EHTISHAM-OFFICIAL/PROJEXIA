@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Check, ChevronDown, Plus, Search, X } from 'lucide-react';
 import { TextInput } from './Inputs';
 import { RichTextEditor } from './RichTextEditor';
-import { InlineText } from '../projects/CaseStudySection';
 import { projectLibraryService } from '../../services/projectLibraryService';
 import type { ProjectLibraryItem, ProjectLibraryKind } from '../../types/projectLibrary';
 import { PROJECT_LIBRARY_STARTER } from '../../constants/projectLibraryStarter';
