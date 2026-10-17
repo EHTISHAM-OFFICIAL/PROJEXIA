@@ -71,7 +71,7 @@ export default function Projects() {
         description="Every build is written up as a case study: the problem, the approach, the components and what the finished system does. Filter by platform, difficulty or status."
       />
 
-      <Container className="py-10 sm:py-12">
+      <Container className="py-8 sm:py-12">
         <ProjectFilters
           filters={filters}
           onChange={setFilters}
@@ -83,7 +83,7 @@ export default function Projects() {
           resultCount={filtered.length}
         />
 
-        <div className="mt-10">
+        <div className="mt-7 sm:mt-10">
           {loading && <ProjectGridSkeleton count={6} />}
 
           {!loading && error && <ErrorState message={error} onRetry={reload} />}
@@ -118,9 +118,10 @@ export default function Projects() {
             <>
               <ProjectGrid projects={visible} />
               {hasMore && (
-                <div className="mt-12 flex justify-center">
+                <div className="mt-8 flex justify-center sm:mt-12">
                   <Button
                     variant="secondary"
+                    className="w-full sm:w-auto"
                     onClick={() => setVisibleCount((count) => count + PROJECTS_PER_PAGE)}
                   >
                     Show more projects
