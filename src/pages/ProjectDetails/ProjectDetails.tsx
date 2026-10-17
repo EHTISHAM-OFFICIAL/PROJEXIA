@@ -149,7 +149,7 @@ export default function ProjectDetails() {
       )}
 
       <Container className="pb-20">
-        <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-16">
+        <div className="grid min-w-0 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,340px)] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-12">
           <div className="flex min-w-0 flex-col gap-10">
             <CaseStudySection title="Overview" empty={!project.description}>
               <Prose text={project.description} />
@@ -177,22 +177,22 @@ export default function ProjectDetails() {
 
             <CaseStudySection title="Components used" empty={project.components.length === 0}>
               <div className="overflow-x-auto rounded-card border border-line">
-                <table className="w-full min-w-[520px] text-sm">
+                <table className="w-full min-w-[600px] table-fixed text-sm">
                   <thead>
                     <tr className="border-b border-line bg-surface text-left">
-                      <th scope="col" className="px-4 py-3 font-medium">Component</th>
-                      <th scope="col" className="px-4 py-3 font-medium">Type</th>
-                      <th scope="col" className="px-4 py-3 font-medium">Qty</th>
-                      <th scope="col" className="px-4 py-3 font-medium">Notes</th>
+                      <th scope="col" className="w-[26%] px-4 py-3 font-medium">Component</th>
+                      <th scope="col" className="w-[18%] px-4 py-3 font-medium">Type</th>
+                      <th scope="col" className="w-[12%] px-4 py-3 font-medium">Qty</th>
+                      <th scope="col" className="w-[44%] px-4 py-3 font-medium">Notes</th>
                     </tr>
                   </thead>
                   <tbody>
                     {project.components.map((component, index) => (
                       <tr key={index} className="border-b border-line last:border-0">
-                        <td className="px-4 py-3 text-content">{component.name}</td>
-                        <td className="px-4 py-3 text-content-secondary">{component.category || '—'}</td>
-                        <td className="px-4 py-3 font-mono text-content-secondary">{component.quantity}</td>
-                        <td className="px-4 py-3 text-content-secondary">{component.notes || '—'}</td>
+                        <td className="break-words px-4 py-3 align-top text-content [overflow-wrap:anywhere]">{component.name}</td>
+                        <td className="break-words px-4 py-3 align-top text-content-secondary [overflow-wrap:anywhere]">{component.category || '—'}</td>
+                        <td className="break-words px-4 py-3 align-top font-mono text-content-secondary [overflow-wrap:anywhere]">{component.quantity}</td>
+                        <td className="break-words px-4 py-3 align-top leading-relaxed text-content-secondary [overflow-wrap:anywhere]">{component.notes || '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -221,8 +221,8 @@ export default function ProjectDetails() {
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="card p-5">
-              <h2 className="text-sm font-medium text-content">Project details</h2>
+            <div className="card min-w-0 p-6">
+              <h2 className="text-base font-semibold tracking-tight text-content">Project details</h2>
               <dl className="mt-4 flex flex-col gap-3.5 text-sm">
                 <DetailRow label="Status" value={STATUS_LABEL[project.status]} />
                 <DetailRow label="Category" value={project.category} />
@@ -282,9 +282,9 @@ export default function ProjectDetails() {
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-line pb-3 last:border-0 last:pb-0">
+    <div className="flex min-w-0 flex-col gap-1.5 border-b border-line pb-3 last:border-0 last:pb-0 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
       <dt className="shrink-0 text-content-muted">{label}</dt>
-      <dd className="text-right text-content">{value}</dd>
+      <dd className="min-w-0 break-words text-left leading-relaxed text-content [overflow-wrap:anywhere] sm:text-right">{value}</dd>
     </div>
   );
 }
