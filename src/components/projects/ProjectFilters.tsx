@@ -42,7 +42,7 @@ export function ProjectFilters({
 
   // Only categories that actually have a published project — no dead-end
   // chips pointing at an empty result.
-  const availableCategories = PROJECT_CATEGORIES.filter(
+  const availableCategories = [...new Set([...PROJECT_CATEGORIES, ...Object.keys(categoryCounts)])].filter(
     (category) => (categoryCounts[category] ?? 0) > 0
   );
 
