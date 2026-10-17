@@ -18,12 +18,14 @@ export function RichTextEditor({
   onChange,
   rows = 5,
   placeholder,
+  inlineOnly = false,
 }: {
   id: string;
   value: string;
   onChange: (value: string) => void;
   rows?: number;
   placeholder?: string;
+  inlineOnly?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -79,10 +81,14 @@ export function RichTextEditor({
     { format: 'bullet', label: 'Bullet list', icon: List },
   ];
 
+  const visibleTools = inlineOnly
+    ? tools.filter(({ format }) => format === 'bold' || format === 'italic' || format === 'underline')
+    : tools;
+
   return (
     <div className="overflow-hidden rounded-lg border border-line focus-within:border-accent/70 focus-within:ring-2 focus-within:ring-accent/15">
       <div className="flex flex-wrap items-center gap-1 border-b border-line bg-surface px-2 py-1.5">
-        {tools.map(({ format, label, shortcut, icon: Icon }) => (
+        {visibleTools.map(({ format, label, shortcut, icon: Icon }) => (
           <button
             key={format}
             type="button"
@@ -110,7 +116,7 @@ export function RichTextEditor({
         aria-describedby={`${id}-format-help`}
       />
       <p id={`${id}-format-help`} className="border-t border-line bg-surface/50 px-3 py-2 text-xs leading-relaxed text-content-muted">
-        Supports **bold**, *italic*, ++underline++, ## headings and - bullet lists. Shortcuts: Ctrl/⌘ + B, I or U.
+        {inlineOnly ? 'Supports **bold**, *italic* and ++underline++ formatting.' : 'Supports **bold**, *italic*, ++underline++, ## headings and - bullet lists.'} Shortcuts: Ctrl/⌘ + B, I or U.
       </p>
     </div>
   );
