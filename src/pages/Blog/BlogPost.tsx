@@ -17,17 +17,17 @@ export default function BlogPost() {
 
   if (loading) {
     return (
-      <Container className="py-16">
+      <Container className="py-10 sm:py-16">
         <Skeleton className="h-4 w-32" />
-        <Skeleton className="mt-6 h-10 w-2/3" />
-        <Skeleton className="mt-8 aspect-[16/9] w-full" />
+        <Skeleton className="mt-5 h-9 w-3/4 sm:mt-6 sm:h-12" />
+        <Skeleton className="mt-6 aspect-[16/9] w-full sm:mt-8" />
       </Container>
     );
   }
 
   if (error) {
     return (
-      <Container className="py-16">
+      <Container className="py-10 sm:py-16">
         <ErrorState message={error} onRetry={reload} />
       </Container>
     );
@@ -35,7 +35,7 @@ export default function BlogPost() {
 
   if (!post) {
     return (
-      <Container className="py-16">
+      <Container className="py-10 sm:py-16">
         <Seo title="Post not found" noIndex />
         <EmptyState
           title="That post isn't here"
@@ -64,31 +64,33 @@ export default function BlogPost() {
         keywords={post.keywords}
       />
 
-      <Container className="pt-10">
+      <Container className="pt-6 sm:pt-10">
         <Link
           to="/blog"
-          className="inline-flex items-center gap-2 rounded-md py-2 text-sm text-content-secondary transition-colors hover:text-content"
+          className="inline-flex min-h-10 items-center gap-2 rounded-md py-2 pr-3 text-sm text-content-secondary transition-colors hover:text-content"
         >
           <ArrowLeft size={15} aria-hidden="true" />
           All posts
         </Link>
       </Container>
 
-      <Container className="pb-16 pt-6">
-        <p className="font-mono text-xs text-content-muted">{formatDate(post.createdAt)}</p>
-        <h1 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-          {post.title}
-        </h1>
+      <Container className="pb-10 pt-4 sm:pb-16 sm:pt-6">
+        <article className="min-w-0">
+          <p className="font-mono text-xs text-content-muted">{formatDate(post.createdAt)}</p>
+          <h1 className="mt-3 max-w-3xl text-3xl font-semibold leading-[1.12] tracking-tight sm:text-4xl">
+            {post.title}
+          </h1>
 
-        {post.coverImageUrl && (
-          <div className="mt-8 overflow-hidden rounded-card border border-line bg-surface-raised">
-            <Image src={post.coverImageUrl} alt={post.coverImageAlt || post.title} eager className="aspect-[16/9] w-full object-cover" />
+          {post.coverImageUrl && (
+            <div className="mt-6 overflow-hidden rounded-card border border-line bg-surface-raised sm:mt-8">
+              <Image src={post.coverImageUrl} alt={post.coverImageAlt || post.title} eager className="aspect-[16/9] w-full object-cover" />
+            </div>
+          )}
+
+          <div className="mt-7 max-w-prose sm:mt-10">
+            <Prose text={post.body} />
           </div>
-        )}
-
-        <div className="mt-10 max-w-prose">
-          <Prose text={post.body} />
-        </div>
+        </article>
       </Container>
     </>
   );
