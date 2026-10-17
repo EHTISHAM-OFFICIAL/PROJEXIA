@@ -175,7 +175,7 @@ export function LibraryMultiSelect({
     <div ref={rootRef} className="flex flex-col gap-3">
       <div className="flex flex-col gap-2">
         {values.map((value, index) => (
-          <div key={`${index}-${value}`} className="min-w-0 rounded-lg border border-line bg-surface-raised/50 p-2.5">
+          <div key={`${index}-${value}`} className={`min-w-0 ${kind === 'component' ? '' : 'rounded-lg border border-line bg-surface-raised/50 p-2.5'}`}>
             <div className="flex min-w-0 items-start gap-2">
               <div className="min-w-0 flex-1">
 {kind === 'component' ? (
