@@ -101,20 +101,20 @@ export default function ProjectLibrary() {
       </div>
       <form onSubmit={submit} className="mt-7 grid gap-4 rounded-xl border border-line p-4 sm:grid-cols-2">
         <h2 className="sm:col-span-2 text-lg font-semibold">{editingId ? 'Edit library item' : 'Add library item'}</h2>
-        <Field label="Name" required><TextInput required maxLength={draft.kind === 'challenge' ? 300 : 120} value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} /></Field>
+        <Field label="Name" required><TextInput required maxLength={5000} value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} /></Field>
         <Field label="Type" required><Select options={KINDS} value={draft.kind} onChange={(event) => setDraft({ ...draft, kind: event.target.value as ProjectLibraryKind })} /></Field>
         <Field
           label={draft.kind === 'component' ? 'Component type' : 'Category'}
           hint={draft.kind === 'component' ? 'This is copied into the project component Type field.' : 'For subcategories, use this field to link the subcategory to a parent project category. For other options, it is an optional grouping.'}
         >
-          <TextInput maxLength={80} value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} placeholder={draft.kind === 'component' ? 'e.g. Sensor, controller, motor driver' : 'e.g. Microcontrollers'} />
+          <TextInput maxLength={5000} value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} placeholder={draft.kind === 'component' ? 'e.g. Sensor, controller, motor driver' : 'e.g. Microcontrollers'} />
         </Field>
         <Field
           label={draft.kind === 'component' ? 'Default quantity unit' : 'Unit'}
           hint={draft.kind === 'component' ? 'Used to prefill a useful quantity such as “1 set”, “1 pc”, “1 roll”, or “1 m”.' : draft.kind === 'specification' ? 'Appended to a suggested specification value when appropriate, e.g. V, mA, mm, or °C.' : 'Optional measurement unit, if relevant.'}
         >
           <TextInput
-            maxLength={30}
+            maxLength={5000}
             value={draft.unit}
             onChange={(event) => setDraft({ ...draft, unit: event.target.value })}
             placeholder={draft.kind === 'component' ? 'e.g. pc, set, pair, roll, m' : 'e.g. V, mA, mm'}
@@ -124,13 +124,13 @@ export default function ProjectLibrary() {
           label={draft.kind === 'specification' ? 'Suggested specification value' : 'Suggested default value'}
           hint={draft.kind === 'specification' ? 'Prefills the project specification Value field. Verify it for each actual build.' : 'Optional; verify for each project.'}
         >
-          <TextInput maxLength={120} value={draft.defaultValue} onChange={(event) => setDraft({ ...draft, defaultValue: event.target.value })} placeholder="Optional; verify for each project" />
+          <TextInput maxLength={5000} value={draft.defaultValue} onChange={(event) => setDraft({ ...draft, defaultValue: event.target.value })} placeholder="Optional; verify for each project" />
         </Field>
         <Field
           label={draft.kind === 'component' ? 'Component notes' : 'Description'}
           hint={draft.kind === 'component' ? 'Copied into the project component Notes field when selected. Leave blank if no note is needed.' : 'Optional description shown with library suggestions.'}
         >
-          <TextArea rows={2} maxLength={300} value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} />
+          <TextArea rows={2} maxLength={5000} value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} />
         </Field>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={draft.active} onChange={(event) => setDraft({ ...draft, active: event.target.checked })} /> Available for new projects</label>
         <div className="flex flex-wrap gap-2 sm:col-span-2">
