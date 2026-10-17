@@ -70,7 +70,7 @@ export function TableEditor<T extends object>({
   label,
 }: {
   rows: T[];
-  columns: { key: Extract<keyof T, string>; label: string; type?: 'text' | 'number' | 'checkbox' | 'richtext'; width?: string }[];
+  columns: { key: Extract<keyof T, string>; label: string; type?: 'text' | 'number' | 'checkbox' | 'richtext'; width?: string; inlineOnly?: boolean }[];
   emptyRow: T;
   onChange: (next: T[]) => void;
   label: string;
@@ -115,6 +115,7 @@ export function TableEditor<T extends object>({
                   <RichTextEditor
                     id={`table-${label.toLocaleLowerCase().replace(/[^a-z0-9]+/g, '-')}-${index}-${column.key}`}
                     rows={3}
+                    inlineOnly={column.inlineOnly}
                     value={String(row[column.key] ?? '')}
                     onChange={(value) => update(index, column.key, value)}
                   />
