@@ -69,18 +69,20 @@ export function TableEditor<T extends object>({
   label,
 }: {
   rows: T[];
-  columns: { key: Extract<keyof T, string>; label: string; type?: 'text' | 'number'; width?: string }[];
+  columns: { key: Extract<keyof T, string>; label: string; type?: 'text' | 'number' | 'checkbox'; width?: string }[];
   emptyRow: T;
   onChange: (next: T[]) => void;
   label: string;
 }) {
   const data = rows.length ? rows : [emptyRow];
 
-  const update = (index: number, key: Extract<keyof T, string>, value: string) => {
-    const isNumber = columns.find((column) => column.key === key)?.type === 'number';
-    const next = data.map((row, position) =>
-      position === index ? { ...row, [key]: isNumber ? Number(value) || 0 : value } : row
-    );
+  const update = (index: number, key: Extract<keyof T, string>, value: string | boolean) => {
+    const type = columns.find((column) => column.key === key)?.type;
+    const next = data.map((row, position) => {
+      if (position !== index) return row;
+      const nextValue = type === 'number' && typeof value === 'string' ? Number(value) || 0 : value;
+      return { ...row, [key]: nextValue };
+    });
     onChange(next);
   };
 
@@ -95,13 +97,28 @@ export function TableEditor<T extends object>({
         <div key={index} className="flex flex-wrap items-end gap-2 rounded-lg border border-line p-3">
           {columns.map((column) => (
             <div key={column.key} className={column.width ?? 'min-w-[140px] flex-1'}>
-              <label className="mb-1 block text-xs text-content-muted">{column.label}</label>
-              <TextInput
-                type={column.type === 'number' ? 'number' : 'text'}
-                value={String(row[column.key] ?? '')}
-                aria-label={`${label} ${index + 1} ${column.label}`}
-                onChange={(event) => update(index, column.key, event.target.value)}
-              />
+              {column.type === 'checkbox' ? (
+                <label className="flex min-h-[42px] items-center gap-2 text-sm text-content-secondary">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(row[column.key])}
+                    aria-label={`${label} ${index + 1} ${column.label}`}
+                    onChange={(event) => update(index, column.key, event.target.checked)}
+                    className="h-4 w-4 rounded border-line accent-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+                  />
+                  {column.label}
+                </label>
+              ) : (
+                <>
+                  <label className="mb-1 block text-xs text-content-muted">{column.label}</label>
+                  <TextInput
+                    type={column.type === 'number' ? 'number' : 'text'}
+                    value={String(row[column.key] ?? '')}
+                    aria-label={`${label} ${index + 1} ${column.label}`}
+                    onChange={(event) => update(index, column.key, event.target.value)}
+                  />
+                </>
+              )}
             </div>
           ))}
           {data.length > 1 && (
