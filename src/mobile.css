@@ -101,3 +101,141 @@ canvas {
     scroll-behavior: auto;
   }
 }
+
+/* ================================================================
+   Mobile experience refinement
+   Tuned for small phones through large touch devices without changing
+   desktop layout rules or application data/behavior.
+   ================================================================ */
+
+@media (max-width: 640px) {
+  /* Give content more room on compact screens and shorten oversized gaps. */
+  main .max-w-content {
+    padding-inline: 1rem;
+  }
+
+  section > .max-w-content {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  main {
+    min-width: 0;
+  }
+
+  main .grid,
+  main .flex,
+  main form,
+  main article,
+  main aside {
+    min-width: 0;
+  }
+
+  /* Headings stay bold but don't dominate a phone-sized viewport. */
+  main h1 {
+    font-size: clamp(1.9rem, 7.2vw, 2.65rem);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+  }
+
+  main h2 {
+    text-wrap: pretty;
+  }
+
+  /* Comfortable touch targets, including compact icon controls. */
+  button,
+  [role="button"] {
+    min-height: 44px;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  select {
+    min-height: 44px;
+  }
+
+  textarea {
+    min-height: 8rem;
+  }
+
+  /* Better mobile card rhythm and less wasted horizontal space. */
+  .card,
+  .surface-panel {
+    border-radius: 12px;
+  }
+
+  .prose-content {
+    font-size: 0.975rem;
+    line-height: 1.75;
+  }
+
+  .prose-content h2,
+  .prose-content h3,
+  .prose-content h4 {
+    scroll-margin-top: 5rem;
+    line-height: 1.3;
+  }
+
+  .prose-content h2 {
+    margin-top: 1.65em;
+    font-size: 1.45rem;
+  }
+
+  .prose-content h3 {
+    margin-top: 1.4em;
+    font-size: 1.2rem;
+  }
+
+  .prose-content pre {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .prose-content img,
+  main article img {
+    height: auto;
+  }
+
+  /* Keep long project names, emails and generated content inside their cards. */
+  .card *,
+  .surface-panel * {
+    min-width: 0;
+  }
+
+  /* On touch devices, use a clear press state instead of hover-only movement. */
+  .card:active,
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.99);
+  }
+
+  /* Keep the footer clear of the home indicator on notched phones. */
+  footer > .max-w-content {
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 380px) {
+  main .max-w-content {
+    padding-inline: 0.875rem;
+  }
+
+  .card {
+    border-radius: 11px;
+  }
+
+  .prose-content {
+    font-size: 0.94rem;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .card:hover {
+    transform: none;
+  }
+
+  .card:active {
+    border-color: rgb(var(--color-line-strong));
+    box-shadow: var(--shadow-resting);
+  }
+}
