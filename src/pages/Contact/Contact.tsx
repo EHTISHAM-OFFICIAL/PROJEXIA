@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PageIntro } from '../../components/ui/PageIntro';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle2, Clock, Mail, MapPin, MessageCircle } from 'lucide-react';
@@ -56,15 +57,11 @@ export default function Contact() {
         path="/contact"
       />
 
-      <div className="border-b border-line">
-        <Container className="py-14 sm:py-20">
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Contact</h1>
-          <p className="mt-4 max-w-prose text-base leading-relaxed text-content-secondary">
-            Questions about a build, a quote, or whether something is feasible — send a message.
-            For a full project brief, the request form collects more useful detail.
-          </p>
-        </Container>
-      </div>
+      <PageIntro
+        eyebrow="Get in touch"
+        title="Contact"
+        description="Questions about a build, a quote, or whether something is feasible — send a message. For a full project brief, the request form collects more useful detail."
+      />
 
       <Container className="py-14">
         <div className="grid gap-12 lg:grid-cols-[1fr_320px] lg:gap-16">
