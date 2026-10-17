@@ -178,16 +178,27 @@ export function LibraryMultiSelect({
           <div key={`${index}-${value}`} className="min-w-0 rounded-lg border border-line bg-surface-raised/50 p-2.5">
             <div className="flex min-w-0 items-start gap-2">
               <div className="min-w-0 flex-1">
-                <RichTextEditor
-                  id={`library-entry-${kind}-${index}`}
-                  rows={2}
-                  inlineOnly
-                  showToolbar={false}
-                  value={value}
-                  onChange={(nextValue) => onChange(values.map((item, itemIndex) => itemIndex === index ? nextValue : item))}
-                  placeholder={`Edit ${label.toLocaleLowerCase()}… Select text and press Ctrl+B, Ctrl+I or Ctrl+U.`}
-                />
-                <p className="mt-1 text-xs text-content-muted">Select text and use Ctrl+B (bold), Ctrl+I (italic) or Ctrl+U (underline).</p>
+{kind === 'component' ? (
+                  <TextInput
+                    value={value}
+                    onChange={(event) => onChange(values.map((item, itemIndex) => itemIndex === index ? event.target.value : item))}
+                    placeholder={`Edit ${label.toLocaleLowerCase()}…`}
+                    aria-label={`Edit ${label.toLocaleLowerCase()} ${index + 1}`}
+                  />
+                ) : (
+                  <>
+                    <RichTextEditor
+                      id={`library-entry-${kind}-${index}`}
+                      rows={2}
+                      inlineOnly
+                      showToolbar={false}
+                      value={value}
+                      onChange={(nextValue) => onChange(values.map((item, itemIndex) => itemIndex === index ? nextValue : item))}
+                      placeholder={`Edit ${label.toLocaleLowerCase()}… Select text and press Ctrl+B, Ctrl+I or Ctrl+U.`}
+                    />
+                    <p className="mt-1 text-xs text-content-muted">Select text and use Ctrl+B (bold), Ctrl+I (italic) or Ctrl+U (underline).</p>
+                  </>
+                )}
               </div>
               <button type="button" onClick={() => onChange(values.filter((_, itemIndex) => itemIndex !== index))} aria-label={`Remove ${value}`} className="shrink-0 rounded-md p-1.5 text-content-muted hover:text-content">
                 <X size={14} />
