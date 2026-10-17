@@ -1,6 +1,6 @@
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { Select, TextInput } from '../forms/Inputs';
-import { PROJECT_CATEGORIES } from '../../constants/categories';
+import { PROJECT_CATEGORIES, sortProjectCategories } from '../../constants/categories';
 import {
   PROJECT_DIFFICULTIES,
   PROJECT_SORT_OPTIONS,
@@ -54,7 +54,7 @@ export function ProjectFilters({
 
   // Only categories that actually have a published project — no dead-end
   // chips pointing at an empty result.
-  const availableCategories = [...new Set([...PROJECT_CATEGORIES, ...Object.keys(categoryCounts)])].filter(
+  const availableCategories = sortProjectCategories([...PROJECT_CATEGORIES, ...Object.keys(categoryCounts)]).filter(
     (category) => (categoryCounts[category] ?? 0) > 0
   );
 
