@@ -208,7 +208,7 @@ export function LibraryMultiSelect({
                     Cancel
                   </button>
                 </div>
-                {editedValue.length > 10000 && <p role="alert" className="text-xs text-state-danger">Keep each reusable entry to 5,000 characters or fewer.</p>}
+                {editedValue.length > 10000 && <p role="alert" className="text-xs text-state-danger">Keep each reusable entry to 10,000 characters or fewer.</p>}
               </div>
             ) : (
               <div className="flex min-w-0 items-start gap-2">
