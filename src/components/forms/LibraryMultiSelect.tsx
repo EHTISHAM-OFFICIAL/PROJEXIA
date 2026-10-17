@@ -278,7 +278,7 @@ export function LibraryMultiSelect({
       <div className="flex gap-2">
         <TextInput
           value={custom}
-          maxLength={kind === 'challenge' ? 300 : undefined}
+          maxLength={5000}
           onChange={(event) => setCustom(event.target.value)}
           onFocus={() => setIsOpen(true)}
           onKeyDown={(event) => {
