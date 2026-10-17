@@ -10,7 +10,9 @@ export type ProjectLibraryKind =
   | 'category'
   | 'subcategory'
   | 'protocol'
-  | 'application';
+  | 'application'
+  | 'difficulty'
+  | 'status';
 
 export interface ProjectLibraryItem {
   id: string;
