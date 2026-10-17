@@ -14,7 +14,7 @@ export function Section({
   id?: string;
 }) {
   return (
-    <section id={id} className={cn('py-16 sm:py-20 lg:py-24', className)}>
+    <section id={id} className={cn('py-12 sm:py-20 lg:py-24', className)}>
       <Container>
         <Reveal>{children}</Reveal>
       </Container>
@@ -36,19 +36,19 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        'flex flex-col gap-4 md:flex-row md:items-end md:justify-between',
+        'flex min-w-0 flex-col gap-3 sm:gap-4 md:flex-row md:items-end md:justify-between',
         align === 'center' && 'md:flex-col md:items-center md:text-center'
       )}
     >
-      <div className={cn('max-w-2xl', align === 'center' && 'mx-auto')}>
-        <h2 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{title}</h2>
+      <div className={cn('min-w-0 max-w-2xl', align === 'center' && 'mx-auto')}>
+        <h2 className="text-2xl font-semibold leading-tight tracking-tight sm:text-4xl">{title}</h2>
         {description && (
-          <p className="mt-4 max-w-prose text-base leading-relaxed text-content-secondary">
+          <p className="mt-3 max-w-prose text-base leading-relaxed text-content-secondary sm:mt-4">
             {description}
           </p>
         )}
       </div>
-      {children}
+      {children && <div className="shrink-0 self-start md:self-auto">{children}</div>}
     </div>
   );
 }
