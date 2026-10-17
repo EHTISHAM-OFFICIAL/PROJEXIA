@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Check, ChevronDown, Pencil, Plus, Search, X } from 'lucide-react';
+import { Check, ChevronDown, Plus, Search, X } from 'lucide-react';
 import { TextInput } from './Inputs';
 import { RichTextEditor } from './RichTextEditor';
 import { InlineText } from '../projects/CaseStudySection';
@@ -40,8 +40,6 @@ export function LibraryMultiSelect({
   const [customSaveError, setCustomSaveError] = useState('');
   const [customSaveNotice, setCustomSaveNotice] = useState('');
   const [savingCustom, setSavingCustom] = useState(false);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editedValue, setEditedValue] = useState('');
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -179,58 +177,26 @@ export function LibraryMultiSelect({
       <div className="flex flex-col gap-2">
         {values.map((value, index) => (
           <div key={`${index}-${value}`} className="min-w-0 rounded-lg border border-line bg-surface-raised/50 p-2.5">
-            {editingIndex === index ? (
-              <div className="flex flex-col gap-2">
+            <div className="flex min-w-0 items-start gap-2">
+              <div className="min-w-0 flex-1">
                 <RichTextEditor
                   id={`library-entry-${kind}-${index}`}
-                  rows={3}
+                  rows={2}
                   inlineOnly
-                  value={editedValue}
-                  onChange={setEditedValue}
-                  placeholder={`Format this ${label.toLocaleLowerCase()} entry…`}
+                  showToolbar={false}
+                  value={value}
+                  onChange={(nextValue) => onChange(values.map((item, itemIndex) => itemIndex === index ? nextValue : item))}
+                  placeholder={`Edit ${label.toLocaleLowerCase()}… Select text and press Ctrl+B, Ctrl+I or Ctrl+U.`}
                 />
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const clean = editedValue.trim();
-                      if (!clean) return;
-                      onChange(values.map((item, itemIndex) => itemIndex === index ? clean : item));
-                      setEditingIndex(null);
-                      setEditedValue('');
-                    }}
-                    disabled={!editedValue.trim() || editedValue.length > 10000}
-                    className="inline-flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-onAccent disabled:opacity-50"
-                  >
-                    <Check size={14} /> Save formatting
-                  </button>
-                  <button type="button" onClick={() => { setEditingIndex(null); setEditedValue(''); }} className="rounded-md border border-line px-3 py-1.5 text-sm text-content-secondary">
-                    Cancel
-                  </button>
-                </div>
-                {editedValue.length > 10000 && <p role="alert" className="text-xs text-state-danger">Keep each reusable entry to 10,000 characters or fewer.</p>}
+                <p className="mt-1 text-xs text-content-muted">Select text and use Ctrl+B (bold), Ctrl+I (italic) or Ctrl+U (underline).</p>
               </div>
-            ) : (
-              <div className="flex min-w-0 items-start gap-2">
-                <span className="min-w-0 flex-1 whitespace-pre-wrap break-words text-sm text-content"><InlineText text={value} allowLinks={false} /></span>
-                <button
-                  type="button"
-                  onClick={() => { setEditingIndex(index); setEditedValue(value); }}
-                  aria-label={`Format ${value}`}
-                  title="Open bold, italic and underline formatting tools"
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-line px-2 py-1.5 text-xs font-medium text-content-secondary hover:bg-surface-raised hover:text-content"
-                >
-                  <Pencil size={14} />
-                  <span>Format text</span>
-                </button>
-                <button type="button" onClick={() => { onChange(values.filter((_, itemIndex) => itemIndex !== index)); if (editingIndex === index) setEditingIndex(null); }} aria-label={`Remove ${value}`} className="shrink-0 rounded-md p-1.5 text-content-muted hover:text-content">
-                  <X size={14} />
-                </button>
-              </div>
-            )}
+              <button type="button" onClick={() => onChange(values.filter((_, itemIndex) => itemIndex !== index))} aria-label={`Remove ${value}`} className="shrink-0 rounded-md p-1.5 text-content-muted hover:text-content">
+                <X size={14} />
+              </button>
+            </div>
           </div>
         ))}
-        {!values.length && <span className="text-sm text-content-muted">No {label.toLocaleLowerCase()} selected.</span>}
+                {!values.length && <span className="text-sm text-content-muted">No {label.toLocaleLowerCase()} selected.</span>}
       </div>
 
       <div className="relative">
