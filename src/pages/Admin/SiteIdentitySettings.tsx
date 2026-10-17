@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CheckCircle2, Globe2, ImageIcon, Save } from "lucide-react";
+import { CalendarDays, CheckCircle2, Eye, Globe2, ImageIcon, Save } from "lucide-react";
 import { Alert } from "../../components/ui/Alert";
 import { Button } from "../../components/ui/Button";
 import { Field } from "../../components/forms/Field";
@@ -180,7 +180,61 @@ export function SiteIdentitySettings() {
         <p className="mt-4 text-xs leading-relaxed text-content-muted">Uploads use the existing imgBB integration. Browser tabs update after settings are saved and the site reloads. Google Search may keep its previously crawled favicon; its favicon guidelines generally favor an icon hosted on the same website domain.</p>
       </div>
 
-      {error && <div className="mt-5"><Alert tone="danger">{error}</Alert></div>}
+      <div className="mt-5 rounded-2xl border border-line bg-surface p-5 sm:p-6">
+        <div className="flex items-start gap-2.5">
+          <Eye size={17} className="mt-0.5 shrink-0 text-content-muted" aria-hidden="true" />
+          <div>
+            <h3 className="text-base font-semibold tracking-tight">Project card display</h3>
+            <p className="mt-1 text-sm leading-relaxed text-content-secondary">
+              Choose which extra details appear on project cards across the public project library and featured project sections. These switches do not change the project data itself.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-line p-4">
+            <div className="flex min-w-0 items-start gap-3">
+              <CalendarDays size={17} className="mt-0.5 shrink-0 text-content-muted" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-medium text-content">Completion / date label</p>
+                <p className="mt-1 text-xs leading-relaxed text-content-muted">
+                  Show the completion date, falling back to the project creation date when no completion date is set.
+                </p>
+              </div>
+            </div>
+            <VisibilityToggle
+              id="showProjectCardDate"
+              checked={draft.showProjectCardDate}
+              onChange={(checked) => update("showProjectCardDate", checked)}
+              label="Show"
+            />
+          </div>
+
+          <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-line p-4">
+            <div className="flex min-w-0 items-start gap-3">
+              <Eye size={17} className="mt-0.5 shrink-0 text-content-muted" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-medium text-content">Project view count</p>
+                <p className="mt-1 text-xs leading-relaxed text-content-muted">
+                  Show the eye icon and view count when a project has at least one recorded view.
+                </p>
+              </div>
+            </div>
+            <VisibilityToggle
+              id="showProjectCardViews"
+              checked={draft.showProjectCardViews}
+              onChange={(checked) => update("showProjectCardViews", checked)}
+              label="Show"
+            />
+          </div>
+        </div>
+
+        <p className="mt-4 text-xs text-content-muted">
+          Save website settings below to publish these changes. Existing date and view-count visibility stays enabled by default.
+        </p>
+      </div>
+
+      {error && <div className="mt-5"><Alert tone="danger">{error}</Alert></div>
       {saved && (
         <div className="mt-5">
           <Alert tone="success">
