@@ -8,6 +8,8 @@ export interface ProjectComponent {
   category: string;
   quantity: string | number;
   notes: string;
+  /** When true, this component is helpful but not required for the build. */
+  optional?: boolean;
 }
 
 export interface ProjectSpecification {
