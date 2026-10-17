@@ -109,7 +109,7 @@ export function TableEditor<T extends object>({
                   />
                   {column.label}
                 </label>
-              ) : column.type === 'richtext' ? (
+              ) : column.type === 'richtext' && !(label === 'Component' && column.key === 'notes') ? (
                 <>
                   <label className="mb-1 block text-xs text-content-muted">{column.label}</label>
                   <RichTextEditor
