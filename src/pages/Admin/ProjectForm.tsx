@@ -130,11 +130,11 @@ export default function ProjectForm() {
   ])];
   const difficultyOptions = [
     ...PROJECT_DIFFICULTIES,
-    ...difficultyLibrary.filter((name) => !PROJECT_DIFFICULTIES.some((option) => option.value.toLocaleLowerCase() === name.toLocaleLowerCase() || option.label.toLocaleLowerCase() === name.toLocaleLowerCase())),
+    ...difficultyLibrary.filter((name) => !PROJECT_DIFFICULTIES.some((option) => option.value.toLocaleLowerCase() === name.toLocaleLowerCase() || option.label.toLocaleLowerCase() === name.toLocaleLowerCase())).map((name) => ({ value: name, label: name })),
   ];
   const statusOptions = [
     ...PROJECT_STATUSES,
-    ...statusLibrary.filter((name) => !PROJECT_STATUSES.some((option) => option.value.toLocaleLowerCase() === name.toLocaleLowerCase() || option.label.toLocaleLowerCase() === name.toLocaleLowerCase())),
+    ...statusLibrary.filter((name) => !PROJECT_STATUSES.some((option) => option.value.toLocaleLowerCase() === name.toLocaleLowerCase() || option.label.toLocaleLowerCase() === name.toLocaleLowerCase())).map((name) => ({ value: name, label: name })),
   ];
 
   useEffect(() => {
