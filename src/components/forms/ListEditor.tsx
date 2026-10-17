@@ -95,7 +95,7 @@ export function TableEditor<T extends object>({
   return (
     <div className="flex flex-col gap-3">
       {data.map((row, index) => (
-        <div key={index} className="flex flex-wrap items-end gap-2 rounded-lg border border-line p-3">
+        <div key={index} className={`flex flex-wrap items-end gap-2 ${label === 'Component' ? '' : 'rounded-lg border border-line p-3'}`}>
           {columns.map((column) => (
             <div key={column.key} className={column.width ?? 'min-w-[140px] flex-1'}>
               {column.type === 'checkbox' ? (
