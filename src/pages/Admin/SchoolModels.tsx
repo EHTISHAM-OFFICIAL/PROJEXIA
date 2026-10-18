@@ -13,6 +13,11 @@ export default function SchoolModelsAdmin() {
   const [items, setItems] = useState<SchoolModel[]>([]);
   const [settings, setSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
   const [categories, setCategories] = useState(DEFAULT_SCHOOL_SETTINGS.categories.join('\n'));
+  const [subcategories, setSubcategories] = useState(DEFAULT_SCHOOL_SETTINGS.subcategories.join('\n'));
+  const [subjects, setSubjects] = useState(DEFAULT_SCHOOL_SETTINGS.subjects.join('\n'));
+  const [modelTypes, setModelTypes] = useState(DEFAULT_SCHOOL_SETTINGS.modelTypes.join('\n'));
+  const [difficulties, setDifficulties] = useState(DEFAULT_SCHOOL_SETTINGS.difficulties.join('\n'));
+  const [statuses, setStatuses] = useState(DEFAULT_SCHOOL_SETTINGS.statuses.join('\n'));
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [visibility, setVisibility] = useState('');
@@ -29,6 +34,11 @@ export default function SchoolModelsAdmin() {
       setItems(all);
       setSettings(config);
       setCategories(config.categories.join('\n'));
+      setSubcategories(config.subcategories.join('\n'));
+      setSubjects(config.subjects.join('\n'));
+      setModelTypes(config.modelTypes.join('\n'));
+      setDifficulties(config.difficulties.join('\n'));
+      setStatuses(config.statuses.join('\n'));
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Could not load school models.');
     } finally {
@@ -57,9 +67,9 @@ export default function SchoolModelsAdmin() {
 
   const saveSettings = async () => {
     setError(''); setNotice('');
-    const next = { ...settings, categories: lines(categories) };
+    const next = { ...settings, categories: lines(categories), subcategories: lines(subcategories), subjects: lines(subjects), modelTypes: lines(modelTypes), difficulties: lines(difficulties), statuses: lines(statuses) };
     if (!next.categories.length) { setError('Add at least one category before saving.'); return; }
-    try { await schoolModelService.saveSettings(next); setSettings(next); setCategories(next.categories.join('\n')); setNotice('Catalog settings saved.'); }
+    try { await schoolModelService.saveSettings(next); setSettings(next); setCategories(next.categories.join('\n')); setSubcategories(next.subcategories.join('\n')); setSubjects(next.subjects.join('\n')); setModelTypes(next.modelTypes.join('\n')); setDifficulties(next.difficulties.join('\n')); setStatuses(next.statuses.join('\n')); setNotice('Catalog settings saved.'); }
     catch (caught) { setError(caught instanceof Error ? caught.message : 'Could not save settings.'); }
   };
 
@@ -71,7 +81,7 @@ export default function SchoolModelsAdmin() {
   return <>
     <Seo title="School Charts & Models" noIndex />
     <header className="flex flex-wrap items-end justify-between gap-4">
-      <div><h1 className="text-2xl font-semibold tracking-tight">School Charts & Models</h1><p className="mt-1.5 text-sm text-content-secondary">{items.length} catalog items · manage content, visibility, media and categories.</p></div>
+      <div><h1 className="text-2xl font-semibold tracking-tight">School Charts & Models</h1><p className="mt-1.5 text-sm text-content-secondary">{items.length} catalog items · manage content, visibility, media, classification and reusable catalog options.</p></div>
       <ButtonLink to="/admin/school-models/new"><Plus size={16} /> New school model</ButtonLink>
     </header>
     {error && <div className="mt-5"><Alert tone="danger">{error}</Alert></div>}
@@ -98,7 +108,14 @@ export default function SchoolModelsAdmin() {
         <div className="rounded-xl border border-line p-4"><h3 className="font-medium">School Charts & Models</h3><div className="mt-3 space-y-3">{([['enabled','Enable section'],['showInNavigation','Show in navigation'],['showOnHome','Show featured models on homepage']] as const).map(([key,label])=><label key={key} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={settings[key]} onChange={(event)=>setSettings((current)=>({...current,[key]:event.target.checked}))}/>{label}</label>)}</div></div>
         <div className="rounded-xl border border-line p-4"><h3 className="font-medium">Electronics & Mechanical Projects</h3><div className="mt-3 space-y-3">{([['electronicsEnabled','Enable section'],['showElectronicsInNavigation','Show in navigation'],['showElectronicsOnHome','Show featured projects on homepage']] as const).map(([key,label])=><label key={key} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={settings[key]} onChange={(event)=>setSettings((current)=>({...current,[key]:event.target.checked}))}/>{label}</label>)}</div></div>
       </div>
-      <label className="mt-5 block text-sm font-medium">School model categories (one per line)<textarea rows={6} value={categories} onChange={(event)=>setCategories(event.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-bg p-3 text-sm"/></label>
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <label className="block text-sm font-medium">Categories<textarea rows={5} value={categories} onChange={(event)=>setCategories(event.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-bg p-3 text-sm" placeholder="One reusable category per line"/></label>
+        <label className="block text-sm font-medium">Subcategories<textarea rows={5} value={subcategories} onChange={(event)=>setSubcategories(event.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-bg p-3 text-sm" placeholder="One reusable subcategory per line"/></label>
+        <label className="block text-sm font-medium">Subjects<textarea rows={4} value={subjects} onChange={(event)=>setSubjects(event.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-bg p-3 text-sm" placeholder="One subject per line"/></label>
+        <label className="block text-sm font-medium">Model formats<textarea rows={4} value={modelTypes} onChange={(event)=>setModelTypes(event.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-bg p-3 text-sm" placeholder="Static chart, working model…"/></label>
+        <label className="block text-sm font-medium">Difficulty levels<textarea rows={4} value={difficulties} onChange={(event)=>setDifficulties(event.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-bg p-3 text-sm" placeholder="One level per line"/></label>
+        <label className="block text-sm font-medium">Catalog statuses<textarea rows={4} value={statuses} onChange={(event)=>setStatuses(event.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-bg p-3 text-sm" placeholder="Available for quote, made to order…"/></label>
+      </div>
       <Button onClick={()=>void saveSettings()} className="mt-4"><Save size={16}/> Save settings</Button>
     </section>
   </>;
