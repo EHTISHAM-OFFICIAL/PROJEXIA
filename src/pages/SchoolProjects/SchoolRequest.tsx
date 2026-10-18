@@ -17,9 +17,9 @@ import { useAuth } from '../../hooks/useAuth';
 
 const CUSTOM_MODEL: SchoolModel = {
   id: 'custom', title: '', slug: 'custom', category: 'Others', subject: '', gradeRange: '',
-  shortDescription: '', description: '', materials: [], objectives: [], dimensions: '',
+  shortDescription: '', description: '', materials: [], objectives: [], features: [], customizationOptions: [], setupInstructions: '', dimensions: '',
   thumbnailUrl: '', galleryUrls: [], featured: false, published: false, seoTitle: '',
-  seoDescription: '', createdAt: null, updatedAt: null,
+  seoDescription: '', keywords: [], createdAt: null, updatedAt: null,
 };
 const SECTIONS = [
   { id: 'school-contact', label: 'Contact' },
@@ -50,6 +50,7 @@ export default function SchoolRequest() {
   const [contactMethod, setContactMethod] = useState('Email');
   const [grade, setGrade] = useState('');
   const [purpose, setPurpose] = useState('');
+  const [additionalNotes, setAdditionalNotes] = useState('');
   const [quantity, setQuantity] = useState('1');
   const [dimensions, setDimensions] = useState('');
   const [deadline, setDeadline] = useState('');
@@ -116,7 +117,7 @@ export default function SchoolRequest() {
         country: country.trim(), city: city.trim(), preferredContactMethod: contactMethod,
         grade: grade.trim(), purpose: purpose.trim(), quantity, dimensions: dimensions.trim(),
         deadline, startDate, timelineFlexibility: flexibility, urgency, budgetRange,
-        budgetNotes: budgetNotes.trim(), customization: customization.trim(), details: details.trim(),
+        budgetNotes: budgetNotes.trim(), customization: customization.trim(), details: details.trim(), additionalNotes: additionalNotes.trim(),
         referenceLinks: referenceLinks.map((link) => link.trim()).filter(Boolean),
         referenceDescription: referenceDescription.trim(), files,
       });
@@ -189,7 +190,7 @@ export default function SchoolRequest() {
             </FormSection>
 
             <FormSection id="school-model-choice" step={2} title="Choose the model" description="Pick a published item or choose custom if you have a different idea.">
-              {!params.get('slug') ? <Field label="School chart or educational model" required>
+              {!params.get('slug') || !model ? <Field label="School chart or educational model" required>
                 <Select value={model?.id || ''} onChange={(e)=>setModel(e.target.value === 'custom' ? CUSTOM_MODEL : models.find((item)=>item.id === e.target.value) ?? null)} options={models.map((item)=>({value:item.id,label:item.title+' — '+item.category})).concat([{value:'custom',label:'Custom / not listed'}])} placeholder="Choose an item"/>
               </Field> : <div className="rounded-xl border border-line bg-surface-raised p-4"><p className="text-xs font-semibold uppercase tracking-wide text-content-muted">Selected catalog item</p><p className="mt-1 font-semibold">{model?.title || 'Loading selected model…'}</p><Link to="/school-projects" className="mt-2 inline-flex text-sm text-accent hover:underline">Choose another from the catalog</Link></div>}
               {model?.id === 'custom' && <Field label="Working title for your custom model" required hint="A simple name is enough; you can explain the full idea below."><TextInput value={customTitle} onChange={(e)=>setCustomTitle(e.target.value)} placeholder="e.g. Working model of a hydraulic lift"/></Field>}
@@ -233,7 +234,7 @@ export default function SchoolRequest() {
             </FormSection>
 
             <FormSection id="school-extra" step={7} title="Anything else?" description="Anything about use, handling or the school event that has not been covered.">
-              <Field label="Additional requirements"><TextArea rows={4} value={purpose} onChange={(e)=>setPurpose(e.target.value)} placeholder="Any additional context, classroom constraints, event details or delivery notes."/></Field>
+              <Field label="Additional requirements"><TextArea rows={4} value={additionalNotes} onChange={(e)=>setAdditionalNotes(e.target.value)} placeholder="Any additional context, classroom constraints, event details or delivery notes."/></Field>
               <div className="rounded-xl border border-line bg-surface p-4"><p className="text-sm font-semibold">Before submitting</p><p className="mt-1 text-sm leading-relaxed text-content-secondary">This sends a request for review, not a confirmed order. Final scope, price and timing will be shared after your requirements are reviewed.</p></div>
             </FormSection>
 
