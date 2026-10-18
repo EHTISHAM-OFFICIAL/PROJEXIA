@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   FolderKanban,
+  GraduationCap,
   Database,
   Inbox,
   CalendarDays,
@@ -23,6 +24,7 @@ import { cn } from '../../utils/cn';
 const ADMIN_LINKS = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/projects', label: 'Projects', icon: FolderKanban, end: false },
+  { to: '/admin/school-models', label: 'School Models', icon: GraduationCap, end: false },
   { to: '/admin/project-library', label: 'Project Library', icon: Database, end: false },
   { to: '/admin/requests', label: 'Requests', icon: Inbox, end: false },
   { to: '/admin/meetings', label: 'Meetings', icon: CalendarDays, end: false },
