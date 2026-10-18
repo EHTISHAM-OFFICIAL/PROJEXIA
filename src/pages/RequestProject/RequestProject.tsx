@@ -126,7 +126,33 @@ export default function RequestProject() {
   const onSubmit = async (values: ProjectRequestFormValues) => {
     setSubmitError(null);
 
-    if (!user) {
+    if (!serviceChoice) {
+    return (
+      <>
+        <Seo title="Choose a Project Type" description="Choose whether you need an electronics or mechanical build, or a school chart or educational model." path="/request-project" noIndex />
+        <PageIntro eyebrow="Start a project" title="What would you like to request?" description="Choose the service that best matches what you need. We’ll show you the relevant request options." />
+        <Container className="py-10 sm:py-14">
+          <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">
+            <button type="button" onClick={() => setServiceChoice('electronics')} className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:border-accent/60 hover:shadow-lg sm:p-8">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><Cpu size={25} /></span>
+              <h2 className="mt-5 text-xl font-semibold">Electronics / Mechanical Project</h2>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Arduino and ESP32 builds, IoT, automation, robotics, control systems, mechanical prototypes and custom technical projects.</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to project brief <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
+            </button>
+            <Link to="/request-school-model" className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:border-accent/60 hover:shadow-lg sm:p-8">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><GraduationCap size={25} /></span>
+              <h2 className="mt-5 text-xl font-semibold">School Charts & Educational Models</h2>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Science charts, biology and geography models, solar-system projects, exhibition models and customized classroom learning aids.</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to school model request <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
+            </Link>
+          </div>
+          <p className="mx-auto mt-6 max-w-4xl text-sm text-content-muted">School models are quote-based. Final pricing is provided after requirements and quantity are reviewed.</p>
+        </Container>
+      </>
+    );
+  }
+
+  if (!user) {
       setSubmitError('Please log in before submitting a project request.');
       return;
     }
@@ -267,32 +293,6 @@ export default function RequestProject() {
               </ButtonLink>
             </div>
           </div>
-        </Container>
-      </>
-    );
-  }
-
-  if (!serviceChoice) {
-    return (
-      <>
-        <Seo title="Choose a Project Type" description="Choose whether you need an electronics or mechanical build, or a school chart or educational model." path="/request-project" noIndex />
-        <PageIntro eyebrow="Start a project" title="What would you like to request?" description="Choose the service that best matches what you need. We’ll show you the relevant request options." />
-        <Container className="py-10 sm:py-14">
-          <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">
-            <button type="button" onClick={() => setServiceChoice('electronics')} className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:border-accent/60 hover:shadow-lg sm:p-8">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><Cpu size={25} /></span>
-              <h2 className="mt-5 text-xl font-semibold">Electronics / Mechanical Project</h2>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Arduino and ESP32 builds, IoT, automation, robotics, control systems, mechanical prototypes and custom technical projects.</p>
-              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to project brief <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
-            </button>
-            <Link to="/request-school-model" className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:border-accent/60 hover:shadow-lg sm:p-8">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><GraduationCap size={25} /></span>
-              <h2 className="mt-5 text-xl font-semibold">School Charts & Educational Models</h2>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Science charts, biology and geography models, solar-system projects, exhibition models and customized classroom learning aids.</p>
-              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to school model request <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
-            </Link>
-          </div>
-          <p className="mx-auto mt-6 max-w-4xl text-sm text-content-muted">School models are quote-based. Final pricing is provided after requirements and quantity are reviewed.</p>
         </Container>
       </>
     );
