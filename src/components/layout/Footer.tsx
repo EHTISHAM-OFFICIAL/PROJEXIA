@@ -1,18 +1,17 @@
 import { Link } from 'react-router-dom';
 import { Container } from '../ui/Container';
 import { Wordmark } from './Wordmark';
-import { NAV_LINKS, SOCIAL_LINKS, whatsappLink } from '../../constants/site';
+import { NAV_LINKS, whatsappLink } from '../../constants/site';
 import { getTrackedRequest } from '../../utils/trackedRequest';
 import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 import { useEffect, useState } from 'react';
 import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/schoolModelService';
 import type { SchoolSettings } from '../../services/schoolModelService';
 
-const activeSocials = SOCIAL_LINKS.filter((social) => social.href);
-
 export function Footer() {
   const { settings } = useSiteSettings();
   const whatsapp = settings.showWhatsapp ? whatsappLink(undefined, settings.whatsapp) : null;
+  const activeSocials = settings.socialLinks.filter((social) => social.enabled && social.label && /^https?:\/\//i.test(social.url));
   const tracked = getTrackedRequest();
   const [schoolSettings, setSchoolSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
   useEffect(() => { let live = true; void schoolModelService.getSettings().then(s => { if (live) setSchoolSettings(s); }).catch(() => {}); return () => { live = false; }; }, []);
@@ -80,14 +79,22 @@ export function Footer() {
                     </a>
                   </li>
                 )}
-                {activeSocials.map((social) => (
-                  <li key={social.label}>
-                    <a href={social.href} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-8 items-center text-sm text-content-secondary transition-colors hover:text-content">
-                      {social.label}
-                    </a>
-                  </li>
-                ))}
+
               </ul>
+              {activeSocials.length > 0 && (
+                <div className="mt-5 border-t border-line pt-4">
+                  <h3 className="text-sm font-medium text-content">Follow along</h3>
+                  <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+                    {activeSocials.map((social) => (
+                      <li key={social.id}>
+                        <a href={social.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-8 items-center gap-1.5 text-sm text-content-secondary transition-colors hover:text-content">
+                          {social.label}<span aria-hidden="true" className="text-xs">↗</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
