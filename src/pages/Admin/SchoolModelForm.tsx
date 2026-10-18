@@ -10,8 +10,9 @@ import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
 import { RichTextEditor } from '../../components/forms/RichTextEditor';
 import { Checkbox } from '../../components/forms/Choice';
 import { ImageUploadField } from '../../components/forms/ImageUploadField';
+import { ListEditor, TableEditor } from '../../components/forms/ListEditor';
 import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/schoolModelService';
-import type { SchoolModelDraft, SchoolSettings } from '../../services/schoolModelService';
+import type { SchoolModelComponent, SchoolModelDraft, SchoolModelSpecification, SchoolSettings } from '../../services/schoolModelService';
 import { imgbbService } from '../../services/imgbbService';
 
 const EMPTY: SchoolModelDraft = {
