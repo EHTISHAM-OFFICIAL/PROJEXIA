@@ -250,9 +250,6 @@ export default function SchoolModelForm() {
                 <Field label="Short description" htmlFor="school-short-description" required hint="A concise summary shown on catalog cards. Up to 320 characters.">
           <TextArea id="school-short-description" rows={3} maxLength={320} value={draft.shortDescription} onChange={(event)=>update('shortDescription',event.target.value)} placeholder="Explain what the chart or model demonstrates and why it is useful."/>
         </Field>
-        <Field label="Full description" htmlFor="school-description" hint="Use paragraphs and simple formatting to explain the concept, key parts and educational value.">
-          <RichTextEditor id="school-description" rows={6} value={draft.description} onChange={(value)=>update('description',value)} placeholder="Describe the concept, key parts, how it demonstrates the topic, and possible customization."/>
-        </Field>
       </Group>
 
       <Group id="school-model-media" title="Images" subtitle="Thumbnail and additional gallery photos">
