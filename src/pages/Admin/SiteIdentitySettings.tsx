@@ -377,6 +377,26 @@ export function SiteIdentitySettings() {
           </div>
         </div>
 
+        <div className="mt-4 rounded-xl border border-line p-4">
+          <Field
+            label="Project card image ratio"
+            htmlFor="projectCardImageRatio"
+            hint="Controls the thumbnail frame on public project cards. The full image stays visible; wider or taller images may leave empty space inside the frame."
+          >
+            <select
+              id="projectCardImageRatio"
+              value={draft.projectCardImageRatio}
+              onChange={(event) => update("projectCardImageRatio", event.target.value as SiteSettings["projectCardImageRatio"])}
+              className="w-full rounded-lg border border-line bg-surface-raised px-3 py-2.5 text-sm text-content outline-none transition-colors focus:border-accent focus:ring-1 focus:ring-accent"
+            >
+              <option value="16/10">16:10 — Standard project card (default)</option>
+              <option value="1/1">1:1 — Square</option>
+              <option value="4/3">4:3 — Classic landscape</option>
+              <option value="3/2">3:2 — Photo landscape</option>
+              <option value="16/9">16:9 — Widescreen</option>
+            </select>
+          </Field>
+        </div>
         <p className="mt-4 text-xs text-content-muted">
           Save website settings below to publish these changes. Existing date
           and view-count visibility stays enabled by default.
