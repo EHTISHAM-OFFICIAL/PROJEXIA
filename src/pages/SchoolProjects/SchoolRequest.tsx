@@ -215,14 +215,26 @@ export default function SchoolRequest() {
               <Field label="Customization" hint="Optional"><TextArea rows={3} value={customization} onChange={(e)=>setCustomization(e.target.value)} placeholder="Colors, labels, language, working parts, school logo, accessibility or special instructions"/></Field>
             </FormSection>
 
-            <FormSection id="school-specifications" step={4} title="Size, quantity & delivery" description="Estimates are fine. If you do not know the exact dimensions, leave them blank.">
+            <FormSection id="school-build-requirements" step={4} title="Build & classroom requirements" description="These choices help distinguish a printed chart from a physical or working model. Choose what you know; “not sure” is completely fine.">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Preferred model format" hint="Choose the closest match."><Select value={modelFormat} onChange={(e) => setModelFormat(e.target.value)} options={['Not sure yet','Printed / laminated chart','Static 3D model','Working mechanical model','Electrical / electronic demonstration','Interactive display','Exhibition centerpiece','Digital / presentation aid']}/></Field>
+                <Field label="How should it work?" hint="Optional; helps us understand moving or powered parts."><Select value={interaction} onChange={(e) => setInteraction(e.target.value)} options={['Not sure yet','Display only, no moving parts','Manual moving parts','Powered / motorized movement','Lights, sensors or electronics','Hands-on student interaction']}/></Field>
+                <Field label="Preferred materials" hint="Optional; alternatives can be suggested after review."><TextInput value={preferredMaterials} onChange={(e) => setPreferredMaterials(e.target.value)} placeholder="e.g. wood, acrylic, foam board, recycled material"/></Field>
+                <Field label="Label / content language"><Select value={labelLanguage} onChange={(e) => setLabelLanguage(e.target.value)} options={['English','Urdu','English and Urdu','Other / discuss']}/></Field>
+                <Field label="Assembly needed?" hint="For large displays or multi-part models."><Select value={assemblyRequirement} onChange={(e) => setAssemblyRequirement(e.target.value)} options={['Not sure','Ready to display','Basic assembly is fine','Assembly instructions needed','On-site setup requested']}/></Field>
+                <Field label="Where will it be used?" hint="Helps plan stability, portability and finish."><Select value={displayEnvironment} onChange={(e) => setDisplayEnvironment(e.target.value)} options={['Classroom','Wall display','Tabletop demonstration','School exhibition / competition','Laboratory','Outdoor display','Multiple locations']}/></Field>
+              </div>
+              <Field label="Power, electronics or special mechanism requirements" hint="Optional. Mention a power source, moving parts, switches, lighting, sound or other practical constraints."><TextArea rows={3} value={powerRequirements} onChange={(e) => setPowerRequirements(e.target.value)} placeholder="e.g. battery powered, safe for classroom use, no exposed wiring, easy to transport"/></Field>
+            </FormSection>
+
+            <FormSection id="school-specifications" step={5} title="Size, quantity & delivery" description="Estimates are fine. If you do not know the exact dimensions, leave them blank.">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Quantity" required hint="How many copies or models?"><TextInput type="number" min={1} value={quantity} onChange={(e)=>setQuantity(e.target.value)} placeholder="1"/></Field>
                 <Field label="Approximate dimensions" hint="Optional"><TextInput value={dimensions} onChange={(e)=>setDimensions(e.target.value)} placeholder="e.g. 60 × 90 cm, tabletop size"/></Field>
               </div>
             </FormSection>
 
-            <FormSection id="school-budget-timeline" step={5} title="Budget & timing" description="These details help us judge scope. A quote is confirmed only after review.">
+            <FormSection id="school-budget-timeline" step={6} title="Budget & timing" description="These details help us judge scope. A quote is confirmed only after review.">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Budget range" hint="Optional"><Select value={budgetRange} onChange={(e)=>setBudgetRange(e.target.value)} options={['Under PKR 2,000','PKR 2,000–5,000','PKR 5,000–10,000','PKR 10,000–25,000','PKR 25,000+','Not decided yet']} placeholder="No budget set"/></Field>
                 <Field label="Preferred start date"><TextInput type="date" value={startDate} onChange={(e)=>setStartDate(e.target.value)}/></Field>
@@ -233,7 +245,7 @@ export default function SchoolRequest() {
               <Field label="Budget notes" hint="Optional"><TextArea rows={3} value={budgetNotes} onChange={(e)=>setBudgetNotes(e.target.value)} placeholder="Budget includes materials, delivery, or any constraints we should know about."/></Field>
             </FormSection>
 
-            <FormSection id="school-references" step={6} title="References & attachments" description="Photos, sketches or links make it easier to understand what you have in mind.">
+            <FormSection id="school-references" step={7} title="References & attachments" description="Photos, sketches or links make it easier to understand what you have in mind.">
               <FieldSet legend="Reference links" hint="Add a YouTube video, example image, or webpage.">
                 <div className="space-y-2">{referenceLinks.map((link,index)=><div key={index} className="flex gap-2"><TextInput type="url" value={link} onChange={(e)=>setReferenceLinks((current)=>current.map((item,i)=>i===index?e.target.value:item))} placeholder="https://…"/><button type="button" disabled={referenceLinks.length===1} onClick={()=>setReferenceLinks((current)=>current.filter((_,i)=>i!==index))} className="rounded-lg border border-line px-3 text-sm text-content-secondary hover:bg-surface-raised disabled:opacity-40" aria-label="Remove reference link">×</button></div>)}</div>
                 <button type="button" onClick={()=>setReferenceLinks((current)=>current.length<8?[...current,'']:current)} disabled={referenceLinks.length>=8} className="mt-3 inline-flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm font-medium hover:bg-surface-raised disabled:opacity-40"><span aria-hidden="true">+</span> Add another link</button>
@@ -242,12 +254,12 @@ export default function SchoolRequest() {
               <FieldSet legend="Images & sketches" hint="Upload photos, diagrams or sketches that help explain your idea."><FileUpload files={files} onChange={setFiles} disabled={busy}/></FieldSet>
             </FormSection>
 
-            <FormSection id="school-extra" step={7} title="Anything else?" description="Anything about use, handling or the school event that has not been covered.">
+            <FormSection id="school-extra" step={8} title="Anything else?" description="Anything about use, handling or the school event that has not been covered.">
               <Field label="Additional requirements"><TextArea rows={4} value={additionalNotes} onChange={(e)=>setAdditionalNotes(e.target.value)} placeholder="Any additional context, classroom constraints, event details or delivery notes."/></Field>
               <div className="rounded-xl border border-line bg-surface p-4"><p className="text-sm font-semibold">Before submitting</p><p className="mt-1 text-sm leading-relaxed text-content-secondary">This sends a request for review, not a confirmed order. Final scope, price and timing will be shared after your requirements are reviewed.</p></div>
             </FormSection>
 
-            <FormSection id="school-consent" step={8} title="Review & send" description="Please confirm that we may contact you about this specific request.">
+            <FormSection id="school-consent" step={9} title="Review & send" description="Please confirm that we may contact you about this specific request.">
               <label className="flex items-start gap-3 rounded-xl border border-line bg-surface p-4 text-sm leading-relaxed text-content"><input type="checkbox" checked={consent} onChange={(e)=>setConsent(e.target.checked)} className="mt-1 h-4 w-4 accent-accent"/><span>I confirm these details are accurate to the best of my knowledge and agree that PROJEXIAHUB may contact me about this quote request.<span className="mt-1 block text-xs text-content-muted">Your details are used to respond to this enquiry, not to publish a listing.</span></span></label>
               {error && <Alert tone="danger">{error}</Alert>}
               <div className="flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center"><Button type="submit" loading={busy} disabled={busy}>{busy ? 'Uploading & sending…' : 'Submit quote request'} <ArrowRight size={16}/></Button><p className="text-xs leading-relaxed text-content-muted">Required: contact details, model choice, quantity, 20+ characters describing requirements, and consent.</p></div>
