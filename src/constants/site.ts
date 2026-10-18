@@ -25,13 +25,6 @@ export const NAV_LINKS = [
   { label: "Book a Meeting", to: "/book-meeting" },
 ] as const;
 
-/** Entries with an empty href are hidden automatically. */
-export const SOCIAL_LINKS = [
-  { label: "GitHub", href: "" }, // TODO
-  { label: "LinkedIn", href: "" }, // TODO
-  { label: "YouTube", href: "" }, // TODO
-] as const;
-
 export const whatsappLink = (message?: string, number: string = SITE.whatsapp): string | null => {
   const normalizedNumber = number.replace(/[^0-9]/g, "");
   if (!normalizedNumber) return null;
