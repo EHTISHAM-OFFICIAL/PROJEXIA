@@ -89,7 +89,7 @@ export default function SchoolModelForm() {
     const name = rawValue.trim().replace(/\s+/g, ' ');
     if (!name) return;
     const nextValues = [...new Set([...settings[key], name])].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-    const nextSettings = { ...settings, [key]: nextValues };
+    const nextSettings: SchoolSettings = { ...settings, [key]: nextValues };
     setError('');
     setNotice('');
     try {
