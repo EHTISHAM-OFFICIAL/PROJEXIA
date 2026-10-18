@@ -49,6 +49,7 @@ function toIso(value) {
 const staticUrls = [
   { path: '/', priority: '1.0' },
   { path: '/projects', priority: '0.9' },
+  { path: '/school-projects', priority: '0.8' },
   { path: '/blog', priority: '0.8' },
   { path: '/about', priority: '0.7' },
   { path: '/contact', priority: '0.7' },
@@ -93,6 +94,7 @@ try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
     await addPublished('projects', '/projects', '0.8');
+    await addPublished('schoolModels', '/school-projects', '0.8');
     await addPublished('posts', '/blog', '0.7');
   } else {
     console.warn('Firebase environment variables are not available; generating sitemap with static public URLs only.');
