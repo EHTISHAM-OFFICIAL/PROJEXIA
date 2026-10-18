@@ -9,8 +9,13 @@ import { WhyMectec } from '../../components/home/WhyMectec';
 import { Testimonials } from '../../components/home/Testimonials';
 import { RequestCta } from '../../components/home/RequestCta';
 import { SchoolModelsPromo } from '../../components/home/SchoolModelsPromo';
+import { useEffect, useState } from 'react';
+import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/schoolModelService';
+import type { SchoolSettings } from '../../services/schoolModelService';
 
 export default function Home() {
+  const [catalogSettings, setCatalogSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
+  useEffect(() => { let live = true; void schoolModelService.getSettings().then(s => { if (live) setCatalogSettings(s); }).catch(() => {}); return () => { live = false; }; }, []);
   return (
     <>
       <Seo
@@ -20,7 +25,7 @@ export default function Home() {
       />
       <Hero />
       <Intro />
-      <FeaturedProjects />
+      {catalogSettings.electronicsEnabled && catalogSettings.showElectronicsOnHome && <FeaturedProjects />
       <SchoolModelsPromo />
       <Services />
       <Process />
