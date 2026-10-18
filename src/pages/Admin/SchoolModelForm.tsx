@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Eye, GraduationCap, ImagePlus, Save, Trash2, Plus } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Seo } from '../../components/ui/Seo';
