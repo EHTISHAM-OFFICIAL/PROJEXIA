@@ -4,6 +4,7 @@ import { Image } from '../ui/Image';
 import { validateProjectImage } from '../../utils/fileValidation';
 import { PROJECT_IMAGE_RULES } from '../../constants/requestOptions';
 import { formatFileSize } from '../../utils/formatting';
+import { ImageProcessingDialog } from './ImageProcessingDialog';
 
 interface ImageUploadFieldProps {
   value: string | null;
@@ -24,21 +25,30 @@ export function ImageUploadField({
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const inputId = `image-${label.replace(/\W+/g, '-').toLowerCase()}`;
 
-  const handleFile = async (file: File | undefined) => {
+  const handleFile = (file: File | undefined) => {
     if (!file) return;
     const result = validateProjectImage(file);
     if (!result.valid) {
       setError(result.error ?? 'That file cannot be uploaded.');
+      if (inputRef.current) inputRef.current.value = '';
       return;
     }
     setError(null);
+    setPendingFile(file);
+  };
+
+  const uploadPreparedFile = async (file: File) => {
     setBusy(true);
+    setError(null);
     try {
       await onUpload(file);
+      setPendingFile(null);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Upload failed.');
+      throw caught;
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = '';
@@ -87,6 +97,7 @@ export function ImageUploadField({
           </p>
         </div>
       )}
+      {pendingFile && <ImageProcessingDialog file={pendingFile} title={`Prepare ${label.toLowerCase()}`} onCancel={() => { setPendingFile(null); if (inputRef.current) inputRef.current.value = ''; }} onUse={uploadPreparedFile} />}
       {error && (
         <p className="text-xs text-state-danger" role="alert">
           {error}
