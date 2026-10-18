@@ -185,7 +185,7 @@ export default function SchoolModelForm() {
       </Group>
 
       <Group id="school-model-learning" title="Learning & construction details" subtitle="Materials, included components and learning objectives">
-        <Field label="Learning overview" htmlFor="school-learning-overview" hint="Optional explanation of how the model can be used in a lesson or exhibition."><TextArea id="school-learning-overview" rows={5} value={draft.description} onChange={(event)=>update('description',event.target.value)} placeholder="Explain the concept this model helps demonstrate."/></Field>
+        <p className="text-sm leading-relaxed text-content-secondary">Use these lists to help visitors understand what is included with the model and what learners should be able to understand after using it. Keep entries concise; each line becomes a separate list item.</p>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Materials / included components" htmlFor="school-materials" hint="One item per line."><TextArea id="school-materials" rows={6} value={materials} onChange={(event)=>setMaterials(event.target.value)} placeholder={'Foam board\nPrinted labels\nWooden base'}/></Field>
           <Field label="Learning objectives" htmlFor="school-objectives" hint="One outcome per line."><TextArea id="school-objectives" rows={6} value={objectives} onChange={(event)=>setObjectives(event.target.value)} placeholder={'Identify key parts\nExplain the process\nCompare concepts'}/></Field>
