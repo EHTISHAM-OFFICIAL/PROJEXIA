@@ -14,6 +14,7 @@ import { ListEditor, TableEditor } from '../../components/forms/ListEditor';
 import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/schoolModelService';
 import type { SchoolModelComponent, SchoolModelDraft, SchoolModelSpecification, SchoolSettings } from '../../services/schoolModelService';
 import { imgbbService } from '../../services/imgbbService';
+import { slugify } from '../../utils/slug';
 
 const EMPTY: SchoolModelDraft = {
   title: '', slug: '', category: 'Science Charts', subcategory: '', modelType: 'Static Chart', difficulty: 'Easy', status: 'Available for quote', subject: '', gradeRange: '',
@@ -30,6 +31,7 @@ export default function SchoolModelForm() {
   const editing = Boolean(id);
   const navigate = useNavigate();
   const [draft, setDraft] = useState<SchoolModelDraft>(EMPTY);
+  const [slugTouched, setSlugTouched] = useState(false);
   const [settings, setSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
   const [materials, setMaterials] = useState('');
   const [objectives, setObjectives] = useState('');
@@ -62,6 +64,7 @@ export default function SchoolModelForm() {
         if (!item) { setError('This school model could not be found.'); setLoading(false); return; }
         const { id: _id, createdAt: _created, updatedAt: _updated, ...rest } = item;
         setDraft(rest);
+        setSlugTouched(true);
         setMaterials(rest.materials.join('\n'));
         setObjectives(rest.objectives.join('\n'));
         setFeatures((rest.features ?? []).join('\n'));
@@ -84,6 +87,8 @@ export default function SchoolModelForm() {
 
   const update = <K extends keyof SchoolModelDraft>(key: K, value: SchoolModelDraft[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
+
+  const updateTitle = (title: string) => setDraft((current) => ({ ...current, title, slug: slugTouched ? current.slug : slugify(title) }));
 
   const addTaxonomyOption = async (key: TaxonomyKey, rawValue: string, clear: () => void) => {
     const name = rawValue.trim().replace(/\s+/g, ' ');
@@ -209,9 +214,9 @@ export default function SchoolModelForm() {
     <form onSubmit={submit} className="mt-8 flex max-w-5xl flex-col gap-5">
       <Group id="school-model-basics" title="Basics" subtitle="Title, classification and public-facing description" defaultOpen>
         <Field label="Model / chart title" htmlFor="school-title" required hint="Use the name a student, teacher or parent would search for.">
-          <TextInput id="school-title" value={draft.title} maxLength={120} onChange={(event)=>update('title',event.target.value)} placeholder="e.g. Human Digestive System Model"/>
+          <TextInput id="school-title" value={draft.title} maxLength={120} onChange={(event)=>updateTitle(event.target.value)} placeholder="e.g. Human Digestive System Model"/>
         </Field>
-        <Field label="URL slug" htmlFor="school-slug" hint={'Public address: /school-projects/' + (draft.slug || 'your-model')}><TextInput id="school-slug" value={draft.slug} onChange={(event)=>update('slug',event.target.value.toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-'))} placeholder="human-digestive-system-model"/></Field>
+        <Field label="URL slug" htmlFor="school-slug" hint={'Public address: /school-projects/' + (draft.slug || 'your-model')}><TextInput id="school-slug" value={draft.slug} onChange={(event)=>{setSlugTouched(true);update('slug',event.target.value)}} onBlur={(event)=>update('slug',slugify(event.target.value))} placeholder="human-digestive-system-model"/></Field>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Category" htmlFor="school-category" required hint="Main catalog group. Add reusable options for future models.">
             <Select id="school-category" options={[...new Set([...settings.categories,draft.category].filter(Boolean))]} value={draft.category} onChange={(event)=>update('category',event.target.value)}/>
