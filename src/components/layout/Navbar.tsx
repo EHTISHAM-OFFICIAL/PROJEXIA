@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Container } from '../ui/Container';
@@ -12,8 +12,6 @@ import { useAuth } from '../../hooks/useAuth';
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const menuScrollPosition = useRef(0);
-  const menuOpenPath = useRef('');
   const location = useLocation();
   const { user, profile } = useAuth();
 
@@ -26,53 +24,7 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
-    if (!mobileOpen) return;
 
-    // Mobile browsers can jump to the top when body overflow is toggled.
-    // Freeze the body at its current scroll offset instead, keeping the menu
-    // anchored to the viewport without moving the page behind it.
-    const body = document.body;
-    const scrollY = window.scrollY;
-    menuScrollPosition.current = scrollY;
-    menuOpenPath.current = window.location.pathname;
-
-    const previousStyles = {
-      position: body.style.position,
-      top: body.style.top,
-      left: body.style.left,
-      right: body.style.right,
-      width: body.style.width,
-      overflow: body.style.overflow,
-    };
-
-    body.style.position = 'fixed';
-    body.style.top = `-${scrollY}px`;
-    body.style.left = '0';
-    body.style.right = '0';
-    body.style.width = '100%';
-    body.style.overflow = 'hidden';
-
-    return () => {
-      body.style.position = previousStyles.position;
-      body.style.top = previousStyles.top;
-      body.style.left = previousStyles.left;
-      body.style.right = previousStyles.right;
-      body.style.width = previousStyles.width;
-      body.style.overflow = previousStyles.overflow;
-
-      // Restore the previous position only when closing on the same route.
-      // When a menu link navigates, don't carry the old page's scroll offset
-      // over to the destination page.
-      if (window.location.pathname === menuOpenPath.current) {
-        const html = document.documentElement;
-        const previousScrollBehavior = html.style.scrollBehavior;
-        html.style.scrollBehavior = 'auto';
-        window.scrollTo(0, menuScrollPosition.current);
-        html.style.scrollBehavior = previousScrollBehavior;
-      }
-    };
-  }, [mobileOpen]);
 
   return (
     <>
