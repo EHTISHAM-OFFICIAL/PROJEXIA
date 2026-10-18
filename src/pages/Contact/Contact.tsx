@@ -12,16 +12,15 @@ import { TextArea, TextInput } from '../../components/forms/Inputs';
 import { contactService } from '../../services/contactService';
 import { contactSchema, type ContactFormValues } from '../../utils/validation';
 import { toUserMessage } from '../../utils/errors';
-import { SITE, SOCIAL_LINKS, whatsappLink } from '../../constants/site';
+import { SITE, whatsappLink } from '../../constants/site';
 import { useSiteSettings } from '../../contexts/SiteSettingsContext';
-
-const activeSocials = SOCIAL_LINKS.filter((social) => social.href);
 
 export default function Contact() {
   const { settings } = useSiteSettings();
   const [submitState, setSubmitState] = useState<'idle' | 'sent'>('idle');
   const [submitError, setSubmitError] = useState<string | null>(null);
   const whatsapp = settings.showWhatsapp ? whatsappLink(`Hello ${settings.name}, I have a question about a project.`, settings.whatsapp) : null;
+  const activeSocials = settings.socialLinks.filter((social) => social.enabled && social.label && /^https?:\/\//i.test(social.url));
 
   const {
     register,
@@ -204,7 +203,7 @@ export default function Contact() {
                     {activeSocials.map((social) => (
                       <li key={social.label}>
                         <a
-                          href={social.href}
+                          href={social.url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm text-content-secondary transition-colors hover:text-content"
