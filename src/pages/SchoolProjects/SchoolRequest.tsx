@@ -25,6 +25,7 @@ const SECTIONS = [
   { id: 'school-contact', label: 'Contact' },
   { id: 'school-model-choice', label: 'Model' },
   { id: 'school-learning', label: 'Learning needs' },
+  { id: 'school-build-requirements', label: 'Build requirements' },
   { id: 'school-specifications', label: 'Size & quantity' },
   { id: 'school-budget-timeline', label: 'Budget & timing' },
   { id: 'school-references', label: 'References' },
@@ -50,6 +51,13 @@ export default function SchoolRequest() {
   const [contactMethod, setContactMethod] = useState('Email');
   const [grade, setGrade] = useState('');
   const [purpose, setPurpose] = useState('');
+  const [modelFormat, setModelFormat] = useState('Not sure yet');
+  const [interaction, setInteraction] = useState('Not sure yet');
+  const [preferredMaterials, setPreferredMaterials] = useState('');
+  const [labelLanguage, setLabelLanguage] = useState('English');
+  const [assemblyRequirement, setAssemblyRequirement] = useState('Not sure');
+  const [displayEnvironment, setDisplayEnvironment] = useState('Classroom');
+  const [powerRequirements, setPowerRequirements] = useState('');
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [quantity, setQuantity] = useState('1');
   const [dimensions, setDimensions] = useState('');
@@ -92,6 +100,7 @@ export default function SchoolRequest() {
     Boolean(details.trim().length >= 20), Boolean(quantity.trim() && Number(quantity) >= 1),
     Boolean(budgetRange || budgetNotes.trim()), Boolean(deadline || startDate),
     Boolean(referenceLinks.some((link) => link.trim()) || files.length),
+    Boolean(modelFormat !== 'Not sure yet' || interaction !== 'Not sure yet' || preferredMaterials.trim() || labelLanguage !== 'English' || assemblyRequirement !== 'Not sure' || displayEnvironment !== 'Classroom' || powerRequirements.trim()),
     consent,
   ].filter(Boolean).length;
 
@@ -115,7 +124,7 @@ export default function SchoolRequest() {
         model: { ...model, title: model.id === 'custom' ? customTitle.trim() : model.title },
         name: name.trim(), email: email.trim(), phone: phone.trim(), whatsapp: whatsapp.trim(),
         country: country.trim(), city: city.trim(), preferredContactMethod: contactMethod,
-        grade: grade.trim(), purpose: purpose.trim(), quantity, dimensions: dimensions.trim(),
+        grade: grade.trim(), purpose: purpose.trim(), modelFormat, interaction, preferredMaterials: preferredMaterials.trim(), labelLanguage, assemblyRequirement, displayEnvironment, powerRequirements: powerRequirements.trim(), quantity, dimensions: dimensions.trim(),
         deadline, startDate, timelineFlexibility: flexibility, urgency, budgetRange,
         budgetNotes: budgetNotes.trim(), customization: customization.trim(), details: details.trim(), additionalNotes: additionalNotes.trim(),
         referenceLinks: referenceLinks.map((link) => link.trim()).filter(Boolean),
@@ -165,8 +174,8 @@ export default function SchoolRequest() {
           <aside className="hidden lg:block">
             <div className="sticky top-24 rounded-xl border border-line bg-surface p-4">
               <p className="text-sm font-semibold">Your request</p>
-              <p className="mt-1 text-xs text-content-muted">{filled} of 8 checkpoints covered</p>
-              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-raised"><div className="h-full rounded-full bg-accent transition-all" style={{width: (filled / 8 * 100) + '%'}}/></div>
+              <p className="mt-1 text-xs text-content-muted">{filled} of {SECTIONS.length} checkpoints covered</p>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-raised"><div className="h-full rounded-full bg-accent transition-all" style={{width: (filled / SECTIONS.length * 100) + '%'}}/></div>
               <nav aria-label="Quote request sections" className="mt-4 flex flex-col gap-1">
                 {SECTIONS.map((section, index) => <a key={section.id} href={'#' + section.id} className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-content-secondary transition hover:bg-surface-raised hover:text-content"><span className="font-mono text-[11px] text-content-muted">{String(index + 1).padStart(2, '0')}</span>{section.label}</a>)}
               </nav>
