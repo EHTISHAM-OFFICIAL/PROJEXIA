@@ -4,6 +4,9 @@ import { Wordmark } from './Wordmark';
 import { NAV_LINKS, SOCIAL_LINKS, whatsappLink } from '../../constants/site';
 import { getTrackedRequest } from '../../utils/trackedRequest';
 import { useSiteSettings } from '../../contexts/SiteSettingsContext';
+import { useEffect, useState } from 'react';
+import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/schoolModelService';
+import type { SchoolSettings } from '../../services/schoolModelService';
 
 const activeSocials = SOCIAL_LINKS.filter((social) => social.href);
 
@@ -11,6 +14,9 @@ export function Footer() {
   const { settings } = useSiteSettings();
   const whatsapp = settings.showWhatsapp ? whatsappLink(undefined, settings.whatsapp) : null;
   const tracked = getTrackedRequest();
+  const [schoolSettings, setSchoolSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
+  useEffect(() => { let live = true; void schoolModelService.getSettings().then(s => { if (live) setSchoolSettings(s); }).catch(() => {}); return () => { live = false; }; }, []);
+  const visibleLinks = NAV_LINKS.filter(link => link.to !== '/school-projects' || (schoolSettings.enabled && schoolSettings.showInNavigation));
 
   return (
     <footer className="mt-12 border-t border-line bg-surface/50 sm:mt-20">
@@ -25,7 +31,7 @@ export function Footer() {
             <nav aria-labelledby="footer-nav" className="min-w-[8rem]">
               <h2 id="footer-nav" className="text-sm font-medium text-content">Pages</h2>
               <ul className="mt-3 flex flex-col gap-1.5 sm:mt-4 sm:gap-2.5">
-                {NAV_LINKS.map((link) => (
+                {visibleLinks.map((link) => (
                   <li key={link.to}>
                     <Link to={link.to} className="inline-flex min-h-8 items-center text-sm text-content-secondary transition-colors hover:text-content">
                       {link.label}
