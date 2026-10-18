@@ -65,7 +65,11 @@ export function Navbar() {
       // When a menu link navigates, don't carry the old page's scroll offset
       // over to the destination page.
       if (window.location.pathname === menuOpenPath.current) {
+        const html = document.documentElement;
+        const previousScrollBehavior = html.style.scrollBehavior;
+        html.style.scrollBehavior = 'auto';
         window.scrollTo(0, menuScrollPosition.current);
+        html.style.scrollBehavior = previousScrollBehavior;
       }
     };
   }, [mobileOpen]);
