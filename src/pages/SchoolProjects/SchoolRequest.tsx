@@ -195,12 +195,12 @@ export default function SchoolRequest() {
 
             <FormSection id="school-contact" step={1} title="How to reach you" description="We need a reliable way to reply. Your details are not displayed on the public catalog.">
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Full name" required><TextInput autoComplete="name" value={name} onChange={(e)=>setName(e.target.value)} placeholder="Your name"/></Field>
-                <Field label="Email address" required><TextInput type="email" autoComplete="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="you@example.com"/></Field>
-                <Field label="Phone" hint="Optional"><TextInput type="tel" autoComplete="tel" value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder="+92…"/></Field>
-                <Field label="WhatsApp" hint="Optional"><TextInput type="tel" value={whatsapp} onChange={(e)=>setWhatsapp(e.target.value)} placeholder="+92…"/></Field>
-                <Field label="Country"><TextInput autoComplete="country-name" value={country} onChange={(e)=>setCountry(e.target.value)} placeholder="Country"/></Field>
-                <Field label="City"><TextInput autoComplete="address-level2" value={city} onChange={(e)=>setCity(e.target.value)} placeholder="City"/></Field>
+                <Field label="Full name" required><TextInput autoComplete="name" maxLength={100} value={name} onChange={(e)=>setName(e.target.value)} placeholder="Your name"/></Field>
+                <Field label="Email address" required><TextInput type="email" autoComplete="email" maxLength={200} value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="you@example.com"/></Field>
+                <Field label="Phone" hint="Optional"><TextInput type="tel" autoComplete="tel" maxLength={30} value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder="+92…"/></Field>
+                <Field label="WhatsApp" hint="Optional"><TextInput type="tel" maxLength={30} value={whatsapp} onChange={(e)=>setWhatsapp(e.target.value)} placeholder="+92…"/></Field>
+                <Field label="Country"><TextInput autoComplete="country-name" maxLength={80} value={country} onChange={(e)=>setCountry(e.target.value)} placeholder="Country"/></Field>
+                <Field label="City"><TextInput autoComplete="address-level2" maxLength={80} value={city} onChange={(e)=>setCity(e.target.value)} placeholder="City"/></Field>
               </div>
               <FieldSet legend="Preferred way to be contacted"><RadioGroup name="school-contact-method" options={['Email','WhatsApp','Phone']} value={contactMethod} onChange={setContactMethod}/></FieldSet>
             </FormSection>
@@ -212,8 +212,8 @@ export default function SchoolRequest() {
               {model?.id === 'custom' && <Field label="Working title for your custom model" required hint="A simple name is enough; you can explain the full idea below."><TextInput value={customTitle} maxLength={120} onChange={(e)=>setCustomTitle(e.target.value)} placeholder="e.g. Working model of a hydraulic lift"/></Field>}
               {selectedModel && <div className="overflow-hidden rounded-xl border border-accent/20 bg-accent/5 sm:flex">{selectedModel.thumbnailUrl && <img src={selectedModel.thumbnailUrl} alt="" className="aspect-[16/9] w-full object-cover sm:w-40"/>}<div className="min-w-0 flex-1 p-4"><div className="flex flex-wrap gap-2 text-xs"><span className="rounded-full bg-accent/10 px-2.5 py-1 text-accent">{selectedModel.category}</span>{selectedModel.subject && <span className="rounded-full bg-surface px-2.5 py-1 text-content-secondary">{selectedModel.subject}</span>}{selectedModel.gradeRange && <span className="rounded-full bg-surface px-2.5 py-1 text-content-secondary">{selectedModel.gradeRange}</span>}{selectedModel.modelType && <span className="rounded-full bg-surface px-2.5 py-1 text-content-secondary">{selectedModel.modelType}</span>}{selectedModel.difficulty && <span className="rounded-full bg-surface px-2.5 py-1 text-content-secondary">{selectedModel.difficulty}</span>}</div><p className="mt-2 font-semibold">{selectedModel.title}</p><p className="mt-1 text-sm leading-relaxed text-content-secondary">{selectedModel.shortDescription || 'Custom request — describe your idea and intended use below.'}</p><button type="button" onClick={() => setModel(null)} className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline">Choose a different model <ArrowRight size={13}/></button></div></div>}
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Subject or topic" hint="Optional"><TextInput value={purpose} onChange={(e)=>setPurpose(e.target.value)} placeholder="e.g. biology, water cycle, electricity"/></Field>
-                <Field label="Grade / class"><TextInput value={grade} onChange={(e)=>setGrade(e.target.value)} placeholder="e.g. Class 8, college exhibition"/></Field>
+                <Field label="Subject or topic" hint="Optional"><TextInput value={purpose} maxLength={200} onChange={(e)=>setPurpose(e.target.value)} placeholder="e.g. biology, water cycle, electricity"/></Field>
+                <Field label="Grade / class"><TextInput value={grade} maxLength={120} onChange={(e)=>setGrade(e.target.value)} placeholder="e.g. Class 8, college exhibition"/></Field>
               </div>
             </FormSection>
 
@@ -237,7 +237,7 @@ export default function SchoolRequest() {
             <FormSection id="school-specifications" step={5} title="Size, quantity & delivery" description="Estimates are fine. If you do not know the exact dimensions, leave them blank.">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Quantity" required hint="How many copies or models?"><TextInput type="number" min={1} value={quantity} onChange={(e)=>setQuantity(e.target.value)} placeholder="1"/></Field>
-                <Field label="Approximate dimensions" hint="Optional"><TextInput value={dimensions} onChange={(e)=>setDimensions(e.target.value)} placeholder="e.g. 60 × 90 cm, tabletop size"/></Field>
+                <Field label="Approximate dimensions" hint="Optional"><TextInput value={dimensions} maxLength={120} onChange={(e)=>setDimensions(e.target.value)} placeholder="e.g. 60 × 90 cm, tabletop size"/></Field>
               </div>
             </FormSection>
 
