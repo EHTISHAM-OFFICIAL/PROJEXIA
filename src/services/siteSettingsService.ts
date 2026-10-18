@@ -1,6 +1,13 @@
 import { doc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase/firestore";
 
+export interface SocialLinkSetting {
+  id: string;
+  label: string;
+  url: string;
+  enabled: boolean;
+}
+
 export interface SiteSettings {
   name: string;
   description: string;
@@ -19,6 +26,7 @@ export interface SiteSettings {
   showProjectCardDate: boolean;
   showProjectCardViews: boolean;
   projectCardImageRatio: "16/10" | "1/1" | "4/3" | "3/2" | "16/9";
+  socialLinks: SocialLinkSetting[];
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
@@ -40,6 +48,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   showProjectCardDate: true,
   showProjectCardViews: true,
   projectCardImageRatio: "16/10",
+  socialLinks: [],
 };
 
 const SITE_SETTINGS_DOC = doc(db, "settings", "siteProfile");
@@ -79,6 +88,7 @@ export function normalizeSiteSettings(value: unknown): SiteSettings {
     showProjectCardDate: typeof source.showProjectCardDate === "boolean" ? source.showProjectCardDate : DEFAULT_SITE_SETTINGS.showProjectCardDate,
     showProjectCardViews: typeof source.showProjectCardViews === "boolean" ? source.showProjectCardViews : DEFAULT_SITE_SETTINGS.showProjectCardViews,
     projectCardImageRatio: ["16/10", "1/1", "4/3", "3/2", "16/9"].includes(String(source.projectCardImageRatio)) ? source.projectCardImageRatio as SiteSettings["projectCardImageRatio"] : DEFAULT_SITE_SETTINGS.projectCardImageRatio,
+    socialLinks: Array.isArray(source.socialLinks) ? source.socialLinks.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object").map((item, index) => ({ id: typeof item.id === "string" && item.id ? item.id : `social-${index}`, label: typeof item.label === "string" ? item.label.trim() : "", url: typeof item.url === "string" ? item.url.trim() : "", enabled: typeof item.enabled === "boolean" ? item.enabled : true })).filter((item) => item.label && item.url) : DEFAULT_SITE_SETTINGS.socialLinks,
   };
 }
 
