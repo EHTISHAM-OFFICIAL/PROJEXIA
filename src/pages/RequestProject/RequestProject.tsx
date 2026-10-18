@@ -291,6 +291,9 @@ export default function RequestProject() {
               <ButtonLink to="/register?next=%2Frequest-project" variant="secondary" size="lg">
                 Create account
               </ButtonLink>
+              <ButtonLink to="/request-school-model" variant="secondary" size="lg">
+                Request a school model instead
+              </ButtonLink>
             </div>
           </div>
         </Container>
