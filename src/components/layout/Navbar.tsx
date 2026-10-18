@@ -8,12 +8,17 @@ import { ThemeToggle } from './ThemeToggle';
 import { NAV_LINKS } from '../../constants/site';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../hooks/useAuth';
+import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/schoolModelService';
+import type { SchoolSettings } from '../../services/schoolModelService';
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const { user, profile } = useAuth();
+  const [schoolSettings, setSchoolSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
+  useEffect(() => { let live = true; void schoolModelService.getSettings().then(s => { if (live) setSchoolSettings(s); }).catch(() => {}); return () => { live = false; }; }, []);
+  const visibleLinks = NAV_LINKS.filter(link => link.to !== '/school-projects' || (schoolSettings.enabled && schoolSettings.showInNavigation));
 
   useEffect(() => setMobileOpen(false), [location.pathname]);
 
@@ -41,7 +46,7 @@ export function Navbar() {
           </Link>
 
           <ul className="hidden items-center gap-1 md:flex">
-            {NAV_LINKS.map((link) => (
+            {visibleLinks.map((link) => (
               <li key={link.to}>
                 <NavLink
                   to={link.to}
