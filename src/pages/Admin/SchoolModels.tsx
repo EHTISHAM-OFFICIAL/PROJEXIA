@@ -1,3 +1,105 @@
-import {useEffect,useState} from 'react';import {Pencil,Plus,Save,Trash2} from 'lucide-react';import {Seo} from '../../components/ui/Seo';import {Button} from '../../components/ui/Button';import {Alert} from '../../components/ui/Alert';import {schoolModelService,DEFAULT_SCHOOL_SETTINGS} from '../../services/schoolModelService';import type {SchoolModel,SchoolModelDraft,SchoolSettings} from '../../services/schoolModelService';import {imgbbService} from '../../services/imgbbService';
-const empty:SchoolModelDraft={title:'',slug:'',category:'Science Charts',subject:'',gradeRange:'',shortDescription:'',description:'',materials:[],objectives:[],dimensions:'',thumbnailUrl:'',galleryUrls:[],featured:false,published:false,seoTitle:'',seoDescription:''};const lines=(s:string)=>s.split('\n').map(x=>x.trim()).filter(Boolean);
-export default function SchoolModelsAdmin(){const [items,setItems]=useState<SchoolModel[]>([]),[settings,setSettings]=useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS),[draft,setDraft]=useState<SchoolModelDraft>(empty),[id,setId]=useState<string>(),[gallery,setGallery]=useState(''),[categories,setCategories]=useState(DEFAULT_SCHOOL_SETTINGS.categories.join('\n')),[busy,setBusy]=useState(false),[uploading,setUploading]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');const reload=async()=>{try{const [a,s]=await Promise.all([schoolModelService.getAll(),schoolModelService.getSettings()]);setItems(a);setSettings(s);setCategories(s.categories.join('\n'))}catch(e){setError(e instanceof Error?e.message:'Could not load catalog')}};useEffect(()=>{void reload()},[]);const set=(k:keyof SchoolModelDraft,v:any)=>setDraft(d=>({...d,[k]:v}));const reset=()=>{setId(undefined);setDraft({...empty,category:settings.categories[0]||'Others'});setGallery('');setError('');setNotice('')};const edit=(x:SchoolModel)=>{setId(x.id);setDraft({title:x.title,slug:x.slug,category:x.category,subject:x.subject,gradeRange:x.gradeRange,shortDescription:x.shortDescription,description:x.description,materials:x.materials,objectives:x.objectives,dimensions:x.dimensions,thumbnailUrl:x.thumbnailUrl,galleryUrls:x.galleryUrls,featured:x.featured,published:x.published,seoTitle:x.seoTitle,seoDescription:x.seoDescription});setGallery(x.galleryUrls.join('\n'));window.scrollTo({top:0,behavior:'smooth'})};const upload=async(files:FileList|null,target:'thumb'|'gallery')=>{if(!files?.length)return;setUploading(true);try{const urls=await Promise.all(Array.from(files).map(async f=>(await imgbbService.upload(f)).url));if(target==='thumb')set('thumbnailUrl',urls[0]);else{const next=[...lines(gallery),...urls];setGallery(next.join('\n'));set('galleryUrls',next)}}catch(e){setError(e instanceof Error?e.message:'Upload failed')}finally{setUploading(false)}};const save=async(e:React.FormEvent)=>{e.preventDefault();setBusy(true);setError('');try{await schoolModelService.save({...draft,slug:'',galleryUrls:lines(gallery)},id);setNotice(id?'Item updated.':'Item created.');reset();await reload()}catch(e){setError(e instanceof Error?e.message:'Could not save item')}finally{setBusy(false)}};const saveSettings=async()=>{try{const next={...settings,categories:[...new Set(lines(categories).map(x=>x.trim()))]};if(!next.categories.length)throw new Error('Add at least one category.');await schoolModelService.saveSettings(next);setSettings(next);setNotice('Section settings saved.')}catch(e){setError(e instanceof Error?e.message:'Could not save settings')}};const remove=async(x:SchoolModel)=>{if(!confirm('Delete '+x.title+'?'))return;try{await schoolModelService.delete(x.id);await reload()}catch(e){setError(e instanceof Error?e.message:'Delete failed')}};return <><Seo title="School models admin" noIndex/><header className="flex flex-wrap items-end justify-between gap-4"><div><h1 className="text-2xl font-semibold">School Charts & Models</h1><p className="mt-1 text-sm text-content-secondary">Manage catalog content, photos and section settings.</p></div><Button variant="secondary" onClick={reset}><Plus size={16}/> New item</Button></header>{error&&<div className="mt-5"><Alert tone="danger">{error}</Alert></div>}{notice&&<div className="mt-5"><Alert tone="success">{notice}</Alert></div>}<form onSubmit={save} className="mt-7 grid gap-4 rounded-2xl border border-line bg-surface p-5 sm:grid-cols-2 sm:p-7"><h2 className="text-lg font-semibold sm:col-span-2">{id?'Edit item':'Create item'}</h2>{([['Title','title'],['Subject','subject'],['Grade range','gradeRange'],['Dimensions','dimensions'],['Short description','shortDescription'],['Description','description'],['Thumbnail URL','thumbnailUrl'],['SEO title','seoTitle'],['SEO description','seoDescription']] as const).map(([label,key])=><label key={key} className={'block text-sm font-medium '+(['shortDescription','description'].includes(key)?'sm:col-span-2':'')}>{label}{['description','shortDescription'].includes(key)?<textarea rows={key==='description'?4:2} value={draft[key]} onChange={e=>set(key,e.target.value)} required className="mt-1.5 w-full rounded-xl border border-line bg-bg p-3 text-sm"/>:<input value={draft[key]} onChange={e=>set(key,e.target.value)} required={key==='title'} className="mt-1.5 h-11 w-full rounded-xl border border-line bg-bg px-3 text-sm"/>}</label>)}<label className="block text-sm font-medium">Category<select value={draft.category} onChange={e=>set('category',e.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-line bg-bg px-3 text-sm">{settings.categories.map(x=><option key={x}>{x}</option>)}</select></label><label className="block text-sm font-medium">Upload thumbnail<input type="file" accept="image/*" onChange={e=>void upload(e.target.files,'thumb')} className="mt-2 block w-full text-sm"/></label><label className="block text-sm font-medium sm:col-span-2">Upload gallery photos<input type="file" accept="image/*" multiple onChange={e=>void upload(e.target.files,'gallery')} className="mt-2 block w-full text-sm"/></label><label className="block text-sm font-medium sm:col-span-2">Gallery URLs (one per line)<textarea rows={3} value={gallery} onChange={e=>{setGallery(e.target.value);set('galleryUrls',lines(e.target.value))}} className="mt-1.5 w-full rounded-xl border border-line bg-bg p-3 text-sm"/></label><label className="block text-sm font-medium">Materials (one per line)<textarea rows={3} value={draft.materials.join('\n')} onChange={e=>set('materials',lines(e.target.value))} className="mt-1.5 w-full rounded-xl border border-line bg-bg p-3 text-sm"/></label><label className="block text-sm font-medium">Learning objectives (one per line)<textarea rows={3} value={draft.objectives.join('\n')} onChange={e=>set('objectives',lines(e.target.value))} className="mt-1.5 w-full rounded-xl border border-line bg-bg p-3 text-sm"/></label><div className="flex flex-wrap gap-5 sm:col-span-2"><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={draft.featured} onChange={e=>set('featured',e.target.checked)}/> Featured</label><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={draft.published} onChange={e=>set('published',e.target.checked)}/> Published</label></div><div className="flex gap-3 sm:col-span-2"><Button type="submit" loading={busy||uploading} disabled={busy||uploading}><Save size={16}/>{id?'Save changes':'Create item'}</Button>{id&&<Button type="button" variant="secondary" onClick={reset}>Cancel</Button>}</div></form><section className="mt-8 rounded-2xl border border-line bg-surface p-5 sm:p-7"><h2 className="text-lg font-semibold">Section settings</h2><p className="mt-1 text-sm text-content-secondary">Quote-only. No fixed prices are assumed.</p><div className="mt-4 grid gap-3 sm:grid-cols-2"><p className="font-medium sm:col-span-2">School Charts & Models</p>{([['enabled','Enable section'],['showInNavigation','Show in navigation'],['showOnHome','Show on homepage']] as const).map(([k,label])=><label key={k} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={settings[k]} onChange={e=>setSettings(s=>({...s,[k]:e.target.checked}))}/>{label}</label>)}<p className="mt-3 font-medium sm:col-span-2">Electronics Projects</p>{([['electronicsEnabled','Enable section'],['showElectronicsInNavigation','Show in navigation'],['showElectronicsOnHome','Show featured projects on homepage']] as const).map(([k,label])=><label key={k} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={settings[k]} onChange={e=>setSettings(s=>({...s,[k]:e.target.checked}))}/>{label}</label>)}</div><label className="mt-5 block max-w-xl text-sm font-medium">Categories (one per line)<textarea rows={6} value={categories} onChange={e=>setCategories(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line bg-bg p-3 text-sm"/></label><Button onClick={()=>void saveSettings()} className="mt-4"><Save size={16}/> Save settings</Button></section><section className="mt-8"><h2 className="text-lg font-semibold">Catalog items ({items.length})</h2>{items.length===0?<p className="mt-3 text-sm text-content-secondary">No items yet.</p>:<ul className="mt-4 space-y-2">{items.map(x=><li key={x.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-surface p-3"><img src={x.thumbnailUrl} alt="" className="h-14 w-16 rounded-lg object-cover" onError={e=>e.currentTarget.style.visibility='hidden'}/><div className="min-w-0 flex-1"><p className="font-medium">{x.title}</p><p className="text-xs text-content-muted">{x.category} · {x.published?'Published':'Draft'}</p></div><Button size="sm" variant="secondary" onClick={()=>edit(x)}><Pencil size={14}/> Edit</Button><Button size="sm" variant="danger" onClick={()=>void remove(x)}><Trash2 size={14}/> Delete</Button></li>)}</ul>}</section></>}
+import { useEffect, useMemo, useState } from 'react';
+import { Eye, EyeOff, Pencil, Plus, Save, Search, Star, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Seo } from '../../components/ui/Seo';
+import { Button, ButtonLink } from '../../components/ui/Button';
+import { Alert } from '../../components/ui/Alert';
+import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/schoolModelService';
+import type { SchoolModel, SchoolSettings } from '../../services/schoolModelService';
+
+const lines = (value: string) => [...new Set(value.split('\n').map((item) => item.trim()).filter(Boolean))];
+
+export default function SchoolModelsAdmin() {
+  const [items, setItems] = useState<SchoolModel[]>([]);
+  const [settings, setSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
+  const [categories, setCategories] = useState(DEFAULT_SCHOOL_SETTINGS.categories.join('\n'));
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('');
+  const [visibility, setVisibility] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [working, setWorking] = useState<string | null>(null);
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+
+  const reload = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const [all, config] = await Promise.all([schoolModelService.getAll(), schoolModelService.getSettings()]);
+      setItems(all);
+      setSettings(config);
+      setCategories(config.categories.join('\n'));
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Could not load school models.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { void reload(); }, []);
+
+  const filtered = useMemo(() => {
+    const term = search.trim().toLocaleLowerCase();
+    return items.filter((item) => {
+      if (category && item.category !== category) return false;
+      if (visibility === 'published' && !item.published) return false;
+      if (visibility === 'draft' && item.published) return false;
+      return !term || `${item.title} ${item.slug} ${item.subject} ${item.category}`.toLocaleLowerCase().includes(term);
+    });
+  }, [items, search, category, visibility]);
+
+  const run = async (id: string, action: () => Promise<void>, success: string) => {
+    setWorking(id); setError(''); setNotice('');
+    try { await action(); setNotice(success); await reload(); }
+    catch (caught) { setError(caught instanceof Error ? caught.message : 'The action could not be completed.'); }
+    finally { setWorking(null); }
+  };
+
+  const saveSettings = async () => {
+    setError(''); setNotice('');
+    const next = { ...settings, categories: lines(categories) };
+    if (!next.categories.length) { setError('Add at least one category before saving.'); return; }
+    try { await schoolModelService.saveSettings(next); setSettings(next); setCategories(next.categories.join('\n')); setNotice('Catalog settings saved.'); }
+    catch (caught) { setError(caught instanceof Error ? caught.message : 'Could not save settings.'); }
+  };
+
+  const remove = async (item: SchoolModel) => {
+    if (!window.confirm(`Permanently delete “${item.title}”? This cannot be undone.`)) return;
+    await run(item.id, () => schoolModelService.delete(item.id), 'School model deleted.');
+  };
+
+  return <>
+    <Seo title="School Charts & Models" noIndex />
+    <header className="flex flex-wrap items-end justify-between gap-4">
+      <div><h1 className="text-2xl font-semibold tracking-tight">School Charts & Models</h1><p className="mt-1.5 text-sm text-content-secondary">{items.length} catalog items · manage content, visibility, media and categories.</p></div>
+      <ButtonLink to="/admin/school-models/new"><Plus size={16} /> New school model</ButtonLink>
+    </header>
+    {error && <div className="mt-5"><Alert tone="danger">{error}</Alert></div>}
+    {notice && <div className="mt-5"><Alert tone="success">{notice}</Alert></div>}
+    <section className="mt-7 rounded-2xl border border-line bg-surface p-4 sm:p-5">
+      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_200px_170px]">
+        <label className="relative block"><span className="sr-only">Search catalog</span><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-content-muted" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search title, subject or slug" className="h-11 w-full rounded-lg border border-line bg-bg pl-9 pr-3 text-sm" /></label>
+        <select value={category} onChange={(event) => setCategory(event.target.value)} aria-label="Filter by category" className="h-11 rounded-lg border border-line bg-bg px-3 text-sm"><option value="">All categories</option>{[...new Set([...settings.categories, ...items.map((item) => item.category)])].sort((a,b)=>a.localeCompare(b)).map((item)=><option key={item} value={item}>{item}</option>)}</select>
+        <select value={visibility} onChange={(event) => setVisibility(event.target.value)} aria-label="Filter by visibility" className="h-11 rounded-lg border border-line bg-bg px-3 text-sm"><option value="">All visibility</option><option value="published">Published</option><option value="draft">Drafts</option></select>
+      </div>
+    </section>
+    <section className="mt-5">
+      {loading ? <p className="rounded-xl border border-line p-8 text-center text-sm text-content-secondary">Loading catalog…</p>
+        : filtered.length === 0 ? <div className="rounded-xl border border-line bg-surface p-8 text-center"><h2 className="font-semibold">{items.length ? 'No items match these filters' : 'No school models yet'}</h2><p className="mt-2 text-sm text-content-secondary">Create a model with a thumbnail, details and optional gallery images.</p>{!items.length && <ButtonLink to="/admin/school-models/new" className="mt-4"><Plus size={16}/> Create first model</ButtonLink>}</div>
+        : <ul className="space-y-3">{filtered.map((item) => <li key={item.id} className="flex flex-col gap-4 rounded-xl border border-line bg-surface p-4 sm:flex-row sm:items-center">
+          <div className="h-20 w-full shrink-0 overflow-hidden rounded-lg bg-surface-raised sm:w-28">{item.thumbnailUrl ? <img src={item.thumbnailUrl} alt="" className="h-full w-full object-cover" onError={(event)=>{event.currentTarget.style.display='none'}}/> : <div className="flex h-full items-center justify-center text-xs text-content-muted">No image</div>}</div>
+          <div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><Link to={`/admin/school-models/${item.id}/edit`} className="font-semibold hover:text-accent">{item.title}</Link><span className={`rounded-full px-2 py-0.5 text-xs ${item.published?'bg-state-success/10 text-state-success':'bg-surface-raised text-content-secondary'}`}>{item.published?'Published':'Draft'}</span>{item.featured&&<span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs text-accent">Featured</span>}</div><p className="mt-1 text-sm text-content-secondary">{item.category}{item.subject ? ` · ${item.subject}` : ''}{item.gradeRange ? ` · ${item.gradeRange}` : ''}</p><p className="mt-1 truncate font-mono text-xs text-content-muted">/school-projects/{item.slug}</p></div>
+          <div className="flex flex-wrap items-center gap-1"><button type="button" disabled={working===item.id} title={item.published?'Unpublish':'Publish'} aria-label={item.published?'Unpublish model':'Publish model'} onClick={()=>void run(item.id,()=>schoolModelService.setPublished(item.id,!item.published),item.published?'Model unpublished.':'Model published.')} className="rounded-lg p-2 text-content-secondary hover:bg-surface-raised disabled:opacity-40">{item.published?<EyeOff size={17}/>:<Eye size={17}/>}</button><button type="button" disabled={working===item.id} title={item.featured?'Remove from featured':'Feature on homepage'} aria-label={item.featured?'Remove featured status':'Feature model'} onClick={()=>void run(item.id,()=>schoolModelService.setFeatured(item.id,!item.featured),item.featured?'Model removed from featured items.':'Model marked as featured.')} className={`rounded-lg p-2 hover:bg-surface-raised disabled:opacity-40 ${item.featured?'text-accent':'text-content-secondary'}`}><Star size={17} fill={item.featured?'currentColor':'none'}/></button><Link to={`/admin/school-models/${item.id}/edit`} aria-label={`Edit ${item.title}`} className="rounded-lg p-2 text-content-secondary hover:bg-surface-raised"><Pencil size={17}/></Link><button type="button" disabled={working===item.id} title="Delete model" aria-label={`Delete ${item.title}`} onClick={()=>void remove(item)} className="rounded-lg p-2 text-content-secondary hover:bg-state-danger/10 hover:text-state-danger disabled:opacity-40"><Trash2 size={17}/></button></div>
+        </li>)}</ul>}
+    </section>
+    <section className="mt-9 rounded-2xl border border-line bg-surface p-5 sm:p-7">
+      <h2 className="text-lg font-semibold">Catalog & website settings</h2><p className="mt-1 text-sm text-content-secondary">Control the two service sections independently. School-model requests remain quote-based.</p>
+      <div className="mt-5 grid gap-5 md:grid-cols-2">
+        <div className="rounded-xl border border-line p-4"><h3 className="font-medium">School Charts & Models</h3><div className="mt-3 space-y-3">{([['enabled','Enable section'],['showInNavigation','Show in navigation'],['showOnHome','Show featured models on homepage']] as const).map(([key,label])=><label key={key} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={settings[key]} onChange={(event)=>setSettings((current)=>({...current,[key]:event.target.checked}))}/>{label}</label>)}</div></div>
+        <div className="rounded-xl border border-line p-4"><h3 className="font-medium">Electronics & Mechanical Projects</h3><div className="mt-3 space-y-3">{([['electronicsEnabled','Enable section'],['showElectronicsInNavigation','Show in navigation'],['showElectronicsOnHome','Show featured projects on homepage']] as const).map(([key,label])=><label key={key} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={settings[key]} onChange={(event)=>setSettings((current)=>({...current,[key]:event.target.checked}))}/>{label}</label>)}</div></div>
+      </div>
+      <label className="mt-5 block text-sm font-medium">School model categories (one per line)<textarea rows={6} value={categories} onChange={(event)=>setCategories(event.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-bg p-3 text-sm"/></label>
+      <Button onClick={()=>void saveSettings()} className="mt-4"><Save size={16}/> Save settings</Button>
+    </section>
+  </>;
+}
