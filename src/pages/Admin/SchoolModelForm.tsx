@@ -67,12 +67,13 @@ export default function SchoolModelForm() {
         setFeatures((rest.features ?? []).join('\n'));
         setCustomizationOptions((rest.customizationOptions ?? []).join('\n'));
         setKeywords((rest.keywords ?? []).join(', '));
+        setTags((rest.tags ?? []).join(', '));
         setGallery(rest.galleryUrls.join('\n'));
-        setInitialSnapshot(JSON.stringify({ draft: rest, materials: rest.materials.join('\n'), objectives: rest.objectives.join('\n'), features: (rest.features ?? []).join('\n'), customizationOptions: (rest.customizationOptions ?? []).join('\n'), keywords: (rest.keywords ?? []).join(', '), gallery: rest.galleryUrls.join('\n') }));
+        setInitialSnapshot(JSON.stringify({ draft: rest, materials: rest.materials.join('\n'), objectives: rest.objectives.join('\n'), features: (rest.features ?? []).join('\n'), customizationOptions: (rest.customizationOptions ?? []).join('\n'), keywords: (rest.keywords ?? []).join(', '), tags: (rest.tags ?? []).join(', '), gallery: rest.galleryUrls.join('\n') }));
       } else {
         const next = { ...EMPTY, category: config.categories[0] || 'Others' };
         setDraft(next);
-        setInitialSnapshot(JSON.stringify({ draft: next, materials: '', objectives: '', features: '', customizationOptions: '', keywords: '', gallery: '' }));
+        setInitialSnapshot(JSON.stringify({ draft: next, materials: '', objectives: '', features: '', customizationOptions: '', keywords: '', tags: '', gallery: '' }));
       }
       setLoading(false);
     }).catch((caught) => {
@@ -84,7 +85,7 @@ export default function SchoolModelForm() {
   const update = <K extends keyof SchoolModelDraft>(key: K, value: SchoolModelDraft[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
 
-  const currentSnapshot = JSON.stringify({ draft, materials, objectives, features, customizationOptions, keywords, gallery });
+  const currentSnapshot = JSON.stringify({ draft, materials, objectives, features, customizationOptions, keywords, tags, gallery });
   const hasUnsavedChanges = initialSnapshot !== null && currentSnapshot !== initialSnapshot;
   const basicsComplete = Boolean(draft.title.trim() && draft.shortDescription.trim() && draft.category.trim());
   const sections = [
