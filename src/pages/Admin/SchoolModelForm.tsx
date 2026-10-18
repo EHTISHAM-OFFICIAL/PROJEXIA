@@ -37,6 +37,12 @@ export default function SchoolModelForm() {
   const [customizationOptions, setCustomizationOptions] = useState('');
   const [keywords, setKeywords] = useState('');
   const [categoryInput, setCategoryInput] = useState('');
+  const [subcategoryInput, setSubcategoryInput] = useState('');
+  const [modelTypeInput, setModelTypeInput] = useState('');
+  const [difficultyInput, setDifficultyInput] = useState('');
+  const [statusInput, setStatusInput] = useState('');
+  const [subjectInput, setSubjectInput] = useState('');
+  const [tags, setTags] = useState('');
   const [gallery, setGallery] = useState('');
   const [loading, setLoading] = useState(editing);
   const [saving, setSaving] = useState(false);
