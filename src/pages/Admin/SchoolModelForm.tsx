@@ -163,8 +163,8 @@ export default function SchoolModelForm() {
     } finally { setUploading(false); }
   };
 
-  const submit = async (event: { preventDefault: () => void }, publish?: boolean) => {
-    event.preventDefault(); setError(''); setNotice('');
+  const submit = async (event?: { preventDefault: () => void }, publish?: boolean) => {
+    event?.preventDefault(); setError(''); setNotice('');
     if (!draft.title.trim()) { setError('Add a title before saving.'); document.getElementById('school-title')?.focus(); return; }
     if (!draft.shortDescription.trim()) { setError('Add a short description for the catalog card.'); document.getElementById('school-short-description')?.focus(); return; }
     if (!draft.category.trim()) { setError('Choose a category before saving.'); return; }
@@ -343,7 +343,7 @@ export default function SchoolModelForm() {
 
       <div className="sticky bottom-3 z-20 flex flex-col gap-3 rounded-xl border border-line bg-bg/95 p-3 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-4">
         <p className="text-xs text-content-muted">{hasUnsavedChanges?'Unsaved changes':'All changes saved'} · Pricing remains quote-based.</p>
-        <div className="flex flex-wrap gap-2"><Button type="button" variant="ghost" onClick={cancel} disabled={saving||uploading}>Cancel</Button><Button type="submit" loading={saving||uploading} disabled={saving||uploading}><Save size={16}/>{saving?'Saving…':editing?'Save changes':'Save draft'}</Button>{!draft.published&&<Button type="button" variant="secondary" disabled={saving||uploading} onClick={(event)=>void submit(event,true)}>{saving?'Publishing…':'Save & publish'}</Button>}</div>
+        <div className="flex flex-wrap gap-2"><Button type="button" variant="ghost" onClick={cancel} disabled={saving||uploading}>Cancel</Button><Button type="submit" loading={saving||uploading} disabled={saving||uploading}><Save size={16}/>{saving?'Saving…':editing?'Save changes':'Save draft'}</Button>{!draft.published&&<Button type="button" variant="secondary" disabled={saving||uploading} onClick={()=>void submit(undefined,true)}>{saving?'Publishing…':'Save & publish'}</Button>}</div>
       </div>
     </form>
   </>;
