@@ -105,7 +105,7 @@ export default function SchoolRequest() {
     if (!model) { setError('Choose a published model or select “Custom / not listed”.'); return; }
     if (model.id === 'custom' && !customTitle.trim()) { setError('Give your custom chart or model a working title.'); return; }
     if (!name.trim() || !email.trim()) { setError('Add your name and email so we can reply.'); return; }
-    if (!Number.isFinite(Number(quantity)) || Number(quantity) < 1) { setError('Quantity must be at least one.'); return; }
+    if (!Number.isInteger(Number(quantity)) || Number(quantity) < 1) { setError('Quantity must be a whole number of at least one.'); return; }
     if (details.trim().length < 20) { setError('Please describe what you need in at least 20 characters.'); return; }
     if (!consent) { setError('Please confirm that we may contact you about this quote request.'); return; }
 
