@@ -260,6 +260,14 @@ export default function SchoolModelForm() {
           <ImageUploadField label="Thumbnail" value={draft.thumbnailUrl||null} disabled={uploading||saving} onUpload={async(file)=>{const uploaded=await imgbbService.upload(file);update('thumbnailUrl',uploaded.url);setNotice('Thumbnail uploaded. Save the model to keep the change.');}} onClear={()=>update('thumbnailUrl','')}/>
           <Field label="Or paste a thumbnail URL" htmlFor="school-thumbnail-url"><TextInput id="school-thumbnail-url" type="url" value={draft.thumbnailUrl} onChange={(event)=>update('thumbnailUrl',event.target.value)} placeholder="https://…"/></Field>
         </FieldSet>
+        <FieldSet legend="Hero image" hint="A larger image for the top of the public detail page. Optional; it can differ from the catalog thumbnail.">
+          <ImageUploadField label="Hero image" value={draft.heroImageUrl || null} disabled={uploading || saving} onUpload={async (file) => { const uploaded = await imgbbService.upload(file); update('heroImageUrl', uploaded.url); setNotice('Hero image uploaded. Save the model to keep the change.'); }} onClear={() => update('heroImageUrl', '')}/>
+          <Field label="Or paste a hero image URL" htmlFor="school-hero-url"><TextInput id="school-hero-url" type="url" value={draft.heroImageUrl} onChange={(event) => update('heroImageUrl', event.target.value)} placeholder="https://…"/></Field>
+        </FieldSet>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field label="Video demonstration URL" htmlFor="school-video-url" hint="Optional YouTube or Vimeo link; do not paste a private file link."><TextInput id="school-video-url" type="url" value={draft.videoUrl} onChange={(event) => update('videoUrl', event.target.value)} placeholder="https://…"/></Field>
+          <Field label="Documentation / lesson resource URL" htmlFor="school-doc-url" hint="Optional worksheet, reference page or public guide."><TextInput id="school-doc-url" type="url" value={draft.documentationUrl} onChange={(event) => update('documentationUrl', event.target.value)} placeholder="https://…"/></Field>
+        </div>
         <FieldSet legend="Gallery images" hint="Add real photos from different angles or close-ups. Add one URL per line, or upload several images at once.">
           <div className="grid gap-3 sm:grid-cols-2">{lines(gallery).map((url,index)=><div key={url+index} className="overflow-hidden rounded-xl border border-line bg-surface"><img src={url} alt={`Gallery image ${index+1}`} className="aspect-[16/10] w-full object-cover" onError={(event)=>{event.currentTarget.style.display='none'}}/><div className="flex items-center justify-between gap-2 p-3"><p className="min-w-0 truncate text-xs text-content-muted">Image {index+1}</p><button type="button" onClick={()=>{const next=lines(gallery).filter((_,position)=>position!==index);setGallery(next.join('\n'));update('galleryUrls',next)}} className="rounded-md p-1.5 text-content-muted hover:bg-surface-raised hover:text-state-danger" aria-label={`Remove gallery image ${index+1}`}><Trash2 size={15}/></button></div></div>)}</div>
           <Field label="Gallery image URLs" htmlFor="school-gallery-urls" hint="One image URL per line. Removing a line removes that image from the gallery."><TextArea id="school-gallery-urls" rows={4} value={gallery} onChange={(event)=>{setGallery(event.target.value);update('galleryUrls',lines(event.target.value))}} placeholder="https://image-one…&#10;https://image-two…"/></Field>
@@ -267,12 +275,46 @@ export default function SchoolModelForm() {
         </FieldSet>
       </Group>
 
-      <Group id="school-model-learning" title="Learning & construction details" subtitle="Materials, included components and learning objectives">
-        <p className="text-sm leading-relaxed text-content-secondary">Use these lists to help visitors understand what is included with the model and what learners should be able to understand after using it. Keep entries concise; each line becomes a separate list item.</p>
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Materials / included components" htmlFor="school-materials" hint="One item per line."><TextArea id="school-materials" rows={6} value={materials} onChange={(event)=>setMaterials(event.target.value)} placeholder={'Foam board\nPrinted labels\nWooden base'}/></Field>
-          <Field label="Learning objectives" htmlFor="school-objectives" hint="One outcome per line."><TextArea id="school-objectives" rows={6} value={objectives} onChange={(event)=>setObjectives(event.target.value)} placeholder={'Identify key parts\nExplain the process\nCompare concepts'}/></Field>
-        </div>
+      <Group id="school-model-story" title="Educational story" subtitle="Explain the concept, the learning value and how the model is used">
+        <Field label="Full description" htmlFor="school-description" hint="Blank lines create separate paragraphs; use headings and lists for long explanations.">
+          <RichTextEditor id="school-description" rows={7} value={draft.description} onChange={(value) => update('description', value)} placeholder="Describe the model, its purpose, key parts and the learning experience."/>
+        </Field>
+        <Field label="Problem / learning need" htmlFor="school-problem" hint="What topic is difficult to explain without this visual or working aid?">
+          <RichTextEditor id="school-problem" rows={4} value={draft.problemStatement} onChange={(value) => update('problemStatement', value)} placeholder="Describe the classroom need or concept this model helps explain."/>
+        </Field>
+        <Field label="Working principle / how it demonstrates the concept" htmlFor="school-principle">
+          <RichTextEditor id="school-principle" rows={5} value={draft.workingPrinciple} onChange={(value) => update('workingPrinciple', value)} placeholder="Explain the mechanism, process, labeled parts or demonstration."/>
+        </Field>
+        <Field label="How teachers or students use it" htmlFor="school-how-to-use">
+          <RichTextEditor id="school-how-to-use" rows={4} value={draft.howToUse} onChange={(value) => update('howToUse', value)} placeholder="Describe a simple classroom activity or demonstration flow."/>
+        </Field>
+        <FieldSet legend="Learning objectives" hint="One measurable outcome per line.">
+          <TextArea id="school-objectives" rows={5} value={objectives} onChange={(event) => setObjectives(event.target.value)} placeholder={'Identify key parts\nExplain the process\nCompare concepts'}/>
+        </FieldSet>
+      </Group>
+
+      <Group id="school-model-technical" title="Materials, components & specifications" subtitle="Make the build contents and physical details clear">
+        <Field label="Materials / included supplies" htmlFor="school-materials" hint="One item per line. Keep this list high-level; use the component table for quantities and notes.">
+          <TextArea id="school-materials" rows={5} value={materials} onChange={(event) => setMaterials(event.target.value)} placeholder={'Foam board\nPrinted labels\nWooden base\nFasteners and adhesives'}/>
+        </Field>
+        <FieldSet legend="Components / parts" hint="Add reusable parts, quantities, optional items and any useful notes.">
+          <TableEditor<SchoolModelComponent> label="Component" rows={draft.components} emptyRow={EMPTY_COMPONENT} onChange={(rows) => update('components', rows)} columns={[
+            { key: 'name', label: 'Part / material' },
+            { key: 'category', label: 'Type' },
+            { key: 'quantity', label: 'Quantity', width: 'w-24' },
+            { key: 'notes', label: 'Notes', type: 'richtext' },
+            { key: 'optional', label: 'Optional', type: 'checkbox', width: 'w-24' },
+          ]}/>
+        </FieldSet>
+        <FieldSet legend="Specifications" hint="Add dimensions, material, display, power or other relevant specifications. Leave unknown values blank.">
+          <TableEditor<SchoolModelSpecification> label="Specification" rows={draft.specifications} emptyRow={EMPTY_SPECIFICATION} onChange={(rows) => update('specifications', rows)} columns={[
+            { key: 'label', label: 'Specification' },
+            { key: 'value', label: 'Value', type: 'richtext', inlineOnly: true },
+          ]}/>
+        </FieldSet>
+        <Field label="Search / discovery tags" htmlFor="school-tags" hint="Comma-separated terms used to help people discover this model.">
+          <TextInput id="school-tags" value={tags} onChange={(event) => setTags(event.target.value)} placeholder="biology, classroom display, human anatomy"/>
+        </Field>
       </Group>
 
       <Group id="school-model-features" title="Features & customization" subtitle="What makes this model useful and how it can be adapted">
