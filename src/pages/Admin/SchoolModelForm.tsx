@@ -80,9 +80,24 @@ export default function SchoolModelForm() {
   useEffect(() => {
     if (!hasUnsavedChanges || saving) return;
     const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; };
+    const confirmInternalNavigation = (event: MouseEvent) => {
+      if (previewOpen || !(event.target instanceof Element)) return;
+      const link = event.target.closest('a[href]') as HTMLAnchorElement | null;
+      if (!link || link.target === '_blank' || link.hasAttribute('download')) return;
+      const destination = new URL(link.href, window.location.href);
+      if (destination.origin !== window.location.origin) return;
+      if (!window.confirm('You have unsaved school model changes. Leave this page and discard them?')) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    };
     window.addEventListener('beforeunload', warn);
-    return () => window.removeEventListener('beforeunload', warn);
-  }, [hasUnsavedChanges, saving]);
+    document.addEventListener('click', confirmInternalNavigation, true);
+    return () => {
+      window.removeEventListener('beforeunload', warn);
+      document.removeEventListener('click', confirmInternalNavigation, true);
+    };
+  }, [hasUnsavedChanges, saving, previewOpen]);
 
   const cancel = () => {
     if (hasUnsavedChanges && !window.confirm('You have unsaved changes. Discard them and leave the editor?')) return;
