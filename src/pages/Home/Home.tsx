@@ -8,6 +8,7 @@ import { Technologies } from '../../components/home/Technologies';
 import { WhyMectec } from '../../components/home/WhyMectec';
 import { Testimonials } from '../../components/home/Testimonials';
 import { RequestCta } from '../../components/home/RequestCta';
+import { SchoolModelsPromo } from '../../components/home/SchoolModelsPromo';
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
       <Hero />
       <Intro />
       <FeaturedProjects />
+      <SchoolModelsPromo />
       <Services />
       <Process />
       <Technologies />
