@@ -267,22 +267,27 @@ export default function RequestProject() {
       <>
         <Seo title="Choose a Project Type" description="Choose whether you need an electronics or mechanical build, or a school chart or educational model." path="/request-project" noIndex />
         <PageIntro eyebrow="Start a project" title="What would you like to request?" description="Choose the service that best matches what you need. We’ll show you the relevant request options." />
-        <Container className="py-10 sm:py-14">
-          <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">
-            <button type="button" onClick={() => setServiceChoice('electronics')} className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:p-8">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><Cpu size={25} /></span>
-              <h2 className="mt-5 text-xl font-semibold">Electronics / Mechanical Project</h2>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Arduino and ESP32 builds, IoT, automation, robotics, control systems, mechanical prototypes and custom technical projects.</p>
-              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to project brief <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
-            </button>
-            <Link to="/request-school-model" className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:p-8">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><GraduationCap size={25} /></span>
-              <h2 className="mt-5 text-xl font-semibold">School Charts & Educational Models</h2>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Science charts, biology and geography models, solar-system projects, exhibition models and customized classroom learning aids.</p>
-              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to school model request <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
-            </Link>
+        <Container className="py-8 sm:py-12">
+          <div className="mx-auto max-w-5xl">
+            <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-content-muted">Choose your service</p><h2 className="mt-1 text-lg font-semibold">Two request paths, one clear starting point</h2></div><p className="max-w-md text-sm leading-relaxed text-content-secondary">You can skip details you do not know. Each form focuses on the questions relevant to that kind of work.</p></div>
+            <div className="grid gap-5 md:grid-cols-2">
+              <button type="button" onClick={() => setServiceChoice('electronics')} className="group flex min-h-80 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition duration-200 hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:p-8">
+                <div className="flex w-full items-start justify-between gap-3"><span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><Cpu size={25}/></span><span className="rounded-full border border-line px-2.5 py-1 text-xs text-content-muted">Technical build</span></div>
+                <h2 className="mt-5 text-xl font-semibold tracking-tight">Electronics & Mechanical Projects</h2>
+                <p className="mt-2 text-sm leading-relaxed text-content-secondary">For custom technical builds, prototypes and automation ideas—from early concepts to detailed requirements.</p>
+                <ul className="mt-4 grid gap-2 text-sm text-content-secondary sm:grid-cols-2"><li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-accent"/>Arduino / ESP32 / IoT</li><li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-accent"/>Robotics & control</li><li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-accent"/>Sensors & electronics</li><li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-accent"/>Mechanical prototypes</li></ul>
+                <span className="mt-auto inline-flex items-center gap-2 pt-7 text-sm font-semibold text-accent">Build my project brief <ArrowRight size={16} className="transition-transform group-hover:translate-x-1"/></span>
+              </button>
+              <Link to="/request-school-model" className="group flex min-h-80 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition duration-200 hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:p-8">
+                <div className="flex w-full items-start justify-between gap-3"><span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><GraduationCap size={25}/></span><span className="rounded-full border border-line px-2.5 py-1 text-xs text-content-muted">Education & display</span></div>
+                <h2 className="mt-5 text-xl font-semibold tracking-tight">School Charts & Educational Models</h2>
+                <p className="mt-2 text-sm leading-relaxed text-content-secondary">For teaching aids, classroom demonstrations and school exhibitions, including custom-made models.</p>
+                <ul className="mt-4 grid gap-2 text-sm text-content-secondary sm:grid-cols-2"><li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-accent"/>Science & biology charts</li><li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-accent"/>3D & working models</li><li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-accent"/>Exhibition projects</li><li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-accent"/>Custom classroom aids</li></ul>
+                <span className="mt-auto inline-flex items-center gap-2 pt-7 text-sm font-semibold text-accent">Request a school model <ArrowRight size={16} className="transition-transform group-hover:translate-x-1"/></span>
+              </Link>
+            </div>
+            <div className="mt-5 flex flex-col gap-3 rounded-xl border border-line bg-surface/60 p-4 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm leading-relaxed text-content-secondary"><span className="font-semibold text-content">No fixed price shown for school models.</span> Final pricing and timing are confirmed after the scope, quantity and requirements are reviewed.</p><span className="shrink-0 text-xs text-content-muted">You can switch services later</span></div>
           </div>
-          <p className="mx-auto mt-6 max-w-4xl text-sm text-content-muted">School models are quote-based. Final pricing is provided after requirements and quantity are reviewed.</p>
         </Container>
       </>
     );
