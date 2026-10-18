@@ -99,7 +99,7 @@ export default function SchoolRequest() {
     event.preventDefault();
     setError('');
     if (!user) {
-      navigate('/login?next=' + encodeURIComponent(location.pathname + location.search));
+      setError('Please sign in using the account link above. Your draft is still on this page; once signed in, return here and submit again.');
       return;
     }
     if (!model) { setError('Choose a published model or select “Custom / not listed”.'); return; }
@@ -175,7 +175,7 @@ export default function SchoolRequest() {
           </aside>
           <form onSubmit={submit} className="min-w-0 space-y-12">
             {error && <Alert tone="danger">{error}</Alert>}
-            {!user && <Alert tone="info">You can prepare the form now. You’ll be asked to sign in when you submit so the request is saved to your account.</Alert>}
+            {!user && <div className="rounded-xl border border-accent/25 bg-accent/5 p-4"><p className="text-sm font-semibold">Sign in before submitting</p><p className="mt-1 text-sm leading-relaxed text-content-secondary">You can keep preparing this form. Open sign-in in a new tab; your draft will stay here, and you can submit after signing in.</p><div className="mt-3 flex flex-wrap gap-3"><a target="_blank" rel="noreferrer" href={'/login?next='+encodeURIComponent(location.pathname+location.search)} className="text-sm font-semibold text-accent hover:underline">Log in</a><a target="_blank" rel="noreferrer" href={'/register?next='+encodeURIComponent(location.pathname+location.search)} className="text-sm font-semibold text-accent hover:underline">Create account</a></div></div>}
 
             <FormSection id="school-contact" step={1} title="How to reach you" description="We need a reliable way to reply. Your details are not displayed on the public catalog.">
               <div className="grid gap-4 sm:grid-cols-2">
