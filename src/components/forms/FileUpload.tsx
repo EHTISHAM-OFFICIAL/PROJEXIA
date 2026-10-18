@@ -3,6 +3,7 @@ import { Paperclip, X } from 'lucide-react';
 import { ATTACHMENT_RULES } from '../../constants/requestOptions';
 import { validateAttachment } from '../../utils/fileValidation';
 import { formatFileSize } from '../../utils/formatting';
+import { ImageProcessingDialog } from './ImageProcessingDialog';
 
 interface FileUploadProps {
   files: File[];
@@ -13,6 +14,7 @@ interface FileUploadProps {
 export function FileUpload({ files, onChange, disabled = false }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState<string[]>([]);
+  const [pendingImages, setPendingImages] = useState<File[]>([]);
 
   const addFiles = (incoming: FileList | null) => {
     if (!incoming) return;
@@ -32,7 +34,12 @@ export function FileUpload({ files, onChange, disabled = false }: FileUploadProp
       else if (result.error) nextErrors.push(result.error);
     });
 
-    if (accepted.length) onChange([...files, ...accepted]);
+    if (accepted.length) {
+      const images = accepted.filter((file) => file.type.startsWith('image/'));
+      const otherFiles = accepted.filter((file) => !file.type.startsWith('image/'));
+      if (otherFiles.length) onChange([...files, ...otherFiles]);
+      if (images.length) setPendingImages((current) => [...current, ...images]);
+    }
     setErrors(Array.from(new Set(nextErrors)));
     if (inputRef.current) inputRef.current.value = '';
   };
@@ -57,7 +64,7 @@ export function FileUpload({ files, onChange, disabled = false }: FileUploadProp
           id="attachments"
           type="file"
           multiple
-          disabled={disabled}
+          disabled={disabled || pendingImages.length > 0}
           accept={ATTACHMENT_RULES.allowedExtensions.join(',')}
           onChange={(event) => addFiles(event.target.files)}
           className="sr-only"
@@ -74,6 +81,8 @@ export function FileUpload({ files, onChange, disabled = false }: FileUploadProp
           {formatFileSize(ATTACHMENT_RULES.maxSizeBytes)} each. Photos, screenshots or sketches — JPG, PNG, WebP, GIF or BMP.
         </p>
       </div>
+
+      {pendingImages[0] && <ImageProcessingDialog key={pendingImages[0].name + pendingImages[0].lastModified} file={pendingImages[0]} title="Prepare reference image" onCancel={() => setPendingImages([])} onUse={async (preparedFile) => { onChange([...files, preparedFile]); setPendingImages((current) => current.slice(1)); }} />}
 
       {errors.length > 0 && (
         <ul className="flex flex-col gap-1" role="alert">
