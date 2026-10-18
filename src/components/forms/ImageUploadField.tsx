@@ -41,6 +41,8 @@ export function ImageUploadField({
   };
 
   const uploadPreparedFile = async (file: File) => {
+    const validation = validateProjectImage(file);
+    if (!validation.valid) throw new Error(validation.error ?? 'The prepared image cannot be uploaded.');
     setBusy(true);
     setError(null);
     try {
