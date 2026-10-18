@@ -163,7 +163,7 @@ export default function SchoolModelForm() {
     } finally { setUploading(false); }
   };
 
-  const submit = async (event: FormEvent) => {
+  const submit = async (event: { preventDefault: () => void }, publish?: boolean) => {
     event.preventDefault(); setError(''); setNotice('');
     if (!draft.title.trim()) { setError('Add a title before saving.'); document.getElementById('school-title')?.focus(); return; }
     if (!draft.shortDescription.trim()) { setError('Add a short description for the catalog card.'); document.getElementById('school-short-description')?.focus(); return; }
@@ -171,8 +171,8 @@ export default function SchoolModelForm() {
     if (draft.slug.trim() && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(draft.slug.trim())) { setError('The URL slug can use lowercase letters, numbers and hyphens only.'); document.getElementById('school-slug')?.focus(); return; }
     setSaving(true);
     try {
-      await schoolModelService.save({ ...draft, title: draft.title.trim(), slug: draft.slug.trim(), materials: lines(materials), objectives: lines(objectives), features: lines(features), customizationOptions: lines(customizationOptions), tags: lines(tags.replace(/,/g, '\n')), keywords: lines(keywords.replace(/,/g, '\n')), components: draft.components.filter((item) => item.name.trim()), specifications: draft.specifications.filter((item) => item.label.trim()), galleryUrls: lines(gallery) }, id);
-      navigate('/admin/school-models', { replace: true, state: { notice: editing ? 'School model updated.' : 'School model created.' } });
+      await schoolModelService.save({ ...draft, title: draft.title.trim(), slug: draft.slug.trim(), materials: lines(materials), objectives: lines(objectives), features: lines(features), customizationOptions: lines(customizationOptions), tags: lines(tags.replace(/,/g, '\n')), keywords: lines(keywords.replace(/,/g, '\n')), components: draft.components.filter((item) => item.name.trim()), specifications: draft.specifications.filter((item) => item.label.trim()), galleryUrls: lines(gallery), published: publish ?? draft.published }, id);
+      navigate('/admin/school-models', { replace: true, state: { notice: publish ? 'School model saved and published.' : editing ? 'School model updated.' : 'School model created.' } });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Could not save this school model.');
     } finally { setSaving(false); }
@@ -343,7 +343,7 @@ export default function SchoolModelForm() {
 
       <div className="sticky bottom-3 z-20 flex flex-col gap-3 rounded-xl border border-line bg-bg/95 p-3 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-4">
         <p className="text-xs text-content-muted">{hasUnsavedChanges?'Unsaved changes':'All changes saved'} · Pricing remains quote-based.</p>
-        <div className="flex flex-wrap gap-2"><Button type="button" variant="secondary" onClick={cancel}>Cancel</Button><Button type="submit" loading={saving||uploading} disabled={saving||uploading}><Save size={16}/>{saving?'Saving…':editing?'Save changes':'Create school model'}</Button></div>
+        <div className="flex flex-wrap gap-2"><Button type="button" variant="ghost" onClick={cancel} disabled={saving||uploading}>Cancel</Button><Button type="submit" loading={saving||uploading} disabled={saving||uploading}><Save size={16}/>{saving?'Saving…':editing?'Save changes':'Save draft'}</Button>{!draft.published&&<Button type="button" variant="secondary" disabled={saving||uploading} onClick={(event)=>void submit(event,true)}>{saving?'Publishing…':'Save & publish'}</Button>}</div>
       </div>
     </form>
   </>;
