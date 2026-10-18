@@ -25,7 +25,7 @@ export function ProjectCard({ project }: { project: Project }) {
         to={`/projects/${project.slug}`}
         className="flex h-full min-w-0 flex-col rounded-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
       >
-        <div className="relative aspect-[16/10] shrink-0 overflow-hidden bg-surface-raised">
+        <div className="relative shrink-0 overflow-hidden bg-surface-raised" style={{ aspectRatio: settings.projectCardImageRatio }}>
           <Image
             src={project.media.thumbnailUrl}
             alt={`${project.title} project thumbnail`}
