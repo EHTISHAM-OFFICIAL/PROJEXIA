@@ -32,9 +32,6 @@ const SECTIONS = [
   { id: 'school-extra', label: 'Anything else' },
   { id: 'school-consent', label: 'Review & send' },
 ];
-const inputClass = 'h-11 w-full rounded-xl border border-line bg-bg px-3 text-sm text-content placeholder:text-content-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15';
-const textareaClass = 'w-full rounded-xl border border-line bg-bg p-3 text-sm text-content placeholder:text-content-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15';
-
 export default function SchoolRequest() {
   const [params] = useSearchParams();
   const { user } = useAuth();
