@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, CheckCircle2, Copy, GraduationCap, ShieldCheck } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Copy, GraduationCap, ShieldCheck } from 'lucide-react';
 import { Container } from '../../components/ui/Container';
 import { PageIntro } from '../../components/ui/PageIntro';
 import { Seo } from '../../components/ui/Seo';
