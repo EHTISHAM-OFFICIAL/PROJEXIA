@@ -319,21 +319,28 @@ export default function SchoolModelForm() {
 
       <Group id="school-model-features" title="Features & customization" subtitle="What makes this model useful and how it can be adapted">
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Key features" htmlFor="school-features" hint="One feature per line. These are shown on the public detail page."><TextArea id="school-features" rows={5} value={features} onChange={(event)=>setFeatures(event.target.value)} placeholder={'Labeled key parts\nInteractive demonstration\nReusable classroom display'}/></Field>
-          <Field label="Customization options" htmlFor="school-customization-options" hint="One option per line, such as language, colors or size."><TextArea id="school-customization-options" rows={5} value={customizationOptions} onChange={(event)=>setCustomizationOptions(event.target.value)} placeholder={'Custom dimensions\nUrdu or English labels\nSchool name / logo'}/></Field>
+          <Field label="Key features" htmlFor="school-features" hint="One feature per line. These are shown on the public detail page."><TextArea id="school-features" rows={5} value={features} onChange={(event) => setFeatures(event.target.value)} placeholder={'Labeled key parts\nInteractive demonstration\nReusable classroom display'}/></Field>
+          <Field label="Customization options" htmlFor="school-customization-options" hint="One option per line, such as language, colors or size."><TextArea id="school-customization-options" rows={5} value={customizationOptions} onChange={(event) => setCustomizationOptions(event.target.value)} placeholder={'Custom dimensions\nUrdu or English labels\nSchool name / logo'}/></Field>
         </div>
-        <Field label="Assembly, setup & demonstration notes" htmlFor="school-setup-instructions" hint="Optional public-facing instructions or notes for teachers."><RichTextEditor id="school-setup-instructions" rows={4} value={draft.setupInstructions} onChange={(value)=>update('setupInstructions',value)} placeholder="Explain any setup, handling or demonstration steps that are useful to know."/></Field>
+        <Field label="Assembly, setup & demonstration notes" htmlFor="school-setup-instructions" hint="Optional public-facing instructions or notes for teachers."><RichTextEditor id="school-setup-instructions" rows={4} value={draft.setupInstructions} onChange={(value) => update('setupInstructions', value)} placeholder="Explain any setup, handling or demonstration steps that are useful to know."/></Field>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field label="Maintenance / storage notes" htmlFor="school-maintenance-notes" hint="Optional care instructions for reusable classroom models."><RichTextEditor id="school-maintenance-notes" rows={3} value={draft.maintenanceNotes} onChange={(value) => update('maintenanceNotes', value)} placeholder="Cleaning, storage, handling or reuse notes."/></Field>
+          <Field label="Safety notes" htmlFor="school-safety-notes" hint="Only add specific, accurate guidance that applies to this model."><RichTextEditor id="school-safety-notes" rows={3} value={draft.safetyNotes} onChange={(value) => update('safetyNotes', value)} placeholder="Relevant handling or supervision considerations."/></Field>
+        </div>
       </Group>
 
-      <Group id="school-model-publishing" title="Publishing & SEO" subtitle="Homepage visibility and search metadata">
+      <Group id="school-model-links" title="Links & SEO" subtitle="Search metadata and supporting resources">
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="SEO title" htmlFor="school-seo-title" hint="Keep it descriptive; around 50–60 characters is a useful target."><TextInput id="school-seo-title" maxLength={70} value={draft.seoTitle} onChange={(event)=>update('seoTitle',event.target.value)} placeholder={draft.title||'School model title'}/></Field>
-          <Field label="SEO description" htmlFor="school-seo-description" hint="A short summary for search results."><TextArea id="school-seo-description" rows={3} maxLength={180} value={draft.seoDescription} onChange={(event)=>update('seoDescription',event.target.value)} placeholder="Describe this educational model in a clear sentence."/></Field>
-          <Field label="Search keywords" htmlFor="school-keywords" hint="Comma-separated phrases that help describe this item."><TextInput id="school-keywords" value={keywords} onChange={(event)=>setKeywords(event.target.value)} placeholder="biology model, classroom chart, science project"/></Field>
+          <Field label="SEO title" htmlFor="school-seo-title" hint="Keep it descriptive; around 50–60 characters is a useful target."><TextInput id="school-seo-title" maxLength={70} value={draft.seoTitle} onChange={(event) => update('seoTitle', event.target.value)} placeholder={draft.title || 'School model title'}/></Field>
+          <Field label="SEO description" htmlFor="school-seo-description" hint="A short summary for search results."><TextArea id="school-seo-description" rows={3} maxLength={180} value={draft.seoDescription} onChange={(event) => update('seoDescription', event.target.value)} placeholder="Describe this educational model in a clear sentence."/></Field>
+          <Field label="Search keywords" htmlFor="school-keywords" hint="Comma-separated phrases that help describe this item."><TextInput id="school-keywords" value={keywords} onChange={(event) => setKeywords(event.target.value)} placeholder="biology model, classroom chart, science project"/></Field>
         </div>
+      </Group>
+
+      <Group id="school-model-publishing" title="Visibility" subtitle="Control whether visitors can discover this item">
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-xl border border-line p-4"><Checkbox id="school-featured" label="Feature this item" description="Allow it to appear in featured school-model sections." checked={draft.featured} onChange={(event)=>update('featured',event.target.checked)}/></div>
-          <div className="rounded-xl border border-line p-4"><Checkbox id="school-published" label="Publish this item" description="Published models can be seen by visitors. Drafts remain in admin." checked={draft.published} onChange={(event)=>update('published',event.target.checked)}/></div>
+          <div className="rounded-xl border border-line p-4"><Checkbox id="school-featured" label="Feature this item" description="Allow it to appear in featured school-model sections." checked={draft.featured} onChange={(event) => update('featured', event.target.checked)}/></div>
+          <div className="rounded-xl border border-line p-4"><Checkbox id="school-published" label="Publish this item" description="Published models can be seen by visitors. Drafts remain in admin." checked={draft.published} onChange={(event) => update('published', event.target.checked)}/></div>
         </div>
       </Group>
 
