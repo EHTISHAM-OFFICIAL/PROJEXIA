@@ -116,6 +116,8 @@ export interface ProjectRequest {
   requestNumber: string;
   /** Per-request token required for administrator trash actions. */
   projectToken?: string;
+  serviceType?: string;
+  schoolModel?: { itemId: string; slug: string; category: string };
   status: RequestStatus;
   priority: RequestPriority;
   contact: RequestContact;
