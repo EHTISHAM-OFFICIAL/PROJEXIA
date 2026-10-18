@@ -29,7 +29,7 @@ export function ProjectCard({ project }: { project: Project }) {
           <Image
             src={project.media.thumbnailUrl}
             alt={`${project.title} project thumbnail`}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.025] motion-reduce:transition-none"
+            className="h-full w-full object-contain"
           />
           <div className="absolute left-3 top-3 max-w-[calc(100%-1.5rem)]">
             <Badge tone={STATUS_TONE[project.status] ?? 'neutral'}>
