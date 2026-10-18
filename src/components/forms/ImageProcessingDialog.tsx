@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Check, Crop, Image as ImageIcon, RotateCcw, X } from 'lucide-react';
-import { Button } from './Button';
+import { Button } from '../ui/Button';
 
 type CropRatio = 'original' | '1:1' | '4:3' | '16:10' | '16:9' | '3:2';
 
