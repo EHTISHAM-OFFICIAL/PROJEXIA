@@ -90,10 +90,12 @@ export default function SchoolModelForm() {
   const basicsComplete = Boolean(draft.title.trim() && draft.shortDescription.trim() && draft.category.trim());
   const sections = [
     { id: 'school-model-basics', label: 'Basics', complete: basicsComplete, required: true },
-    { id: 'school-model-media', label: 'Images', complete: Boolean(draft.thumbnailUrl || gallery.trim()), required: false },
-    { id: 'school-model-learning', label: 'Learning details', complete: Boolean(materials.trim() || objectives.trim() || draft.description.trim()), required: false },
-    { id: 'school-model-features', label: 'Features & customization', complete: Boolean(features.trim() || customizationOptions.trim() || draft.setupInstructions.trim()), required: false },
-    { id: 'school-model-publishing', label: 'Publishing & SEO', complete: Boolean(draft.seoTitle || draft.seoDescription || keywords.trim() || draft.published || draft.featured), required: false },
+    { id: 'school-model-media', label: 'Media', complete: Boolean(draft.thumbnailUrl || draft.heroImageUrl || gallery.trim() || draft.videoUrl), required: false },
+    { id: 'school-model-story', label: 'Educational story', complete: Boolean(draft.description.trim() || draft.problemStatement.trim() || draft.workingPrinciple.trim() || draft.howToUse.trim() || objectives.trim()), required: false },
+    { id: 'school-model-technical', label: 'Materials & specs', complete: Boolean(materials.trim() || draft.components.some((item) => item.name.trim()) || draft.specifications.some((item) => item.label.trim()) || tags.trim()), required: false },
+    { id: 'school-model-features', label: 'Features & customization', complete: Boolean(features.trim() || customizationOptions.trim() || draft.setupInstructions.trim() || draft.maintenanceNotes.trim() || draft.safetyNotes.trim()), required: false },
+    { id: 'school-model-links', label: 'Links & SEO', complete: Boolean(draft.documentationUrl || draft.seoTitle || draft.seoDescription || keywords.trim()), required: false },
+    { id: 'school-model-publishing', label: 'Visibility', complete: Boolean(draft.published || draft.featured), required: false },
   ];
   const completedRequired = [draft.title.trim(), draft.shortDescription.trim(), draft.category.trim()].filter(Boolean).length;
 
