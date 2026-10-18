@@ -325,7 +325,7 @@ export default function SchoolModelForm() {
                     <Field label="Quantity included" htmlFor={`school-component-${index}-quantity`} hint="Include a unit when useful."><TextInput id={`school-component-${index}-quantity`} value={component.quantity} maxLength={60} onChange={(event) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], quantity: event.target.value }; update('components', rows); }} placeholder="e.g. 1 base, 12 labels"/></Field>
                     <div className="flex items-end rounded-lg border border-line bg-bg px-3 py-3"><Checkbox id={`school-component-${index}-optional`} label="Optional / supplied only if requested" description="Use for add-ons, not standard included parts." checked={component.optional} onChange={(event) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], optional: event.target.checked }; update('components', rows); }}/></div>
                   </div>
-                  <div className="mt-4"><Field label="Notes / specifications for this part" htmlFor={`school-component-${index}-notes`} hint="Describe size, material, purpose, finish or other details that help identify this item."><RichTextEditor id={`school-component-${index}-notes`} rows={3} value={component.notes} onChange={(value) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], notes: value }; update('components', rows); }} placeholder="e.g. Clear acrylic, rounded edges; mounted at the front of the base."/></Field></div>
+                  <div className="mt-4"><Field label="Notes / specifications for this part" htmlFor={`school-component-${index}-notes`} hint="Describe size, material, purpose, finish or other details that help identify this item."><RichTextEditor id={`school-component-${index}-notes`} rows={3} showToolbar={false} value={component.notes} onChange={(value) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], notes: value }; update('components', rows); }} placeholder="e.g. Clear acrylic, rounded edges; mounted at the front of the base."/></Field></div>
                 </div>
               ))}
               <Button type="button" variant="secondary" onClick={() => update('components', [...draft.components, { ...EMPTY_COMPONENT }])}><Plus size={15}/> Add component</Button>
@@ -335,7 +335,7 @@ export default function SchoolModelForm() {
         <FieldSet legend="Specifications" hint="Add dimensions, material, display, power or other relevant specifications. Leave unknown values blank.">
           <TableEditor<SchoolModelSpecification> label="Specification" rows={draft.specifications} emptyRow={EMPTY_SPECIFICATION} onChange={(rows) => update('specifications', rows)} columns={[
             { key: 'label', label: 'Specification' },
-            { key: 'value', label: 'Value', type: 'richtext', inlineOnly: true },
+            { key: 'value', label: 'Value', type: 'richtext', inlineOnly: true, showToolbar: false },
           ]}/>
         </FieldSet>
         <Field label="Search / discovery tags" htmlFor="school-tags" hint="Comma-separated terms used to help people discover this model.">

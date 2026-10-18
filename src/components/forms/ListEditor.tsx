@@ -70,7 +70,7 @@ export function TableEditor<T extends object>({
   label,
 }: {
   rows: T[];
-  columns: { key: Extract<keyof T, string>; label: string; type?: 'text' | 'number' | 'checkbox' | 'richtext'; width?: string; inlineOnly?: boolean }[];
+  columns: { key: Extract<keyof T, string>; label: string; type?: 'text' | 'number' | 'checkbox' | 'richtext'; width?: string; inlineOnly?: boolean; showToolbar?: boolean }[];
   emptyRow: T;
   onChange: (next: T[]) => void;
   label: string;
@@ -116,6 +116,7 @@ export function TableEditor<T extends object>({
                     id={`table-${label.toLocaleLowerCase().replace(/[^a-z0-9]+/g, '-')}-${index}-${column.key}`}
                     rows={3}
                     inlineOnly={column.inlineOnly}
+                    showToolbar={column.showToolbar}
                     value={String(row[column.key] ?? '')}
                     onChange={(value) => update(index, column.key, value)}
                   />

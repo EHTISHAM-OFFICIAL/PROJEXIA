@@ -234,7 +234,7 @@ export default function SchoolRequest() {
             <FormSection id="school-specifications" step={5} title="Size, quantity & delivery" description="Estimates are fine. If you do not know the exact dimensions, leave them blank.">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Quantity" required hint="How many copies or models?"><TextInput type="number" min={1} value={quantity} onChange={(e)=>setQuantity(e.target.value)} placeholder="1"/></Field>
-                <Field label="Approximate dimensions"><TextInput value={dimensions} maxLength={120} onChange={(e)=>setDimensions(e.target.value)} placeholder="e.g. 60 × 90 cm, tabletop size"/></Field>
+                <Field label="Approximate dimensions" hint="Approximate size with units; leave blank if unsure."><TextInput className="h-11" value={dimensions} maxLength={120} onChange={(e)=>setDimensions(e.target.value)} placeholder="e.g. 60 × 90 cm, tabletop size"/></Field>
               </div>
             </FormSection>
 
