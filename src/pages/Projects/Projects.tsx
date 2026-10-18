@@ -28,7 +28,7 @@ export default function Projects() {
   const { settings } = useSiteSettings();
   const [catalogSettings, setCatalogSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
   useEffect(() => { let live = true; void schoolModelService.getSettings().then(s => { if (live) setCatalogSettings(s); }).catch(() => {}); return () => { live = false; }; }, []);
-  if (!catalogSettings.electronicsEnabled) return <><Seo title="Electronics projects unavailable" noIndex /><Container className="py-20"><h1 className="text-2xl font-semibold">The electronics project catalog is temporarily unavailable.</h1><p className="mt-3 text-content-secondary">You can still explore our school charts and educational models.</p><ButtonLink to="/school-projects" className="mt-5">Browse school models</ButtonLink></Container></>;
+  const electronicsDisabled = !catalogSettings.electronicsEnabled;
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, loading, error, reload } = usePublishedProjects();
 
