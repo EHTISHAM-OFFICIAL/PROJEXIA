@@ -21,6 +21,7 @@ import { RequireCustomerAuth } from './RequireCustomerAuth';
 const RequestProject = lazy(() => import('../pages/RequestProject/RequestProject'));
 const SchoolRequest = lazy(() => import('../pages/SchoolProjects/SchoolRequest'));
 const AdminSchoolModels = lazy(() => import('../pages/Admin/SchoolModels'));
+const AdminSchoolModelForm = lazy(() => import('../pages/Admin/SchoolModelForm'));
 const BookMeeting = lazy(() => import('../pages/BookMeeting/BookMeeting'));
 const AdminLayout = lazy(() =>
   import('../components/layout/AdminLayout').then((module) => ({ default: module.AdminLayout }))
@@ -96,6 +97,8 @@ export function AppRoutes() {
             <Route index element={<AdminDashboard />} />
             <Route path="projects" element={<AdminProjectsList />} />
             <Route path="school-models" element={<AdminSchoolModels />} />
+            <Route path="school-models/new" element={<AdminSchoolModelForm />} />
+            <Route path="school-models/:id/edit" element={<AdminSchoolModelForm />} />
             <Route path="projects/new" element={<AdminProjectForm />} />
             <Route path="projects/:id/edit" element={<AdminProjectForm />} />
             <Route path="project-library" element={<AdminProjectLibrary />} />
