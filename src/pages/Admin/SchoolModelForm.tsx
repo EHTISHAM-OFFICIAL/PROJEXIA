@@ -10,6 +10,7 @@ import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
 import { RichTextEditor } from '../../components/forms/RichTextEditor';
 import { Checkbox } from '../../components/forms/Choice';
 import { ImageUploadField } from '../../components/forms/ImageUploadField';
+import { ImageProcessingDialog } from '../../components/forms/ImageProcessingDialog';
 import { ListEditor, TableEditor } from '../../components/forms/ListEditor';
 import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/schoolModelService';
 import type { SchoolModelComponent, SchoolModelDraft, SchoolModelSpecification, SchoolSettings } from '../../services/schoolModelService';
@@ -46,6 +47,7 @@ export default function SchoolModelForm() {
   const [subjectInput, setSubjectInput] = useState('');
   const [tags, setTags] = useState('');
   const [gallery, setGallery] = useState('');
+  const [galleryQueue, setGalleryQueue] = useState<File[]>([]);
   const [loading, setLoading] = useState(editing);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -154,18 +156,27 @@ export default function SchoolModelForm() {
     navigate('/admin/school-models');
   };
 
-  const uploadGallery = async (files: FileList | null) => {
+  const uploadGallery = (files: FileList | null) => {
     if (!files?.length) return;
-    setUploading(true); setError(''); setNotice('');
+    setError('');
+    setNotice('');
+    setGalleryQueue(Array.from(files));
+  };
+
+  const uploadPreparedGalleryImage = async (file: File) => {
+    setUploading(true);
+    setError('');
     try {
-      const urls = await Promise.all(Array.from(files).map(async (file) => (await imgbbService.upload(file)).url));
-      const next = [...lines(gallery), ...urls];
-      setGallery(next.join('\n'));
-      update('galleryUrls', next);
-      setNotice(`${urls.length} gallery image${urls.length === 1 ? '' : 's'} uploaded. Save the model to keep your changes.`);
+      const uploaded = await imgbbService.upload(file);
+      setGallery((current) => [...lines(current), uploaded.url].join('\\n'));
+      setGalleryQueue((current) => current.slice(1));
+      setNotice('Gallery image uploaded. Save the model to keep your changes.');
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Image upload failed. You can paste image URLs instead.');
-    } finally { setUploading(false); }
+      throw caught;
+    } finally {
+      setUploading(false);
+    }
   };
 
   const submit = async (event?: { preventDefault: () => void }, publish?: boolean) => {
@@ -369,6 +380,8 @@ export default function SchoolModelForm() {
           <div className="rounded-xl border border-line p-4"><Checkbox id="school-published" label="Publish this item" description="Published models can be seen by visitors. Drafts remain in admin." checked={draft.published} onChange={(event) => update('published', event.target.checked)}/></div>
         </div>
       </Group>
+
+      {galleryQueue[0] && <ImageProcessingDialog key={galleryQueue[0].name + galleryQueue[0].lastModified} file={galleryQueue[0]} title="Prepare gallery image" onCancel={() => setGalleryQueue([])} onUse={uploadPreparedGalleryImage} />}
 
       <div className="sticky bottom-3 z-20 flex flex-col gap-3 rounded-xl border border-line bg-bg/95 p-3 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-4">
         <p className="text-xs text-content-muted">{hasUnsavedChanges?'Unsaved changes':'All changes saved'} · Pricing remains quote-based.</p>
