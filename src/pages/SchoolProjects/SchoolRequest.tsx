@@ -1,2 +1,250 @@
-import {useEffect,useState} from 'react';import {Link,useNavigate,useSearchParams} from 'react-router-dom';import {CheckCircle2} from 'lucide-react';import {Container} from '../../components/ui/Container';import {PageIntro} from '../../components/ui/PageIntro';import {Seo} from '../../components/ui/Seo';import {Button} from '../../components/ui/Button';import {Alert} from '../../components/ui/Alert';import {schoolModelService} from '../../services/schoolModelService';import type {SchoolModel} from '../../services/schoolModelService';import {useAuth} from '../../hooks/useAuth';
-export default function SchoolRequest(){const [params]=useSearchParams(),{user}=useAuth(),navigate=useNavigate();const [model,setModel]=useState<SchoolModel|null>(null),[models,setModels]=useState<SchoolModel[]>([]),[customTitle,setCustomTitle]=useState(''),[name,setName]=useState(''),[email,setEmail]=useState(user?.email||''),[phone,setPhone]=useState(''),[grade,setGrade]=useState(''),[quantity,setQuantity]=useState('1'),[dimensions,setDimensions]=useState(''),[deadline,setDeadline]=useState(''),[customization,setCustomization]=useState(''),[details,setDetails]=useState(''),[consent,setConsent]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[number,setNumber]=useState('');useEffect(()=>{let live=true;const slug=params.get('slug');void schoolModelService.getPublished().then(list=>{if(!live)return;setModels(list);if(slug)setModel(list.find(item=>item.slug===slug)??null)}).catch(()=>{if(live)setModels([])});return()=>{live=false}},[params]);async function submit(e:React.FormEvent){e.preventDefault();setError('');if(!user){navigate('/login?next='+encodeURIComponent(location.pathname+location.search));return}if(!model){setError('Choose a published model or select a custom item.');return}if(model.id==='custom'&&!customTitle.trim()){setError('Enter a title for your custom school model or chart.');return}if(!consent){setError('Please agree that we may contact you about this request.');return}if(details.trim().length<20){setError('Please provide at least 20 characters of requirements.');return}setBusy(true);try{setNumber(await schoolModelService.requestQuote({model:model.id==='custom'?{...model,title:customTitle.trim(),slug:'custom'}:model,name,email,phone,grade,quantity,dimensions,deadline,customization,details}))}catch(e){setError(e instanceof Error?e.message:'Could not submit your request.')}finally{setBusy(false)}}if(number)return <Container className="py-16"><Seo title="Quote request submitted" noIndex/><div className="mx-auto max-w-xl rounded-2xl border border-line bg-surface p-7 text-center"><CheckCircle2 size={32} className="mx-auto text-accent"/><h1 className="mt-4 text-2xl font-semibold">Quote request submitted</h1><p className="mt-3 text-sm text-content-secondary">Keep this reference to track your request.</p><p className="mt-4 rounded-lg bg-surface-raised p-3 font-mono">{number}</p><Button className="mt-5" onClick={()=>navigate('/track-request?ref='+encodeURIComponent(number))}>Track request</Button></div></Container>;return <><Seo title="Request a School Chart or Educational Model" description="Submit your school chart or educational model requirements for a quote." path="/request-school-model" noIndex/><PageIntro eyebrow="Custom quote" title="Request a school model" description="Share your quantity, size and requirements. We'll review the request and respond with a quote."/><Container className="pt-4"><div className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4"><div><p className="text-xs font-medium uppercase tracking-wide text-content-muted">Selected service</p><p className="mt-1 text-sm font-semibold">School Charts & Educational Models</p></div><Link to="/request-project" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-accent/30 px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent/10">Switch to Electronics / Mechanical <span aria-hidden="true">→</span></Link></div></Container><Container className="py-6"><div className="mx-auto max-w-3xl"><Link to={model?'/school-projects/'+model.slug:'/school-projects'} className="text-sm text-content-secondary">← {model?'Back to model':'Browse school models'}</Link>{!user&&<div className="mt-4"><Alert tone="info">Sign in is required to submit a quote request.</Alert></div>}{error&&<div className="mt-4"><Alert tone="danger">{error}</Alert></div>}<form onSubmit={submit} className="mt-5 space-y-5 rounded-2xl border border-line bg-surface p-5 sm:p-8">{!params.get('slug')&&<label className="block text-sm font-medium">School chart or educational model<select required value={model?.id||''} onChange={e=>{const value=e.target.value;setModel(value==='custom'?{id:'custom',title:'',slug:'custom',category:'Others',subject:'',gradeRange:'',shortDescription:'',description:'',materials:[],objectives:[],dimensions:'',thumbnailUrl:'',galleryUrls:[],featured:false,published:false,seoTitle:'',seoDescription:'',createdAt:null,updatedAt:null}:models.find(item=>item.id===value)??null)}} className="mt-1.5 h-11 w-full rounded-xl border border-line bg-bg px-3 text-sm"><option value="">Choose an item</option>{models.map(item=><option key={item.id} value={item.id}>{item.title} — {item.category}</option>)}<option value="custom">Custom / not listed</option></select><span className="mt-1 block text-xs text-content-muted">Only published items appear here. For a custom item, describe what you need in the requirements field.</span></label>}{model?.id==='custom'&&<label className="block text-sm font-medium">Custom model / chart title<input required value={customTitle} onChange={e=>setCustomTitle(e.target.value)} placeholder="Describe the educational model you need" className="mt-1.5 h-11 w-full rounded-xl border border-line bg-bg px-3 text-sm"/></label>}<div className="rounded-xl bg-surface-raised p-4"><p className="text-xs uppercase text-content-muted">Selected item</p><p className="mt-1 font-semibold">{model?.id==='custom'?(customTitle||'Custom model / chart'):model?.title||(models.length?'Choose an item above':'No published items available yet — choose Custom / not listed')}</p>{model&&<p className="mt-1 text-sm text-content-secondary">{model.category}{model.gradeRange?' · '+model.gradeRange:''}</p>}</div><div className="grid gap-4 sm:grid-cols-2">{[['Your name',name,setName,'text'],['Email address',email,setEmail,'email'],['Phone',phone,setPhone,'tel'],['Grade / class',grade,setGrade,'text'],['Quantity',quantity,setQuantity,'number'],['Dimensions',dimensions,setDimensions,'text'],['Needed by',deadline,setDeadline,'date']].map(([label,value,set,type])=><label key={label as string} className="block text-sm font-medium">{label as string}<input required={['Your name','Email address','Quantity'].includes(label as string)} type={type as string} min={type==='number'?1:undefined} value={value as string} onChange={e=>(set as (v:string)=>void)(e.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-line bg-bg px-3 text-sm"/></label>)}</div><label className="block text-sm font-medium">Customization (optional)<input value={customization} onChange={e=>setCustomization(e.target.value)} placeholder="Colors, labels, language or special instructions" className="mt-1.5 h-11 w-full rounded-xl border border-line bg-bg px-3 text-sm"/></label><label className="block text-sm font-medium">Requirements (minimum 20 characters<textarea required minLength={20} maxLength={3000} rows={5} value={details} onChange={e=>setDetails(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line bg-bg p-3 text-sm"/></label><label className="flex items-start gap-3 text-sm text-content-secondary"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} className="mt-1"/>I agree that PROJEXIAHUB may contact me about this quote request.</label><Button type="submit" loading={busy} disabled={busy||!model} className="w-full sm:w-auto">Submit quote request</Button><p className="text-xs text-content-muted">This is a request, not a confirmed order. Pricing is provided after review.</p></form></div></Container></>}
+import { useEffect, useState, type FormEvent } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, CheckCircle2, Copy, GraduationCap, ShieldCheck } from 'lucide-react';
+import { Container } from '../../components/ui/Container';
+import { PageIntro } from '../../components/ui/PageIntro';
+import { Seo } from '../../components/ui/Seo';
+import { Button, ButtonLink } from '../../components/ui/Button';
+import { Alert } from '../../components/ui/Alert';
+import { Field, FieldSet } from '../../components/forms/Field';
+import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
+import { RadioGroup } from '../../components/forms/Choice';
+import { FileUpload } from '../../components/forms/FileUpload';
+import { FormSection } from '../../components/forms/FormSection';
+import { schoolModelService } from '../../services/schoolModelService';
+import type { SchoolModel } from '../../services/schoolModelService';
+import { useAuth } from '../../hooks/useAuth';
+
+const CUSTOM_MODEL: SchoolModel = {
+  id: 'custom', title: '', slug: 'custom', category: 'Others', subject: '', gradeRange: '',
+  shortDescription: '', description: '', materials: [], objectives: [], dimensions: '',
+  thumbnailUrl: '', galleryUrls: [], featured: false, published: false, seoTitle: '',
+  seoDescription: '', createdAt: null, updatedAt: null,
+};
+const SECTIONS = [
+  { id: 'school-contact', label: 'Contact' },
+  { id: 'school-model-choice', label: 'Model' },
+  { id: 'school-learning', label: 'Learning needs' },
+  { id: 'school-specifications', label: 'Size & quantity' },
+  { id: 'school-budget-timeline', label: 'Budget & timing' },
+  { id: 'school-references', label: 'References' },
+  { id: 'school-extra', label: 'Anything else' },
+  { id: 'school-consent', label: 'Review & send' },
+];
+const inputClass = 'h-11 w-full rounded-xl border border-line bg-bg px-3 text-sm text-content placeholder:text-content-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15';
+const textareaClass = 'w-full rounded-xl border border-line bg-bg p-3 text-sm text-content placeholder:text-content-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15';
+
+export default function SchoolRequest() {
+  const [params] = useSearchParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [model, setModel] = useState<SchoolModel | null>(null);
+  const [models, setModels] = useState<SchoolModel[]>([]);
+  const [customTitle, setCustomTitle] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [country, setCountry] = useState('');
+  const [city, setCity] = useState('');
+  const [contactMethod, setContactMethod] = useState('Email');
+  const [grade, setGrade] = useState('');
+  const [purpose, setPurpose] = useState('');
+  const [quantity, setQuantity] = useState('1');
+  const [dimensions, setDimensions] = useState('');
+  const [deadline, setDeadline] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [flexibility, setFlexibility] = useState('Some flexibility');
+  const [urgency, setUrgency] = useState('Normal');
+  const [budgetRange, setBudgetRange] = useState('');
+  const [budgetNotes, setBudgetNotes] = useState('');
+  const [customization, setCustomization] = useState('');
+  const [details, setDetails] = useState('');
+  const [referenceLinks, setReferenceLinks] = useState<string[]>(['']);
+  const [referenceDescription, setReferenceDescription] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
+  const [consent, setConsent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [number, setNumber] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    let live = true;
+    const slug = params.get('slug');
+    void schoolModelService.getPublished().then((list) => {
+      if (!live) return;
+      setModels(list);
+      if (slug) setModel(list.find((item) => item.slug === slug) ?? null);
+    }).catch(() => { if (live) setModels([]); });
+    return () => { live = false; };
+  }, [params]);
+
+  useEffect(() => {
+    if (user?.email && !email) setEmail(user.email);
+    if (user?.displayName && !name) setName(user.displayName);
+  }, [user, email, name]);
+
+  const selectedModel = model?.id === 'custom' ? { ...CUSTOM_MODEL, title: customTitle.trim() || 'Custom school model / chart' } : model;
+  const filled = [
+    Boolean(name.trim() && email.trim()), Boolean(model && (model.id !== 'custom' || customTitle.trim())),
+    Boolean(details.trim().length >= 20), Boolean(quantity.trim() && Number(quantity) >= 1),
+    Boolean(budgetRange || budgetNotes.trim()), Boolean(deadline || startDate),
+    Boolean(referenceLinks.some((link) => link.trim()) || files.length),
+    consent,
+  ].filter(Boolean).length;
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setError('');
+    if (!user) {
+      navigate('/login?next=' + encodeURIComponent(location.pathname + location.search));
+      return;
+    }
+    if (!model) { setError('Choose a published model or select “Custom / not listed”.'); return; }
+    if (model.id === 'custom' && !customTitle.trim()) { setError('Give your custom chart or model a working title.'); return; }
+    if (!name.trim() || !email.trim()) { setError('Add your name and email so we can reply.'); return; }
+    if (!Number.isFinite(Number(quantity)) || Number(quantity) < 1) { setError('Quantity must be at least one.'); return; }
+    if (details.trim().length < 20) { setError('Please describe what you need in at least 20 characters.'); return; }
+    if (!consent) { setError('Please confirm that we may contact you about this quote request.'); return; }
+
+    setBusy(true);
+    try {
+      const requestNumber = await schoolModelService.requestQuote({
+        model: { ...model, title: model.id === 'custom' ? customTitle.trim() : model.title },
+        name: name.trim(), email: email.trim(), phone: phone.trim(), whatsapp: whatsapp.trim(),
+        country: country.trim(), city: city.trim(), preferredContactMethod: contactMethod,
+        grade: grade.trim(), purpose: purpose.trim(), quantity, dimensions: dimensions.trim(),
+        deadline, startDate, timelineFlexibility: flexibility, urgency, budgetRange,
+        budgetNotes: budgetNotes.trim(), customization: customization.trim(), details: details.trim(),
+        referenceLinks: referenceLinks.map((link) => link.trim()).filter(Boolean),
+        referenceDescription: referenceDescription.trim(), files,
+      });
+      setNumber(requestNumber);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Could not submit your quote request. Please try again.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally { setBusy(false); }
+  };
+
+  if (number) return (
+    <>
+      <Seo title="Quote request submitted" noIndex />
+      <Container className="py-16 sm:py-24">
+        <div className="mx-auto max-w-2xl rounded-2xl border border-state-success/25 bg-state-success/5 p-7 text-center sm:p-12">
+          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-state-success/10 text-state-success"><CheckCircle2 size={30}/></span>
+          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-state-success">Request received</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight">Your quote request is in.</h1>
+          <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-content-secondary">We’ll review your model, quantity, size, timing and any references or attachments before preparing a response. This is a quote request, not a confirmed order.</p>
+          <div className="mt-7 rounded-xl border border-line bg-surface p-5 text-left">
+            <p className="text-xs font-medium uppercase tracking-wide text-content-muted">Your reference number</p>
+            <p className="mt-2 break-all font-mono text-lg font-semibold">{number}</p>
+            <button type="button" onClick={() => { void navigator.clipboard.writeText(number); setCopied(true); }} className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-accent hover:text-accent-hover"><Copy size={15}/>{copied ? 'Copied reference' : 'Copy reference'}</button>
+          </div>
+          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+            <Button onClick={() => navigate('/track-request?ref=' + encodeURIComponent(number))}>Track request <ArrowRight size={16}/></Button>
+            <ButtonLink to="/school-projects" variant="secondary">Browse school models</ButtonLink>
+          </div>
+        </div>
+      </Container>
+    </>
+  );
+
+  return (
+    <>
+      <Seo title="Request a School Chart or Educational Model" description="Send a detailed quote request for a school chart, classroom learning aid or educational model." path="/request-school-model" noIndex />
+      <PageIntro eyebrow="School & learning · Custom quote" title="Tell us what you need." description="Choose a catalog model or describe a custom idea. Share only what you know — size, quantity, learning goals and references help us prepare a more useful quote."/>
+      <Container className="pt-5">
+        <div className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent"><GraduationCap size={22}/></span><div><p className="text-xs font-semibold uppercase tracking-wide text-content-muted">Selected service</p><p className="mt-1 font-semibold">School Charts & Educational Models</p><p className="mt-1 text-sm text-content-secondary">Quote-based · No fixed price assumed</p></div></div>
+          <Link to="/request-project" className="inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-lg border border-line px-4 py-2 text-sm font-medium text-content transition hover:bg-surface-raised sm:self-center">Need an electronics / mechanical project instead? <ArrowRight size={15}/></Link>
+        </div>
+        <div className="mt-6 grid gap-6 lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-10">
+          <aside className="hidden lg:block">
+            <div className="sticky top-24 rounded-xl border border-line bg-surface p-4">
+              <p className="text-sm font-semibold">Your request</p>
+              <p className="mt-1 text-xs text-content-muted">{filled} of 8 checkpoints covered</p>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-raised"><div className="h-full rounded-full bg-accent transition-all" style={{width: (filled / 8 * 100) + '%'}}/></div>
+              <nav aria-label="Quote request sections" className="mt-4 flex flex-col gap-1">
+                {SECTIONS.map((section, index) => <a key={section.id} href={'#' + section.id} className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-content-secondary transition hover:bg-surface-raised hover:text-content"><span className="font-mono text-[11px] text-content-muted">{String(index + 1).padStart(2, '0')}</span>{section.label}</a>)}
+              </nav>
+              <div className="mt-4 rounded-lg bg-surface-raised p-3"><ShieldCheck size={16} className="text-accent"/><p className="mt-2 text-xs leading-relaxed text-content-muted">Your contact details and request are used to respond to this enquiry.</p></div>
+            </div>
+          </aside>
+          <form onSubmit={submit} className="min-w-0 space-y-12">
+            {error && <Alert tone="danger">{error}</Alert>}
+            {!user && <Alert tone="info">You can prepare the form now. You’ll be asked to sign in when you submit so the request is saved to your account.</Alert>}
+
+            <FormSection id="school-contact" step={1} title="How to reach you" description="We need a reliable way to reply. Your details are not displayed on the public catalog.">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Full name" required><TextInput autoComplete="name" value={name} onChange={(e)=>setName(e.target.value)} placeholder="Your name"/></Field>
+                <Field label="Email address" required><TextInput type="email" autoComplete="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="you@example.com"/></Field>
+                <Field label="Phone" hint="Optional"><TextInput type="tel" autoComplete="tel" value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder="+92…"/></Field>
+                <Field label="WhatsApp" hint="Optional"><TextInput type="tel" value={whatsapp} onChange={(e)=>setWhatsapp(e.target.value)} placeholder="+92…"/></Field>
+                <Field label="Country"><TextInput autoComplete="country-name" value={country} onChange={(e)=>setCountry(e.target.value)} placeholder="Country"/></Field>
+                <Field label="City"><TextInput autoComplete="address-level2" value={city} onChange={(e)=>setCity(e.target.value)} placeholder="City"/></Field>
+              </div>
+              <FieldSet legend="Preferred way to be contacted"><RadioGroup name="school-contact-method" options={['Email','WhatsApp','Phone']} value={contactMethod} onChange={setContactMethod}/></FieldSet>
+            </FormSection>
+
+            <FormSection id="school-model-choice" step={2} title="Choose the model" description="Pick a published item or choose custom if you have a different idea.">
+              {!params.get('slug') ? <Field label="School chart or educational model" required>
+                <Select value={model?.id || ''} onChange={(e)=>setModel(e.target.value === 'custom' ? CUSTOM_MODEL : models.find((item)=>item.id === e.target.value) ?? null)} options={models.map((item)=>({value:item.id,label:item.title+' — '+item.category})).concat([{value:'custom',label:'Custom / not listed'}])} placeholder="Choose an item"/>
+              </Field> : <div className="rounded-xl border border-line bg-surface-raised p-4"><p className="text-xs font-semibold uppercase tracking-wide text-content-muted">Selected catalog item</p><p className="mt-1 font-semibold">{model?.title || 'Loading selected model…'}</p><Link to="/school-projects" className="mt-2 inline-flex text-sm text-accent hover:underline">Choose another from the catalog</Link></div>}
+              {model?.id === 'custom' && <Field label="Working title for your custom model" required hint="A simple name is enough; you can explain the full idea below."><TextInput value={customTitle} onChange={(e)=>setCustomTitle(e.target.value)} placeholder="e.g. Working model of a hydraulic lift"/></Field>}
+              {selectedModel && <div className="rounded-xl border border-accent/20 bg-accent/5 p-4"><div className="flex flex-wrap gap-2 text-xs"><span className="rounded-full bg-accent/10 px-2.5 py-1 text-accent">{selectedModel.category}</span>{selectedModel.subject && <span className="rounded-full bg-surface px-2.5 py-1 text-content-secondary">{selectedModel.subject}</span>}{selectedModel.gradeRange && <span className="rounded-full bg-surface px-2.5 py-1 text-content-secondary">{selectedModel.gradeRange}</span>}</div><p className="mt-2 font-semibold">{selectedModel.title}</p><p className="mt-1 text-sm leading-relaxed text-content-secondary">{selectedModel.shortDescription || 'Custom request — describe your idea and intended use below.'}</p></div>}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Subject or topic" hint="Optional"><TextInput value={purpose} onChange={(e)=>setPurpose(e.target.value)} placeholder="e.g. biology, water cycle, electricity"/></Field>
+                <Field label="Grade / class"><TextInput value={grade} onChange={(e)=>setGrade(e.target.value)} placeholder="e.g. Class 8, college exhibition"/></Field>
+              </div>
+            </FormSection>
+
+            <FormSection id="school-learning" step={3} title="Learning goals & content" description="Tell us what the model should teach, demonstrate or help explain.">
+              <Field label="What should students learn or understand?" required hint="At least 20 characters. Describe the concept, process or key parts to show."><TextArea rows={6} maxLength={4000} value={details} onChange={(e)=>setDetails(e.target.value)} placeholder="Explain the concept, what needs to be visible or movable, how it will be demonstrated, and any labels or language needed."/></Field>
+              <Field label="Customization" hint="Optional"><TextArea rows={3} value={customization} onChange={(e)=>setCustomization(e.target.value)} placeholder="Colors, labels, language, working parts, school logo, accessibility or special instructions"/></Field>
+            </FormSection>
+
+            <FormSection id="school-specifications" step={4} title="Size, quantity & delivery" description="Estimates are fine. If you do not know the exact dimensions, leave them blank.">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Quantity" required hint="How many copies or models?"><TextInput type="number" min={1} value={quantity} onChange={(e)=>setQuantity(e.target.value)} placeholder="1"/></Field>
+                <Field label="Approximate dimensions" hint="Optional"><TextInput value={dimensions} onChange={(e)=>setDimensions(e.target.value)} placeholder="e.g. 60 × 90 cm, tabletop size"/></Field>
+              </div>
+            </FormSection>
+
+            <FormSection id="school-budget-timeline" step={5} title="Budget & timing" description="These details help us judge scope. A quote is confirmed only after review.">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Budget range" hint="Optional"><Select value={budgetRange} onChange={(e)=>setBudgetRange(e.target.value)} options={['Under PKR 2,000','PKR 2,000–5,000','PKR 5,000–10,000','PKR 10,000–25,000','PKR 25,000+','Not decided yet']} placeholder="No budget set"/></Field>
+                <Field label="Preferred start date"><TextInput type="date" value={startDate} onChange={(e)=>setStartDate(e.target.value)}/></Field>
+                <Field label="Needed by"><TextInput type="date" min={startDate || undefined} value={deadline} onChange={(e)=>setDeadline(e.target.value)}/></Field>
+                <Field label="Timeline flexibility"><Select value={flexibility} onChange={(e)=>setFlexibility(e.target.value)} options={['Flexible','Some flexibility','Fixed deadline','Not sure']}/></Field>
+              </div>
+              <FieldSet legend="Urgency"><RadioGroup name="school-urgency" options={['Normal','Urgent']} value={urgency} onChange={setUrgency}/></FieldSet>
+              <Field label="Budget notes" hint="Optional"><TextArea rows={3} value={budgetNotes} onChange={(e)=>setBudgetNotes(e.target.value)} placeholder="Budget includes materials, delivery, or any constraints we should know about."/></Field>
+            </FormSection>
+
+            <FormSection id="school-references" step={6} title="References & attachments" description="Photos, sketches or links make it easier to understand what you have in mind.">
+              <FieldSet legend="Reference links" hint="Add a YouTube video, example image, or webpage.">
+                <div className="space-y-2">{referenceLinks.map((link,index)=><div key={index} className="flex gap-2"><TextInput type="url" value={link} onChange={(e)=>setReferenceLinks((current)=>current.map((item,i)=>i===index?e.target.value:item))} placeholder="https://…"/><button type="button" disabled={referenceLinks.length===1} onClick={()=>setReferenceLinks((current)=>current.filter((_,i)=>i!==index))} className="rounded-lg border border-line px-3 text-sm text-content-secondary hover:bg-surface-raised disabled:opacity-40" aria-label="Remove reference link">×</button></div>)}</div>
+                <button type="button" onClick={()=>setReferenceLinks((current)=>current.length<8?[...current,'']:current)} disabled={referenceLinks.length>=8} className="mt-3 inline-flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm font-medium hover:bg-surface-raised disabled:opacity-40"><span aria-hidden="true">+</span> Add another link</button>
+              </FieldSet>
+              <Field label="What should we notice in these references?"><TextArea rows={3} value={referenceDescription} onChange={(e)=>setReferenceDescription(e.target.value)} placeholder="Mention what you like, what must be different, or which details matter."/></Field>
+              <FieldSet legend="Images & sketches" hint="Upload photos, diagrams or sketches that help explain your idea."><FileUpload files={files} onChange={setFiles} disabled={busy}/></FieldSet>
+            </FormSection>
+
+            <FormSection id="school-extra" step={7} title="Anything else?" description="Anything about use, handling or the school event that has not been covered.">
+              <Field label="Additional requirements"><TextArea rows={4} value={purpose} onChange={(e)=>setPurpose(e.target.value)} placeholder="Any additional context, classroom constraints, event details or delivery notes."/></Field>
+              <div className="rounded-xl border border-line bg-surface p-4"><p className="text-sm font-semibold">Before submitting</p><p className="mt-1 text-sm leading-relaxed text-content-secondary">This sends a request for review, not a confirmed order. Final scope, price and timing will be shared after your requirements are reviewed.</p></div>
+            </FormSection>
+
+            <FormSection id="school-consent" step={8} title="Review & send" description="Please confirm that we may contact you about this specific request.">
+              <label className="flex items-start gap-3 rounded-xl border border-line bg-surface p-4 text-sm leading-relaxed text-content"><input type="checkbox" checked={consent} onChange={(e)=>setConsent(e.target.checked)} className="mt-1 h-4 w-4 accent-accent"/><span>I confirm these details are accurate to the best of my knowledge and agree that PROJEXIAHUB may contact me about this quote request.<span className="mt-1 block text-xs text-content-muted">Your details are used to respond to this enquiry, not to publish a listing.</span></span></label>
+              {error && <Alert tone="danger">{error}</Alert>}
+              <div className="flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center"><Button type="submit" loading={busy} disabled={busy}>{busy ? 'Uploading & sending…' : 'Submit quote request'} <ArrowRight size={16}/></Button><p className="text-xs leading-relaxed text-content-muted">Required: contact details, model choice, quantity, 20+ characters describing requirements, and consent.</p></div>
+            </FormSection>
+          </form>
+        </div>
+      </Container>
+    </>
+  );
+}
