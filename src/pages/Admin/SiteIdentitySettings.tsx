@@ -89,6 +89,8 @@ export function SiteIdentitySettings() {
 
   const uploadPreparedLogo = async (file: File) => {
     if (!pendingImage) return;
+    if (!file.type.startsWith("image/")) throw new Error("Choose an image file.");
+    if (file.size > 5 * 1024 * 1024) throw new Error("Prepared logo files must be 5 MB or smaller. Try a smaller crop or keep the original.");
     const kind = pendingImage.kind;
     setLogoUploading(kind);
     setLogoError(null);
