@@ -6,6 +6,9 @@ import {
   Globe2,
   ImageIcon,
   Save,
+  Plus,
+  Trash2,
+  Share2,
 } from "lucide-react";
 import { Alert } from "../../components/ui/Alert";
 import { Button } from "../../components/ui/Button";
@@ -124,12 +127,19 @@ export function SiteIdentitySettings() {
       return;
     }
 
+    const socialLinks = draft.socialLinks.map((link) => ({ ...link, label: link.label.trim(), url: link.url.trim() }));
+    if (socialLinks.some((link) => link.url && (!link.label || !/^https?:\/\//i.test(link.url)))) {
+      setError("Each social link needs a label and a full URL starting with https:// or http://.");
+      return;
+    }
+
     setSaving(true);
     setError(null);
     setSaved(false);
     try {
       await saveSettings({
         ...draft,
+        socialLinks: socialLinks.filter((link) => link.label && link.url),
         name,
         description: (
           draft.description.trim() || DEFAULT_SITE_SETTINGS.description
@@ -169,6 +179,42 @@ export function SiteIdentitySettings() {
         visitors. Hidden details remain saved and can be enabled again at any
         time.
       </p>
+
+
+      <div className="mt-5 rounded-2xl border border-line bg-surface p-5 sm:p-6">
+        <div className="flex items-center gap-2.5">
+          <Share2 size={17} className="text-content-muted" aria-hidden="true" />
+          <div>
+            <h3 className="text-base font-semibold tracking-tight">Social media & external links</h3>
+            <p className="mt-0.5 text-xs leading-relaxed text-content-muted">Manage the profiles visitors can open from the footer and Contact page. Only enabled links with a label and URL are shown.</p>
+          </div>
+        </div>
+        <div className="mt-5 space-y-3">
+          {draft.socialLinks.map((link, index) => (
+            <div key={link.id} className="grid gap-3 rounded-xl border border-line p-4 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)_auto_auto] sm:items-end">
+              <Field label="Platform / label" htmlFor={`social-label-${link.id}`}>
+                <TextInput id={`social-label-${link.id}`} value={link.label} placeholder="Instagram" onChange={(event) => update("socialLinks", draft.socialLinks.map((item, i) => i === index ? { ...item, label: event.target.value } : item))} maxLength={40} />
+              </Field>
+              <Field label="Profile URL" htmlFor={`social-url-${link.id}`}>
+                <TextInput id={`social-url-${link.id}`} type="url" value={link.url} placeholder="https://instagram.com/yourprofile" onChange={(event) => update("socialLinks", draft.socialLinks.map((item, i) => i === index ? { ...item, url: event.target.value } : item))} />
+              </Field>
+              <VisibilityToggle id={`social-enabled-${link.id}`} checked={link.enabled} onChange={(checked) => update("socialLinks", draft.socialLinks.map((item, i) => i === index ? { ...item, enabled: checked } : item))} label="Show" />
+              <button type="button" aria-label={`Remove ${link.label || "social link"}`} onClick={() => update("socialLinks", draft.socialLinks.filter((item) => item.id !== link.id))} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-line px-3 text-sm text-content-secondary transition-colors hover:border-state-danger/40 hover:text-state-danger">
+                <Trash2 size={15} aria-hidden="true" /><span className="sm:hidden">Remove</span>
+              </button>
+            </div>
+          ))}
+          {draft.socialLinks.length === 0 && <p className="rounded-xl border border-dashed border-line px-4 py-6 text-center text-sm text-content-muted">No social links added yet. Add the profiles you want visitors to find.</p>}
+          <div className="flex flex-wrap gap-2">
+            {["Instagram", "Facebook", "LinkedIn", "YouTube", "GitHub", "TikTok", "X", "Pinterest", "Discord", "Custom link"].map((label) => (
+              <button key={label} type="button" onClick={() => update("socialLinks", [...draft.socialLinks, { id: `social-${Date.now()}-${draft.socialLinks.length}`, label: label === "Custom link" ? "" : label, url: "", enabled: true }])} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-line px-3 text-xs font-medium text-content-secondary transition-colors hover:border-line-strong hover:text-content">
+                <Plus size={14} aria-hidden="true" />{label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <p className="mt-4 text-xs text-content-muted">Add a profile, paste its full public URL, and save website settings below. Links open in a new tab. Disable a profile to keep it saved without displaying it publicly.</p>
+      </div>
 
       <div className="mt-5 rounded-2xl border border-line bg-surface p-5 sm:p-6">
         <div className="flex items-center gap-2.5">
