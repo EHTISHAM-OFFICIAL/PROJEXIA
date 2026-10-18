@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ImagePlus, Save } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Seo } from '../../components/ui/Seo';
 import { Button } from '../../components/ui/Button';
