@@ -71,6 +71,7 @@ export function Navbar() {
   }, [mobileOpen]);
 
   return (
+    <>
     <header
       className={cn(
         'sticky top-0 z-50 border-b border-line/80 bg-bg/90 backdrop-blur-xl transition-[background-color,box-shadow] duration-200',
@@ -183,5 +184,6 @@ export function Navbar() {
         </Container>
       </div>
     )}
+    </>
   );
 }
