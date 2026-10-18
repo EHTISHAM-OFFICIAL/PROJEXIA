@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Eye, GraduationCap, ImagePlus, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Eye, GraduationCap, ImagePlus, Save, Trash2, Plus } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Seo } from '../../components/ui/Seo';
 import { Button } from '../../components/ui/Button';
@@ -16,11 +16,14 @@ import type { SchoolModelComponent, SchoolModelDraft, SchoolModelSpecification, 
 import { imgbbService } from '../../services/imgbbService';
 
 const EMPTY: SchoolModelDraft = {
-  title: '', slug: '', category: 'Science Charts', subject: '', gradeRange: '',
-  shortDescription: '', description: '', materials: [], objectives: [], features: [], customizationOptions: [], setupInstructions: '', dimensions: '',
-  thumbnailUrl: '', galleryUrls: [], featured: false, published: false, seoTitle: '', seoDescription: '', keywords: [],
+  title: '', slug: '', category: 'Science Charts', subcategory: '', modelType: 'Static Chart', difficulty: 'Easy', status: 'Available for quote', subject: '', gradeRange: '',
+  shortDescription: '', description: '', problemStatement: '', workingPrinciple: '', howToUse: '', materials: [], objectives: [], features: [], customizationOptions: [], setupInstructions: '', maintenanceNotes: '', safetyNotes: '', components: [], specifications: [], tags: [], dimensions: '', estimatedBuildTime: '',
+  thumbnailUrl: '', heroImageUrl: '', galleryUrls: [], videoUrl: '', documentationUrl: '', featured: false, published: false, seoTitle: '', seoDescription: '', keywords: [],
 };
 const lines = (value: string) => [...new Set(value.split('\n').map((item) => item.trim()).filter(Boolean))];
+const EMPTY_COMPONENT: SchoolModelComponent = { name: '', category: '', quantity: '1', notes: '', optional: false };
+const EMPTY_SPECIFICATION: SchoolModelSpecification = { label: '', value: '' };
+type TaxonomyKey = 'categories' | 'subcategories' | 'modelTypes' | 'difficulties' | 'statuses' | 'subjects';
 
 export default function SchoolModelForm() {
   const { id } = useParams<{ id: string }>();
