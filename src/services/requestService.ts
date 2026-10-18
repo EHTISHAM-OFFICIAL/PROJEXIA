@@ -95,6 +95,8 @@ function toRequest(
     ownerUid: data.ownerUid ?? "",
     requestNumber: data.requestNumber ?? snapshot.id,
     projectToken: data.projectToken ?? undefined,
+    serviceType: data.serviceType ?? "electronics",
+    schoolModel: data.schoolModel ?? undefined,
     status: data.status ?? "new",
     priority: data.priority ?? "normal",
     contact: data.contact ?? {},
