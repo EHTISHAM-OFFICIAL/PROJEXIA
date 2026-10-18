@@ -363,7 +363,8 @@ export default function RequestProject() {
                       <span className="font-mono text-xs text-content-muted">
                         {String(index + 1).padStart(2, '0')}
                       </span>
-                      {section.label}
+                      {sectionCompletion[section.id] ? <CheckCircle2 size={14} className="shrink-0 text-state-success" aria-hidden="true"/> : <Circle size={14} className="shrink-0 text-content-muted" aria-hidden="true"/>}
+                      <span className="flex-1">{section.label}</span>
                     </a>
                   </li>
                 ))}
