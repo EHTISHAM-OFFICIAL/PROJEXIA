@@ -211,7 +211,7 @@ export default function SchoolModelForm() {
 
     {previewOpen&&<div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4" role="dialog" aria-modal="true" aria-label="School model preview"><div className="w-full max-w-2xl rounded-2xl border border-line bg-bg p-5 shadow-2xl sm:p-7"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-wide text-accent">Live preview</p><h2 className="mt-1 text-xl font-semibold">Catalog card preview</h2></div><button type="button" onClick={()=>setPreviewOpen(false)} className="rounded-lg border border-line px-3 py-1.5 text-sm hover:bg-surface-raised">Close</button></div><div className="mt-5 overflow-hidden rounded-xl border border-line bg-surface sm:flex">{draft.thumbnailUrl?<img src={draft.thumbnailUrl} alt="" className="aspect-[16/10] w-full object-cover sm:w-2/5" onError={(event)=>{event.currentTarget.style.display='none'}}/>:<div className="flex aspect-[16/10] w-full items-center justify-center bg-surface-raised text-content-muted sm:w-2/5"><ImagePlus size={28}/></div>}<div className="flex flex-1 flex-col p-5"><div className="flex flex-wrap gap-2"><span className="rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent">{draft.category||'Category'}</span>{draft.gradeRange&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.gradeRange}</span>}{draft.subcategory&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.subcategory}</span>}{draft.modelType&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.modelType}</span>}{draft.difficulty&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.difficulty}</span>}</div><h3 className="mt-3 text-lg font-semibold">{draft.title||'Your school model title'}</h3><p className="mt-2 text-sm leading-relaxed text-content-secondary">{draft.shortDescription||'Your short description will appear here.'}</p>{draft.dimensions&&<p className="mt-auto pt-4 text-xs text-content-muted">Approx. dimensions: {draft.dimensions}</p>}</div></div><p className="mt-4 text-xs text-content-muted">This is a preview of the catalog card, not a published page.</p></div></div>}
 
-    <form onSubmit={submit} className="mt-8 flex max-w-5xl flex-col gap-5">
+    <form onSubmit={submit} className="mt-8 flex w-full max-w-6xl flex-col gap-6 lg:gap-7">
       <Group id="school-model-basics" title="Basics" subtitle="Title, classification and public-facing description" defaultOpen>
         <Field label="Model / chart title" htmlFor="school-title" required hint="Use the name a student, teacher or parent would search for.">
           <TextInput id="school-title" value={draft.title} maxLength={120} onChange={(event)=>updateTitle(event.target.value)} placeholder="e.g. Human Digestive System Model"/>
@@ -290,24 +290,48 @@ export default function SchoolModelForm() {
         <Field label="How teachers or students use it" htmlFor="school-how-to-use">
           <RichTextEditor id="school-how-to-use" rows={4} value={draft.howToUse} onChange={(value) => update('howToUse', value)} placeholder="Describe a simple classroom activity or demonstration flow."/>
         </Field>
-        <FieldSet legend="Learning objectives" hint="One measurable outcome per line.">
-          <TextArea id="school-objectives" rows={5} value={objectives} onChange={(event) => setObjectives(event.target.value)} placeholder={'Identify key parts\nExplain the process\nCompare concepts'}/>
+        <FieldSet legend="Learning objectives" hint="Add each outcome separately. Start with a clear action verb so teachers can see what students should be able to do after using this model.">
+          <div className="rounded-xl border border-line bg-surface p-4 sm:p-5">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div><p className="text-sm font-semibold">What will learners be able to do?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Use one outcome per row. Keep outcomes observable and specific.</p></div>
+              <span className="inline-flex w-fit items-center rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">{lines(objectives).length} objective{lines(objectives).length === 1 ? '' : 's'}</span>
+            </div>
+            <ListEditor values={lines(objectives)} onChange={(next) => setObjectives(next.join('\n'))} label="Learning objective" placeholder="e.g. Identify and label the main parts"/>
+            <div className="mt-4 rounded-lg bg-surface-raised/70 px-3 py-3 text-xs leading-relaxed text-content-secondary"><span className="font-semibold text-content">Examples:</span> Identify key parts · Explain the process · Compare two concepts · Predict what happens when one variable changes.</div>
+          </div>
         </FieldSet>
       </Group>
 
       <Group id="school-model-technical" title="Materials, components & specifications" subtitle="Make the build contents and physical details clear">
-        <Field label="Materials / included supplies" htmlFor="school-materials" hint="One item per line. Keep this list high-level; use the component table for quantities and notes.">
-          <TextArea id="school-materials" rows={5} value={materials} onChange={(event) => setMaterials(event.target.value)} placeholder={'Foam board\nPrinted labels\nWooden base\nFasteners and adhesives'}/>
-        </Field>
-        <FieldSet legend="Components / parts" hint="Add reusable parts, quantities, optional items and any useful notes.">
-          <TableEditor<SchoolModelComponent> label="Component" rows={draft.components} emptyRow={EMPTY_COMPONENT} onChange={(rows) => update('components', rows)} columns={[
-            { key: 'name', label: 'Part / material' },
-            { key: 'category', label: 'Type' },
-            { key: 'quantity', label: 'Quantity', width: 'w-24' },
-            { key: 'notes', label: 'Notes', type: 'richtext' },
-            { key: 'optional', label: 'Optional', type: 'checkbox', width: 'w-24' },
-          ]}/>
-        </FieldSet>
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+          <FieldSet legend="Materials / included supplies" hint="List the main materials supplied with the model, such as boards, labels, fasteners, adhesives or finishing items.">
+            <div className="rounded-xl border border-line bg-surface p-4 sm:p-5">
+              <div className="mb-3"><p className="text-sm font-semibold">What is included?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Add one material or supply per row. Use the parts list for exact quantities and individual notes.</p></div>
+              <ListEditor values={lines(materials)} onChange={(next) => setMaterials(next.join('\n'))} label="Included material" placeholder="e.g. Printed, laminated labels"/>
+              <p className="mt-3 text-xs text-content-muted">{lines(materials).filter(Boolean).length} material item{lines(materials).filter(Boolean).length === 1 ? '' : 's'} listed</p>
+            </div>
+          </FieldSet>
+          <FieldSet legend="Included components & parts" hint="Describe individual items with quantities, types, optional status and clear notes.">
+            <div className="space-y-3">
+              {(draft.components.length ? draft.components : [EMPTY_COMPONENT]).map((component, index) => (
+                <div key={index} className="rounded-xl border border-line bg-surface p-4 transition-colors hover:border-line-strong sm:p-5">
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-sm font-semibold text-accent">{String(index + 1).padStart(2, '0')}</span><div><h4 className="text-sm font-semibold text-content">Component {index + 1}</h4><p className="mt-0.5 text-xs text-content-muted">Part, quantity and inclusion details</p></div></div>
+                    {(draft.components.length ? draft.components : [EMPTY_COMPONENT]).length > 1 && <button type="button" onClick={() => update('components', (draft.components.length ? draft.components : [EMPTY_COMPONENT]).filter((_, position) => position !== index))} aria-label={`Remove component ${index + 1}`} className="rounded-lg border border-line p-2 text-content-muted transition-colors hover:border-state-danger/40 hover:bg-state-danger/5 hover:text-state-danger"><Trash2 size={15}/></button>}
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Field label="Component / part name" htmlFor={`school-component-${index}-name`}><TextInput id={`school-component-${index}-name`} value={component.name} maxLength={120} onChange={(event) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], name: event.target.value }; update('components', rows); }} placeholder="e.g. Acrylic display base"/></Field>
+                    <Field label="Type / category" htmlFor={`school-component-${index}-category`}><TextInput id={`school-component-${index}-category`} value={component.category} maxLength={80} onChange={(event) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], category: event.target.value }; update('components', rows); }} placeholder="e.g. Structure, electronics, print"/></Field>
+                    <Field label="Quantity included" htmlFor={`school-component-${index}-quantity`} hint="Include a unit when useful."><TextInput id={`school-component-${index}-quantity`} value={component.quantity} maxLength={60} onChange={(event) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], quantity: event.target.value }; update('components', rows); }} placeholder="e.g. 1 base, 12 labels"/></Field>
+                    <div className="flex items-end rounded-lg border border-line bg-bg px-3 py-3"><Checkbox id={`school-component-${index}-optional`} label="Optional / supplied only if requested" description="Use for add-ons, not standard included parts." checked={component.optional} onChange={(event) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], optional: event.target.checked }; update('components', rows); }}/></div>
+                  </div>
+                  <div className="mt-4"><Field label="Notes / specifications for this part" htmlFor={`school-component-${index}-notes`} hint="Describe size, material, purpose, finish or other details that help identify this item."><RichTextEditor id={`school-component-${index}-notes`} rows={3} value={component.notes} onChange={(value) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], notes: value }; update('components', rows); }} placeholder="e.g. Clear acrylic, rounded edges; mounted at the front of the base."/></Field></div>
+                </div>
+              ))}
+              <Button type="button" variant="secondary" onClick={() => update('components', [...draft.components, { ...EMPTY_COMPONENT }])}><Plus size={15}/> Add component</Button>
+            </div>
+          </FieldSet>
+        </div>
         <FieldSet legend="Specifications" hint="Add dimensions, material, display, power or other relevant specifications. Leave unknown values blank.">
           <TableEditor<SchoolModelSpecification> label="Specification" rows={draft.specifications} emptyRow={EMPTY_SPECIFICATION} onChange={(rows) => update('specifications', rows)} columns={[
             { key: 'label', label: 'Specification' },
@@ -355,11 +379,11 @@ export default function SchoolModelForm() {
 }
 
 function Group({ id, title, subtitle, children, defaultOpen = false }: { id: string; title: string; subtitle: string; children: ReactNode; defaultOpen?: boolean }) {
-  return <details id={id} open={defaultOpen} className="group scroll-mt-24 rounded-xl border border-line bg-surface/40">
-    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-xl px-4 py-4 transition-colors hover:bg-surface-raised/60 [&::-webkit-details-marker]:hidden sm:px-5">
+  return <details id={id} open={defaultOpen} className="group scroll-mt-24 overflow-hidden rounded-2xl border border-line bg-surface/50 shadow-sm transition-shadow open:shadow-md">
+    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-5 transition-colors hover:bg-surface-raised/50 [&::-webkit-details-marker]:hidden sm:px-6 sm:py-5">
       <span className="min-w-0"><span className="block text-base font-semibold tracking-tight">{title}</span><span className="mt-0.5 block text-xs text-content-muted">{subtitle}</span></span>
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-content-muted transition-transform group-open:rotate-180"><ChevronDown size={16}/></span>
     </summary>
-    <div className="border-t border-line px-4 py-5 sm:px-5"><div className="flex flex-col gap-5">{children}</div></div>
+    <div className="border-t border-line bg-bg/30 px-4 py-5 sm:px-6 sm:py-6"><div className="flex flex-col gap-5">{children}</div></div>
   </details>;
 }
