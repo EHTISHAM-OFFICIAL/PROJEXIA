@@ -6,6 +6,7 @@ import { ProtectedRoute } from './ProtectedRoute';
 import Home from '../pages/Home/Home';
 import Projects from '../pages/Projects/Projects';
 import ProjectDetails from '../pages/ProjectDetails/ProjectDetails';
+import SchoolProjects from '../pages/SchoolProjects/SchoolProjects';
 import About from '../pages/About/About';
 import BlogIndex from '../pages/Blog/BlogIndex';
 import BlogPostPage from '../pages/Blog/BlogPost';
@@ -18,6 +19,8 @@ import { RequireCustomerAuth } from './RequireCustomerAuth';
 // only ever used by one person — both are split out so public visitors never
 // download them.
 const RequestProject = lazy(() => import('../pages/RequestProject/RequestProject'));
+const SchoolRequest = lazy(() => import('../pages/SchoolProjects/SchoolRequest'));
+const AdminSchoolModels = lazy(() => import('../pages/Admin/SchoolModels'));
 const BookMeeting = lazy(() => import('../pages/BookMeeting/BookMeeting'));
 const AdminLayout = lazy(() =>
   import('../components/layout/AdminLayout').then((module) => ({ default: module.AdminLayout }))
@@ -64,6 +67,9 @@ export function AppRoutes() {
           <Route index element={<Home />} />
           <Route path="projects" element={<Projects />} />
           <Route path="projects/:slug" element={<ProjectDetails />} />
+          <Route path="school-projects" element={<SchoolProjects />} />
+          <Route path="school-projects/:slug" element={<SchoolProjects />} />
+          <Route path="request-school-model" element={<SchoolRequest />} />
           <Route path="blog" element={<BlogIndex />} />
           <Route path="blog/:slug" element={<BlogPostPage />} />
           <Route path="request-project" element={<RequestProject />} />
@@ -89,6 +95,7 @@ export function AppRoutes() {
           <Route element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="projects" element={<AdminProjectsList />} />
+            <Route path="school-models" element={<AdminSchoolModels />} />
             <Route path="projects/new" element={<AdminProjectForm />} />
             <Route path="projects/:id/edit" element={<AdminProjectForm />} />
             <Route path="project-library" element={<AdminProjectLibrary />} />
