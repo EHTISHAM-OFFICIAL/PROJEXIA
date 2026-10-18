@@ -213,21 +213,41 @@ export default function SchoolModelForm() {
         </Field>
         <Field label="URL slug" htmlFor="school-slug" hint={'Public address: /school-projects/' + (draft.slug || 'your-model')}><TextInput id="school-slug" value={draft.slug} onChange={(event)=>update('slug',event.target.value.toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-'))} placeholder="human-digestive-system-model"/></Field>
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Category" htmlFor="school-category" required hint="Used for catalog filters.">
+          <Field label="Category" htmlFor="school-category" required hint="Main catalog group. Add reusable options for future models.">
             <Select id="school-category" options={[...new Set([...settings.categories,draft.category].filter(Boolean))]} value={draft.category} onChange={(event)=>update('category',event.target.value)}/>
-            <div className="mt-2 flex gap-2"><TextInput value={categoryInput} maxLength={60} onChange={(event)=>setCategoryInput(event.target.value)} placeholder="Add a category…" aria-label="New school model category"/><Button type="button" variant="secondary" disabled={!categoryInput.trim()||saving} onClick={async()=>{const name=categoryInput.trim().replace(/\s+/g,' ');if(!name)return;const categories=[...new Set([...settings.categories,name])].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));try{const next={...settings,categories};await schoolModelService.saveSettings(next);setSettings(next);update('category',name);setCategoryInput('');setNotice('Category added to the reusable school-model category list.');setError('');}catch(caught){setError(caught instanceof Error?caught.message:'Could not save this category.');}}}>Add category</Button></div>
+            <div className="mt-2 flex gap-2"><TextInput value={categoryInput} maxLength={60} onChange={(event)=>setCategoryInput(event.target.value)} placeholder="New category…" aria-label="New school model category"/><Button type="button" variant="secondary" disabled={!categoryInput.trim()||saving} onClick={()=>void addTaxonomyOption('categories',categoryInput,()=>setCategoryInput(''))}><Plus size={14}/> Add</Button></div>
           </Field>
-          <Field label="Subject" htmlFor="school-subject" hint="e.g. Biology, Physics, Geography, Environmental Science">
-            <TextInput id="school-subject" value={draft.subject} onChange={(event)=>update('subject',event.target.value)} placeholder="Biology"/>
+          <Field label="Subcategory" htmlFor="school-subcategory" hint="A more specific grouping, such as Anatomy or Working Models.">
+            <Select id="school-subcategory" options={[...new Set([...settings.subcategories,draft.subcategory].filter(Boolean))]} value={draft.subcategory} onChange={(event)=>update('subcategory',event.target.value)} placeholder="Choose subcategory"/>
+            <div className="mt-2 flex gap-2"><TextInput value={subcategoryInput} maxLength={60} onChange={(event)=>setSubcategoryInput(event.target.value)} placeholder="New subcategory…" aria-label="New subcategory"/><Button type="button" variant="secondary" disabled={!subcategoryInput.trim()||saving} onClick={()=>void addTaxonomyOption('subcategories',subcategoryInput,()=>setSubcategoryInput(''))}><Plus size={14}/> Add</Button></div>
           </Field>
-          <Field label="Grade / class range" htmlFor="school-grade" hint="Helps visitors understand who this is for.">
+          <Field label="Subject" htmlFor="school-subject" hint="The academic subject this model supports.">
+            <Select id="school-subject" options={[...new Set([...settings.subjects,draft.subject].filter(Boolean))]} value={draft.subject} onChange={(event)=>update('subject',event.target.value)} placeholder="Choose subject"/>
+            <div className="mt-2 flex gap-2"><TextInput value={subjectInput} maxLength={60} onChange={(event)=>setSubjectInput(event.target.value)} placeholder="New subject…" aria-label="New subject"/><Button type="button" variant="secondary" disabled={!subjectInput.trim()||saving} onClick={()=>void addTaxonomyOption('subjects',subjectInput,()=>setSubjectInput(''))}><Plus size={14}/> Add</Button></div>
+          </Field>
+          <Field label="Model format" htmlFor="school-model-type" hint="For example, a static chart or working model.">
+            <Select id="school-model-type" options={[...new Set([...settings.modelTypes,draft.modelType].filter(Boolean))]} value={draft.modelType} onChange={(event)=>update('modelType',event.target.value)} placeholder="Choose format"/>
+            <div className="mt-2 flex gap-2"><TextInput value={modelTypeInput} maxLength={60} onChange={(event)=>setModelTypeInput(event.target.value)} placeholder="New format…" aria-label="New model format"/><Button type="button" variant="secondary" disabled={!modelTypeInput.trim()||saving} onClick={()=>void addTaxonomyOption('modelTypes',modelTypeInput,()=>setModelTypeInput(''))}><Plus size={14}/> Add</Button></div>
+          </Field>
+          <Field label="Difficulty" htmlFor="school-difficulty" hint="A general indication of build or demonstration complexity.">
+            <Select id="school-difficulty" options={[...new Set([...settings.difficulties,draft.difficulty].filter(Boolean))]} value={draft.difficulty} onChange={(event)=>update('difficulty',event.target.value)}/>
+            <div className="mt-2 flex gap-2"><TextInput value={difficultyInput} maxLength={40} onChange={(event)=>setDifficultyInput(event.target.value)} placeholder="New difficulty…" aria-label="New difficulty"/><Button type="button" variant="secondary" disabled={!difficultyInput.trim()||saving} onClick={()=>void addTaxonomyOption('difficulties',difficultyInput,()=>setDifficultyInput(''))}><Plus size={14}/> Add</Button></div>
+          </Field>
+          <Field label="Catalog status" htmlFor="school-status" hint="Describes how the model is offered; publishing is controlled separately.">
+            <Select id="school-status" options={[...new Set([...settings.statuses,draft.status].filter(Boolean))]} value={draft.status} onChange={(event)=>update('status',event.target.value)}/>
+            <div className="mt-2 flex gap-2"><TextInput value={statusInput} maxLength={60} onChange={(event)=>setStatusInput(event.target.value)} placeholder="New status…" aria-label="New catalog status"/><Button type="button" variant="secondary" disabled={!statusInput.trim()||saving} onClick={()=>void addTaxonomyOption('statuses',statusInput,()=>setStatusInput(''))}><Plus size={14}/> Add</Button></div>
+          </Field>
+          <Field label="Grade / class range" htmlFor="school-grade" hint="Who is this model designed for?">
             <TextInput id="school-grade" value={draft.gradeRange} onChange={(event)=>update('gradeRange',event.target.value)} placeholder="e.g. Classes 6–10"/>
           </Field>
-          <Field label="Approximate dimensions" htmlFor="school-dimensions" hint="Mention if the size can be customized.">
+          <Field label="Approximate dimensions" htmlFor="school-dimensions" hint="Include units; indicate if customizable.">
             <TextInput id="school-dimensions" value={draft.dimensions} onChange={(event)=>update('dimensions',event.target.value)} placeholder="e.g. 60 × 90 cm (customizable)"/>
           </Field>
+          <Field label="Estimated build / preparation time" htmlFor="school-build-time" hint="An estimate, not a delivery promise.">
+            <TextInput id="school-build-time" value={draft.estimatedBuildTime} onChange={(event)=>update('estimatedBuildTime',event.target.value)} placeholder="e.g. 3–5 working days after approval"/>
+          </Field>
         </div>
-        <Field label="Short description" htmlFor="school-short-description" required hint="A concise summary shown on catalog cards. Up to 320 characters.">
+                <Field label="Short description" htmlFor="school-short-description" required hint="A concise summary shown on catalog cards. Up to 320 characters.">
           <TextArea id="school-short-description" rows={3} maxLength={320} value={draft.shortDescription} onChange={(event)=>update('shortDescription',event.target.value)} placeholder="Explain what the chart or model demonstrates and why it is useful."/>
         </Field>
         <Field label="Full description" htmlFor="school-description" hint="Use paragraphs and simple formatting to explain the concept, key parts and educational value.">
