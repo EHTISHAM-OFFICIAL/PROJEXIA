@@ -126,33 +126,7 @@ export default function RequestProject() {
   const onSubmit = async (values: ProjectRequestFormValues) => {
     setSubmitError(null);
 
-    if (!serviceChoice) {
-    return (
-      <>
-        <Seo title="Choose a Project Type" description="Choose whether you need an electronics or mechanical build, or a school chart or educational model." path="/request-project" noIndex />
-        <PageIntro eyebrow="Start a project" title="What would you like to request?" description="Choose the service that best matches what you need. We’ll show you the relevant request options." />
-        <Container className="py-10 sm:py-14">
-          <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">
-            <button type="button" onClick={() => setServiceChoice('electronics')} className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:border-accent/60 hover:shadow-lg sm:p-8">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><Cpu size={25} /></span>
-              <h2 className="mt-5 text-xl font-semibold">Electronics / Mechanical Project</h2>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Arduino and ESP32 builds, IoT, automation, robotics, control systems, mechanical prototypes and custom technical projects.</p>
-              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to project brief <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
-            </button>
-            <Link to="/request-school-model" className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:border-accent/60 hover:shadow-lg sm:p-8">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><GraduationCap size={25} /></span>
-              <h2 className="mt-5 text-xl font-semibold">School Charts & Educational Models</h2>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Science charts, biology and geography models, solar-system projects, exhibition models and customized classroom learning aids.</p>
-              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to school model request <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
-            </Link>
-          </div>
-          <p className="mx-auto mt-6 max-w-4xl text-sm text-content-muted">School models are quote-based. Final pricing is provided after requirements and quantity are reviewed.</p>
-        </Container>
-      </>
-    );
-  }
-
-  if (!user) {
+    if (!user) {
       setSubmitError('Please log in before submitting a project request.');
       return;
     }
@@ -274,6 +248,32 @@ export default function RequestProject() {
     );
   }
 
+  if (!serviceChoice) {
+    return (
+      <>
+        <Seo title="Choose a Project Type" description="Choose whether you need an electronics or mechanical build, or a school chart or educational model." path="/request-project" noIndex />
+        <PageIntro eyebrow="Start a project" title="What would you like to request?" description="Choose the service that best matches what you need. We’ll show you the relevant request options." />
+        <Container className="py-10 sm:py-14">
+          <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">
+            <button type="button" onClick={() => setServiceChoice('electronics')} className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:p-8">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><Cpu size={25} /></span>
+              <h2 className="mt-5 text-xl font-semibold">Electronics / Mechanical Project</h2>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Arduino and ESP32 builds, IoT, automation, robotics, control systems, mechanical prototypes and custom technical projects.</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to project brief <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
+            </button>
+            <Link to="/request-school-model" className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:p-8">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><GraduationCap size={25} /></span>
+              <h2 className="mt-5 text-xl font-semibold">School Charts & Educational Models</h2>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Science charts, biology and geography models, solar-system projects, exhibition models and customized classroom learning aids.</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to school model request <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
+            </Link>
+          </div>
+          <p className="mx-auto mt-6 max-w-4xl text-sm text-content-muted">School models are quote-based. Final pricing is provided after requirements and quantity are reviewed.</p>
+        </Container>
+      </>
+    );
+  }
+
   if (!user) {
     return (
       <>
@@ -312,7 +312,16 @@ export default function RequestProject() {
         description={<>Ten short sections. Only a handful of fields are required — skip anything technical you aren't sure about, and ProjexiaHub will fill in the gaps when replying. Expect a response {SITE.responseTime}.</>}
       />
 
-      <Container className="py-12">
+      <Container className="pt-5">
+        <div className="mb-2 flex flex-col gap-3 rounded-2xl border border-line bg-surface p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent"><Cpu size={20}/></span>
+            <div><p className="text-xs font-medium uppercase tracking-wide text-content-muted">Selected service</p><p className="text-sm font-semibold">Electronics / Mechanical Project</p></div>
+          </div>
+          <Link to="/request-school-model" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-accent/30 px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent/10">Switch to School Charts & Models <ArrowRight size={15}/></Link>
+        </div>
+      </Container>
+      <Container className="py-8 sm:py-10">
         <div className="grid gap-12 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-16">
           <nav aria-label="Form sections" className="hidden lg:block">
             <div className="sticky top-24">
@@ -373,7 +382,6 @@ export default function RequestProject() {
               )}
 
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <Button type="button" variant="secondary" onClick={() => setServiceChoice(null)}>Change service</Button>
                 <Button type="submit" size="lg" loading={isSubmitting}>
                   {isSubmitting
                     ? files.length
