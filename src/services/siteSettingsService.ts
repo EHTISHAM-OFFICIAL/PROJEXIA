@@ -18,6 +18,7 @@ export interface SiteSettings {
   showFavicon: boolean;
   showProjectCardDate: boolean;
   showProjectCardViews: boolean;
+  projectCardImageRatio: "16/10" | "1/1" | "4/3" | "3/2" | "16/9";
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
@@ -38,6 +39,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   showFavicon: true,
   showProjectCardDate: true,
   showProjectCardViews: true,
+  projectCardImageRatio: "16/10",
 };
 
 const SITE_SETTINGS_DOC = doc(db, "settings", "siteProfile");
@@ -76,6 +78,7 @@ export function normalizeSiteSettings(value: unknown): SiteSettings {
     showFavicon: typeof source.showFavicon === "boolean" ? source.showFavicon : DEFAULT_SITE_SETTINGS.showFavicon,
     showProjectCardDate: typeof source.showProjectCardDate === "boolean" ? source.showProjectCardDate : DEFAULT_SITE_SETTINGS.showProjectCardDate,
     showProjectCardViews: typeof source.showProjectCardViews === "boolean" ? source.showProjectCardViews : DEFAULT_SITE_SETTINGS.showProjectCardViews,
+    projectCardImageRatio: ["16/10", "1/1", "4/3", "3/2", "16/9"].includes(String(source.projectCardImageRatio)) ? source.projectCardImageRatio as SiteSettings["projectCardImageRatio"] : DEFAULT_SITE_SETTINGS.projectCardImageRatio,
   };
 }
 
