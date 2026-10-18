@@ -3,7 +3,7 @@ import { PageIntro } from '../../components/ui/PageIntro';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckCircle2, Copy, Clock3 } from 'lucide-react';
+import { CheckCircle2, Copy, Clock3, Cpu, GraduationCap, ArrowRight } from 'lucide-react';
 import { Container } from '../../components/ui/Container';
 import { Seo } from '../../components/ui/Seo';
 import { Button, ButtonLink } from '../../components/ui/Button';
@@ -110,6 +110,7 @@ export default function RequestProject() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [result, setResult] = useState<{ requestNumber: string; editDeadline: Date | null; editHours: number } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [serviceChoice, setServiceChoice] = useState<'electronics' | 'school' | null>(null);
   const { user } = useAuth();
 
   const form = useForm<ProjectRequestFormValues>({
@@ -271,10 +272,36 @@ export default function RequestProject() {
     );
   }
 
+  if (!serviceChoice) {
+    return (
+      <>
+        <Seo title="Choose a Project Type" description="Choose whether you need an electronics or mechanical build, or a school chart or educational model." path="/request-project" noIndex />
+        <PageIntro eyebrow="Start a project" title="What would you like to request?" description="Choose the service that best matches what you need. We’ll show you the relevant request options." />
+        <Container className="py-10 sm:py-14">
+          <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">
+            <button type="button" onClick={() => setServiceChoice('electronics')} className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:border-accent/60 hover:shadow-lg sm:p-8">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><Cpu size={25} /></span>
+              <h2 className="mt-5 text-xl font-semibold">Electronics / Mechanical Project</h2>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Arduino and ESP32 builds, IoT, automation, robotics, control systems, mechanical prototypes and custom technical projects.</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to project brief <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
+            </button>
+            <Link to="/request-school-model" className="group flex min-h-64 flex-col rounded-2xl border border-line bg-surface p-6 text-left transition hover:border-accent/60 hover:shadow-lg sm:p-8">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent"><GraduationCap size={25} /></span>
+              <h2 className="mt-5 text-xl font-semibold">School Charts & Educational Models</h2>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-content-secondary">Science charts, biology and geography models, solar-system projects, exhibition models and customized classroom learning aids.</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent">Continue to school model request <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></span>
+            </Link>
+          </div>
+          <p className="mx-auto mt-6 max-w-4xl text-sm text-content-muted">School models are quote-based. Final pricing is provided after requirements and quantity are reviewed.</p>
+        </Container>
+      </>
+    );
+  }
+
   return (
     <>
       <Seo
-        title="Request a Custom Electronics Project"
+        title="Request an Electronics or Mechanical Project"
         description="Tell ProjexiaHub what you want to build. Submit a detailed project brief covering technical requirements, budget and timeline for a more useful first reply."
         path="/request-project"
       />
@@ -346,6 +373,7 @@ export default function RequestProject() {
               )}
 
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <Button type="button" variant="secondary" onClick={() => setServiceChoice(null)}>Change service</Button>
                 <Button type="submit" size="lg" loading={isSubmitting}>
                   {isSubmitting
                     ? files.length
