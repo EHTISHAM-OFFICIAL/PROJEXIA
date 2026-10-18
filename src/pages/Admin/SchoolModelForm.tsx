@@ -85,6 +85,29 @@ export default function SchoolModelForm() {
   const update = <K extends keyof SchoolModelDraft>(key: K, value: SchoolModelDraft[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
 
+  const addTaxonomyOption = async (key: TaxonomyKey, rawValue: string, clear: () => void) => {
+    const name = rawValue.trim().replace(/\s+/g, ' ');
+    if (!name) return;
+    const nextValues = [...new Set([...settings[key], name])].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    const nextSettings = { ...settings, [key]: nextValues };
+    setError('');
+    setNotice('');
+    try {
+      await schoolModelService.saveSettings(nextSettings);
+      setSettings(nextSettings);
+      if (key === 'categories') update('category', name);
+      if (key === 'subcategories') update('subcategory', name);
+      if (key === 'modelTypes') update('modelType', name);
+      if (key === 'difficulties') update('difficulty', name);
+      if (key === 'statuses') update('status', name);
+      if (key === 'subjects') update('subject', name);
+      clear();
+      setNotice('“' + name + '” has been added to the reusable school-model options.');
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Could not save this reusable option.');
+    }
+  };
+
   const currentSnapshot = JSON.stringify({ draft, materials, objectives, features, customizationOptions, keywords, tags, gallery });
   const hasUnsavedChanges = initialSnapshot !== null && currentSnapshot !== initialSnapshot;
   const basicsComplete = Boolean(draft.title.trim() && draft.shortDescription.trim() && draft.category.trim());
