@@ -11,6 +11,7 @@ import { Alert } from "../../components/ui/Alert";
 import { Button } from "../../components/ui/Button";
 import { Field } from "../../components/forms/Field";
 import { TextInput } from "../../components/forms/Inputs";
+import { ImageProcessingDialog } from "../../components/forms/ImageProcessingDialog";
 import { useSiteSettings } from "../../contexts/SiteSettingsContext";
 import {
   DEFAULT_SITE_SETTINGS,
@@ -57,6 +58,7 @@ export function SiteIdentitySettings() {
     null,
   );
   const [logoError, setLogoError] = useState<string | null>(null);
+  const [pendingImage, setPendingImage] = useState<{ kind: "site" | "favicon"; file: File } | null>(null);
 
   useEffect(() => {
     setDraft(settings);
@@ -70,11 +72,10 @@ export function SiteIdentitySettings() {
     setSaved(false);
   };
 
-  const handleLogoUpload = async (kind: "site" | "favicon", file?: File) => {
+  const handleLogoUpload = (kind: "site" | "favicon", file?: File) => {
     if (!file) return;
     setLogoError(null);
     setSaved(false);
-
     if (!file.type.startsWith("image/")) {
       setLogoError("Choose a PNG, JPG, or WebP image file.");
       return;
@@ -83,18 +84,22 @@ export function SiteIdentitySettings() {
       setLogoError("Logo files must be 5 MB or smaller.");
       return;
     }
+    setPendingImage({ kind, file });
+  };
 
+  const uploadPreparedLogo = async (file: File) => {
+    if (!pendingImage) return;
+    const kind = pendingImage.kind;
     setLogoUploading(kind);
+    setLogoError(null);
     try {
       const uploaded = await imgbbService.upload(file);
       update(kind === "site" ? "siteLogoUrl" : "faviconUrl", uploaded.url);
+      setPendingImage(null);
     } catch (caught) {
-      setLogoError(
-        toUserMessage(
-          caught,
-          "Could not upload the logo. Check the imgBB configuration in Admin Settings.",
-        ),
-      );
+      const message = toUserMessage(caught, "Could not upload the image. Check the imgBB configuration in Admin Settings.");
+      setLogoError(message);
+      throw new Error(message);
     } finally {
       setLogoUploading(null);
     }
@@ -220,17 +225,7 @@ export function SiteIdentitySettings() {
             >
               Upload website logo
             </label>
-            <input
-              id="siteLogoFile"
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              disabled={logoUploading !== null}
-              onChange={(event) => {
-                void handleLogoUpload("site", event.target.files?.[0]);
-                event.currentTarget.value = "";
-              }}
-              className="mt-2 block w-full text-xs text-content-secondary file:mr-3 file:rounded-lg file:border-0 file:bg-surface-raised file:px-3 file:py-2 file:text-content hover:file:bg-surface"
-            />
+            <input id="siteLogoFile" type="file" accept="image/png,image/jpeg,image/webp" disabled={logoUploading !== null} onChange={(event) => { handleLogoUpload("site", event.target.files?.[0]); event.currentTarget.value = ""; }} className="mt-2 block w-full text-xs text-content-secondary file:mr-3 file:rounded-lg file:border-0 file:bg-surface-raised file:px-3 file:py-2 file:text-content hover:file:bg-surface" />
             <p className="mt-2 text-xs text-content-muted">
               {logoUploading === "site"
                 ? "Uploading logo…"
@@ -281,17 +276,7 @@ export function SiteIdentitySettings() {
             >
               Upload favicon
             </label>
-            <input
-              id="faviconFile"
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              disabled={logoUploading !== null}
-              onChange={(event) => {
-                void handleLogoUpload("favicon", event.target.files?.[0]);
-                event.currentTarget.value = "";
-              }}
-              className="mt-2 block w-full text-xs text-content-secondary file:mr-3 file:rounded-lg file:border-0 file:bg-surface-raised file:px-3 file:py-2 file:text-content hover:file:bg-surface"
-            />
+            <input id="faviconFile" type="file" accept="image/png,image/jpeg,image/webp" disabled={logoUploading !== null} onChange={(event) => { handleLogoUpload("favicon", event.target.files?.[0]); event.currentTarget.value = ""; }} className="mt-2 block w-full text-xs text-content-secondary file:mr-3 file:rounded-lg file:border-0 file:bg-surface-raised file:px-3 file:py-2 file:text-content hover:file:bg-surface" />
             <p className="mt-2 text-xs text-content-muted">
               {logoUploading === "favicon"
                 ? "Uploading favicon…"
@@ -524,6 +509,7 @@ export function SiteIdentitySettings() {
           </Button>
         </div>
       </div>
+      {pendingImage && <ImageProcessingDialog key={pendingImage.kind + pendingImage.file.name + pendingImage.file.lastModified} file={pendingImage.file} title={pendingImage.kind === "site" ? "Prepare website logo" : "Prepare favicon"} onCancel={() => setPendingImage(null)} onUse={uploadPreparedLogo} />}
     </section>
   );
 }
