@@ -148,7 +148,7 @@ export default function SchoolModelForm() {
     if (draft.slug.trim() && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(draft.slug.trim())) { setError('The URL slug can use lowercase letters, numbers and hyphens only.'); document.getElementById('school-slug')?.focus(); return; }
     setSaving(true);
     try {
-      await schoolModelService.save({ ...draft, title: draft.title.trim(), slug: draft.slug.trim(), materials: lines(materials), objectives: lines(objectives), features: lines(features), customizationOptions: lines(customizationOptions), keywords: lines(keywords.replace(/,/g, '\n')), galleryUrls: lines(gallery) }, id);
+      await schoolModelService.save({ ...draft, title: draft.title.trim(), slug: draft.slug.trim(), materials: lines(materials), objectives: lines(objectives), features: lines(features), customizationOptions: lines(customizationOptions), tags: lines(tags.replace(/,/g, '\n')), keywords: lines(keywords.replace(/,/g, '\n')), components: draft.components.filter((item) => item.name.trim()), specifications: draft.specifications.filter((item) => item.label.trim()), galleryUrls: lines(gallery) }, id);
       navigate('/admin/school-models', { replace: true, state: { notice: editing ? 'School model updated.' : 'School model created.' } });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Could not save this school model.');
