@@ -18,7 +18,7 @@ export function Navbar() {
   const { user, profile } = useAuth();
   const [schoolSettings, setSchoolSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
   useEffect(() => { let live = true; void schoolModelService.getSettings().then(s => { if (live) setSchoolSettings(s); }).catch(() => {}); return () => { live = false; }; }, []);
-  const visibleLinks = NAV_LINKS.filter(link => link.to !== '/school-projects' || (schoolSettings.enabled && schoolSettings.showInNavigation));
+  const visibleLinks = NAV_LINKS.filter(link => link.to === '/school-projects' ? schoolSettings.enabled && schoolSettings.showInNavigation : link.to === '/projects' ? schoolSettings.electronicsEnabled && schoolSettings.showElectronicsInNavigation : true);
 
   useEffect(() => setMobileOpen(false), [location.pathname]);
 
@@ -119,7 +119,7 @@ export function Navbar() {
       >
         <Container className="py-3 sm:py-4">
           <ul className="flex flex-col gap-1">
-            {NAV_LINKS.map((link) => (
+            {visibleLinks.map((link) => (
               <li key={link.to}>
                 <NavLink
                   to={link.to}
