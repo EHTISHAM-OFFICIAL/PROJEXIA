@@ -117,13 +117,13 @@ export default function SchoolModelForm() {
   const hasUnsavedChanges = initialSnapshot !== null && currentSnapshot !== initialSnapshot;
   const basicsComplete = Boolean(draft.title.trim() && draft.shortDescription.trim() && draft.category.trim());
   const sections = [
-    { id: 'school-model-basics', label: 'Basics', complete: basicsComplete, required: true },
-    { id: 'school-model-media', label: 'Media', complete: Boolean(draft.thumbnailUrl || draft.heroImageUrl || gallery.trim() || draft.videoUrl), required: false },
-    { id: 'school-model-story', label: 'Educational story', complete: Boolean(draft.description.trim() || draft.problemStatement.trim() || draft.workingPrinciple.trim() || draft.howToUse.trim() || objectives.trim()), required: false },
-    { id: 'school-model-technical', label: 'Materials & specs', complete: Boolean(materials.trim() || draft.components.some((item) => item.name.trim()) || draft.specifications.some((item) => item.label.trim()) || tags.trim()), required: false },
-    { id: 'school-model-features', label: 'Features & customization', complete: Boolean(features.trim() || customizationOptions.trim() || draft.setupInstructions.trim() || draft.maintenanceNotes.trim() || draft.safetyNotes.trim()), required: false },
-    { id: 'school-model-links', label: 'Links & SEO', complete: Boolean(draft.documentationUrl || draft.seoTitle || draft.seoDescription || keywords.trim()), required: false },
-    { id: 'school-model-publishing', label: 'Visibility', complete: Boolean(draft.published || draft.featured), required: false },
+    { id: 'school-model-basics', step: '01', label: 'Basic information', description: 'Name, category and short summary', complete: basicsComplete, required: true },
+    { id: 'school-model-media', step: '02', label: 'Images & media', description: 'Catalog image, gallery and video', complete: Boolean(draft.thumbnailUrl || draft.heroImageUrl || gallery.trim() || draft.videoUrl), required: false },
+    { id: 'school-model-story', step: '03', label: 'Learning content', description: 'Explain what students learn and how it works', complete: Boolean(draft.description.trim() || draft.problemStatement.trim() || draft.workingPrinciple.trim() || draft.howToUse.trim() || objectives.trim()), required: false },
+    { id: 'school-model-technical', step: '04', label: 'Build details', description: 'Materials, included parts and specifications', complete: Boolean(materials.trim() || draft.components.some((item) => item.name.trim()) || draft.specifications.some((item) => item.label.trim()) || tags.trim()), required: false },
+    { id: 'school-model-features', step: '05', label: 'Use & customization', description: 'Features, options, setup and care', complete: Boolean(features.trim() || customizationOptions.trim() || draft.setupInstructions.trim() || draft.maintenanceNotes.trim() || draft.safetyNotes.trim()), required: false },
+    { id: 'school-model-links', step: '06', label: 'Search & resources', description: 'SEO details and supporting links', complete: Boolean(draft.documentationUrl || draft.seoTitle || draft.seoDescription || keywords.trim()), required: false },
+    { id: 'school-model-publishing', step: '07', label: 'Review & publish', description: 'Feature it or make it visible to visitors', complete: Boolean(draft.published || draft.featured), required: false },
   ];
   const completedRequired = [draft.title.trim(), draft.shortDescription.trim(), draft.category.trim()].filter(Boolean).length;
 
@@ -196,14 +196,14 @@ export default function SchoolModelForm() {
     <Link to="/admin/school-models" onClick={(event)=>{if(hasUnsavedChanges&&!window.confirm('You have unsaved changes. Discard them and leave the editor?'))event.preventDefault();}} className="inline-flex items-center gap-2 rounded-md py-2 text-sm text-content-secondary transition-colors hover:text-content"><ArrowLeft size={15}/> All school models</Link>
 
     <header className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-      <div><div className="mb-2 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/5 px-3 py-1 text-xs font-medium text-accent"><GraduationCap size={14}/> SCHOOL CHARTS & EDUCATIONAL MODELS</div><h1 className="text-2xl font-semibold tracking-tight">{editing ? 'Edit school model' : 'Create a school model'}</h1><p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-content-secondary">Build a complete, polished catalog entry. Add only the educational details that apply; every field beyond the title, category and short description is optional.</p></div>
+      <div><div className="mb-2 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/5 px-3 py-1 text-xs font-medium text-accent"><GraduationCap size={14}/> SCHOOL CHARTS & EDUCATIONAL MODELS</div><h1 className="text-2xl font-semibold tracking-tight">{editing ? 'Edit school model' : 'Create a school model'}</h1><p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-content-secondary">Work through the sections below in order. Start with the three required details, then add only the media and educational information that applies to this item.</p></div>
       <Button type="button" variant="secondary" onClick={()=>setPreviewOpen(true)}><Eye size={16}/> Preview card</Button>
     </header>
 
-    <section className="mt-6 rounded-xl border border-line bg-surface/40 p-4 sm:p-5" aria-label="Editor progress">
+    <section className="mt-6 rounded-xl border border-line bg-surface/40 p-4 sm:p-5" aria-label="Editor guide"><div className="mb-4 flex items-start gap-3 rounded-lg bg-accent/5 p-3"><div className="mt-0.5 rounded-lg bg-accent/10 p-2 text-accent"><CheckCircle2 size={16}/></div><div><p className="text-sm font-semibold">A simple way to complete this form</p><p className="mt-1 text-xs leading-relaxed text-content-secondary">1. Add the title, category and short description. 2. Add images and explain the learning purpose. 3. List supplied materials and parts if known. 4. Review visibility and save. Everything else is optional and can be filled in later.</p></div></div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-semibold">Editor progress</p><p className="mt-1 text-xs text-content-muted">Required details: {completedRequired} of 3 completed. Other sections are optional.</p></div><span className={completedRequired===3?'inline-flex items-center gap-1.5 text-sm font-medium text-state-success':'inline-flex items-center gap-1.5 text-sm font-medium text-content-secondary'}>{completedRequired===3?<CheckCircle2 size={16}/>:<Circle size={16}/>} {completedRequired===3?'Ready to save':'Required details remaining'}</span></div>
       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-raised" role="progressbar" aria-label="Required school model details" aria-valuemin={0} aria-valuemax={3} aria-valuenow={completedRequired}><div className="h-full rounded-full bg-accent transition-[width]" style={{width:`${completedRequired/3*100}%`}}/></div>
-      <div className="mt-4 flex flex-wrap gap-2">{sections.map((section)=><button key={section.id} type="button" onClick={()=>scrollTo(section.id)} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-2 text-xs transition-colors hover:bg-surface-raised">{section.complete?<CheckCircle2 size={14} className="text-state-success"/>:section.required?<Circle size={14} className="text-content-muted"/>:<span className="h-3.5 w-3.5 rounded-full border border-line"/>}<span>{section.label}</span><span className="text-content-muted">{section.required?(section.complete?'Complete':'Required'):(section.complete?'Added':'Optional')}</span></button>)}</div>
+      <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{sections.map((section)=><button key={section.id} type="button" onClick={()=>scrollTo(section.id)} className="flex min-w-0 items-start gap-3 rounded-xl border border-line bg-bg/70 p-3 text-left transition-colors hover:border-accent/40 hover:bg-surface-raised"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-raised text-xs font-semibold text-content-secondary">{section.complete?<CheckCircle2 size={16} className="text-state-success"/>:section.step}</span><span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-2 text-sm font-medium text-content">{section.label}<span className={section.required?'rounded-full bg-state-warning/10 px-1.5 py-0.5 text-[10px] font-medium text-state-warning':'rounded-full bg-surface-raised px-1.5 py-0.5 text-[10px] text-content-muted'}>{section.required?'Required':'Optional'}</span></span><span className="mt-1 block text-xs leading-relaxed text-content-muted">{section.description}</span></span></button>)}</div>
     </section>
 
     {hasUnsavedChanges&&<div className="mt-4 rounded-lg border border-state-warning/40 bg-state-warning/5 px-4 py-3 text-sm text-content-secondary" role="status">You have unsaved changes. Save the model before leaving, or discard them when prompted.</div>}
@@ -212,7 +212,7 @@ export default function SchoolModelForm() {
     {previewOpen&&<div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4" role="dialog" aria-modal="true" aria-label="School model preview"><div className="w-full max-w-2xl rounded-2xl border border-line bg-bg p-5 shadow-2xl sm:p-7"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-wide text-accent">Live preview</p><h2 className="mt-1 text-xl font-semibold">Catalog card preview</h2></div><button type="button" onClick={()=>setPreviewOpen(false)} className="rounded-lg border border-line px-3 py-1.5 text-sm hover:bg-surface-raised">Close</button></div><div className="mt-5 overflow-hidden rounded-xl border border-line bg-surface sm:flex">{draft.thumbnailUrl?<img src={draft.thumbnailUrl} alt="" className="aspect-[16/10] w-full object-cover sm:w-2/5" onError={(event)=>{event.currentTarget.style.display='none'}}/>:<div className="flex aspect-[16/10] w-full items-center justify-center bg-surface-raised text-content-muted sm:w-2/5"><ImagePlus size={28}/></div>}<div className="flex flex-1 flex-col p-5"><div className="flex flex-wrap gap-2"><span className="rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent">{draft.category||'Category'}</span>{draft.gradeRange&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.gradeRange}</span>}{draft.subcategory&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.subcategory}</span>}{draft.modelType&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.modelType}</span>}{draft.difficulty&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.difficulty}</span>}</div><h3 className="mt-3 text-lg font-semibold">{draft.title||'Your school model title'}</h3><p className="mt-2 text-sm leading-relaxed text-content-secondary">{draft.shortDescription||'Your short description will appear here.'}</p>{draft.dimensions&&<p className="mt-auto pt-4 text-xs text-content-muted">Approx. dimensions: {draft.dimensions}</p>}</div></div><p className="mt-4 text-xs text-content-muted">This is a preview of the catalog card, not a published page.</p></div></div>}
 
     <form onSubmit={submit} className="mt-8 flex w-full max-w-6xl flex-col gap-6 lg:gap-7">
-      <Group id="school-model-basics" title="Basics" subtitle="Title, classification and public-facing description" defaultOpen>
+      <Group id="school-model-basics" title="1. Basic information" subtitle="Required: identify the model and explain it briefly" defaultOpen>
         <Field label="Model / chart title" htmlFor="school-title" required hint="Use the name a student, teacher or parent would search for.">
           <TextInput id="school-title" value={draft.title} maxLength={120} onChange={(event)=>updateTitle(event.target.value)} placeholder="e.g. Human Digestive System Model"/>
         </Field>
@@ -257,7 +257,7 @@ export default function SchoolModelForm() {
         </Field>
       </Group>
 
-      <Group id="school-model-media" title="Images" subtitle="Thumbnail and additional gallery photos">
+      <Group id="school-model-media" title="2. Images & media" subtitle="Help visitors understand what the model looks like">
         <FieldSet legend="Thumbnail" hint="The primary catalog image. A landscape image with a clear subject works best.">
           <ImageUploadField label="Thumbnail" value={draft.thumbnailUrl||null} disabled={uploading||saving} onUpload={async(file)=>{const uploaded=await imgbbService.upload(file);update('thumbnailUrl',uploaded.url);setNotice('Thumbnail uploaded. Save the model to keep the change.');}} onClear={()=>update('thumbnailUrl','')}/>
           <Field label="Or paste a thumbnail URL" htmlFor="school-thumbnail-url"><TextInput id="school-thumbnail-url" type="url" value={draft.thumbnailUrl} onChange={(event)=>update('thumbnailUrl',event.target.value)} placeholder="https://…"/></Field>
@@ -277,7 +277,7 @@ export default function SchoolModelForm() {
         </FieldSet>
       </Group>
 
-      <Group id="school-model-story" title="Educational story" subtitle="Explain the concept, the learning value and how the model is used">
+      <Group id="school-model-story" title="3. Learning content" subtitle="Explain what it teaches, how it works and how it is used">
         <Field label="Full description" htmlFor="school-description" hint="Blank lines create separate paragraphs; use headings and lists for long explanations.">
           <RichTextEditor id="school-description" rows={7} value={draft.description} onChange={(value) => update('description', value)} placeholder="Describe the model, its purpose, key parts and the learning experience."/>
         </Field>
@@ -302,7 +302,7 @@ export default function SchoolModelForm() {
         </FieldSet>
       </Group>
 
-      <Group id="school-model-technical" title="Materials, components & specifications" subtitle="Make the build contents and physical details clear">
+      <Group id="school-model-technical" title="4. Build details" subtitle="List supplied materials, parts and known dimensions">
         <div className="grid gap-5 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
           <FieldSet legend="Materials / included supplies" hint="List the main materials supplied with the model, such as boards, labels, fasteners, adhesives or finishing items.">
             <div className="rounded-xl border border-line bg-surface p-4 sm:p-5">
@@ -343,7 +343,7 @@ export default function SchoolModelForm() {
         </Field>
       </Group>
 
-      <Group id="school-model-features" title="Features & customization" subtitle="What makes this model useful and how it can be adapted">
+      <Group id="school-model-features" title="5. Use & customization" subtitle="Add special features, setup, care and customization options">
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Key features" htmlFor="school-features" hint="One feature per line. These are shown on the public detail page."><TextArea id="school-features" rows={5} value={features} onChange={(event) => setFeatures(event.target.value)} placeholder={'Labeled key parts\nInteractive demonstration\nReusable classroom display'}/></Field>
           <Field label="Customization options" htmlFor="school-customization-options" hint="One option per line, such as language, colors or size."><TextArea id="school-customization-options" rows={5} value={customizationOptions} onChange={(event) => setCustomizationOptions(event.target.value)} placeholder={'Custom dimensions\nUrdu or English labels\nSchool name / logo'}/></Field>
@@ -355,7 +355,7 @@ export default function SchoolModelForm() {
         </div>
       </Group>
 
-      <Group id="school-model-links" title="Links & SEO" subtitle="Search metadata and supporting resources">
+      <Group id="school-model-links" title="6. Search & resources" subtitle="Optional search-result text and supporting links">
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="SEO title" htmlFor="school-seo-title" hint="Keep it descriptive; around 50–60 characters is a useful target."><TextInput id="school-seo-title" maxLength={70} value={draft.seoTitle} onChange={(event) => update('seoTitle', event.target.value)} placeholder={draft.title || 'School model title'}/></Field>
           <Field label="SEO description" htmlFor="school-seo-description" hint="A short summary for search results."><TextArea id="school-seo-description" rows={3} maxLength={180} value={draft.seoDescription} onChange={(event) => update('seoDescription', event.target.value)} placeholder="Describe this educational model in a clear sentence."/></Field>
@@ -363,7 +363,7 @@ export default function SchoolModelForm() {
         </div>
       </Group>
 
-      <Group id="school-model-publishing" title="Visibility" subtitle="Control whether visitors can discover this item">
+      <Group id="school-model-publishing" title="7. Review & publish" subtitle="Choose whether to feature it and show it on the public website">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-line p-4"><Checkbox id="school-featured" label="Feature this item" description="Allow it to appear in featured school-model sections." checked={draft.featured} onChange={(event) => update('featured', event.target.checked)}/></div>
           <div className="rounded-xl border border-line p-4"><Checkbox id="school-published" label="Publish this item" description="Published models can be seen by visitors. Drafts remain in admin." checked={draft.published} onChange={(event) => update('published', event.target.checked)}/></div>
