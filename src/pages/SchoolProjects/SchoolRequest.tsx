@@ -197,8 +197,8 @@ export default function SchoolRequest() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Full name" required><TextInput autoComplete="name" maxLength={100} value={name} onChange={(e)=>setName(e.target.value)} placeholder="Your name"/></Field>
                 <Field label="Email address" required><TextInput type="email" autoComplete="email" maxLength={200} value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="you@example.com"/></Field>
-                <Field label="Phone" hint="Optional"><TextInput type="tel" autoComplete="tel" maxLength={30} value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder="+92…"/></Field>
-                <Field label="WhatsApp" hint="Optional"><TextInput type="tel" maxLength={30} value={whatsapp} onChange={(e)=>setWhatsapp(e.target.value)} placeholder="+92…"/></Field>
+                <Field label="Phone"><TextInput type="tel" autoComplete="tel" maxLength={30} value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder="+92…"/></Field>
+                <Field label="WhatsApp"><TextInput type="tel" maxLength={30} value={whatsapp} onChange={(e)=>setWhatsapp(e.target.value)} placeholder="+92…"/></Field>
                 <Field label="Country"><TextInput autoComplete="country-name" maxLength={80} value={country} onChange={(e)=>setCountry(e.target.value)} placeholder="Country"/></Field>
                 <Field label="City"><TextInput autoComplete="address-level2" maxLength={80} value={city} onChange={(e)=>setCity(e.target.value)} placeholder="City"/></Field>
               </div>
@@ -212,44 +212,44 @@ export default function SchoolRequest() {
               {model?.id === 'custom' && <Field label="Working title for your custom model" required hint="A simple name is enough; you can explain the full idea below."><TextInput value={customTitle} maxLength={120} onChange={(e)=>setCustomTitle(e.target.value)} placeholder="e.g. Working model of a hydraulic lift"/></Field>}
               {selectedModel && <div className="overflow-hidden rounded-xl border border-accent/20 bg-accent/5 sm:flex">{selectedModel.thumbnailUrl && <img src={selectedModel.thumbnailUrl} alt="" className="aspect-[16/9] w-full object-cover sm:w-40"/>}<div className="min-w-0 flex-1 p-4"><div className="flex flex-wrap gap-2 text-xs"><span className="rounded-full bg-accent/10 px-2.5 py-1 text-accent">{selectedModel.category}</span>{selectedModel.subject && <span className="rounded-full bg-surface px-2.5 py-1 text-content-secondary">{selectedModel.subject}</span>}{selectedModel.gradeRange && <span className="rounded-full bg-surface px-2.5 py-1 text-content-secondary">{selectedModel.gradeRange}</span>}{selectedModel.modelType && <span className="rounded-full bg-surface px-2.5 py-1 text-content-secondary">{selectedModel.modelType}</span>}{selectedModel.difficulty && <span className="rounded-full bg-surface px-2.5 py-1 text-content-secondary">{selectedModel.difficulty}</span>}</div><p className="mt-2 font-semibold">{selectedModel.title}</p><p className="mt-1 text-sm leading-relaxed text-content-secondary">{selectedModel.shortDescription || 'Custom request — describe your idea and intended use below.'}</p><button type="button" onClick={() => setModel(null)} className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline">Choose a different model <ArrowRight size={13}/></button></div></div>}
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Subject or topic" hint="Optional"><TextInput value={purpose} maxLength={200} onChange={(e)=>setPurpose(e.target.value)} placeholder="e.g. biology, water cycle, electricity"/></Field>
+                <Field label="Subject or topic"><TextInput value={purpose} maxLength={200} onChange={(e)=>setPurpose(e.target.value)} placeholder="e.g. biology, water cycle, electricity"/></Field>
                 <Field label="Grade / class"><TextInput value={grade} maxLength={120} onChange={(e)=>setGrade(e.target.value)} placeholder="e.g. Class 8, college exhibition"/></Field>
               </div>
             </FormSection>
 
             <FormSection id="school-learning" step={3} title="Learning goals & content" description="Tell us what the model should teach, demonstrate or help explain.">
               <Field label="What should students learn or understand?" required hint="At least 20 characters. Describe the concept, process or key parts to show."><TextArea rows={6} maxLength={4000} value={details} onChange={(e)=>setDetails(e.target.value)} placeholder="Explain the concept, what needs to be visible or movable, how it will be demonstrated, and any labels or language needed."/></Field>
-              <Field label="Customization" hint="Optional"><TextArea rows={3} maxLength={1200} value={customization} onChange={(e)=>setCustomization(e.target.value)} placeholder="Colors, labels, language, working parts, school logo, accessibility or special instructions"/></Field>
+              <Field label="Customization"><TextArea rows={3} maxLength={1200} value={customization} onChange={(e)=>setCustomization(e.target.value)} placeholder="Colors, labels, language, working parts, school logo, accessibility or special instructions"/></Field>
             </FormSection>
 
             <FormSection id="school-build-requirements" step={4} title="Build & classroom requirements" description="These choices help distinguish a printed chart from a physical or working model. Choose what you know; “not sure” is completely fine.">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Preferred model format" hint="Choose the closest match."><Select value={modelFormat} onChange={(e) => setModelFormat(e.target.value)} options={['Not sure yet','Printed / laminated chart','Static 3D model','Working mechanical model','Electrical / electronic demonstration','Interactive display','Exhibition centerpiece','Digital / presentation aid']}/></Field>
-                <Field label="How should it work?" hint="Optional; helps us understand moving or powered parts."><Select value={interaction} onChange={(e) => setInteraction(e.target.value)} options={['Not sure yet','Display only, no moving parts','Manual moving parts','Powered / motorized movement','Lights, sensors or electronics','Hands-on student interaction']}/></Field>
-                <Field label="Preferred materials" hint="Optional; alternatives can be suggested after review."><TextInput value={preferredMaterials} maxLength={200} onChange={(e) => setPreferredMaterials(e.target.value)} placeholder="e.g. wood, acrylic, foam board, recycled material"/></Field>
+                <Field label="How should it work?" hint="Helps us understand moving or powered parts."><Select value={interaction} onChange={(e) => setInteraction(e.target.value)} options={['Not sure yet','Display only, no moving parts','Manual moving parts','Powered / motorized movement','Lights, sensors or electronics','Hands-on student interaction']}/></Field>
+                <Field label="Preferred materials" hint="Alternatives can be suggested after review."><TextInput value={preferredMaterials} maxLength={200} onChange={(e) => setPreferredMaterials(e.target.value)} placeholder="e.g. wood, acrylic, foam board, recycled material"/></Field>
                 <Field label="Label / content language"><Select value={labelLanguage} onChange={(e) => setLabelLanguage(e.target.value)} options={['English','Urdu','English and Urdu','Other / discuss']}/></Field>
                 <Field label="Assembly needed?" hint="For large displays or multi-part models."><Select value={assemblyRequirement} onChange={(e) => setAssemblyRequirement(e.target.value)} options={['Not sure','Ready to display','Basic assembly is fine','Assembly instructions needed','On-site setup requested']}/></Field>
                 <Field label="Where will it be used?" hint="Helps plan stability, portability and finish."><Select value={displayEnvironment} onChange={(e) => setDisplayEnvironment(e.target.value)} options={['Classroom','Wall display','Tabletop demonstration','School exhibition / competition','Laboratory','Outdoor display','Multiple locations']}/></Field>
               </div>
-              <Field label="Power, electronics or special mechanism requirements" hint="Optional. Mention a power source, moving parts, switches, lighting, sound or other practical constraints."><TextArea rows={3} maxLength={600} value={powerRequirements} onChange={(e) => setPowerRequirements(e.target.value)} placeholder="e.g. battery powered, safe for classroom use, no exposed wiring, easy to transport"/></Field>
+              <Field label="Power, electronics or special mechanism requirements" hint="Mention a power source, moving parts, switches, lighting, sound or other practical constraints."><TextArea rows={3} maxLength={600} value={powerRequirements} onChange={(e) => setPowerRequirements(e.target.value)} placeholder="e.g. battery powered, safe for classroom use, no exposed wiring, easy to transport"/></Field>
             </FormSection>
 
             <FormSection id="school-specifications" step={5} title="Size, quantity & delivery" description="Estimates are fine. If you do not know the exact dimensions, leave them blank.">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Quantity" required hint="How many copies or models?"><TextInput type="number" min={1} value={quantity} onChange={(e)=>setQuantity(e.target.value)} placeholder="1"/></Field>
-                <Field label="Approximate dimensions" hint="Optional"><TextInput value={dimensions} maxLength={120} onChange={(e)=>setDimensions(e.target.value)} placeholder="e.g. 60 × 90 cm, tabletop size"/></Field>
+                <Field label="Approximate dimensions"><TextInput value={dimensions} maxLength={120} onChange={(e)=>setDimensions(e.target.value)} placeholder="e.g. 60 × 90 cm, tabletop size"/></Field>
               </div>
             </FormSection>
 
             <FormSection id="school-budget-timeline" step={6} title="Budget & timing" description="These details help us judge scope. A quote is confirmed only after review.">
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Budget range" hint="Optional"><Select value={budgetRange} onChange={(e)=>setBudgetRange(e.target.value)} options={['Under PKR 2,000','PKR 2,000–5,000','PKR 5,000–10,000','PKR 10,000–25,000','PKR 25,000+','Not decided yet']} placeholder="No budget set"/></Field>
+                <Field label="Budget range"><Select value={budgetRange} onChange={(e)=>setBudgetRange(e.target.value)} options={['Under PKR 2,000','PKR 2,000–5,000','PKR 5,000–10,000','PKR 10,000–25,000','PKR 25,000+','Not decided yet']} placeholder="No budget set"/></Field>
                 <Field label="Preferred start date"><TextInput type="date" value={startDate} onChange={(e)=>setStartDate(e.target.value)}/></Field>
                 <Field label="Needed by"><TextInput type="date" min={startDate || undefined} value={deadline} onChange={(e)=>setDeadline(e.target.value)}/></Field>
                 <Field label="Timeline flexibility"><Select value={flexibility} onChange={(e)=>setFlexibility(e.target.value)} options={['Flexible','Some flexibility','Fixed deadline','Not sure']}/></Field>
               </div>
               <FieldSet legend="Urgency"><RadioGroup name="school-urgency" options={['Normal','Urgent']} value={urgency} onChange={setUrgency}/></FieldSet>
-              <Field label="Budget notes" hint="Optional"><TextArea rows={3} maxLength={800} value={budgetNotes} onChange={(e)=>setBudgetNotes(e.target.value)} placeholder="Budget includes materials, delivery, or any constraints we should know about."/></Field>
+              <Field label="Budget notes"><TextArea rows={3} maxLength={800} value={budgetNotes} onChange={(e)=>setBudgetNotes(e.target.value)} placeholder="Budget includes materials, delivery, or any constraints we should know about."/></Field>
             </FormSection>
 
             <FormSection id="school-references" step={7} title="References & attachments" description="Photos, sketches or links make it easier to understand what you have in mind.">
