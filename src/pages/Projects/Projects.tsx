@@ -62,6 +62,8 @@ export default function Projects() {
     setSearchParams(next, { replace: true });
   }, [filters.category, setSearchParams]);
 
+  if (electronicsDisabled) return <Container className="py-20"><Seo title="Electronics projects unavailable" noIndex /><h1 className="text-2xl font-semibold">The electronics project catalog is temporarily unavailable.</h1><p className="mt-3 text-content-secondary">You can still explore our school charts and educational models.</p><ButtonLink to="/school-projects" className="mt-5">Browse school models</ButtonLink></Container>;
+
   return (
     <>
       <Seo
