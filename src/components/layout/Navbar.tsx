@@ -129,7 +129,21 @@ export function Navbar() {
           <button
             type="button"
             className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-content-secondary transition-colors hover:bg-surface hover:text-content md:hidden"
-            onClick={() => setMobileOpen((open) => !open)}
+            onClick={() => {
+              if (mobileOpen) {
+                setMobileOpen(false);
+                return;
+              }
+
+              // Start the mobile menu at the top so its toggle remains visible
+              // and easy to reach on every mobile browser.
+              const html = document.documentElement;
+              const previousScrollBehavior = html.style.scrollBehavior;
+              html.style.scrollBehavior = 'auto';
+              window.scrollTo(0, 0);
+              html.style.scrollBehavior = previousScrollBehavior;
+              setMobileOpen(true);
+            }}
             aria-expanded={mobileOpen}
             aria-controls="mobile-menu"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
