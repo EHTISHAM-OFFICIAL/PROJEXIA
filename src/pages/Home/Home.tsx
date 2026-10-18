@@ -25,7 +25,7 @@ export default function Home() {
       />
       <Hero />
       <Intro />
-      {catalogSettings.electronicsEnabled && catalogSettings.showElectronicsOnHome && <FeaturedProjects />
+      {catalogSettings.electronicsEnabled && catalogSettings.showElectronicsOnHome && <FeaturedProjects />}
       <SchoolModelsPromo />
       <Services />
       <Process />
