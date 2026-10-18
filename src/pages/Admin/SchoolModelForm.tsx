@@ -7,6 +7,7 @@ import { Alert } from '../../components/ui/Alert';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { Field, FieldSet } from '../../components/forms/Field';
 import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
+import { RichTextEditor } from '../../components/forms/RichTextEditor';
 import { Checkbox } from '../../components/forms/Choice';
 import { ImageUploadField } from '../../components/forms/ImageUploadField';
 import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/schoolModelService';
@@ -15,8 +16,8 @@ import { imgbbService } from '../../services/imgbbService';
 
 const EMPTY: SchoolModelDraft = {
   title: '', slug: '', category: 'Science Charts', subject: '', gradeRange: '',
-  shortDescription: '', description: '', materials: [], objectives: [], dimensions: '',
-  thumbnailUrl: '', galleryUrls: [], featured: false, published: false, seoTitle: '', seoDescription: '',
+  shortDescription: '', description: '', materials: [], objectives: [], features: [], customizationOptions: [], setupInstructions: '', dimensions: '',
+  thumbnailUrl: '', galleryUrls: [], featured: false, published: false, seoTitle: '', seoDescription: '', keywords: [],
 };
 const lines = (value: string) => [...new Set(value.split('\n').map((item) => item.trim()).filter(Boolean))];
 
@@ -28,6 +29,10 @@ export default function SchoolModelForm() {
   const [settings, setSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
   const [materials, setMaterials] = useState('');
   const [objectives, setObjectives] = useState('');
+  const [features, setFeatures] = useState('');
+  const [customizationOptions, setCustomizationOptions] = useState('');
+  const [keywords, setKeywords] = useState('');
+  const [categoryInput, setCategoryInput] = useState('');
   const [gallery, setGallery] = useState('');
   const [loading, setLoading] = useState(editing);
   const [saving, setSaving] = useState(false);
@@ -49,12 +54,15 @@ export default function SchoolModelForm() {
         setDraft(rest);
         setMaterials(rest.materials.join('\n'));
         setObjectives(rest.objectives.join('\n'));
+        setFeatures((rest.features ?? []).join('\n'));
+        setCustomizationOptions((rest.customizationOptions ?? []).join('\n'));
+        setKeywords((rest.keywords ?? []).join(', '));
         setGallery(rest.galleryUrls.join('\n'));
-        setInitialSnapshot(JSON.stringify({ draft: rest, materials: rest.materials.join('\n'), objectives: rest.objectives.join('\n'), gallery: rest.galleryUrls.join('\n') }));
+        setInitialSnapshot(JSON.stringify({ draft: rest, materials: rest.materials.join('\n'), objectives: rest.objectives.join('\n'), features: (rest.features ?? []).join('\n'), customizationOptions: (rest.customizationOptions ?? []).join('\n'), keywords: (rest.keywords ?? []).join(', '), gallery: rest.galleryUrls.join('\n') }));
       } else {
         const next = { ...EMPTY, category: config.categories[0] || 'Others' };
         setDraft(next);
-        setInitialSnapshot(JSON.stringify({ draft: next, materials: '', objectives: '', gallery: '' }));
+        setInitialSnapshot(JSON.stringify({ draft: next, materials: '', objectives: '', features: '', customizationOptions: '', keywords: '', gallery: '' }));
       }
       setLoading(false);
     }).catch((caught) => {
@@ -66,14 +74,15 @@ export default function SchoolModelForm() {
   const update = <K extends keyof SchoolModelDraft>(key: K, value: SchoolModelDraft[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
 
-  const currentSnapshot = JSON.stringify({ draft, materials, objectives, gallery });
+  const currentSnapshot = JSON.stringify({ draft, materials, objectives, features, customizationOptions, keywords, gallery });
   const hasUnsavedChanges = initialSnapshot !== null && currentSnapshot !== initialSnapshot;
   const basicsComplete = Boolean(draft.title.trim() && draft.shortDescription.trim() && draft.category.trim());
   const sections = [
     { id: 'school-model-basics', label: 'Basics', complete: basicsComplete, required: true },
     { id: 'school-model-media', label: 'Images', complete: Boolean(draft.thumbnailUrl || gallery.trim()), required: false },
     { id: 'school-model-learning', label: 'Learning details', complete: Boolean(materials.trim() || objectives.trim() || draft.description.trim()), required: false },
-    { id: 'school-model-publishing', label: 'Publishing & SEO', complete: Boolean(draft.seoTitle || draft.seoDescription || draft.published || draft.featured), required: false },
+    { id: 'school-model-features', label: 'Features & customization', complete: Boolean(features.trim() || customizationOptions.trim() || draft.setupInstructions.trim()), required: false },
+    { id: 'school-model-publishing', label: 'Publishing & SEO', complete: Boolean(draft.seoTitle || draft.seoDescription || keywords.trim() || draft.published || draft.featured), required: false },
   ];
   const completedRequired = [draft.title.trim(), draft.shortDescription.trim(), draft.category.trim()].filter(Boolean).length;
 
@@ -123,9 +132,10 @@ export default function SchoolModelForm() {
     if (!draft.title.trim()) { setError('Add a title before saving.'); document.getElementById('school-title')?.focus(); return; }
     if (!draft.shortDescription.trim()) { setError('Add a short description for the catalog card.'); document.getElementById('school-short-description')?.focus(); return; }
     if (!draft.category.trim()) { setError('Choose a category before saving.'); return; }
+    if (draft.slug.trim() && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(draft.slug.trim())) { setError('The URL slug can use lowercase letters, numbers and hyphens only.'); document.getElementById('school-slug')?.focus(); return; }
     setSaving(true);
     try {
-      await schoolModelService.save({ ...draft, title: draft.title.trim(), materials: lines(materials), objectives: lines(objectives), galleryUrls: lines(gallery), slug: '' }, id);
+      await schoolModelService.save({ ...draft, title: draft.title.trim(), slug: draft.slug.trim(), materials: lines(materials), objectives: lines(objectives), features: lines(features), customizationOptions: lines(customizationOptions), keywords: lines(keywords.replace(/,/g, '\n')), galleryUrls: lines(gallery) }, id);
       navigate('/admin/school-models', { replace: true, state: { notice: editing ? 'School model updated.' : 'School model created.' } });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Could not save this school model.');
@@ -165,9 +175,11 @@ export default function SchoolModelForm() {
         <Field label="Model / chart title" htmlFor="school-title" required hint="Use the name a student, teacher or parent would search for.">
           <TextInput id="school-title" value={draft.title} maxLength={140} onChange={(event)=>update('title',event.target.value)} placeholder="e.g. Human Digestive System Model"/>
         </Field>
+        <Field label="URL slug" htmlFor="school-slug" hint={'Public address: /school-projects/' + (draft.slug || 'your-model')}><TextInput id="school-slug" value={draft.slug} onChange={(event)=>update('slug',event.target.value.toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-'))} placeholder="human-digestive-system-model"/></Field>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Category" htmlFor="school-category" required hint="Used for catalog filters.">
             <Select id="school-category" options={[...new Set([...settings.categories,draft.category].filter(Boolean))]} value={draft.category} onChange={(event)=>update('category',event.target.value)}/>
+            <div className="mt-2 flex gap-2"><TextInput value={categoryInput} maxLength={100} onChange={(event)=>setCategoryInput(event.target.value)} placeholder="Add a category…" aria-label="New school model category"/><Button type="button" variant="secondary" disabled={!categoryInput.trim()||saving} onClick={async()=>{const name=categoryInput.trim().replace(/\s+/g,' ');if(!name)return;const categories=[...new Set([...settings.categories,name])].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));try{const next={...settings,categories};await schoolModelService.saveSettings(next);setSettings(next);update('category',name);setCategoryInput('');setNotice('Category added to the reusable school-model category list.');setError('');}catch(caught){setError(caught instanceof Error?caught.message:'Could not save this category.');}}}>Add category</Button></div>
           </Field>
           <Field label="Subject" htmlFor="school-subject" hint="e.g. Biology, Physics, Geography, Environmental Science">
             <TextInput id="school-subject" value={draft.subject} onChange={(event)=>update('subject',event.target.value)} placeholder="Biology"/>
@@ -182,8 +194,8 @@ export default function SchoolModelForm() {
         <Field label="Short description" htmlFor="school-short-description" required hint="A concise summary shown on catalog cards. Up to 320 characters.">
           <TextArea id="school-short-description" rows={3} maxLength={320} value={draft.shortDescription} onChange={(event)=>update('shortDescription',event.target.value)} placeholder="Explain what the chart or model demonstrates and why it is useful."/>
         </Field>
-        <Field label="Full description" htmlFor="school-description" hint="You can leave this blank if the short description is enough.">
-          <TextArea id="school-description" rows={6} value={draft.description} onChange={(event)=>update('description',event.target.value)} placeholder="Describe the concept, key parts, how it demonstrates the topic, and possible customization."/>
+        <Field label="Full description" htmlFor="school-description" hint="Use paragraphs and simple formatting to explain the concept, key parts and educational value.">
+          <RichTextEditor id="school-description" rows={6} value={draft.description} onChange={(value)=>update('description',value)} placeholder="Describe the concept, key parts, how it demonstrates the topic, and possible customization."/>
         </Field>
       </Group>
 
@@ -207,10 +219,19 @@ export default function SchoolModelForm() {
         </div>
       </Group>
 
+      <Group id="school-model-features" title="Features & customization" subtitle="What makes this model useful and how it can be adapted">
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field label="Key features" htmlFor="school-features" hint="One feature per line. These are shown on the public detail page."><TextArea id="school-features" rows={5} value={features} onChange={(event)=>setFeatures(event.target.value)} placeholder={'Labeled key parts\nInteractive demonstration\nReusable classroom display'}/></Field>
+          <Field label="Customization options" htmlFor="school-customization-options" hint="One option per line, such as language, colors or size."><TextArea id="school-customization-options" rows={5} value={customizationOptions} onChange={(event)=>setCustomizationOptions(event.target.value)} placeholder={'Custom dimensions\nUrdu or English labels\nSchool name / logo'}/></Field>
+        </div>
+        <Field label="Assembly, setup & demonstration notes" htmlFor="school-setup-instructions" hint="Optional public-facing instructions or notes for teachers."><RichTextEditor id="school-setup-instructions" rows={4} value={draft.setupInstructions} onChange={(value)=>update('setupInstructions',value)} placeholder="Explain any setup, handling or demonstration steps that are useful to know."/></Field>
+      </Group>
+
       <Group id="school-model-publishing" title="Publishing & SEO" subtitle="Homepage visibility and search metadata">
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="SEO title" htmlFor="school-seo-title" hint="Keep it descriptive; around 50–60 characters is a useful target."><TextInput id="school-seo-title" maxLength={70} value={draft.seoTitle} onChange={(event)=>update('seoTitle',event.target.value)} placeholder={draft.title||'School model title'}/></Field>
           <Field label="SEO description" htmlFor="school-seo-description" hint="A short summary for search results."><TextArea id="school-seo-description" rows={3} maxLength={180} value={draft.seoDescription} onChange={(event)=>update('seoDescription',event.target.value)} placeholder="Describe this educational model in a clear sentence."/></Field>
+          <Field label="Search keywords" htmlFor="school-keywords" hint="Comma-separated phrases that help describe this item."><TextInput id="school-keywords" value={keywords} onChange={(event)=>setKeywords(event.target.value)} placeholder="biology model, classroom chart, science project"/></Field>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-line p-4"><Checkbox id="school-featured" label="Feature this item" description="Allow it to appear in featured school-model sections." checked={draft.featured} onChange={(event)=>update('featured',event.target.checked)}/></div>
