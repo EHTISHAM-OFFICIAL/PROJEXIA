@@ -345,7 +345,7 @@ export default function RequestProject() {
             <span className="inline-flex items-center gap-2 text-sm font-medium text-content-secondary"><ShieldCheck size={16} className="text-accent"/> Private request · Quote after review</span>
           </div>
           <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-surface-raised" role="progressbar" aria-label="Project request sections completed" aria-valuemin={0} aria-valuemax={SECTION_LINKS.length} aria-valuenow={completedSections}><div className="h-full rounded-full bg-accent transition-[width]" style={{width: (completedSections / SECTION_LINKS.length * 100) + '%'}}/></div>
-          <div className="mt-4 flex flex-wrap gap-2">{SECTION_LINKS.map((section,index)=><a key={section.id} href={'#' + section.id} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-2 text-xs transition hover:bg-surface-raised"><span className="font-mono text-content-muted">{String(index+1).padStart(2,'0')}</span>{sectionCompletion[section.id]?<CheckCircle2 size={13} className="text-state-success"/>:<Circle size={13} className="text-content-muted"/>}{section.label}</a>)}</div>
+          <div className="mt-4 flex flex-wrap gap-2 lg:hidden">{SECTION_LINKS.map((section,index)=><a key={section.id} href={'#' + section.id} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-2 text-xs transition hover:bg-surface-raised"><span className="font-mono text-content-muted">{String(index+1).padStart(2,'0')}</span>{sectionCompletion[section.id]?<CheckCircle2 size={13} className="text-state-success"/>:<Circle size={13} className="text-content-muted"/>}{section.label}</a>)}</div>
         </section>
       </Container>
       <Container className="py-8 sm:py-10">
