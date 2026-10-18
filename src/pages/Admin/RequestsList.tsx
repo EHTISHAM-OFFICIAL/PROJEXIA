@@ -26,6 +26,7 @@ export default function RequestsList() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [priority, setPriority] = useState('');
+  const [serviceType, setServiceType] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [trashingId, setTrashingId] = useState<string | null>(null);
@@ -75,6 +76,7 @@ export default function RequestsList() {
     return data.filter((request) => {
       if (status && request.status !== status) return false;
       if (priority && request.priority !== priority) return false;
+      if (serviceType && (request.serviceType ?? 'electronics') !== serviceType) return false;
       if (!term) return true;
       return [
         request.requestNumber,
@@ -86,7 +88,7 @@ export default function RequestsList() {
         .toLowerCase()
         .includes(term);
     });
-  }, [data, search, status, priority]);
+  }, [data, search, status, priority, serviceType]);
 
   const handleStatusChange = async (id: string, nextStatus: RequestStatus) => {
     setUpdatingId(id);
@@ -127,7 +129,7 @@ export default function RequestsList() {
         </div>
       )}
 
-      <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_190px_190px_auto]">
+      <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_170px_170px_190px_auto]">
         <TextInput
           type="search"
           value={search}
@@ -150,6 +152,14 @@ export default function RequestsList() {
           value={priority}
           aria-label="Filter by priority"
           onChange={(event) => setPriority(event.target.value)}
+          className="h-11 w-full"
+        />
+        <Select
+          options={[{ value: 'electronics', label: 'Electronics' }, { value: 'school-model', label: 'School models' }]}
+          placeholder="All service types"
+          value={serviceType}
+          aria-label="Filter by service type"
+          onChange={(event) => setServiceType(event.target.value)}
           className="h-11 w-full"
         />
         <Link
