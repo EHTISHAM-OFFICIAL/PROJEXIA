@@ -16,7 +16,7 @@ export function Footer() {
   const tracked = getTrackedRequest();
   const [schoolSettings, setSchoolSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
   useEffect(() => { let live = true; void schoolModelService.getSettings().then(s => { if (live) setSchoolSettings(s); }).catch(() => {}); return () => { live = false; }; }, []);
-  const visibleLinks = NAV_LINKS.filter(link => link.to !== '/school-projects' || (schoolSettings.enabled && schoolSettings.showInNavigation));
+  const visibleLinks = NAV_LINKS.filter(link => link.to === '/school-projects' ? schoolSettings.enabled && schoolSettings.showInNavigation : link.to === '/projects' ? schoolSettings.electronicsEnabled && schoolSettings.showElectronicsInNavigation : true);
 
   return (
     <footer className="mt-12 border-t border-line bg-surface/50 sm:mt-20">
