@@ -3,7 +3,7 @@ import { PageIntro } from '../../components/ui/PageIntro';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckCircle2, Copy, Clock3, Cpu, GraduationCap, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Copy, Clock3, Cpu, GraduationCap, ArrowRight, Circle, ClipboardList, ShieldCheck } from 'lucide-react';
 import { Container } from '../../components/ui/Container';
 import { Seo } from '../../components/ui/Seo';
 import { Button, ButtonLink } from '../../components/ui/Button';
@@ -122,6 +122,20 @@ export default function RequestProject() {
   const { handleSubmit, formState } = form;
   const { isSubmitting, errors } = formState;
   const errorCount = Object.keys(errors).length;
+  const watchedValues = form.watch();
+  const sectionCompletion: Record<string, boolean> = {
+    contact: Boolean(watchedValues.fullName?.trim() && watchedValues.email?.trim()),
+    basics: Boolean(watchedValues.projectTitle?.trim() && watchedValues.projectDescription?.trim()),
+    technical: Boolean(watchedValues.preferredPlatform?.length || watchedValues.connectivity?.length || watchedValues.sensors?.length || watchedValues.outputs?.length || watchedValues.powerSource || watchedValues.powerRequirements?.trim()),
+    software: Boolean(watchedValues.requiresMobileApp || watchedValues.requiresWebDashboard || watchedValues.requiresCloudDatabase || watchedValues.requiresNotifications || watchedValues.requiresRemoteControl || watchedValues.softwareNotes?.trim() || watchedValues.possibleLanguages?.length),
+    scale: Boolean(watchedValues.prototypeQuantity || watchedValues.estimatedQuantity || watchedValues.deploymentEnvironment),
+    budget: Boolean(watchedValues.budgetRange || watchedValues.budgetNotes?.trim()),
+    timeline: Boolean(watchedValues.desiredStartDate || watchedValues.desiredDeadline || watchedValues.timelineFlexibility || watchedValues.urgency !== 'Normal'),
+    references: Boolean(watchedValues.referenceLinks?.some((link) => link.trim()) || watchedValues.referenceDescription?.trim() || files.length),
+    additional: Boolean(watchedValues.specialRequirements?.trim() || watchedValues.additionalNotes?.trim() || watchedValues.hasExistingHardware || watchedValues.hasExistingCode || watchedValues.consultationRequired),
+    consent: Boolean(watchedValues.agreeToTerms && watchedValues.allowContact),
+  };
+  const completedSections = Object.values(sectionCompletion).filter(Boolean).length;
 
   const onSubmit = async (values: ProjectRequestFormValues) => {
     setSubmitError(null);
@@ -324,8 +338,18 @@ export default function RequestProject() {
           <Link to="/request-school-model" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-accent/30 px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent/10">Switch to School Charts & Models <ArrowRight size={15}/></Link>
         </div>
       </Container>
+      <Container className="pt-5">
+        <section className="rounded-2xl border border-line bg-surface/70 p-4 sm:p-5" aria-label="Request progress">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent"><ClipboardList size={20}/></span><div><p className="text-sm font-semibold">Your project brief</p><p className="mt-1 text-xs leading-relaxed text-content-muted">{completedSections} of {SECTION_LINKS.length} sections have details. Technical sections are optional — skip anything you’re unsure about.</p></div></div>
+            <span className="inline-flex items-center gap-2 text-sm font-medium text-content-secondary"><ShieldCheck size={16} className="text-accent"/> Private request · Quote after review</span>
+          </div>
+          <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-surface-raised" role="progressbar" aria-label="Project request sections completed" aria-valuemin={0} aria-valuemax={SECTION_LINKS.length} aria-valuenow={completedSections}><div className="h-full rounded-full bg-accent transition-[width]" style={{width: (completedSections / SECTION_LINKS.length * 100) + '%'}}/></div>
+          <div className="mt-4 flex flex-wrap gap-2">{SECTION_LINKS.map((section,index)=><a key={section.id} href={'#' + section.id} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-2 text-xs transition hover:bg-surface-raised"><span className="font-mono text-content-muted">{String(index+1).padStart(2,'0')}</span>{sectionCompletion[section.id]?<CheckCircle2 size={13} className="text-state-success"/>:<Circle size={13} className="text-content-muted"/>}{section.label}</a>)}</div>
+        </section>
+      </Container>
       <Container className="py-8 sm:py-10">
-        <div className="grid gap-12 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-16">
+        <div className="grid gap-8 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-12">
           <nav aria-label="Form sections" className="hidden lg:block">
             <div className="sticky top-24">
               <p className="text-sm font-medium text-content">Sections</p>
@@ -347,7 +371,7 @@ export default function RequestProject() {
             </div>
           </nav>
 
-          <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex min-w-0 flex-col gap-14">
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex min-w-0 flex-col gap-12">
             {submitError && <Alert tone="danger">{submitError}</Alert>}
 
             <SectionA form={form} />
