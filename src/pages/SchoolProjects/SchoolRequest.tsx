@@ -16,9 +16,9 @@ import type { SchoolModel } from '../../services/schoolModelService';
 import { useAuth } from '../../hooks/useAuth';
 
 const CUSTOM_MODEL: SchoolModel = {
-  id: 'custom', title: '', slug: 'custom', category: 'Others', subject: '', gradeRange: '',
-  shortDescription: '', description: '', materials: [], objectives: [], features: [], customizationOptions: [], setupInstructions: '', dimensions: '',
-  thumbnailUrl: '', galleryUrls: [], featured: false, published: false, seoTitle: '',
+  id: 'custom', title: '', slug: 'custom', category: 'Others', subcategory: '', modelType: 'Custom model', difficulty: '', status: 'Available for quote', subject: '', gradeRange: '',
+  shortDescription: '', description: '', problemStatement: '', workingPrinciple: '', howToUse: '', materials: [], objectives: [], features: [], customizationOptions: [], setupInstructions: '', maintenanceNotes: '', safetyNotes: '', components: [], specifications: [], tags: [], dimensions: '', estimatedBuildTime: '',
+  thumbnailUrl: '', heroImageUrl: '', galleryUrls: [], videoUrl: '', documentationUrl: '', featured: false, published: false, seoTitle: '',
   seoDescription: '', keywords: [], createdAt: null, updatedAt: null,
 };
 const SECTIONS = [
