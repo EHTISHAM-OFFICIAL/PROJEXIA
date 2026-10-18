@@ -55,7 +55,7 @@ export function FileUpload({ files, onChange, disabled = false }: FileUploadProp
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {
           event.preventDefault();
-          if (!disabled) addFiles(event.dataTransfer.files);
+          if (!disabled && pendingImages.length === 0) addFiles(event.dataTransfer.files);
         }}
         className="rounded-lg border border-dashed border-line bg-surface-raised px-4 py-6 text-center"
       >
@@ -82,7 +82,7 @@ export function FileUpload({ files, onChange, disabled = false }: FileUploadProp
         </p>
       </div>
 
-      {pendingImages[0] && <ImageProcessingDialog key={pendingImages[0].name + pendingImages[0].lastModified} file={pendingImages[0]} title="Prepare reference image" onCancel={() => setPendingImages([])} onUse={async (preparedFile) => { onChange([...files, preparedFile]); setPendingImages((current) => current.slice(1)); }} />}
+      {pendingImages[0] && <ImageProcessingDialog key={pendingImages[0].name + pendingImages[0].lastModified} file={pendingImages[0]} title="Prepare reference image" onCancel={() => setPendingImages([])} onUse={async (preparedFile) => { const validation = validateAttachment(preparedFile); if (!validation.valid) { const message = validation.error ?? "This prepared image cannot be attached."; setErrors((current) => [...current, message]); throw new Error(message); } onChange([...files, preparedFile]); setPendingImages((current) => current.slice(1)); }} />}
 
       {errors.length > 0 && (
         <ul className="flex flex-col gap-1" role="alert">
