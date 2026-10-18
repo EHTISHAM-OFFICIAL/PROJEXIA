@@ -95,14 +95,18 @@ export default function SchoolRequest() {
   }, [user, email, name]);
 
   const selectedModel = model?.id === 'custom' ? { ...CUSTOM_MODEL, title: customTitle.trim() || 'Custom school model / chart' } : model;
-  const filled = [
-    Boolean(name.trim() && email.trim()), Boolean(model && (model.id !== 'custom' || customTitle.trim())),
-    Boolean(details.trim().length >= 20), Boolean(quantity.trim() && Number(quantity) >= 1),
-    Boolean(budgetRange || budgetNotes.trim()), Boolean(deadline || startDate),
-    Boolean(referenceLinks.some((link) => link.trim()) || files.length),
-    Boolean(modelFormat !== 'Not sure yet' || interaction !== 'Not sure yet' || preferredMaterials.trim() || labelLanguage !== 'English' || assemblyRequirement !== 'Not sure' || displayEnvironment !== 'Classroom' || powerRequirements.trim()),
-    consent,
-  ].filter(Boolean).length;
+  const sectionCompletion: Record<string, boolean> = {
+    'school-contact': Boolean(name.trim() && email.trim()),
+    'school-model-choice': Boolean(model && (model.id !== 'custom' || customTitle.trim())),
+    'school-learning': Boolean(details.trim().length >= 20 || purpose.trim()),
+    'school-build-requirements': Boolean(modelFormat !== 'Not sure yet' || interaction !== 'Not sure yet' || preferredMaterials.trim() || labelLanguage !== 'English' || assemblyRequirement !== 'Not sure' || displayEnvironment !== 'Classroom' || powerRequirements.trim()),
+    'school-specifications': Boolean(quantity.trim() && Number.isInteger(Number(quantity)) && Number(quantity) >= 1),
+    'school-budget-timeline': Boolean(budgetRange || budgetNotes.trim() || deadline || startDate),
+    'school-references': Boolean(referenceLinks.some((link) => link.trim()) || files.length || referenceDescription.trim()),
+    'school-extra': Boolean(customization.trim() || additionalNotes.trim()),
+    'school-consent': consent,
+  };
+  const filled = Object.values(sectionCompletion).filter(Boolean).length;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
