@@ -36,6 +36,7 @@ import {
   type ProjectRequestFormValues,
 } from "../../utils/validation";
 import { toUserMessage } from "../../utils/errors";
+import { useToast } from "../../contexts/ToastContext";
 import { saveTrackedRequest } from "../../utils/trackedRequest";
 import { SITE } from "../../constants/site";
 import { useAuth } from "../../hooks/useAuth";
@@ -115,6 +116,7 @@ const SECTION_LINKS = [
 ];
 
 export default function RequestProject() {
+  const { notify } = useToast();
   const { settings } = useSiteSettings();
   const [files, setFiles] = useState<File[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -246,14 +248,12 @@ export default function RequestProject() {
         editDeadline,
         editHours,
       });
+      notify({ title: 'Project request submitted', message: `Request ${created.requestNumber} was received successfully.`, tone: 'success' });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
-      setSubmitError(
-        toUserMessage(
-          error,
-          "Your request could not be sent. Please try again in a moment.",
-        ),
-      );
+      const message = toUserMessage(error, "Your request could not be sent. Please try again in a moment.");
+      setSubmitError(message);
+      notify({ title: 'Project request failed', message, tone: 'error' });
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
