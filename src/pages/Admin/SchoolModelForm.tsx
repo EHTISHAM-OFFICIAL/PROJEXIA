@@ -16,6 +16,7 @@ import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/scho
 import type { SchoolModelComponent, SchoolModelDraft, SchoolModelSpecification, SchoolSettings } from '../../services/schoolModelService';
 import { imgbbService } from '../../services/imgbbService';
 import { slugify } from '../../utils/slug';
+import { useToast } from '../../contexts/ToastContext';
 
 const EMPTY: SchoolModelDraft = {
   title: '', slug: '', category: 'Science Charts', subcategory: '', modelType: 'Static Chart', difficulty: 'Easy', status: 'Available for quote', subject: '', gradeRange: '',
@@ -31,6 +32,7 @@ export default function SchoolModelForm() {
   const { id } = useParams<{ id: string }>();
   const editing = Boolean(id);
   const navigate = useNavigate();
+  const { notify } = useToast();
   const [draft, setDraft] = useState<SchoolModelDraft>(EMPTY);
   const [slugTouched, setSlugTouched] = useState(false);
   const [settings, setSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
@@ -188,9 +190,12 @@ export default function SchoolModelForm() {
     setSaving(true);
     try {
       await schoolModelService.save({ ...draft, title: draft.title.trim(), slug: draft.slug.trim(), materials: lines(materials), objectives: lines(objectives), features: lines(features), customizationOptions: lines(customizationOptions), tags: lines(tags.replace(/,/g, '\n')), keywords: lines(keywords.replace(/,/g, '\n')), components: draft.components.filter((item) => item.name.trim()), specifications: draft.specifications.filter((item) => item.label.trim()), galleryUrls: lines(gallery), published: publish ?? draft.published }, id);
+      notify({ title: publish ? 'School model published' : editing ? 'School model changes saved' : 'School model draft saved', message: 'Your school model has been saved successfully.', tone: 'success' });
       navigate('/admin/school-models', { replace: true, state: { notice: publish ? 'School model saved and published.' : editing ? 'School model updated.' : 'School model created.' } });
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Could not save this school model.');
+      const message = caught instanceof Error ? caught.message : 'Could not save this school model.';
+      setError(message);
+      notify({ title: 'Could not save school model', message, tone: 'error' });
     } finally { setSaving(false); }
   };
 
