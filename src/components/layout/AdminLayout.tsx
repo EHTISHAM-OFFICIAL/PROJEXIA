@@ -21,18 +21,32 @@ import { Wordmark } from './Wordmark';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../utils/cn';
 
-const ADMIN_LINKS = [
-  { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/admin/projects', label: 'Projects', icon: FolderKanban, end: false },
-  { to: '/admin/school-models', label: 'School Models', icon: GraduationCap, end: false },
-  { to: '/admin/project-library', label: 'Project Library', icon: Database, end: false },
-  { to: '/admin/requests', label: 'Requests', icon: Inbox, end: false },
-  { to: '/admin/meetings', label: 'Meetings', icon: CalendarDays, end: false },
-  { to: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote, end: false },
-  { to: '/admin/blog', label: 'Blog', icon: Newspaper, end: false },
-  { to: '/admin/banner', label: 'Banner', icon: Megaphone, end: false },
-  { to: '/admin/settings', label: 'Settings', icon: Settings, end: false },
-  { to: '/admin/request-status', label: 'Request Status', icon: ClipboardList, end: false },
+const ADMIN_GROUPS = [
+  {
+    label: 'Overview',
+    links: [
+      { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    ],
+  },
+  {
+    label: 'Content management',
+    links: [
+      { to: '/admin/projects', label: 'Projects', icon: FolderKanban, end: false },
+      { to: '/admin/school-models', label: 'School Models', icon: GraduationCap, end: false },
+      { to: '/admin/project-library', label: 'Project Library', icon: Database, end: false },
+      { to: '/admin/blog', label: 'Blog', icon: Newspaper, end: false },
+      { to: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote, end: false },
+      { to: '/admin/banner', label: 'Banner', icon: Megaphone, end: false },
+    ],
+  },
+  {
+    label: 'Customer activity',
+    links: [
+      { to: '/admin/requests', label: 'Requests', icon: Inbox, end: false },
+      { to: '/admin/request-status', label: 'Request Status', icon: ClipboardList, end: false },
+      { to: '/admin/meetings', label: 'Meetings', icon: CalendarDays, end: false },
+    ],
+  },
 ];
 
 export function AdminLayout() {
@@ -54,33 +68,83 @@ export function AdminLayout() {
   };
 
   const nav = (
-    <nav className="flex flex-col gap-1" aria-label="Admin">
-      {ADMIN_LINKS.map((link) => (
+    <nav className="flex flex-col gap-5" aria-label="Admin">
+      {ADMIN_GROUPS.map((group) => (
+        <section key={group.label} aria-label={group.label}>
+          <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-content-muted">
+            {group.label}
+          </p>
+          <div className="flex flex-col gap-1">
+            {group.links.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) =>
+                  cn(
+                    'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50',
+                    isActive
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-content-secondary hover:bg-surface-raised hover:text-content'
+                  )
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <span className="absolute bottom-2 left-0 top-2 w-0.5 rounded-full bg-accent" aria-hidden="true" />
+                    )}
+                    <link.icon
+                      size={18}
+                      strokeWidth={isActive ? 2.2 : 1.8}
+                      aria-hidden="true"
+                      className={cn(
+                        'shrink-0 transition-colors',
+                        isActive ? 'text-accent' : 'text-content-muted group-hover:text-content-secondary'
+                      )}
+                    />
+                    <span className="min-w-0 flex-1">{link.label}</span>
+                    {isActive && <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />}
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </div>
+        </section>
+      ))}
+      <div className="border-t border-line/80 pt-3">
         <NavLink
-          key={link.to}
-          to={link.to}
-          end={link.end}
+          to="/admin/settings"
           onClick={() => setSidebarOpen(false)}
           className={({ isActive }) =>
             cn(
-              'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
+              'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50',
               isActive
                 ? 'bg-accent/10 text-accent'
                 : 'text-content-secondary hover:bg-surface-raised hover:text-content'
             )
           }
         >
-          <link.icon size={17} aria-hidden="true" />
-          {link.label}
+          {({ isActive }) => (
+            <>
+              {isActive && (
+                <span className="absolute bottom-2 left-0 top-2 w-0.5 rounded-full bg-accent" aria-hidden="true" />
+              )}
+              <Settings size={18} strokeWidth={isActive ? 2.2 : 1.8} aria-hidden="true" className={cn('shrink-0', isActive ? 'text-accent' : 'text-content-muted group-hover:text-content-secondary')} />
+              <span className="min-w-0 flex-1">Settings</span>
+              {isActive && <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />}
+            </>
+          )}
         </NavLink>
-      ))}
+      </div>
     </nav>
   );
 
   return (
     <>
-      <div className="min-h-screen lg:flex">
-      <header className="flex h-14 items-center justify-between border-b border-line px-4 lg:hidden">
+      <div className="min-h-screen bg-surface lg:flex">
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-surface/95 px-4 backdrop-blur lg:hidden">
         <Link to="/admin">
           <Wordmark size="sm" />
         </Link>
@@ -96,7 +160,7 @@ export function AdminLayout() {
       </header>
 
       {sidebarOpen && (
-        <div className="border-b border-line p-4 lg:hidden">
+        <div className="border-b border-line bg-surface p-4 shadow-lg lg:hidden">
           {nav}
           <button
             type="button"
@@ -109,8 +173,8 @@ export function AdminLayout() {
         </div>
       )}
 
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-line p-4 lg:flex">
-        <Link to="/admin" className="mb-8 px-1">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-line bg-surface p-4 lg:flex">
+        <Link to="/admin" className="mb-6 rounded-xl px-2 py-3 transition-colors hover:bg-surface-raised">
           <Wordmark size="sm" />
         </Link>
         {nav}
@@ -135,7 +199,7 @@ export function AdminLayout() {
         </div>
       </aside>
 
-      <main className="min-w-0 flex-1 p-5 sm:p-8">
+      <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
         <Outlet />
       </main>
       </div>
