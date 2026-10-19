@@ -29,6 +29,7 @@ import { requestSettingsService, DEFAULT_CUSTOMER_REQUEST_EDIT_WINDOW_HOURS, MIN
 import type { ThemeColors } from "../../types/theme";
 import { toUserMessage } from "../../utils/errors";
 import { SiteIdentitySettings } from "./SiteIdentitySettings";
+import { useToast } from "../../contexts/ToastContext";
 
 /* ================================================================
    COLOR GROUPS
@@ -273,6 +274,7 @@ function ColorEditor({
 
 export default function Settings() {
   const { theme, siteTheme, setSiteTheme, applyThemeColors } = useTheme();
+  const { notify } = useToast();
 
   /* ================================================================
      IMGBB STATE
@@ -399,8 +401,11 @@ export default function Settings() {
     try {
       await imgbbService.saveApiKeyOverride(apiKey || null);
       setImgbbSaved(true);
+      notify({ title: "Image hosting settings saved", message: "New uploads will use the updated configuration.", tone: "success" });
     } catch (caught) {
-      setImgbbError(toUserMessage(caught, "Could not save the API key."));
+      const message = toUserMessage(caught, "Could not save the API key.");
+      setImgbbError(message);
+      notify({ title: "Could not save image hosting settings", message, tone: "error" });
     } finally {
       setImgbbSaving(false);
     }
@@ -491,8 +496,11 @@ export default function Settings() {
       });
       setRequestEditHours(hours);
       setRequestSecuritySaved(true);
+      notify({ title: "Request security settings saved", message: "The customer editing window has been updated.", tone: "success" });
     } catch (caught) {
-      setRequestSecurityError(toUserMessage(caught, "Could not save the customer request settings."));
+      const message = toUserMessage(caught, "Could not save the customer request settings.");
+      setRequestSecurityError(message);
+      notify({ title: "Could not save request security", message, tone: "error" });
     } finally {
       setRequestSecuritySaving(false);
     }
@@ -542,8 +550,11 @@ export default function Settings() {
       });
 
       setThemeSaved(true);
+      notify({ title: "Appearance settings saved", message: "Your website color theme has been updated.", tone: "success" });
     } catch (caught) {
-      setThemeError(toUserMessage(caught, "Could not save the theme."));
+      const message = toUserMessage(caught, "Could not save the theme.");
+      setThemeError(message);
+      notify({ title: "Could not save appearance settings", message, tone: "error" });
     } finally {
       setThemeSaving(false);
     }
@@ -585,8 +596,9 @@ export default function Settings() {
           PAGE HEADER
           ============================================================ */}
 
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+      <header className="rounded-2xl border border-line bg-surface p-5 sm:p-7">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Admin workspace</p>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight">Settings</h1>
 
         <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-content-secondary">
           Site-wide configuration that doesn't belong to a single project or
@@ -594,13 +606,30 @@ export default function Settings() {
         </p>
       </header>
 
+
+      <nav aria-label="Settings sections" className="sticky top-2 z-20 mt-5 rounded-2xl border border-line bg-bg/90 p-2 shadow-sm backdrop-blur-lg">
+        <div className="flex gap-2 overflow-x-auto pb-0.5">
+          {[
+            ["#identity-settings", "Website & social"],
+            ["#image-hosting", "Image uploads"],
+            ["#email-notifications", "Email alerts"],
+            ["#account-security", "Account security"],
+            ["#appearance-settings", "Appearance"],
+          ].map(([href, label]) => (
+            <a key={href} href={href} className="shrink-0 rounded-xl px-3 py-2 text-xs font-medium text-content-secondary transition-colors hover:bg-surface-raised hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+              {label}
+            </a>
+          ))}
+        </div>
+      </nav>
+
       <SiteIdentitySettings />
 
       {/* ============================================================
           IMGBB
           ============================================================ */}
 
-      <section className="mt-10 max-w-2xl">
+      <section id="image-hosting" className="mt-10 scroll-mt-28 max-w-4xl rounded-2xl border border-line bg-surface/40 p-5 sm:p-7">
         <div className="flex items-center gap-2.5">
           <ImageIcon
             size={17}
@@ -679,7 +708,7 @@ export default function Settings() {
           EMAIL NOTIFICATIONS
           ============================================================ */}
 
-      <section className="mt-12 max-w-2xl border-t border-line pt-10">
+      <section id="email-notifications" className="mt-8 scroll-mt-28 max-w-4xl rounded-2xl border border-line bg-surface/40 p-5 sm:p-7">
         <div className="flex items-center gap-2.5">
           <Mail size={17} className="text-content-muted" aria-hidden="true" />
 
@@ -835,7 +864,7 @@ export default function Settings() {
           CUSTOMER ACCOUNTS & REQUEST SECURITY
           ============================================================ */}
 
-      <section className="mt-12 max-w-3xl border-t border-line pt-10">
+      <section id="account-security" className="mt-8 scroll-mt-28 max-w-4xl rounded-2xl border border-line bg-surface/40 p-5 sm:p-7">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
             <ShieldCheck size={17} className="text-accent" aria-hidden="true" />
@@ -906,7 +935,7 @@ export default function Settings() {
           APPEARANCE
           ============================================================ */}
 
-      <section className="mt-14 max-w-6xl border-t border-line pt-10">
+      <section id="appearance-settings" className="mt-8 scroll-mt-28 max-w-6xl rounded-2xl border border-line bg-surface/40 p-5 sm:p-7">
         {/* Section heading */}
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
