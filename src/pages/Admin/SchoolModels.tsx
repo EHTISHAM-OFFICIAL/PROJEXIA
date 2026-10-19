@@ -4,12 +4,14 @@ import { Link } from 'react-router-dom';
 import { Seo } from '../../components/ui/Seo';
 import { Button, ButtonLink } from '../../components/ui/Button';
 import { Alert } from '../../components/ui/Alert';
+import { useToast } from '../../contexts/ToastContext';
 import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/schoolModelService';
 import type { SchoolModel, SchoolSettings } from '../../services/schoolModelService';
 
 const lines = (value: string) => [...new Set(value.split('\n').map((item) => item.trim()).filter(Boolean))];
 
 export default function SchoolModelsAdmin() {
+  const { notify } = useToast();
   const [items, setItems] = useState<SchoolModel[]>([]);
   const [settings, setSettings] = useState<SchoolSettings>(DEFAULT_SCHOOL_SETTINGS);
   const [categories, setCategories] = useState(DEFAULT_SCHOOL_SETTINGS.categories.join('\n'));
