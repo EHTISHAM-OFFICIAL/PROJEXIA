@@ -60,6 +60,7 @@ const EMPTY_FORM: FormState = {
 };
 
 export default function BannerSettings() {
+  const { notify } = useToast();
   const { data, loading, reload } = useBanner();
 
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
@@ -119,9 +120,12 @@ export default function BannerSettings() {
       });
 
       setSaved(true);
+      notify({ title: 'Announcement banner saved', message: 'Your public banner settings have been updated.', tone: 'success' });
       reload();
     } catch (caught) {
-      setError(toUserMessage(caught, "The banner could not be saved."));
+      const message = toUserMessage(caught, "The banner could not be saved.");
+      setError(message);
+      notify({ title: "Could not save banner", message, tone: "error" });
     } finally {
       setSaving(false);
     }
