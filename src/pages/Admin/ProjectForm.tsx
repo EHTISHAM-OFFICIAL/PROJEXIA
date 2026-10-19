@@ -27,6 +27,7 @@ import {
 import { slugify } from '../../utils/slug';
 import { toDateInputValue } from '../../utils/formatting';
 import { toUserMessage } from '../../utils/errors';
+import { useToast } from '../../contexts/ToastContext';
 import type {
   GalleryImage,
   ProjectComponent,
@@ -101,6 +102,7 @@ export default function ProjectForm() {
   const { id } = useParams<{ id: string }>();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
+  const { notify } = useToast();
   const existing = useProjectById(id);
 
   const [draft, setDraft] = useState<ProjectDraft>(EMPTY_DRAFT);
@@ -319,9 +321,12 @@ export default function ProjectForm() {
       } else {
         await projectService.createProject(payload);
       }
+      notify({ title: publish ?? draft.published ? 'Project published successfully' : isEdit ? 'Project changes saved' : 'Project draft saved', message: 'Your project changes have been saved.', tone: 'success' });
       navigate('/admin/projects');
     } catch (caught) {
-      setError(toUserMessage(caught, 'The project could not be saved.'));
+      const message = toUserMessage(caught, 'The project could not be saved.');
+      setError(message);
+      notify({ title: 'Could not save project', message, tone: 'error' });
     } finally {
       setSaving(false);
     }
