@@ -177,7 +177,7 @@ export function AdminLayout() {
         <Link to="/admin" className="mb-6 rounded-xl px-2 py-3 transition-colors hover:bg-surface-raised">
           <Wordmark size="sm" />
         </Link>
-        {nav}
+        <div className="min-h-0 flex-1 overflow-y-auto pb-4 pr-1">{nav}</div>
         <div className="mt-auto border-t border-line pt-4">
           <p className="truncate px-3 text-xs text-content-muted" title={user?.email ?? ''}>
             {user?.email}
