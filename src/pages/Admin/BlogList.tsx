@@ -12,9 +12,11 @@ import { useAllPosts } from '../../hooks/useBlog';
 import { blogService } from '../../services/blogService';
 import { formatShortDate } from '../../utils/formatting';
 import { toUserMessage } from '../../utils/errors';
+import { useToast } from '../../contexts/ToastContext';
 import type { BlogPost } from '../../types/blog';
 
 export default function BlogList() {
+  const { notify } = useToast();
   const { data, loading, error, reload } = useAllPosts();
   const [pendingDelete, setPendingDelete] = useState<BlogPost | null>(null);
   const [working, setWorking] = useState<string | null>(null);
@@ -25,9 +27,12 @@ export default function BlogList() {
     setActionError(null);
     try {
       await action();
+      notify({ title: 'Blog action completed', message: 'The article change was saved successfully.', tone: 'success' });
       reload();
     } catch (caught) {
-      setActionError(toUserMessage(caught));
+      const message = toUserMessage(caught);
+      setActionError(message);
+      notify({ title: 'Blog action failed', message, tone: 'error' });
     } finally {
       setWorking(null);
     }
