@@ -15,6 +15,7 @@ import { PROJECT_CATEGORIES } from '../../constants/categories';
 import { STATUS_LABEL, STATUS_TONE } from '../../constants/projectOptions';
 import { formatShortDate } from '../../utils/formatting';
 import { toUserMessage } from '../../utils/errors';
+import { useToast } from '../../contexts/ToastContext';
 import type { Project } from '../../types/project';
 
 const VISIBILITY_OPTIONS = [
@@ -23,6 +24,7 @@ const VISIBILITY_OPTIONS = [
 ];
 
 export default function ProjectsList() {
+  const { notify } = useToast();
   const { data, loading, error, reload } = useAllProjects();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
@@ -48,9 +50,12 @@ export default function ProjectsList() {
     setActionError(null);
     try {
       await action();
+      notify({ title: 'Project action completed', message: 'The project change was saved successfully.', tone: 'success' });
       reload();
     } catch (caught) {
-      setActionError(toUserMessage(caught));
+      const message = toUserMessage(caught);
+      setActionError(message);
+      notify({ title: 'Project action failed', message, tone: 'error' });
     } finally {
       setWorking(null);
     }
