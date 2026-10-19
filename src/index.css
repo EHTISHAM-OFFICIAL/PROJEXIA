@@ -382,3 +382,11 @@ REDUCED-MOTION HANDLING
 @keyframes mectec-p1{0%{transform:translate(90px,112px);opacity:0}10%{opacity:1}55%{transform:translate(320px,200px);opacity:1}100%{transform:translate(510px,112px);opacity:0}}@keyframes mectec-p2{0%{transform:translate(90px,196px);opacity:0}10%{opacity:1}55%{transform:translate(320px,200px);opacity:1}100%{transform:translate(542px,180px);opacity:0}}@keyframes mectec-p3{0%{transform:translate(112px,292px);opacity:0}10%{opacity:1}55%{transform:translate(320px,200px);opacity:1}100%{transform:translate(566px,270px);opacity:0}}@keyframes mectec-p4{0%{transform:translate(510px,112px);opacity:0}10%{opacity:1}55%{transform:translate(320px,200px);opacity:1}100%{transform:translate(90px,112px);opacity:0}}
 [data-theme="light"] .mectec-energy-hero{box-shadow:inset 0 0 90px rgb(var(--color-bg)/.4),0 26px 80px -46px rgb(var(--color-accent)/.18)}
 @media(prefers-reduced-motion:reduce){.mectec-energy-hero *{animation:none!important}}
+
+
+@keyframes toast-enter {
+  from { opacity: 0; transform: translate3d(0, -12px, 0) scale(0.98); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+.toast-enter { position: relative; animation: toast-enter 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .toast-enter { animation: none; } }
