@@ -66,8 +66,8 @@ export default function SchoolModelsAdmin() {
 
   const run = async (id: string, action: () => Promise<void>, success: string) => {
     setWorking(id); setError(''); setNotice('');
-    try { await action(); setNotice(success); await reload(); }
-    catch (caught) { setError(caught instanceof Error ? caught.message : 'The action could not be completed.'); }
+    try { await action(); setNotice(success); notify({ title: success, message: 'The catalog has been updated.', tone: 'success' }); await reload(); }
+    catch (caught) { const message = caught instanceof Error ? caught.message : 'The action could not be completed.'; setError(message); notify({ title: 'Catalog action failed', message, tone: 'error' }); }
     finally { setWorking(null); }
   };
 
@@ -75,8 +75,8 @@ export default function SchoolModelsAdmin() {
     setError(''); setNotice('');
     const next = { ...settings, categories: lines(categories), subcategories: lines(subcategories), subjects: lines(subjects), modelTypes: lines(modelTypes), difficulties: lines(difficulties), statuses: lines(statuses) };
     if (!next.categories.length) { setError('Add at least one category before saving.'); return; }
-    try { await schoolModelService.saveSettings(next); setSettings(next); setCategories(next.categories.join('\n')); setSubcategories(next.subcategories.join('\n')); setSubjects(next.subjects.join('\n')); setModelTypes(next.modelTypes.join('\n')); setDifficulties(next.difficulties.join('\n')); setStatuses(next.statuses.join('\n')); setNotice('Catalog settings saved.'); }
-    catch (caught) { setError(caught instanceof Error ? caught.message : 'Could not save settings.'); }
+    try { await schoolModelService.saveSettings(next); setSettings(next); setCategories(next.categories.join('\n')); setSubcategories(next.subcategories.join('\n')); setSubjects(next.subjects.join('\n')); setModelTypes(next.modelTypes.join('\n')); setDifficulties(next.difficulties.join('\n')); setStatuses(next.statuses.join('\n')); setNotice('Catalog settings saved.'); notify({ title: 'Catalog settings saved', message: 'School-model options and visibility settings are updated.', tone: 'success' }); }
+    catch (caught) { const message = caught instanceof Error ? caught.message : 'Could not save settings.'; setError(message); notify({ title: 'Could not save catalog settings', message, tone: 'error' }); }
   };
 
   const remove = async (item: SchoolModel) => {
