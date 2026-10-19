@@ -15,6 +15,7 @@ import { blogService } from '../../services/blogService';
 import { imgbbService } from '../../services/imgbbService';
 import { slugify } from '../../utils/slug';
 import { toUserMessage } from '../../utils/errors';
+import { useToast } from '../../contexts/ToastContext';
 import { Prose } from '../../components/projects/CaseStudySection';
 import type { BlogPostDraft } from '../../types/blog';
 
@@ -37,6 +38,7 @@ export default function BlogForm() {
   const { id } = useParams<{ id: string }>();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
+  const { notify } = useToast();
   const existing = usePostById(id);
 
   const [draft, setDraft] = useState<BlogPostDraft>(EMPTY_DRAFT);
@@ -102,9 +104,12 @@ export default function BlogForm() {
       if (isEdit && id) await blogService.updatePost(id, payload);
       else await blogService.createPost(payload);
 
+      notify({ title: publish ?? draft.published ? 'Article published successfully' : isEdit ? 'Article changes saved' : 'Article draft saved', message: 'Your blog post has been saved.', tone: 'success' });
       navigate('/admin/blog');
     } catch (caught) {
-      setError(toUserMessage(caught, 'The post could not be saved.'));
+      const message = toUserMessage(caught, 'The post could not be saved.');
+      setError(message);
+      notify({ title: 'Could not save article', message, tone: 'error' });
     } finally {
       setSaving(false);
     }
