@@ -13,6 +13,7 @@ import { Select, TextArea, TextInput } from '../../components/forms/Inputs';
 import { meetingService } from '../../services/meetingService';
 import { toUserMessage } from '../../utils/errors';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../contexts/ToastContext';
 
 const schema = z.object({
   fullName: z.string().trim().min(2, 'Enter your full name.').max(100),
@@ -38,6 +39,7 @@ const timezones = [
 type FormValues = z.infer<typeof schema>;
 
 export default function BookMeeting() {
+  const { notify } = useToast();
   const [sent,setSent]=useState(false); const [error,setError]=useState<string|null>(null); const { user } = useAuth();
   const {register,handleSubmit,reset,formState:{errors,isSubmitting}}=useForm<FormValues>({
     resolver:zodResolver(schema),
@@ -66,8 +68,8 @@ export default function BookMeeting() {
   }
   const onSubmit=async(values:FormValues)=>{
     setError(null); if(values.website){setSent(true);return;}
-    try { const {website: _website,...meeting}=values; await meetingService.createMeeting(meeting); reset(); setSent(true); }
-    catch(e){setError(toUserMessage(e,'Your meeting request could not be submitted. Please try again.'));}
+    try { const {website: _website,...meeting}=values; await meetingService.createMeeting(meeting); reset(); setSent(true); notify({ title: 'Meeting request received', message: 'Your preferred time has been sent for review.', tone: 'success' }); }
+    catch(e){const message=toUserMessage(e,'Your meeting request could not be submitted. Please try again.');setError(message);notify({ title: 'Meeting request failed', message, tone: 'error' });}
   };
   return <>
     <Seo title="Book a Meeting with ProjexiaHub" description="Request a meeting with ProjexiaHub to discuss an electronics project, technical question, or existing project request." path="/book-meeting"/>
