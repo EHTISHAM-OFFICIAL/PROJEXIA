@@ -14,9 +14,11 @@ import { contactSchema, type ContactFormValues } from '../../utils/validation';
 import { toUserMessage } from '../../utils/errors';
 import { SITE, whatsappLink } from '../../constants/site';
 import { useSiteSettings } from '../../contexts/SiteSettingsContext';
+import { useToast } from '../../contexts/ToastContext';
 
 export default function Contact() {
   const { settings } = useSiteSettings();
+  const { notify } = useToast();
   const [submitState, setSubmitState] = useState<'idle' | 'sent'>('idle');
   const [submitError, setSubmitError] = useState<string | null>(null);
   const whatsapp = settings.showWhatsapp ? whatsappLink(`Hello ${settings.name}, I have a question about a project.`, settings.whatsapp) : null;
@@ -43,8 +45,11 @@ export default function Contact() {
       await contactService.sendMessage(values);
       reset();
       setSubmitState('sent');
+      notify({ title: 'Message sent successfully', message: 'Your message has been received.', tone: 'success' });
     } catch (error) {
-      setSubmitError(toUserMessage(error, 'Your message could not be sent. Please try again.'));
+      const message = toUserMessage(error, 'Your message could not be sent. Please try again.');
+      setSubmitError(message);
+      notify({ title: 'Message could not be sent', message, tone: 'error' });
     }
   };
 
