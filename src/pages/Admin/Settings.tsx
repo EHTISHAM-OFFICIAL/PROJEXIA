@@ -423,8 +423,11 @@ export default function Settings() {
     try {
       await emailNotificationService.sendTestEmail();
       setEmailSaved(true);
+      notify({ title: "Test email sent", message: "The EmailJS test completed successfully.", tone: "success" });
     } catch (caught) {
-      setEmailError(toUserMessage(caught, "The test email could not be sent. Check your EmailJS settings and template."));
+      const message = toUserMessage(caught, "The test email could not be sent. Check your EmailJS settings and template.");
+      setEmailError(message);
+      notify({ title: "Test email failed", message, tone: "error" });
     } finally {
       setEmailTesting(false);
     }
@@ -438,13 +441,11 @@ export default function Settings() {
     try {
       await emailNotificationService.sendProjectRequestTestEmail();
       setEmailSaved(true);
+      notify({ title: "Project request test sent", message: "The project-request email test completed successfully.", tone: "success" });
     } catch (caught) {
-      setEmailError(
-        toUserMessage(
-          caught,
-          "The project-request test email could not be sent. Check EmailJS History for the exact failure.",
-        ),
-      );
+      const message = toUserMessage(caught, "The project-request test email could not be sent. Check EmailJS History for the exact failure.");
+      setEmailError(message);
+      notify({ title: "Project request test failed", message, tone: "error" });
     } finally {
       setProjectEmailTesting(false);
     }
@@ -458,10 +459,11 @@ export default function Settings() {
     try {
       await emailNotificationService.saveConfigOverride(emailConfig);
       setEmailSaved(true);
+      notify({ title: "Email notification settings saved", message: "Your updated configuration is now active.", tone: "success" });
     } catch (caught) {
-      setEmailError(
-        toUserMessage(caught, "Could not save the email settings."),
-      );
+      const message = toUserMessage(caught, "Could not save the email settings.");
+      setEmailError(message);
+      notify({ title: "Could not save email settings", message, tone: "error" });
     } finally {
       setEmailSaving(false);
     }
