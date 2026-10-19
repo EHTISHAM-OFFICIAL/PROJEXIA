@@ -22,6 +22,7 @@ import {
 } from "../../services/siteSettingsService";
 import { toUserMessage } from "../../utils/errors";
 import { imgbbService } from "../../services/imgbbService";
+import { useToast } from "../../contexts/ToastContext";
 
 function VisibilityToggle({
   id,
@@ -53,6 +54,7 @@ function VisibilityToggle({
 
 export function SiteIdentitySettings() {
   const { settings, saveSettings } = useSiteSettings();
+  const { notify } = useToast();
   const [draft, setDraft] = useState<SiteSettings>(settings);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -150,17 +152,18 @@ export function SiteIdentitySettings() {
         address: draft.address.trim(),
       });
       setSaved(true);
+      notify({ title: "Website settings saved", message: "Brand identity, public contact details, social links and project card display settings are updated.", tone: "success" });
     } catch (caught) {
-      setError(
-        toUserMessage(caught, "Could not save the website identity settings."),
-      );
+      const message = toUserMessage(caught, "Could not save the website identity settings.");
+      setError(message);
+      notify({ title: "Could not save website settings", message, tone: "error" });
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <section className="mt-10 max-w-4xl">
+    <section id="identity-settings" className="mt-8 scroll-mt-28 max-w-6xl">
       <div className="flex items-center gap-2.5">
         <Globe2 size={17} className="text-content-muted" aria-hidden="true" />
         <div>
