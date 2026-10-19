@@ -11,9 +11,11 @@ import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { useAllTestimonials } from '../../hooks/useTestimonials';
 import { testimonialService } from '../../services/testimonialService';
 import { toUserMessage } from '../../utils/errors';
+import { useToast } from '../../contexts/ToastContext';
 import type { Testimonial } from '../../types/testimonial';
 
 export default function TestimonialsList() {
+  const { notify } = useToast();
   const { data, loading, error, reload } = useAllTestimonials();
   const [pendingDelete, setPendingDelete] = useState<Testimonial | null>(null);
   const [working, setWorking] = useState<string | null>(null);
@@ -24,9 +26,12 @@ export default function TestimonialsList() {
     setActionError(null);
     try {
       await action();
+      notify({ title: 'Testimonial action completed', message: 'The change was saved successfully.', tone: 'success' });
       reload();
     } catch (caught) {
-      setActionError(toUserMessage(caught));
+      const message = toUserMessage(caught);
+      setActionError(message);
+      notify({ title: 'Testimonial action failed', message, tone: 'error' });
     } finally {
       setWorking(null);
     }
