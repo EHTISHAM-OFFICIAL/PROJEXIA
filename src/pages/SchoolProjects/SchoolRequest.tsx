@@ -104,8 +104,13 @@ export default function SchoolRequest() {
     'school-extra': Boolean(customization.trim() || additionalNotes.trim()),
     'school-consent': consent,
   };
-  const visibleSections = requestMode === 'quick' ? SECTIONS.filter((section) => ['school-contact', 'school-model-choice', 'school-learning', 'school-specifications', 'school-consent'].includes(section.id)) : SECTIONS;
-  const sidebarSections = requestMode === 'quick' ? visibleSections.filter((section) => ['school-contact', 'school-model-choice', 'school-consent'].includes(section.id)) : visibleSections;
+  // Quick mode keeps the form's essential fields while the sidebar stays at three checkpoints.
+  const visibleSections = requestMode === 'quick'
+    ? SECTIONS.filter(({ id }) => ['school-contact', 'school-model-choice', 'school-learning', 'school-specifications', 'school-consent'].includes(id))
+    : SECTIONS;
+  const sidebarSections = requestMode === 'quick'
+    ? SECTIONS.filter(({ id }) => id === 'school-contact' || id === 'school-model-choice' || id === 'school-consent')
+    : SECTIONS;
   const filled = Object.entries(sectionCompletion).filter(([id, complete]) => complete && sidebarSections.some((section) => section.id === id)).length;
 
   const submit = async (event: FormEvent) => {
