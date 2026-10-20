@@ -240,6 +240,7 @@ export default function SchoolRequest() {
               </div>
               <Field label="Power, electronics or special mechanism requirements" hint="Mention a power source, moving parts, switches, lighting, sound or other practical constraints."><TextArea rows={3} maxLength={600} value={powerRequirements} onChange={(e) => setPowerRequirements(e.target.value)} placeholder="e.g. battery powered, safe for classroom use, no exposed wiring, easy to transport"/></Field>
             </FormSection>
+            </>}
 
             <FormSection id="school-specifications" step={5} title="Size, quantity & delivery" description="Estimates are fine. If you do not know the exact dimensions, leave them blank.">
               <div className="grid gap-4 sm:grid-cols-2">
@@ -248,6 +249,7 @@ export default function SchoolRequest() {
               </div>
             </FormSection>
 
+            {requestMode === 'detailed' && <>
             <FormSection id="school-budget-timeline" step={6} title="Budget & timing" description="These details help us judge scope. A quote is confirmed only after review.">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Budget range"><Select value={budgetRange} onChange={(e)=>setBudgetRange(e.target.value)} options={['Under PKR 2,000','PKR 2,000–5,000','PKR 5,000–10,000','PKR 10,000–25,000','PKR 25,000+','Not decided yet']} placeholder="No budget set"/></Field>
