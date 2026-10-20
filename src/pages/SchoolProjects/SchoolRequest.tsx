@@ -185,8 +185,8 @@ export default function SchoolRequest() {
           <aside className="hidden lg:block">
             <div className="sticky top-24 rounded-xl border border-line bg-surface p-4">
               <p className="text-sm font-semibold">Your request</p>
-              <p className="mt-1 text-xs text-content-muted">{filled} of {visibleSections.length} checkpoints covered</p>
-              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-raised"><div className="h-full rounded-full bg-accent transition-all" style={{width: (filled / visibleSections.length * 100) + '%'}}/></div>
+              <p className="mt-1 text-xs text-content-muted">{filled} of {sidebarSections.length} checkpoints covered</p>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-raised"><div className="h-full rounded-full bg-accent transition-all" style={{width: (filled / sidebarSections.length * 100) + '%'}}/></div>
               <nav aria-label="Quote request sections" className="mt-4 flex flex-col gap-1">
                 {sidebarSections.map((section, index) => <a key={section.id} href={'#' + section.id} className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-content-secondary transition hover:bg-surface-raised hover:text-content"><span className="font-mono text-[11px] text-content-muted">{String(index + 1).padStart(2, '0')}</span>{sectionCompletion[section.id] ? <CheckCircle2 size={14} className="shrink-0 text-state-success"/> : <span className="h-3.5 w-3.5 shrink-0 rounded-full border border-line"/>}<span className="flex-1">{section.label}</span></a>)}
               </nav>
