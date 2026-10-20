@@ -56,7 +56,8 @@ export default function SchoolRequest() {
   const [displayEnvironment, setDisplayEnvironment] = useState('Classroom');
   const [powerRequirements, setPowerRequirements] = useState('');
   const [additionalNotes, setAdditionalNotes] = useState('');
-  const [quantity, setQuantity] = useState('1');
+  // Leave quantity blank initially so the sidebar doesn't mark this section complete before user input.
+  const [quantity, setQuantity] = useState('');
   const [dimensions, setDimensions] = useState('');
   const [deadline, setDeadline] = useState('');
   const [startDate, setStartDate] = useState('');
