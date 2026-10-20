@@ -670,7 +670,7 @@ export default function RequestProject() {
             <div className="sticky top-24">
               <p className="text-sm font-medium text-content">Sections</p>
               <ol className="mt-4 flex flex-col gap-1">
-                {SECTION_LINKS.map((section, index) => (
+                {visibleSectionLinks.map((section, index) => (
                   <li key={section.id}>
                     <a
                       href={`#${section.id}`}
