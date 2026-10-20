@@ -105,7 +105,8 @@ export default function SchoolRequest() {
     'school-consent': consent,
   };
   const visibleSections = requestMode === 'quick' ? SECTIONS.filter((section) => ['school-contact', 'school-model-choice', 'school-learning', 'school-specifications', 'school-consent'].includes(section.id)) : SECTIONS;
-  const filled = Object.entries(sectionCompletion).filter(([id, complete]) => complete && visibleSections.some((section) => section.id === id)).length;
+  const sidebarSections = requestMode === 'quick' ? visibleSections.filter((section) => ['school-contact', 'school-model-choice', 'school-consent'].includes(section.id)) : visibleSections;
+  const filled = Object.entries(sectionCompletion).filter(([id, complete]) => complete && sidebarSections.some((section) => section.id === id)).length;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -187,13 +188,13 @@ export default function SchoolRequest() {
               <p className="mt-1 text-xs text-content-muted">{filled} of {visibleSections.length} checkpoints covered</p>
               <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-raised"><div className="h-full rounded-full bg-accent transition-all" style={{width: (filled / visibleSections.length * 100) + '%'}}/></div>
               <nav aria-label="Quote request sections" className="mt-4 flex flex-col gap-1">
-                {visibleSections.map((section, index) => <a key={section.id} href={'#' + section.id} className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-content-secondary transition hover:bg-surface-raised hover:text-content"><span className="font-mono text-[11px] text-content-muted">{String(index + 1).padStart(2, '0')}</span>{sectionCompletion[section.id] ? <CheckCircle2 size={14} className="shrink-0 text-state-success"/> : <span className="h-3.5 w-3.5 shrink-0 rounded-full border border-line"/>}<span className="flex-1">{section.label}</span></a>)}
+                {sidebarSections.map((section, index) => <a key={section.id} href={'#' + section.id} className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-content-secondary transition hover:bg-surface-raised hover:text-content"><span className="font-mono text-[11px] text-content-muted">{String(index + 1).padStart(2, '0')}</span>{sectionCompletion[section.id] ? <CheckCircle2 size={14} className="shrink-0 text-state-success"/> : <span className="h-3.5 w-3.5 shrink-0 rounded-full border border-line"/>}<span className="flex-1">{section.label}</span></a>)}
               </nav>
               <div className="mt-4 rounded-lg bg-surface-raised p-3"><ShieldCheck size={16} className="text-accent"/><p className="mt-2 text-xs leading-relaxed text-content-muted">Your contact details and request are used to respond to this enquiry.</p></div>
             </div>
           </aside>
           <nav aria-label="Quote request sections" className="flex flex-wrap gap-2 lg:hidden">
-            {SECTIONS.map((section, index) => <a key={section.id} href={'#' + section.id} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-xs text-content-secondary transition hover:bg-surface-raised"><span className="font-mono text-content-muted">{String(index + 1).padStart(2, '0')}</span>{sectionCompletion[section.id] ? <CheckCircle2 size={13} className="text-state-success"/> : <span className="h-3 w-3 rounded-full border border-line"/>}{section.label}</a>)}
+            {sidebarSections.map((section, index) => <a key={section.id} href={'#' + section.id} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-xs text-content-secondary transition hover:bg-surface-raised"><span className="font-mono text-content-muted">{String(index + 1).padStart(2, '0')}</span>{sectionCompletion[section.id] ? <CheckCircle2 size={13} className="text-state-success"/> : <span className="h-3 w-3 rounded-full border border-line"/>}{section.label}</a>)}
           </nav>
           <form onSubmit={submit} className="min-w-0 space-y-12">
             {error && <Alert tone="danger">{error}</Alert>}
