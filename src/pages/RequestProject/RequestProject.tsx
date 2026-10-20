@@ -129,6 +129,10 @@ export default function RequestProject() {
   const [serviceChoice, setServiceChoice] = useState<
     "electronics" | "school" | null
   >(null);
+  const [requestMode, setRequestMode] = useState<"quick" | "detailed">("quick");
+  const visibleSectionLinks = requestMode === "quick"
+    ? SECTION_LINKS.filter((section) => ["contact", "basics", "consent"].includes(section.id))
+    : SECTION_LINKS;
   const { user } = useAuth();
 
   const form = useForm<ProjectRequestFormValues>({
@@ -195,7 +199,7 @@ export default function RequestProject() {
     consent: Boolean(watchedValues.agreeToTerms && watchedValues.allowContact),
   };
   const completedSections =
-    Object.values(sectionCompletion).filter(Boolean).length;
+    Object.entries(sectionCompletion).filter(([id, complete]) => complete && visibleSectionLinks.some((section) => section.id === id)).length;
 
   const onSubmit = async (values: ProjectRequestFormValues) => {
     setSubmitError(null);
@@ -581,6 +585,26 @@ export default function RequestProject() {
         </div>
       </Container>
       <Container className="pt-5">
+        <section aria-label="Choose request form detail" className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
+          <div className="mb-3">
+            <p className="text-sm font-semibold">How much detail would you like to share?</p>
+            <p className="mt-1 text-sm text-content-secondary">Start with a short brief, or open the full technical form. You can switch modes without losing what you have entered.</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <button type="button" aria-pressed={requestMode === "quick"} onClick={() => setRequestMode("quick")} className={`rounded-xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${requestMode === "quick" ? "border-accent bg-accent/5" : "border-line hover:bg-surface-raised"}`}>
+              <span className="block text-sm font-semibold">Quick request</span>
+              <span className="mt-1 block text-sm leading-relaxed text-content-secondary">Contact details, project title, and a short description. Best if you are still exploring an idea.</span>
+              <span className="mt-2 block text-xs font-medium text-accent">About 3 sections</span>
+            </button>
+            <button type="button" aria-pressed={requestMode === "detailed"} onClick={() => setRequestMode("detailed")} className={`rounded-xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${requestMode === "detailed" ? "border-accent bg-accent/5" : "border-line hover:bg-surface-raised"}`}>
+              <span className="block text-sm font-semibold">Detailed request</span>
+              <span className="mt-1 block text-sm leading-relaxed text-content-secondary">Add hardware, software, scale, budget, timeline and reference information for a more complete brief.</span>
+              <span className="mt-2 block text-xs font-medium text-accent">All 10 sections</span>
+            </button>
+          </div>
+        </section>
+      </Container>
+      <Container className="pt-5">
         <section
           className="rounded-2xl border border-line bg-surface/70 p-4 sm:p-5"
           aria-label="Request progress"
@@ -593,7 +617,7 @@ export default function RequestProject() {
               <div>
                 <p className="text-sm font-semibold">Your project brief</p>
                 <p className="mt-1 text-xs leading-relaxed text-content-muted">
-                  {completedSections} of {SECTION_LINKS.length} sections have
+                  {completedSections} of {visibleSectionLinks.length} sections have
                   details. Technical sections are optional — skip anything
                   you’re unsure about.
                 </p>
@@ -609,18 +633,18 @@ export default function RequestProject() {
             role="progressbar"
             aria-label="Project request sections completed"
             aria-valuemin={0}
-            aria-valuemax={SECTION_LINKS.length}
+            aria-valuemax={visibleSectionLinks.length}
             aria-valuenow={completedSections}
           >
             <div
               className="h-full rounded-full bg-accent transition-[width]"
               style={{
-                width: (completedSections / SECTION_LINKS.length) * 100 + "%",
+                width: (completedSections / visibleSectionLinks.length) * 100 + "%",
               }}
             />
           </div>
           <div className="mt-4 flex flex-wrap gap-2 lg:hidden">
-            {SECTION_LINKS.map((section, index) => (
+            {visibleSectionLinks.map((section, index) => (
               <a
                 key={section.id}
                 href={"#" + section.id}
@@ -685,18 +709,15 @@ export default function RequestProject() {
 
             <SectionA form={form} />
             <SectionB form={form} />
-            <SectionC form={form} />
-            <SectionD form={form} />
-            <SectionE form={form} />
-            <SectionF form={form} />
-            <SectionG form={form} />
-            <SectionH
-              form={form}
-              files={files}
-              onFilesChange={setFiles}
-              uploading={isSubmitting}
-            />
-            <SectionI form={form} />
+            {requestMode === "detailed" && <>
+              <SectionC form={form} />
+              <SectionD form={form} />
+              <SectionE form={form} />
+              <SectionF form={form} />
+              <SectionG form={form} />
+              <SectionH form={form} files={files} onFilesChange={setFiles} uploading={isSubmitting} />
+              <SectionI form={form} />
+            </>}
             <SectionJ form={form} />
 
             <input
