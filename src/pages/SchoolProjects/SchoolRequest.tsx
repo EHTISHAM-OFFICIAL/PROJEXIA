@@ -97,7 +97,8 @@ export default function SchoolRequest() {
   const [displayEnvironment, setDisplayEnvironment] = useState("Classroom");
   const [powerRequirements, setPowerRequirements] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
-  const [quantity, setQuantity] = useState("1");
+  // Start empty: the placeholder is only a hint, not a completed quantity.
+  const [quantity, setQuantity] = useState("");
   const [dimensions, setDimensions] = useState("");
   const [deadline, setDeadline] = useState("");
   const [startDate, setStartDate] = useState("");
