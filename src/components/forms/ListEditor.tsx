@@ -1,4 +1,5 @@
-import { Plus, X } from 'lucide-react';
+import { GripVertical, Plus, X } from 'lucide-react';
+import { useState } from 'react';
 import { TextInput } from './Inputs';
 import { RichTextEditor } from './RichTextEditor';
 
@@ -15,6 +16,7 @@ export function ListEditor({
   label: string;
 }) {
   const rows = values.length ? values : [''];
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 
   const update = (index: number, value: string) => {
     const next = [...rows];
@@ -30,19 +32,36 @@ export function ListEditor({
   return (
     <div className="flex flex-col gap-2">
       {rows.map((value, index) => (
-        <div key={index} className="flex gap-2">
+        <div
+          key={index}
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={(event) => {
+            event.preventDefault();
+            if (draggingIndex === null || draggingIndex === index) return;
+            const next = [...rows];
+            const [moved] = next.splice(draggingIndex, 1);
+            next.splice(index, 0, moved);
+            onChange(next);
+            setDraggingIndex(null);
+          }}
+          className={`flex min-w-0 items-center gap-1.5 rounded-lg border border-line bg-surface px-1.5 py-1 ${draggingIndex === index ? 'opacity-40' : ''}`}
+        >
+          <button type="button" draggable onDragStart={() => setDraggingIndex(index)} onDragEnd={() => setDraggingIndex(null)} aria-label={`Drag to reorder ${label} ${index + 1}`} title="Drag to reorder" className="shrink-0 cursor-grab touch-none rounded p-1 text-content-muted hover:bg-surface-raised active:cursor-grabbing">
+            <GripVertical size={15} />
+          </button>
           <TextInput
             value={value}
             placeholder={placeholder}
             aria-label={`${label} ${index + 1}`}
             onChange={(event) => update(index, event.target.value)}
+          className="min-w-0 flex-1 border-0 bg-transparent shadow-none focus-visible:ring-1"
           />
           {rows.length > 1 && (
             <button
               type="button"
               onClick={() => remove(index)}
               aria-label={`Remove ${label} ${index + 1}`}
-              className="shrink-0 rounded-lg border border-line px-3 text-content-muted transition-colors hover:border-line-strong hover:text-state-danger"
+              className="shrink-0 rounded-lg border border-line px-2.5 text-content-muted transition-colors hover:border-line-strong hover:text-state-danger"
             >
               <X size={15} />
             </button>
@@ -76,6 +95,7 @@ export function TableEditor<T extends object>({
   label: string;
 }) {
   const data = rows.length ? rows : [emptyRow];
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 
   const update = (index: number, key: Extract<keyof T, string>, value: string | boolean) => {
     const type = columns.find((column) => column.key === key)?.type;
@@ -95,7 +115,21 @@ export function TableEditor<T extends object>({
   return (
     <div className="flex flex-col gap-3">
       {data.map((row, index) => (
-        <div key={index} className={`flex flex-wrap items-end gap-2 ${label === 'Component' ? '' : 'rounded-lg border border-line p-3'}`}>
+        <div
+          key={index}
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={(event) => {
+            event.preventDefault();
+            if (draggingIndex === null || draggingIndex === index) return;
+            const next = [...data];
+            const [moved] = next.splice(draggingIndex, 1);
+            next.splice(index, 0, moved);
+            onChange(next);
+            setDraggingIndex(null);
+          }}
+          className={`flex min-w-0 flex-wrap items-end gap-2 ${label === 'Component' ? 'rounded-lg border border-line px-2 py-2' : 'rounded-lg border border-line p-2'} ${draggingIndex === index ? 'opacity-40' : ''}`}
+        >
+          {data.length > 1 && <button type="button" draggable onDragStart={() => setDraggingIndex(index)} onDragEnd={() => setDraggingIndex(null)} aria-label={`Drag to reorder ${label.toLowerCase()} ${index + 1}`} title="Drag to reorder" className="mb-1 shrink-0 cursor-grab touch-none rounded p-1.5 text-content-muted hover:bg-surface-raised active:cursor-grabbing"><GripVertical size={15} /></button>}
           {columns.map((column) => (
             <div key={column.key} className={column.width ?? 'min-w-[140px] flex-1'}>
               {column.type === 'checkbox' ? (
