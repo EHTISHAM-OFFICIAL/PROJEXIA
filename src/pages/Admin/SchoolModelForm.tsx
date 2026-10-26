@@ -372,9 +372,9 @@ export default function SchoolModelForm() {
             { key: 'value', label: 'Value', type: 'richtext', inlineOnly: true, showToolbar: false },
           ]}/>
         </FieldSet>
-        <Field label="Search / discovery tags" htmlFor="school-tags" hint="Comma-separated terms used to help people discover this model.">
-          <TextInput id="school-tags" value={tags} onChange={(event) => setTags(event.target.value)} placeholder="biology, classroom display, human anatomy"/>
-        </Field>
+        <FieldSet legend="Search / discovery tags" hint="Add one tag per row and drag to set the order.">
+          <ListEditor values={lines(tags.replace(/,/g, '\n'))} onChange={(next) => setTags(next.map((item) => item.trim()).filter(Boolean).join(', '))} label="Tag" placeholder="e.g. biology"/>
+        </FieldSet>
       </Group>
 
       <Group id="school-model-features" title="5. Use & customization" subtitle="Add special features, setup, care and customization options">
@@ -397,7 +397,9 @@ export default function SchoolModelForm() {
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="SEO title" htmlFor="school-seo-title" hint="Keep it descriptive; around 50–60 characters is a useful target."><TextInput id="school-seo-title" maxLength={70} value={draft.seoTitle} onChange={(event) => update('seoTitle', event.target.value)} placeholder={draft.title || 'School model title'}/></Field>
           <Field label="SEO description" htmlFor="school-seo-description" hint="A short summary for search results."><TextArea id="school-seo-description" rows={3} maxLength={180} value={draft.seoDescription} onChange={(event) => update('seoDescription', event.target.value)} placeholder="Describe this educational model in a clear sentence."/></Field>
-          <Field label="Search keywords" htmlFor="school-keywords" hint="Comma-separated phrases that help describe this item."><TextInput id="school-keywords" value={keywords} onChange={(event) => setKeywords(event.target.value)} placeholder="biology model, classroom chart, science project"/></Field>
+          <FieldSet legend="Search keywords" hint="Add one keyword or phrase per row and drag to reorder.">
+            <ListEditor values={lines(keywords.replace(/,/g, '\n'))} onChange={(next) => setKeywords(next.map((item) => item.trim()).filter(Boolean).join(', '))} label="Keyword" placeholder="e.g. biology model"/>
+          </FieldSet>
         </div>
       </Group>
 
