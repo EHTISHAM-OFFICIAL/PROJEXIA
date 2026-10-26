@@ -13,6 +13,7 @@ export function ProjectCard({ project }: { project: Project }) {
   const visibleTech = project.technologies.slice(0, 3);
   const hiddenTechCount = project.technologies.length - visibleTech.length;
   const showDate = settings.showProjectCardDate;
+  const showPrice = settings.showProjectCardPrice;
   const showViews = settings.showProjectCardViews && project.viewCount > 0;
 
   return (
@@ -53,7 +54,7 @@ export function ProjectCard({ project }: { project: Project }) {
             {truncate(project.shortDescription, 120)}
           </p>
 
-          {project.estimatedCost?.amount !== null && project.estimatedCost?.amount !== undefined && Number.isFinite(Number(project.estimatedCost.amount)) && Number(project.estimatedCost.amount) > 0 && (
+          {showPrice && project.estimatedCost?.amount !== null && project.estimatedCost?.amount !== undefined && Number.isFinite(Number(project.estimatedCost.amount)) && Number(project.estimatedCost.amount) > 0 && (
             <p className="mt-3 inline-flex w-fit items-center rounded-full border border-accent/25 bg-accent/5 px-3 py-1.5 text-sm font-semibold text-accent">
               {formatCurrency(Number(project.estimatedCost.amount), project.estimatedCost.currency || 'PKR')}
             </p>
