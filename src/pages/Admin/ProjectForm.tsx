@@ -875,6 +875,7 @@ function GalleryEditor({
             if (!Number.isInteger(source) || source === index || source < 0 || source >= gallery.length) return;
             const next = [...gallery];
             const [moved] = next.splice(source, 1);
+            if (moved === undefined) return;
             next.splice(index, 0, moved);
             onChange(next.map((item, order) => ({ ...item, order })));
           }}
