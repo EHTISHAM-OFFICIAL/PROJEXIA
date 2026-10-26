@@ -369,7 +369,7 @@ export default function SchoolModelForm() {
         <FieldSet legend="Specifications" hint="Add dimensions, material, display, power or other relevant specifications. Leave unknown values blank.">
           <TableEditor<SchoolModelSpecification> label="Specification" rows={draft.specifications} emptyRow={EMPTY_SPECIFICATION} onChange={(rows) => update('specifications', rows)} columns={[
             { key: 'label', label: 'Specification' },
-            { key: 'value', label: 'Value', type: 'richtext', inlineOnly: true, showToolbar: false },
+            { key: 'value', label: 'Value' },
           ]}/>
         </FieldSet>
         <FieldSet legend="Search / discovery tags" hint="Add one tag per row and drag to set the order.">
