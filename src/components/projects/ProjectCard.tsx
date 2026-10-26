@@ -4,7 +4,7 @@ import { Badge } from '../ui/Badge';
 import { InlineText } from './CaseStudySection';
 import { Image } from '../ui/Image';
 import { DIFFICULTY_LABEL, STATUS_LABEL, STATUS_TONE } from '../../constants/projectOptions';
-import { formatCompactNumber, formatShortDate, truncate } from '../../utils/formatting';
+import { formatCompactNumber, formatCurrency, formatShortDate, truncate } from '../../utils/formatting';
 import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 import type { Project } from '../../types/project';
 
@@ -52,6 +52,12 @@ export function ProjectCard({ project }: { project: Project }) {
           <p className="mt-2 break-words text-sm leading-relaxed text-content-secondary">
             {truncate(project.shortDescription, 120)}
           </p>
+
+          {project.estimatedCost?.amount !== null && project.estimatedCost?.amount !== undefined && Number.isFinite(Number(project.estimatedCost.amount)) && Number(project.estimatedCost.amount) > 0 && (
+            <p className="mt-3 inline-flex w-fit items-center rounded-full border border-accent/25 bg-accent/5 px-3 py-1.5 text-sm font-semibold text-accent">
+              {formatCurrency(Number(project.estimatedCost.amount), project.estimatedCost.currency || 'PKR')}
+            </p>
+          )}
 
           {visibleTech.length > 0 && (
             <ul className="mt-3 flex flex-wrap gap-1.5 sm:mt-4">
