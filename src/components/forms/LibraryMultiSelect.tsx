@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Check, ChevronDown, Plus, Search, X } from 'lucide-react';
+import { Check, ChevronDown, GripVertical, Plus, Search, X } from 'lucide-react';
 import { TextInput } from './Inputs';
 import { projectLibraryService } from '../../services/projectLibraryService';
 import type { ProjectLibraryItem, ProjectLibraryKind } from '../../types/projectLibrary';
@@ -34,6 +34,7 @@ export function LibraryMultiSelect({
   const [custom, setCustom] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [loadError, setLoadError] = useState('');
   const [customSaveError, setCustomSaveError] = useState('');
   const [customSaveNotice, setCustomSaveNotice] = useState('');
@@ -192,8 +193,24 @@ export function LibraryMultiSelect({
       ) : (
         <div className="flex flex-col gap-1.5">
           {values.map((value, index) => (
-            <div key={`${index}-${value}`} className="flex min-w-0 items-center gap-2 rounded-lg border border-line bg-surface px-2 py-1">
-              <span className="w-6 shrink-0 text-center text-[11px] tabular-nums text-content-muted">{index + 1}</span>
+            <div
+              key={`${index}-${value}`}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={(event) => {
+                event.preventDefault();
+                if (draggingIndex === null || draggingIndex === index) return;
+                const next = [...values];
+                const [moved] = next.splice(draggingIndex, 1);
+                next.splice(index, 0, moved);
+                onChange(next);
+                setDraggingIndex(null);
+              }}
+              className={`flex min-w-0 items-center gap-2 rounded-lg border border-line bg-surface px-2 py-1 transition-opacity ${draggingIndex === index ? 'opacity-40' : ''}`}
+            >
+              <button type="button" draggable onDragStart={() => setDraggingIndex(index)} onDragEnd={() => setDraggingIndex(null)} aria-label={`Drag to reorder ${label.toLocaleLowerCase()} ${index + 1}`} title="Drag to reorder" className="shrink-0 cursor-grab touch-none rounded p-1 text-content-muted hover:bg-surface-raised active:cursor-grabbing">
+                <GripVertical size={15} />
+              </button>
+              <span className="w-5 shrink-0 text-center text-[11px] tabular-nums text-content-muted">{index + 1}</span>
               <TextInput
                 value={value}
                 aria-label={`Edit ${label.toLocaleLowerCase()} ${index + 1}`}
