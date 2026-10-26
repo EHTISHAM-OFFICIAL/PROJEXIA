@@ -24,6 +24,8 @@ const EMPTY: SchoolModelDraft = {
   thumbnailUrl: '', heroImageUrl: '', galleryUrls: [], videoUrl: '', documentationUrl: '', featured: false, published: false, seoTitle: '', seoDescription: '', keywords: [],
 };
 const lines = (value: string) => [...new Set(value.split('\n').map((item) => item.trim()).filter(Boolean))];
+// Keep empty editor rows in the UI; filter them only when saving the model.
+const editorLines = (value: string) => value.split('\n');
 const EMPTY_COMPONENT: SchoolModelComponent = { name: '', category: '', quantity: '1', notes: '', optional: false };
 const EMPTY_SPECIFICATION: SchoolModelSpecification = { label: '', value: '' };
 type TaxonomyKey = 'categories' | 'subcategories' | 'modelTypes' | 'difficulties' | 'statuses' | 'subjects';
@@ -341,7 +343,7 @@ export default function SchoolModelForm() {
         <FieldSet legend="Learning objectives" hint="Add each outcome separately. Start with a clear action verb so teachers can see what students should be able to do after using this model.">
           <div className="flex flex-col gap-2">
             <div><p className="text-sm font-semibold">What will learners be able to do?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Use one outcome per row. Keep outcomes observable and specific.</p></div>
-            <ListEditor values={lines(objectives)} onChange={(next) => setObjectives(next.join('\n'))} label="Learning objective" placeholder="e.g. Identify and label the main parts"/>
+            <ListEditor values={editorLines(objectives)} onChange={(next) => setObjectives(next.join('\n'))} label="Learning objective" placeholder="e.g. Identify and label the main parts"/>
             <p className="text-xs leading-relaxed text-content-muted"><span className="font-semibold text-content">Examples:</span> Identify key parts · Explain the process · Compare two concepts · Predict what happens when one variable changes.</p>
           </div>
         </FieldSet>
@@ -352,7 +354,7 @@ export default function SchoolModelForm() {
           <FieldSet legend="Materials / included supplies" hint="List the main materials supplied with the model, such as boards, labels, fasteners, adhesives or finishing items.">
             <div className="flex flex-col gap-2">
               <div><p className="text-sm font-semibold">What is included?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Add one material or supply per row. Use the parts list for exact quantities and individual notes.</p></div>
-              <ListEditor values={lines(materials)} onChange={(next) => setMaterials(next.join('\n'))} label="Included material" placeholder="e.g. Printed, laminated labels"/>
+              <ListEditor values={editorLines(materials)} onChange={(next) => setMaterials(next.join('\n'))} label="Included material" placeholder="e.g. Printed, laminated labels"/>
               <p className="text-xs text-content-muted">{lines(materials).filter(Boolean).length} material item{lines(materials).filter(Boolean).length === 1 ? '' : 's'} listed</p>
             </div>
           </FieldSet>
@@ -373,17 +375,17 @@ export default function SchoolModelForm() {
           ]}/>
         </FieldSet>
         <FieldSet legend="Search / discovery tags" hint="Add one tag per row and drag to set the order.">
-          <ListEditor values={lines(tags.replace(/,/g, '\n'))} onChange={(next) => setTags(next.map((item) => item.trim()).filter(Boolean).join(', '))} label="Tag" placeholder="e.g. biology"/>
+          <ListEditor values={tags.split(',')} onChange={(next) => setTags(next.map((item) => item.trim()).join(', '))} label="Tag" placeholder="e.g. biology"/>
         </FieldSet>
       </Group>
 
       <Group id="school-model-features" title="5. Use & customization" subtitle="Add special features, setup, care and customization options">
         <div className="grid gap-5 sm:grid-cols-2">
           <FieldSet legend="Key features" hint="Add each public-facing feature separately. Drag rows to set the display order.">
-            <ListEditor values={lines(features)} onChange={(next) => setFeatures(next.join('\n'))} label="Feature" placeholder="e.g. Labeled key parts"/>
+            <ListEditor values={editorLines(features)} onChange={(next) => setFeatures(next.join('\n'))} label="Feature" placeholder="e.g. Labeled key parts"/>
           </FieldSet>
           <FieldSet legend="Customization options" hint="Add each available option separately, such as language, colors or size. Drag to reorder.">
-            <ListEditor values={lines(customizationOptions)} onChange={(next) => setCustomizationOptions(next.join('\n'))} label="Customization option" placeholder="e.g. Custom dimensions"/>
+            <ListEditor values={editorLines(customizationOptions)} onChange={(next) => setCustomizationOptions(next.join('\n'))} label="Customization option" placeholder="e.g. Custom dimensions"/>
           </FieldSet>
         </div>
         <Field label="Assembly, setup & demonstration notes" htmlFor="school-setup-instructions" hint="Optional public-facing instructions or notes for teachers."><RichTextEditor id="school-setup-instructions" rows={4} value={draft.setupInstructions} onChange={(value) => update('setupInstructions', value)} placeholder="Explain any setup, handling or demonstration steps that are useful to know."/></Field>
@@ -398,7 +400,7 @@ export default function SchoolModelForm() {
           <Field label="SEO title" htmlFor="school-seo-title" hint="Keep it descriptive; around 50–60 characters is a useful target."><TextInput id="school-seo-title" maxLength={70} value={draft.seoTitle} onChange={(event) => update('seoTitle', event.target.value)} placeholder={draft.title || 'School model title'}/></Field>
           <Field label="SEO description" htmlFor="school-seo-description" hint="A short summary for search results."><TextArea id="school-seo-description" rows={3} maxLength={180} value={draft.seoDescription} onChange={(event) => update('seoDescription', event.target.value)} placeholder="Describe this educational model in a clear sentence."/></Field>
           <FieldSet legend="Search keywords" hint="Add one keyword or phrase per row and drag to reorder.">
-            <ListEditor values={lines(keywords.replace(/,/g, '\n'))} onChange={(next) => setKeywords(next.map((item) => item.trim()).filter(Boolean).join(', '))} label="Keyword" placeholder="e.g. biology model"/>
+            <ListEditor values={keywords.split(',')} onChange={(next) => setKeywords(next.map((item) => item.trim()).join(', '))} label="Keyword" placeholder="e.g. biology model"/>
           </FieldSet>
         </div>
       </Group>
