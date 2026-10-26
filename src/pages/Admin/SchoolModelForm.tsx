@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Eye, GraduationCap, ImagePlus, Save, Trash2, Plus } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Eye, GraduationCap, GripVertical, ImagePlus, Save, Plus } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Seo } from '../../components/ui/Seo';
 import { Button } from '../../components/ui/Button';
@@ -49,6 +49,8 @@ export default function SchoolModelForm() {
   const [subjectInput, setSubjectInput] = useState('');
   const [tags, setTags] = useState('');
   const [gallery, setGallery] = useState('');
+  const [galleryUrlInput, setGalleryUrlInput] = useState('');
+  const [draggingGalleryIndex, setDraggingGalleryIndex] = useState<number | null>(null);
   const [galleryQueue, setGalleryQueue] = useState<File[]>([]);
   const [loading, setLoading] = useState(editing);
   const [saving, setSaving] = useState(false);
@@ -170,7 +172,9 @@ export default function SchoolModelForm() {
     setError('');
     try {
       const uploaded = await imgbbService.upload(file);
-      setGallery((current) => [...lines(current), uploaded.url].join('\\n'));
+      const next = [...lines(gallery), uploaded.url];
+      setGallery(next.join('\\n'));
+      update('galleryUrls', next);
       setGalleryQueue((current) => current.slice(1));
       setNotice('Gallery image uploaded. Save the model to keep your changes.');
     } catch (caught) {
@@ -286,10 +290,38 @@ export default function SchoolModelForm() {
           <Field label="Video demonstration URL" htmlFor="school-video-url" hint="Optional YouTube or Vimeo link; do not paste a private file link."><TextInput id="school-video-url" type="url" value={draft.videoUrl} onChange={(event) => update('videoUrl', event.target.value)} placeholder="https://…"/></Field>
           <Field label="Documentation / lesson resource URL" htmlFor="school-doc-url" hint="Optional worksheet, reference page or public guide."><TextInput id="school-doc-url" type="url" value={draft.documentationUrl} onChange={(event) => update('documentationUrl', event.target.value)} placeholder="https://…"/></Field>
         </div>
-        <FieldSet legend="Gallery images" hint="Add real photos from different angles or close-ups. Add one URL per line, or upload several images at once.">
-          <div className="grid gap-3 sm:grid-cols-2">{lines(gallery).map((url,index)=><div key={url+index} className="overflow-hidden rounded-xl border border-line bg-surface"><img src={url} alt={`Gallery image ${index+1}`} className="aspect-[16/10] w-full object-cover" onError={(event)=>{event.currentTarget.style.display='none'}}/><div className="flex items-center justify-between gap-2 p-3"><p className="min-w-0 truncate text-xs text-content-muted">Image {index+1}</p><button type="button" onClick={()=>{const next=lines(gallery).filter((_,position)=>position!==index);setGallery(next.join('\n'));update('galleryUrls',next)}} className="rounded-md p-1.5 text-content-muted hover:bg-surface-raised hover:text-state-danger" aria-label={`Remove gallery image ${index+1}`}><Trash2 size={15}/></button></div></div>)}</div>
-          <Field label="Gallery image URLs" htmlFor="school-gallery-urls" hint="One image URL per line. Removing a line removes that image from the gallery."><TextArea id="school-gallery-urls" rows={4} value={gallery} onChange={(event)=>{setGallery(event.target.value);update('galleryUrls',lines(event.target.value))}} placeholder="https://image-one…&#10;https://image-two…"/></Field>
-          <label className="inline-flex cursor-pointer items-center gap-2 self-start rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium transition hover:bg-surface-raised"><ImagePlus size={16}/>{uploading?'Uploading images…':'Upload gallery images'}<input type="file" accept="image/*" multiple disabled={uploading||saving} onChange={(event)=>{void uploadGallery(event.target.files);event.currentTarget.value=''}} className="sr-only"/></label>
+        <FieldSet legend="Gallery images" hint="Drag images to reorder them. Edit or remove any image, paste a URL, or upload multiple images.">
+          <div className="flex flex-col gap-2">
+            {lines(gallery).map((url, index) => (
+              <div key={`${url}-${index}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => {
+                event.preventDefault();
+                const source = Number(event.dataTransfer.getData('text/plain'));
+                const current = lines(gallery);
+                if (!Number.isInteger(source) || source === index || source < 0 || source >= current.length) return;
+                const next = [...current];
+                const [moved] = next.splice(source, 1);
+                if (moved === undefined) return;
+                next.splice(index, 0, moved);
+                setGallery(next.join('\\n'));
+                update('galleryUrls', next);
+                setDraggingGalleryIndex(null);
+              }} className={`flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-surface p-2 sm:flex-row sm:items-center ${draggingGalleryIndex === index ? 'opacity-50' : ''}`}>
+                <button type="button" draggable onDragStart={(event) => { event.dataTransfer.setData('text/plain', String(index)); setDraggingGalleryIndex(index); }} onDragEnd={() => setDraggingGalleryIndex(null)} aria-label={`Drag to reorder gallery image ${index + 1}`} title="Drag to reorder" className="flex shrink-0 items-center justify-center self-start rounded-md p-1 text-content-muted hover:bg-surface-raised sm:self-center"><GripVertical size={16}/></button>
+                <div className="w-full min-w-0 shrink-0 sm:w-44">
+                  <ImageUploadField label={`Gallery image ${index + 1}`} value={url} disabled={uploading || saving}
+                    onUpload={async (file) => { const uploaded = await imgbbService.upload(file); const next = lines(gallery).map((item, position) => position === index ? uploaded.url : item); setGallery(next.join('\\n')); update('galleryUrls', next); setNotice('Gallery image updated. Save the model to keep the change.'); }}
+                    onClear={() => { const next = lines(gallery).filter((_, position) => position !== index); setGallery(next.join('\\n')); update('galleryUrls', next); }}
+                  />
+                </div>
+                <p className="min-w-0 flex-1 break-all text-xs text-content-muted sm:truncate" title={url}>Image {index + 1} · {url}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <TextInput value={galleryUrlInput} onChange={(event) => setGalleryUrlInput(event.target.value)} type="url" placeholder="Paste a gallery image URL…" aria-label="Gallery image URL"/>
+            <Button type="button" variant="secondary" disabled={!galleryUrlInput.trim() || saving || uploading} onClick={() => { const url = galleryUrlInput.trim(); if (!url) return; const next = [...lines(gallery), url]; setGallery(next.join('\\n')); update('galleryUrls', next); setGalleryUrlInput(''); }}><Plus size={14}/> Add URL</Button>
+          </div>
+          <label className="inline-flex cursor-pointer items-center gap-2 self-start rounded-lg border border-line bg-surface px-3 py-2 text-sm font-medium transition hover:bg-surface-raised"><ImagePlus size={16}/>{uploading?'Uploading images…':'Upload gallery images'}<input type="file" accept="image/*" multiple disabled={uploading||saving} onChange={(event)=>{void uploadGallery(event.target.files);event.currentTarget.value=''}} className="sr-only"/></label>
         </FieldSet>
       </Group>
 
@@ -307,13 +339,10 @@ export default function SchoolModelForm() {
           <RichTextEditor id="school-how-to-use" rows={4} value={draft.howToUse} onChange={(value) => update('howToUse', value)} placeholder="Describe a simple classroom activity or demonstration flow."/>
         </Field>
         <FieldSet legend="Learning objectives" hint="Add each outcome separately. Start with a clear action verb so teachers can see what students should be able to do after using this model.">
-          <div className="rounded-xl border border-line bg-surface p-4 sm:p-5">
-            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div><p className="text-sm font-semibold">What will learners be able to do?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Use one outcome per row. Keep outcomes observable and specific.</p></div>
-              <span className="inline-flex w-fit items-center rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">{lines(objectives).length} objective{lines(objectives).length === 1 ? '' : 's'}</span>
-            </div>
-            <ListEditor values={lines(objectives)} onChange={(next) => setObjectives(next.join('\n'))} label="Learning objective" placeholder="e.g. Identify and label the main parts"/>
-            <div className="mt-4 rounded-lg bg-surface-raised/70 px-3 py-3 text-xs leading-relaxed text-content-secondary"><span className="font-semibold text-content">Examples:</span> Identify key parts · Explain the process · Compare two concepts · Predict what happens when one variable changes.</div>
+          <div className="flex flex-col gap-2">
+            <div><p className="text-sm font-semibold">What will learners be able to do?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Use one outcome per row. Keep outcomes observable and specific.</p></div>
+            <ListEditor values={lines(objectives)} onChange={(next) => setObjectives(next.join('\\n'))} label="Learning objective" placeholder="e.g. Identify and label the main parts"/>
+            <p className="text-xs leading-relaxed text-content-muted"><span className="font-semibold text-content">Examples:</span> Identify key parts · Explain the process · Compare two concepts · Predict what happens when one variable changes.</p>
           </div>
         </FieldSet>
       </Group>
@@ -321,31 +350,20 @@ export default function SchoolModelForm() {
       <Group id="school-model-technical" title="4. Build details" subtitle="List supplied materials, parts and known dimensions">
         <div className="grid gap-5 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
           <FieldSet legend="Materials / included supplies" hint="List the main materials supplied with the model, such as boards, labels, fasteners, adhesives or finishing items.">
-            <div className="rounded-xl border border-line bg-surface p-4 sm:p-5">
-              <div className="mb-3"><p className="text-sm font-semibold">What is included?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Add one material or supply per row. Use the parts list for exact quantities and individual notes.</p></div>
-              <ListEditor values={lines(materials)} onChange={(next) => setMaterials(next.join('\n'))} label="Included material" placeholder="e.g. Printed, laminated labels"/>
-              <p className="mt-3 text-xs text-content-muted">{lines(materials).filter(Boolean).length} material item{lines(materials).filter(Boolean).length === 1 ? '' : 's'} listed</p>
+            <div className="flex flex-col gap-2">
+              <div><p className="text-sm font-semibold">What is included?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Add one material or supply per row. Use the parts list for exact quantities and individual notes.</p></div>
+              <ListEditor values={lines(materials)} onChange={(next) => setMaterials(next.join('\\n'))} label="Included material" placeholder="e.g. Printed, laminated labels"/>
+              <p className="text-xs text-content-muted">{lines(materials).filter(Boolean).length} material item{lines(materials).filter(Boolean).length === 1 ? '' : 's'} listed</p>
             </div>
           </FieldSet>
-          <FieldSet legend="Included components & parts" hint="Describe individual items with quantities, types, optional status and clear notes.">
-            <div className="space-y-3">
-              {(draft.components.length ? draft.components : [EMPTY_COMPONENT]).map((component, index) => (
-                <div key={index} className="rounded-xl border border-line bg-surface p-4 transition-colors hover:border-line-strong sm:p-5">
-                  <div className="mb-4 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-sm font-semibold text-accent">{String(index + 1).padStart(2, '0')}</span><div><h4 className="text-sm font-semibold text-content">Component {index + 1}</h4><p className="mt-0.5 text-xs text-content-muted">Part, quantity and inclusion details</p></div></div>
-                    {(draft.components.length ? draft.components : [EMPTY_COMPONENT]).length > 1 && <button type="button" onClick={() => update('components', (draft.components.length ? draft.components : [EMPTY_COMPONENT]).filter((_, position) => position !== index))} aria-label={`Remove component ${index + 1}`} className="rounded-lg border border-line p-2 text-content-muted transition-colors hover:border-state-danger/40 hover:bg-state-danger/5 hover:text-state-danger"><Trash2 size={15}/></button>}
-                  </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <Field label="Component / part name" htmlFor={`school-component-${index}-name`}><TextInput id={`school-component-${index}-name`} value={component.name} maxLength={120} onChange={(event) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], name: event.target.value }; update('components', rows); }} placeholder="e.g. Acrylic display base"/></Field>
-                    <Field label="Type / category" htmlFor={`school-component-${index}-category`}><TextInput id={`school-component-${index}-category`} value={component.category} maxLength={80} onChange={(event) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], category: event.target.value }; update('components', rows); }} placeholder="e.g. Structure, electronics, print"/></Field>
-                    <Field label="Quantity included" htmlFor={`school-component-${index}-quantity`} hint="Include a unit when useful."><TextInput id={`school-component-${index}-quantity`} value={component.quantity} maxLength={60} onChange={(event) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], quantity: event.target.value }; update('components', rows); }} placeholder="e.g. 1 base, 12 labels"/></Field>
-                    <div className="flex items-end rounded-lg border border-line bg-bg px-3 py-3"><Checkbox id={`school-component-${index}-optional`} label="Optional / supplied only if requested" description="Use for add-ons, not standard included parts." checked={component.optional} onChange={(event) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], optional: event.target.checked }; update('components', rows); }}/></div>
-                  </div>
-                  <div className="mt-4"><Field label="Notes / specifications for this part" htmlFor={`school-component-${index}-notes`} hint="Describe size, material, purpose, finish or other details that help identify this item."><RichTextEditor id={`school-component-${index}-notes`} rows={3} showToolbar={false} value={component.notes} onChange={(value) => { const rows = draft.components.length ? [...draft.components] : [{ ...EMPTY_COMPONENT }]; rows[index] = { ...rows[index], notes: value }; update('components', rows); }} placeholder="e.g. Clear acrylic, rounded edges; mounted at the front of the base."/></Field></div>
-                </div>
-              ))}
-              <Button type="button" variant="secondary" onClick={() => update('components', [...draft.components, { ...EMPTY_COMPONENT }])}><Plus size={15}/> Add component</Button>
-            </div>
+          <FieldSet legend="Included components & parts" hint="Compact editable rows with drag-and-drop ordering, quantities, types, optional status and notes.">
+            <TableEditor<SchoolModelComponent> label="Component" rows={draft.components} emptyRow={EMPTY_COMPONENT} onChange={(rows) => update('components', rows)} columns={[
+              { key: 'name', label: 'Component / part' },
+              { key: 'category', label: 'Type' },
+              { key: 'quantity', label: 'Quantity', width: 'w-28' },
+              { key: 'notes', label: 'Notes' },
+              { key: 'optional', label: 'Optional', type: 'checkbox', width: 'w-28' },
+            ]}/>
           </FieldSet>
         </div>
         <FieldSet legend="Specifications" hint="Add dimensions, material, display, power or other relevant specifications. Leave unknown values blank.">
@@ -361,8 +379,12 @@ export default function SchoolModelForm() {
 
       <Group id="school-model-features" title="5. Use & customization" subtitle="Add special features, setup, care and customization options">
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Key features" htmlFor="school-features" hint="One feature per line. These are shown on the public detail page."><TextArea id="school-features" rows={5} value={features} onChange={(event) => setFeatures(event.target.value)} placeholder={'Labeled key parts\nInteractive demonstration\nReusable classroom display'}/></Field>
-          <Field label="Customization options" htmlFor="school-customization-options" hint="One option per line, such as language, colors or size."><TextArea id="school-customization-options" rows={5} value={customizationOptions} onChange={(event) => setCustomizationOptions(event.target.value)} placeholder={'Custom dimensions\nUrdu or English labels\nSchool name / logo'}/></Field>
+          <FieldSet legend="Key features" hint="Add each public-facing feature separately. Drag rows to set the display order.">
+            <ListEditor values={lines(features)} onChange={(next) => setFeatures(next.join('\\n'))} label="Feature" placeholder="e.g. Labeled key parts"/>
+          </FieldSet>
+          <FieldSet legend="Customization options" hint="Add each available option separately, such as language, colors or size. Drag to reorder.">
+            <ListEditor values={lines(customizationOptions)} onChange={(next) => setCustomizationOptions(next.join('\\n'))} label="Customization option" placeholder="e.g. Custom dimensions"/>
+          </FieldSet>
         </div>
         <Field label="Assembly, setup & demonstration notes" htmlFor="school-setup-instructions" hint="Optional public-facing instructions or notes for teachers."><RichTextEditor id="school-setup-instructions" rows={4} value={draft.setupInstructions} onChange={(value) => update('setupInstructions', value)} placeholder="Explain any setup, handling or demonstration steps that are useful to know."/></Field>
         <div className="grid gap-5 sm:grid-cols-2">
