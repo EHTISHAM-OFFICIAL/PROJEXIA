@@ -40,6 +40,7 @@ export function ListEditor({
             if (draggingIndex === null || draggingIndex === index) return;
             const next = [...rows];
             const [moved] = next.splice(draggingIndex, 1);
+            if (moved === undefined) return;
             next.splice(index, 0, moved);
             onChange(next);
             setDraggingIndex(null);
