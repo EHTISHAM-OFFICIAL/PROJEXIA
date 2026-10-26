@@ -45,7 +45,12 @@ function toProject(snapshot: QueryDocumentSnapshot<DocumentData>): Project {
     results: data.results ?? '',
     components: data.components ?? [],
     specifications: data.specifications ?? [],
-    estimatedCost: data.estimatedCost ?? { amount: null, currency: 'PKR' },
+    estimatedCost: {
+      amount: data.estimatedCost?.amount === null || data.estimatedCost?.amount === undefined
+        ? (Number.isFinite(Number(data.estimatedCostAmount ?? data.price ?? data.cost)) && (data.estimatedCostAmount ?? data.price ?? data.cost) !== '' ? Number(data.estimatedCostAmount ?? data.price ?? data.cost) : null)
+        : (Number.isFinite(Number(data.estimatedCost.amount)) ? Number(data.estimatedCost.amount) : null),
+      currency: String(data.estimatedCost?.currency || data.currency || 'PKR'),
+    },
     media: {
       thumbnailUrl: data.media?.thumbnailUrl ?? '',
       heroImageUrl: data.media?.heroImageUrl ?? null,
@@ -164,6 +169,14 @@ export const projectService = {
   async updateProject(id: string, updates: Partial<ProjectDraft>): Promise<void> {
     await updateDoc(doc(db, COLLECTIONS.projects, id), {
       ...updates,
+      ...(updates.estimatedCost ? {
+        estimatedCost: {
+          amount: updates.estimatedCost.amount === null || updates.estimatedCost.amount === undefined || !Number.isFinite(Number(updates.estimatedCost.amount))
+            ? null
+            : Number(updates.estimatedCost.amount),
+          currency: String(updates.estimatedCost.currency || 'PKR'),
+        },
+      } : {}),
       updatedAt: serverTimestamp(),
     });
   },
