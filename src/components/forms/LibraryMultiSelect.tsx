@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Check, ChevronDown, Plus, Search, X } from 'lucide-react';
 import { TextInput } from './Inputs';
-import { RichTextEditor } from './RichTextEditor';
 import { projectLibraryService } from '../../services/projectLibraryService';
 import type { ProjectLibraryItem, ProjectLibraryKind } from '../../types/projectLibrary';
 import { PROJECT_LIBRARY_STARTER } from '../../constants/projectLibraryStarter';
@@ -191,29 +190,23 @@ export function LibraryMultiSelect({
           {!values.length && <span className="text-sm text-content-muted">No components selected yet. Search below to add components.</span>}
         </div>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5">
           {values.map((value, index) => (
-            <div key={`${index}-${value}`} className="min-w-0 rounded-lg border border-line bg-surface-raised/50 p-2.5">
-              <div className="flex min-w-0 items-start gap-2">
-                <div className="min-w-0 flex-1">
-                  <RichTextEditor
-                    id={`library-entry-${kind}-${index}`}
-                    rows={2}
-                    inlineOnly
-                    showToolbar={false}
-                    value={value}
-                    onChange={(nextValue) => onChange(values.map((item, itemIndex) => itemIndex === index ? nextValue : item))}
-                    placeholder={`Edit ${label.toLocaleLowerCase()}… Select text and press Ctrl+B, Ctrl+I or Ctrl+U.`}
-                  />
-                  <p className="mt-1 text-xs text-content-muted">Select text and use Ctrl+B (bold), Ctrl+I (italic) or Ctrl+U (underline).</p>
-                </div>
-                <button type="button" onClick={() => onChange(values.filter((_, itemIndex) => itemIndex !== index))} aria-label={`Remove ${value}`} className="shrink-0 rounded-md p-1.5 text-content-muted hover:text-content">
-                  <X size={14} />
-                </button>
-              </div>
+            <div key={`${index}-${value}`} className="flex min-w-0 items-center gap-2 rounded-lg border border-line bg-surface px-2 py-1">
+              <span className="w-6 shrink-0 text-center text-[11px] tabular-nums text-content-muted">{index + 1}</span>
+              <TextInput
+                value={value}
+                aria-label={`Edit ${label.toLocaleLowerCase()} ${index + 1}`}
+                onChange={(event) => onChange(values.map((item, itemIndex) => itemIndex === index ? event.target.value : item))}
+                placeholder={`Enter ${label.toLocaleLowerCase()}`}
+                className="h-9 min-w-0 border-0 bg-transparent px-1 shadow-none focus-visible:ring-1"
+              />
+              <button type="button" onClick={() => onChange(values.filter((_, itemIndex) => itemIndex !== index))} aria-label={`Remove ${value}`} className="shrink-0 rounded-md p-1.5 text-content-muted transition-colors hover:bg-state-danger/10 hover:text-state-danger">
+                <X size={14} />
+              </button>
             </div>
           ))}
-          {!values.length && <span className="text-sm text-content-muted">No {label.toLocaleLowerCase()} selected.</span>}
+          {!values.length && <span className="text-sm text-content-muted">Nothing selected yet. Search the library or add a custom entry below.</span>}
         </div>
       )}
 
