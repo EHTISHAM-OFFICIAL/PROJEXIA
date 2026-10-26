@@ -881,12 +881,19 @@ function GalleryEditor({
           className="flex flex-col gap-3 rounded-lg border border-line p-3 sm:flex-row"
         >
           <button type="button" draggable onDragStart={(event) => event.dataTransfer.setData('text/plain', String(index))} aria-label={`Drag to reorder gallery image ${index + 1}`} title="Drag to reorder" className="flex shrink-0 items-center justify-center self-start rounded-md p-1 text-content-muted hover:bg-surface-raised"><GripVertical size={17} /></button>
-          <img
-            src={image.url}
-            alt=""
-            loading="lazy"
-            className="h-24 w-32 shrink-0 rounded object-cover"
-          />
+          <div className="w-full shrink-0 sm:w-44">
+            <ImageUploadField
+              label={`Gallery image ${index + 1}`}
+              value={image.url}
+              onUpload={async (file) => {
+                const uploaded = await imgbbService.upload(file);
+                onChange(gallery.map((item, position) => position === index
+                  ? { ...item, url: uploaded.url, storagePath: uploaded.deleteUrl }
+                  : item));
+              }}
+              onClear={() => onChange(gallery.filter((_, position) => position !== index).map((item, order) => ({ ...item, order })))}
+            />
+          </div>
           <div className="flex flex-1 flex-col gap-2">
             <TextInput
               value={image.alt}
@@ -909,14 +916,6 @@ function GalleryEditor({
               }}
             />
           </div>
-          <button
-            type="button"
-            onClick={() => onChange(gallery.filter((_, position) => position !== index))}
-            aria-label={`Remove gallery image ${index + 1}`}
-            className="shrink-0 self-start rounded-md p-2 text-content-muted transition-colors hover:text-state-danger"
-          >
-            <Trash2 size={16} />
-          </button>
         </div>
       ))}
 
