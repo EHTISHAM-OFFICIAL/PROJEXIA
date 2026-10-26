@@ -173,7 +173,7 @@ export default function SchoolModelForm() {
     try {
       const uploaded = await imgbbService.upload(file);
       const next = [...lines(gallery), uploaded.url];
-      setGallery(next.join('\\n'));
+      setGallery(next.join('\n'));
       update('galleryUrls', next);
       setGalleryQueue((current) => current.slice(1));
       setNotice('Gallery image uploaded. Save the model to keep your changes.');
@@ -302,15 +302,15 @@ export default function SchoolModelForm() {
                 const [moved] = next.splice(source, 1);
                 if (moved === undefined) return;
                 next.splice(index, 0, moved);
-                setGallery(next.join('\\n'));
+                setGallery(next.join('\n'));
                 update('galleryUrls', next);
                 setDraggingGalleryIndex(null);
               }} className={`flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-surface p-2 sm:flex-row sm:items-center ${draggingGalleryIndex === index ? 'opacity-50' : ''}`}>
                 <button type="button" draggable onDragStart={(event) => { event.dataTransfer.setData('text/plain', String(index)); setDraggingGalleryIndex(index); }} onDragEnd={() => setDraggingGalleryIndex(null)} aria-label={`Drag to reorder gallery image ${index + 1}`} title="Drag to reorder" className="flex shrink-0 items-center justify-center self-start rounded-md p-1 text-content-muted hover:bg-surface-raised sm:self-center"><GripVertical size={16}/></button>
                 <div className="w-full min-w-0 shrink-0 sm:w-44">
                   <ImageUploadField label={`Gallery image ${index + 1}`} value={url} disabled={uploading || saving}
-                    onUpload={async (file) => { const uploaded = await imgbbService.upload(file); const next = lines(gallery).map((item, position) => position === index ? uploaded.url : item); setGallery(next.join('\\n')); update('galleryUrls', next); setNotice('Gallery image updated. Save the model to keep the change.'); }}
-                    onClear={() => { const next = lines(gallery).filter((_, position) => position !== index); setGallery(next.join('\\n')); update('galleryUrls', next); }}
+                    onUpload={async (file) => { const uploaded = await imgbbService.upload(file); const next = lines(gallery).map((item, position) => position === index ? uploaded.url : item); setGallery(next.join('\n')); update('galleryUrls', next); setNotice('Gallery image updated. Save the model to keep the change.'); }}
+                    onClear={() => { const next = lines(gallery).filter((_, position) => position !== index); setGallery(next.join('\n')); update('galleryUrls', next); }}
                   />
                 </div>
                 <p className="min-w-0 flex-1 break-all text-xs text-content-muted sm:truncate" title={url}>Image {index + 1} · {url}</p>
@@ -319,7 +319,7 @@ export default function SchoolModelForm() {
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
             <TextInput value={galleryUrlInput} onChange={(event) => setGalleryUrlInput(event.target.value)} type="url" placeholder="Paste a gallery image URL…" aria-label="Gallery image URL"/>
-            <Button type="button" variant="secondary" disabled={!galleryUrlInput.trim() || saving || uploading} onClick={() => { const url = galleryUrlInput.trim(); if (!url) return; const next = [...lines(gallery), url]; setGallery(next.join('\\n')); update('galleryUrls', next); setGalleryUrlInput(''); }}><Plus size={14}/> Add URL</Button>
+            <Button type="button" variant="secondary" disabled={!galleryUrlInput.trim() || saving || uploading} onClick={() => { const url = galleryUrlInput.trim(); if (!url) return; const next = [...lines(gallery), url]; setGallery(next.join('\n')); update('galleryUrls', next); setGalleryUrlInput(''); }}><Plus size={14}/> Add URL</Button>
           </div>
           <label className="inline-flex cursor-pointer items-center gap-2 self-start rounded-lg border border-line bg-surface px-3 py-2 text-sm font-medium transition hover:bg-surface-raised"><ImagePlus size={16}/>{uploading?'Uploading images…':'Upload gallery images'}<input type="file" accept="image/*" multiple disabled={uploading||saving} onChange={(event)=>{void uploadGallery(event.target.files);event.currentTarget.value=''}} className="sr-only"/></label>
         </FieldSet>
@@ -341,7 +341,7 @@ export default function SchoolModelForm() {
         <FieldSet legend="Learning objectives" hint="Add each outcome separately. Start with a clear action verb so teachers can see what students should be able to do after using this model.">
           <div className="flex flex-col gap-2">
             <div><p className="text-sm font-semibold">What will learners be able to do?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Use one outcome per row. Keep outcomes observable and specific.</p></div>
-            <ListEditor values={lines(objectives)} onChange={(next) => setObjectives(next.join('\\n'))} label="Learning objective" placeholder="e.g. Identify and label the main parts"/>
+            <ListEditor values={lines(objectives)} onChange={(next) => setObjectives(next.join('\n'))} label="Learning objective" placeholder="e.g. Identify and label the main parts"/>
             <p className="text-xs leading-relaxed text-content-muted"><span className="font-semibold text-content">Examples:</span> Identify key parts · Explain the process · Compare two concepts · Predict what happens when one variable changes.</p>
           </div>
         </FieldSet>
@@ -352,7 +352,7 @@ export default function SchoolModelForm() {
           <FieldSet legend="Materials / included supplies" hint="List the main materials supplied with the model, such as boards, labels, fasteners, adhesives or finishing items.">
             <div className="flex flex-col gap-2">
               <div><p className="text-sm font-semibold">What is included?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Add one material or supply per row. Use the parts list for exact quantities and individual notes.</p></div>
-              <ListEditor values={lines(materials)} onChange={(next) => setMaterials(next.join('\\n'))} label="Included material" placeholder="e.g. Printed, laminated labels"/>
+              <ListEditor values={lines(materials)} onChange={(next) => setMaterials(next.join('\n'))} label="Included material" placeholder="e.g. Printed, laminated labels"/>
               <p className="text-xs text-content-muted">{lines(materials).filter(Boolean).length} material item{lines(materials).filter(Boolean).length === 1 ? '' : 's'} listed</p>
             </div>
           </FieldSet>
@@ -380,10 +380,10 @@ export default function SchoolModelForm() {
       <Group id="school-model-features" title="5. Use & customization" subtitle="Add special features, setup, care and customization options">
         <div className="grid gap-5 sm:grid-cols-2">
           <FieldSet legend="Key features" hint="Add each public-facing feature separately. Drag rows to set the display order.">
-            <ListEditor values={lines(features)} onChange={(next) => setFeatures(next.join('\\n'))} label="Feature" placeholder="e.g. Labeled key parts"/>
+            <ListEditor values={lines(features)} onChange={(next) => setFeatures(next.join('\n'))} label="Feature" placeholder="e.g. Labeled key parts"/>
           </FieldSet>
           <FieldSet legend="Customization options" hint="Add each available option separately, such as language, colors or size. Drag to reorder.">
-            <ListEditor values={lines(customizationOptions)} onChange={(next) => setCustomizationOptions(next.join('\\n'))} label="Customization option" placeholder="e.g. Custom dimensions"/>
+            <ListEditor values={lines(customizationOptions)} onChange={(next) => setCustomizationOptions(next.join('\n'))} label="Customization option" placeholder="e.g. Custom dimensions"/>
           </FieldSet>
         </div>
         <Field label="Assembly, setup & demonstration notes" htmlFor="school-setup-instructions" hint="Optional public-facing instructions or notes for teachers."><RichTextEditor id="school-setup-instructions" rows={4} value={draft.setupInstructions} onChange={(value) => update('setupInstructions', value)} placeholder="Explain any setup, handling or demonstration steps that are useful to know."/></Field>
