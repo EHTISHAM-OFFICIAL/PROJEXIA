@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   CalendarDays,
   CheckCircle2,
+  DollarSign,
   Eye,
   Globe2,
   ImageIcon,
@@ -424,6 +425,31 @@ export function SiteIdentitySettings() {
               label="Show"
             />
           </div>
+
+          <div className="flex min-w-0 items-start justify-between gap-4 rounded-xl border border-line p-4">
+            <div className="flex min-w-0 items-start gap-3">
+              <DollarSign
+                size={17}
+                className="mt-0.5 shrink-0 text-content-muted"
+                aria-hidden="true"
+              />
+              <div>
+                <p className="text-sm font-medium text-content">
+                  Project price
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-content-muted">
+                  Show or hide the saved estimated price on project cards. This
+                  does not change the price or hide it from the project detail page.
+                </p>
+              </div>
+            </div>
+            <VisibilityToggle
+              id="showProjectCardPrice"
+              checked={draft.showProjectCardPrice}
+              onChange={(checked) => update("showProjectCardPrice", checked)}
+              label="Show"
+            />
+          </div>
         </div>
 
         <div className="mt-4 rounded-xl border border-line p-4">
@@ -447,8 +473,7 @@ export function SiteIdentitySettings() {
           </Field>
         </div>
         <p className="mt-4 text-xs text-content-muted">
-          Save website settings below to publish these changes. Existing date
-          and view-count visibility stays enabled by default.
+          Save website settings below to publish these changes. Date, view-count and price visibility stay enabled by default.
         </p>
       </div>
 
