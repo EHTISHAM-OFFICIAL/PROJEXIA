@@ -177,10 +177,20 @@ export default function ProjectForm() {
     }
     if (!existing.data) return;
     const { id: _ignored, viewCount: _viewCount, createdAt: _c, updatedAt: _u, ...rest } = existing.data;
+    const storedAmount = Number(rest.estimatedCost?.amount);
+    const restoredDraft: ProjectDraft = {
+      ...rest,
+      estimatedCost: {
+        amount: rest.estimatedCost?.amount === null || rest.estimatedCost?.amount === undefined || rest.estimatedCost?.amount === '' as unknown as number
+          ? null
+          : Number.isFinite(storedAmount) ? storedAmount : null,
+        currency: String(rest.estimatedCost?.currency || 'PKR'),
+      },
+    };
     const dateValue = toDateInputValue(existing.data.completedAt);
-    setDraft(rest);
+    setDraft(restoredDraft);
     setCompletedDate(dateValue);
-    setInitialSnapshot(JSON.stringify({ draft: rest, completedDate: dateValue }));
+    setInitialSnapshot(JSON.stringify({ draft: restoredDraft, completedDate: dateValue }));
     setSlugTouched(true);
   }, [isEdit, existing.data]);
 
@@ -312,6 +322,12 @@ export default function ProjectForm() {
         challenges: cleanList(draft.challenges),
         components: draft.components.filter((component) => component.name.trim()),
         specifications: draft.specifications.filter((spec) => spec.label.trim()),
+        estimatedCost: {
+          amount: draft.estimatedCost.amount === null || draft.estimatedCost.amount === undefined || !Number.isFinite(Number(draft.estimatedCost.amount))
+            ? null
+            : Number(draft.estimatedCost.amount),
+          currency: draft.estimatedCost.currency.trim() || 'PKR',
+        },
         completedAt: completedDate ? Timestamp.fromDate(new Date(completedDate)) : null,
         published: publish ?? draft.published,
       };
