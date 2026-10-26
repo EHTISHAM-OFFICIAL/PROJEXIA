@@ -181,7 +181,7 @@ export default function ProjectForm() {
     const restoredDraft: ProjectDraft = {
       ...rest,
       estimatedCost: {
-        amount: rest.estimatedCost?.amount === null || rest.estimatedCost?.amount === undefined || rest.estimatedCost?.amount === '' as unknown as number
+        amount: rest.estimatedCost?.amount === null || rest.estimatedCost?.amount === undefined
           ? null
           : Number.isFinite(storedAmount) ? storedAmount : null,
         currency: String(rest.estimatedCost?.currency || 'PKR'),
