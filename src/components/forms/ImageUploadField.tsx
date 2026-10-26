@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ImagePlus, Loader2, X } from 'lucide-react';
+import { ImagePlus, Loader2, Pencil, X } from 'lucide-react';
 import { Image } from '../ui/Image';
 import { validateProjectImage } from '../../utils/fileValidation';
 import { PROJECT_IMAGE_RULES } from '../../constants/requestOptions';
@@ -14,7 +14,7 @@ interface ImageUploadFieldProps {
   disabled?: boolean;
 }
 
-/** Uploads one image immediately and reports back the download URL via onUpload. */
+/** Uploads one image immediately and lets admins reopen the image preparation editor. */
 export function ImageUploadField({
   value,
   onUpload,
@@ -26,7 +26,8 @@ export function ImageUploadField({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
-  const inputId = `image-${label.replace(/\W+/g, '-').toLowerCase()}`;
+  const [lastUploadedFile, setLastUploadedFile] = useState<File | null>(null);
+  const inputId = `image-${label.replace(/\\W+/g, '-').toLowerCase()}`;
 
   const handleFile = (file: File | undefined) => {
     if (!file) return;
@@ -40,6 +41,31 @@ export function ImageUploadField({
     setPendingFile(file);
   };
 
+  const editImage = async () => {
+    setError(null);
+    if (lastUploadedFile) {
+      setPendingFile(lastUploadedFile);
+      return;
+    }
+    if (value) {
+      try {
+        const response = await fetch(value);
+        if (!response.ok) throw new Error('Could not retrieve the uploaded image.');
+        const blob = await response.blob();
+        const extension = blob.type === 'image/jpeg' ? '.jpg' : blob.type === 'image/webp' ? '.webp' : '.png';
+        const file = new File([blob], `${label.toLowerCase().replace(/\\W+/g, '-')}${extension}`, { type: blob.type || 'image/png' });
+        const validation = validateProjectImage(file);
+        if (!validation.valid) throw new Error(validation.error ?? 'This image cannot be edited.');
+        setPendingFile(file);
+      } catch {
+        setError('To edit this previously saved image, choose its original file again.');
+        inputRef.current?.click();
+      }
+    } else {
+      inputRef.current?.click();
+    }
+  };
+
   const uploadPreparedFile = async (file: File) => {
     const validation = validateProjectImage(file);
     if (!validation.valid) throw new Error(validation.error ?? 'The prepared image cannot be uploaded.');
@@ -47,6 +73,7 @@ export function ImageUploadField({
     setError(null);
     try {
       await onUpload(file);
+      setLastUploadedFile(file);
       setPendingFile(null);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Upload failed.');
@@ -59,39 +86,49 @@ export function ImageUploadField({
 
   return (
     <div className="flex flex-col gap-2">
+      <input
+        ref={inputRef}
+        id={inputId}
+        type="file"
+        accept={PROJECT_IMAGE_RULES.allowedExtensions.join(',')}
+        disabled={disabled || busy}
+        onChange={(event) => void handleFile(event.target.files?.[0])}
+        className="sr-only"
+      />
       {value ? (
-        <div className="relative w-full max-w-xs overflow-hidden rounded-lg border border-line">
-          <Image src={value} alt={`${label} preview`} className="aspect-[16/10] w-full object-cover" />
-          <button
-            type="button"
-            onClick={onClear}
-            disabled={disabled || busy}
-            aria-label={`Remove ${label}`}
-            className="absolute right-2 top-2 rounded-md bg-bg/80 p-1.5 text-content-secondary backdrop-blur transition-colors hover:text-state-danger"
-          >
-            <X size={15} />
-          </button>
+        <div className="w-full max-w-sm overflow-hidden rounded-xl border border-line bg-surface">
+          <div className="relative">
+            <Image src={value} alt={`${label} preview`} className="aspect-[16/10] w-full object-cover" />
+            <span className="absolute left-2 top-2 rounded-md bg-bg/85 px-2 py-1 text-xs font-medium text-content shadow-sm">Uploaded</span>
+          </div>
+          <div className="flex items-center gap-2 border-t border-line p-2">
+            <button
+              type="button"
+              onClick={() => void editImage()}
+              disabled={disabled || busy}
+              className="inline-flex min-h-9 flex-1 items-center justify-center gap-2 rounded-lg border border-line bg-surface-raised px-3 text-sm font-medium text-content transition-colors hover:border-accent hover:text-accent disabled:opacity-50"
+            >
+              {busy ? <Loader2 size={15} className="animate-spin" /> : <Pencil size={15} />}
+              Edit image
+            </button>
+            <button
+              type="button"
+              onClick={onClear}
+              disabled={disabled || busy}
+              className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-line px-3 text-sm text-content-muted transition-colors hover:border-state-danger hover:text-state-danger disabled:opacity-50"
+            >
+              <X size={15} />
+              Remove
+            </button>
+          </div>
         </div>
       ) : (
         <div className="rounded-lg border border-dashed border-line bg-surface-raised px-4 py-6 text-center">
-          <input
-            ref={inputRef}
-            id={inputId}
-            type="file"
-            accept={PROJECT_IMAGE_RULES.allowedExtensions.join(',')}
-            disabled={disabled || busy}
-            onChange={(event) => void handleFile(event.target.files?.[0])}
-            className="sr-only"
-          />
           <label
             htmlFor={inputId}
             className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm text-content transition-colors hover:border-line-strong"
           >
-            {busy ? (
-              <Loader2 size={15} className="animate-spin" aria-hidden="true" />
-            ) : (
-              <ImagePlus size={15} aria-hidden="true" />
-            )}
+            {busy ? <Loader2 size={15} className="animate-spin" aria-hidden="true" /> : <ImagePlus size={15} aria-hidden="true" />}
             {busy ? 'Uploading…' : `Upload ${label.toLowerCase()}`}
           </label>
           <p className="mt-2.5 text-xs text-content-muted">
@@ -99,12 +136,8 @@ export function ImageUploadField({
           </p>
         </div>
       )}
-      {pendingFile && <ImageProcessingDialog file={pendingFile} title={`Prepare ${label.toLowerCase()}`} onCancel={() => { setPendingFile(null); if (inputRef.current) inputRef.current.value = ''; }} onUse={uploadPreparedFile} />}
-      {error && (
-        <p className="text-xs text-state-danger" role="alert">
-          {error}
-        </p>
-      )}
+      {pendingFile && <ImageProcessingDialog file={pendingFile} title={value ? `Edit ${label.toLowerCase()}` : `Prepare ${label.toLowerCase()}`} onCancel={() => { setPendingFile(null); if (inputRef.current) inputRef.current.value = ''; }} onUse={uploadPreparedFile} />}
+      {error && <p className="text-xs text-state-danger" role="alert">{error}</p>}
     </div>
   );
 }
