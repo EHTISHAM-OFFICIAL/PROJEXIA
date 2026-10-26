@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Eye, GripVertical, Trash2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Eye, GripVertical } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
 import { Seo } from '../../components/ui/Seo';
 import { Button } from '../../components/ui/Button';
