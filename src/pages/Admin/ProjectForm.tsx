@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Eye, Trash2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Eye, GripVertical, Trash2 } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
 import { Seo } from '../../components/ui/Seo';
 import { Button } from '../../components/ui/Button';
@@ -866,7 +866,21 @@ function GalleryEditor({
   return (
     <div className="flex flex-col gap-4">
       {gallery.map((image, index) => (
-        <div key={image.url} className="flex flex-col gap-3 rounded-lg border border-line p-3 sm:flex-row">
+        <div
+          key={image.url}
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={(event) => {
+            event.preventDefault();
+            const source = Number(event.dataTransfer.getData('text/plain'));
+            if (!Number.isInteger(source) || source === index || source < 0 || source >= gallery.length) return;
+            const next = [...gallery];
+            const [moved] = next.splice(source, 1);
+            next.splice(index, 0, moved);
+            onChange(next.map((item, order) => ({ ...item, order })));
+          }}
+          className="flex flex-col gap-3 rounded-lg border border-line p-3 sm:flex-row"
+        >
+          <button type="button" draggable onDragStart={(event) => event.dataTransfer.setData('text/plain', String(index))} aria-label={`Drag to reorder gallery image ${index + 1}`} title="Drag to reorder" className="flex shrink-0 items-center justify-center self-start rounded-md p-1 text-content-muted hover:bg-surface-raised"><GripVertical size={17} /></button>
           <img
             src={image.url}
             alt=""
