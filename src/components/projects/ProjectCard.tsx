@@ -54,9 +54,11 @@ export function ProjectCard({ project }: { project: Project }) {
             {truncate(project.shortDescription, 120)}
           </p>
 
-          {showPrice && project.estimatedCost?.amount !== null && project.estimatedCost?.amount !== undefined && Number.isFinite(Number(project.estimatedCost.amount)) && Number(project.estimatedCost.amount) > 0 && (
+          {showPrice && project.showPriceOnCard !== false && (Boolean(project.estimatedCost?.label?.trim()) || (project.estimatedCost?.amount !== null && project.estimatedCost?.amount !== undefined && Number.isFinite(Number(project.estimatedCost.amount)) && Number(project.estimatedCost.amount) > 0)) && (
             <p className="mt-3 inline-flex w-fit items-center rounded-full border border-accent/25 bg-accent/5 px-3 py-1.5 text-sm font-semibold text-accent">
-              {formatCurrency(Number(project.estimatedCost.amount), project.estimatedCost.currency || 'PKR')}
+              {project.estimatedCost.label?.trim() && !/^\s*[\d,]+(?:\.\d+)?\s*$/.test(project.estimatedCost.label)
+                ? project.estimatedCost.label
+                : formatCurrency(Number(project.estimatedCost.amount), project.estimatedCost.currency || 'PKR')}
             </p>
           )}
 
