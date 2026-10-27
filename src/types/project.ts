@@ -47,6 +47,8 @@ export interface ProjectSeo {
 export interface ProjectEstimatedCost {
   amount: number | null;
   currency: string;
+  /** Exact price text entered by an admin, including ranges and currency labels. */
+  label?: string | null;
 }
 
 /** A project document as stored in Firestore, plus its document id. */
@@ -72,6 +74,8 @@ export interface Project {
   components: ProjectComponent[];
   specifications: ProjectSpecification[];
   estimatedCost: ProjectEstimatedCost;
+  /** When false, hides the price tag on this project's cards, regardless of the global setting. */
+  showPriceOnCard?: boolean;
   media: ProjectMedia;
   externalLinks: ProjectExternalLinks;
   seo: ProjectSeo;
