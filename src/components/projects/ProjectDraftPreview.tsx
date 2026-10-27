@@ -65,9 +65,11 @@ export function ProjectDraftPreview({
               {[draft.status, draft.difficulty].filter(Boolean).map((item) => (
                 <span key={item} className="rounded-full border border-line px-3 py-1.5 capitalize text-content-secondary">{item.replace('-', ' ')}</span>
               ))}
-              {draft.estimatedCost.amount !== null && draft.estimatedCost.amount > 0 && (
+              {(draft.estimatedCost.label?.trim() || (draft.estimatedCost.amount !== null && draft.estimatedCost.amount > 0)) && (
                 <span className="rounded-full border border-line px-3 py-1.5 text-content-secondary">
-                  Approx. {draft.estimatedCost.currency} {draft.estimatedCost.amount.toLocaleString()}
+                  Approx. {draft.estimatedCost.label?.trim() && !/^\s*[\d,]+(?:\.\d+)?\s*$/.test(draft.estimatedCost.label)
+                    ? draft.estimatedCost.label
+                    : `${draft.estimatedCost.currency} ${Number(draft.estimatedCost.amount).toLocaleString()}`}
                 </span>
               )}
             </div>
