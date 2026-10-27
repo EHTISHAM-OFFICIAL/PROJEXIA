@@ -107,6 +107,9 @@ export default function ProjectForm() {
 
   const [draft, setDraft] = useState<ProjectDraft>(EMPTY_DRAFT);
   const [completedDate, setCompletedDate] = useState('');
+  // Keep the price field as text while editing so browser number-input quirks
+  // cannot silently clear or coerce the value before it is saved.
+  const [priceInput, setPriceInput] = useState('');
   const [slugTouched, setSlugTouched] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -172,7 +175,8 @@ export default function ProjectForm() {
 
   useEffect(() => {
     if (!isEdit) {
-      setInitialSnapshot(JSON.stringify({ draft: EMPTY_DRAFT, completedDate: '' }));
+      setPriceInput('');
+      setInitialSnapshot(JSON.stringify({ draft: EMPTY_DRAFT, completedDate: '', priceInput: '' }));
       return;
     }
     if (!existing.data) return;
@@ -189,8 +193,9 @@ export default function ProjectForm() {
     };
     const dateValue = toDateInputValue(existing.data.completedAt);
     setDraft(restoredDraft);
+    setPriceInput(restoredDraft.estimatedCost.amount === null ? '' : String(restoredDraft.estimatedCost.amount));
     setCompletedDate(dateValue);
-    setInitialSnapshot(JSON.stringify({ draft: restoredDraft, completedDate: dateValue }));
+    setInitialSnapshot(JSON.stringify({ draft: restoredDraft, completedDate: dateValue, priceInput: restoredDraft.estimatedCost.amount === null ? '' : String(restoredDraft.estimatedCost.amount) }));
     setSlugTouched(true);
   }, [isEdit, existing.data]);
 
@@ -250,7 +255,7 @@ export default function ProjectForm() {
   };
 
   const cleanList = (items: string[]) => items.map((item) => item.trim()).filter(Boolean);
-  const currentSnapshot = JSON.stringify({ draft, completedDate });
+  const currentSnapshot = JSON.stringify({ draft, completedDate, priceInput });
   const hasUnsavedChanges = initialSnapshot !== null && currentSnapshot !== initialSnapshot;
   const sectionItems = [
     { id: 'project-section-basics', label: 'Basics', required: true, complete: Boolean(draft.title.trim() && draft.shortDescription.trim()) },
@@ -323,9 +328,7 @@ export default function ProjectForm() {
         components: draft.components.filter((component) => component.name.trim()),
         specifications: draft.specifications.filter((spec) => spec.label.trim()),
         estimatedCost: {
-          amount: draft.estimatedCost.amount === null || draft.estimatedCost.amount === undefined || !Number.isFinite(Number(draft.estimatedCost.amount))
-            ? null
-            : Number(draft.estimatedCost.amount),
+          amount: priceInput.trim() === '' ? null : Number.isFinite(Number(priceInput)) ? Number(priceInput) : null,
           currency: draft.estimatedCost.currency.trim() || 'PKR',
         },
         completedAt: completedDate ? Timestamp.fromDate(new Date(completedDate)) : null,
@@ -717,15 +720,17 @@ export default function ProjectForm() {
             <Field label="Approximate cost" htmlFor="cost" hint="Leave blank to hide it publicly.">
               <TextInput
                 id="cost"
-                type="number"
-                min={0}
-                value={draft.estimatedCost.amount ?? ''}
-                onChange={(event) =>
+                type="text"
+                inputMode="decimal"
+                value={priceInput}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setPriceInput(value);
                   update('estimatedCost', {
                     ...draft.estimatedCost,
-                    amount: event.target.value === '' ? null : Number(event.target.value),
-                  })
-                }
+                    amount: value.trim() === '' ? null : Number.isFinite(Number(value)) ? Number(value) : null,
+                  });
+                }}
               />
             </Field>
             <Field label="Currency" htmlFor="currency">
