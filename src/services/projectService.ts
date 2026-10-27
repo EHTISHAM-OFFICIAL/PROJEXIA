@@ -46,6 +46,9 @@ function toProject(snapshot: QueryDocumentSnapshot<DocumentData>): Project {
     components: data.components ?? [],
     specifications: data.specifications ?? [],
     estimatedCost: {
+      label: typeof data.estimatedCost?.label === 'string' && data.estimatedCost.label.trim()
+        ? data.estimatedCost.label
+        : (typeof data.estimatedCost?.amount === 'string' && data.estimatedCost.amount.trim() ? data.estimatedCost.amount : null),
       amount: data.estimatedCost?.amount === null || data.estimatedCost?.amount === undefined
         ? (Number.isFinite(Number(data.estimatedCostAmount ?? data.price ?? data.cost)) && (data.estimatedCostAmount ?? data.price ?? data.cost) !== '' ? Number(data.estimatedCostAmount ?? data.price ?? data.cost) : null)
         : (Number.isFinite(Number(data.estimatedCost.amount)) ? Number(data.estimatedCost.amount) : null),
@@ -68,6 +71,7 @@ function toProject(snapshot: QueryDocumentSnapshot<DocumentData>): Project {
       keywords: data.seo?.keywords ?? [],
     },
     featured: data.featured ?? false,
+    showPriceOnCard: data.showPriceOnCard !== false,
     published: data.published ?? false,
     viewCount: data.viewCount ?? 0,
     createdAt: data.createdAt ?? null,
@@ -175,6 +179,7 @@ export const projectService = {
             ? null
             : Number(updates.estimatedCost.amount),
           currency: String(updates.estimatedCost.currency || 'PKR'),
+          label: updates.estimatedCost.label?.trim() || null,
         },
       } : {}),
       updatedAt: serverTimestamp(),
