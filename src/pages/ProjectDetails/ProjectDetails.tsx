@@ -256,10 +256,12 @@ export default function ProjectDetails() {
                 {project.completedAt && (
                   <DetailRow label="Completed" value={formatDate(project.completedAt)} />
                 )}
-                {estimatedCost.amount !== null && (
+                {(estimatedCost.label?.trim() || estimatedCost.amount !== null) && (
                   <DetailRow
                     label="Approx. cost"
-                    value={formatCurrency(estimatedCost.amount, estimatedCost.currency)}
+                    value={estimatedCost.label?.trim() && !/^\s*[\d,]+(?:\.\d+)?\s*$/.test(estimatedCost.label)
+                      ? estimatedCost.label
+                      : formatCurrency(Number(estimatedCost.amount), estimatedCost.currency)}
                   />
                 )}
                 {project.specifications.map((spec) => (
