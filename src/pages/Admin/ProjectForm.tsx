@@ -57,7 +57,8 @@ const EMPTY_DRAFT: ProjectDraft = {
   results: '',
   components: [],
   specifications: [],
-  estimatedCost: { amount: null, currency: 'PKR' },
+  estimatedCost: { amount: null, currency: 'PKR', label: null },
+  showPriceOnCard: true,
   media: { thumbnailUrl: '', heroImageUrl: null, gallery: [], videoUrl: null },
   externalLinks: { github: null, documentation: null, demo: null },
   seo: { metaTitle: null, metaDescription: null, keywords: [] },
@@ -189,13 +190,15 @@ export default function ProjectForm() {
           ? null
           : Number.isFinite(storedAmount) ? storedAmount : null,
         currency: String(rest.estimatedCost?.currency || 'PKR'),
+        label: typeof rest.estimatedCost?.label === 'string' ? rest.estimatedCost.label : null,
       },
+      showPriceOnCard: rest.showPriceOnCard !== false,
     };
     const dateValue = toDateInputValue(existing.data.completedAt);
     setDraft(restoredDraft);
-    setPriceInput(restoredDraft.estimatedCost.amount === null ? '' : String(restoredDraft.estimatedCost.amount));
+    setPriceInput(restoredDraft.estimatedCost.label?.trim() || (restoredDraft.estimatedCost.amount === null ? '' : String(restoredDraft.estimatedCost.amount)));
     setCompletedDate(dateValue);
-    setInitialSnapshot(JSON.stringify({ draft: restoredDraft, completedDate: dateValue, priceInput: restoredDraft.estimatedCost.amount === null ? '' : String(restoredDraft.estimatedCost.amount) }));
+    setInitialSnapshot(JSON.stringify({ draft: restoredDraft, completedDate: dateValue, priceInput: restoredDraft.estimatedCost.label?.trim() || (restoredDraft.estimatedCost.amount === null ? '' : String(restoredDraft.estimatedCost.amount)) }));
     setSlugTouched(true);
   }, [isEdit, existing.data]);
 
@@ -328,8 +331,12 @@ export default function ProjectForm() {
         components: draft.components.filter((component) => component.name.trim()),
         specifications: draft.specifications.filter((spec) => spec.label.trim()),
         estimatedCost: {
-          amount: priceInput.trim() === '' ? null : Number.isFinite(Number(priceInput)) ? Number(priceInput) : null,
+          amount: (() => {
+            const match = priceInput.replace(/,/g, '').match(/\d+(?:\.\d+)?/);
+            return match ? Number(match[0]) : null;
+          })(),
           currency: draft.estimatedCost.currency.trim() || 'PKR',
+          label: priceInput.trim() || null,
         },
         completedAt: completedDate ? Timestamp.fromDate(new Date(completedDate)) : null,
         published: publish ?? draft.published,
@@ -721,14 +728,19 @@ export default function ProjectForm() {
               <TextInput
                 id="cost"
                 type="text"
-                inputMode="decimal"
+                inputMode="text"
+                placeholder="e.g. 3,500–7,000 PKR"
                 value={priceInput}
                 onChange={(event) => {
                   const value = event.target.value;
                   setPriceInput(value);
                   update('estimatedCost', {
                     ...draft.estimatedCost,
-                    amount: value.trim() === '' ? null : Number.isFinite(Number(value)) ? Number(value) : null,
+                    amount: (() => {
+                      const match = value.replace(/,/g, '').match(/\d+(?:\.\d+)?/);
+                      return match ? Number(match[0]) : null;
+                    })(),
+                    label: value.trim() || null,
                   });
                 }}
               />
@@ -822,6 +834,13 @@ export default function ProjectForm() {
               description="Visible to everyone on the public site."
               checked={draft.published}
               onChange={(event) => update('published', event.target.checked)}
+            />
+            <Checkbox
+              id="showPriceOnCard"
+              label="Show price tag on this project's card"
+              description="This project-level option works together with the global Project price setting. Both must be enabled for the price tag to appear."
+              checked={draft.showPriceOnCard !== false}
+              onChange={(event) => update('showPriceOnCard', event.target.checked)}
             />
             <Checkbox
               id="featured"
