@@ -37,19 +37,31 @@ reference links and description fields still cover that.
 
 ## The 8 things added
 
-### 1. imgBB instead of Firebase Storage
-Every image upload — project thumbnails, hero images, galleries, blog covers,
-request attachments — now goes through `src/services/imgbbService.ts`
-instead of Firebase Storage. This removes the Blaze-plan requirement
-entirely; the whole app now runs on Firebase's free Spark plan.
+### 1. Secure dual image hosting through Cloudflare
 
-The admin panel stores only the Worker URL and preferred provider. API keys remain in Cloudflare encrypted Worker secrets and must never be exposed to the browser.
+Admin uploads for project thumbnails, hero images, school models, blog covers,
+website logos, and favicon images are sent to both ImgBB and Freeimage.host
+through a Cloudflare Worker. The preferred provider is the primary URL; the
+second URL is recorded in `imageHostingAssets` and used only if the primary
+image fails to load. Existing single-host image URLs continue to work.
 
-**Known limitation**: imgBB's free tier has no reliable API-based delete —
-only a one-time "delete URL" that has to be visited manually in a browser.
-This is stored (in the `storagePath` field, repurposed) for your own
-reference, but there's no "delete from admin panel" button for images, only
-for the project/post/testimonial records themselves.
+Customer project-request and school-model request attachments keep their
+existing ImgBB-only behavior, but the upload key is now held by the Worker
+rather than exposed in the browser. The admin panel stores only the Worker URL
+and preferred provider. Provider keys belong in Cloudflare encrypted secrets,
+never in Vite variables, Firestore, or source control.
+
+Before deploying the website changes, deploy the Worker from
+`cloudflare/image-upload-worker`, add its two encrypted secrets and Firebase
+project/origin settings, then save the Worker URL under Admin → Settings →
+Image hosting. Deploy the updated Firestore rules with
+`firebase deploy --only firestore:rules`.
+
+If a provider key was ever committed to the repository, rotate it with the
+provider. Removing it from the current files does not erase Git history.
+Neither image host guarantees permanent backup; keep original project photos
+in a separate archive. Removing a website image removes its content reference
+but does not guarantee deletion from the remote image host.
 
 ### 2. Banner — fully customizable
 `/admin/banner` now controls: tone (5 options, each with an energetic
