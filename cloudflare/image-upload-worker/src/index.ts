@@ -11,6 +11,7 @@ type ProviderResult = {
   ok: boolean;
   url?: string;
   deleteUrl?: string;
+  id?: string;
   idEncoded?: string;
   error?: string;
 };
@@ -129,7 +130,7 @@ async function uploadToImgBB(file: File, env: Env): Promise<ProviderResult> {
     if (!response.ok || payload.success !== true || !url || new URL(url).protocol !== "https:") {
       return { ok: false, error: payload.error?.message || "ImgBB rejected the upload." };
     }
-    return { ok: true, url, deleteUrl: payload.data?.delete_url };
+    return { ok: true, url, id: payload.data?.id, deleteUrl: payload.data?.delete_url };
   } catch (error) {
     return { ok: false, error: error instanceof Error ? error.message : "ImgBB upload failed." };
   }
@@ -209,14 +210,14 @@ export default {
       if (purpose === "admin" && (onlyProvider === "imgbb" || onlyProvider === "freeimage")) {
         const uploaded = await uploadProvider(onlyProvider, file, env);
         if (!uploaded.ok || !uploaded.url) return json({ ok: false, provider: onlyProvider, error: uploaded.error || "Backup retry failed." }, 502, cors);
-        return json({ ok: true, uploaded: { provider: onlyProvider, url: uploaded.url, deleteUrl: uploaded.deleteUrl || null } }, 200, cors);
+        return json({ ok: true, uploaded: { provider: onlyProvider, url: uploaded.url, id: uploaded.id || null, idEncoded: uploaded.idEncoded || null, deleteUrl: uploaded.deleteUrl || null } }, 200, cors);
       }
 
       if (purpose === "request") {
         const uploaded = await uploadToImgBB(file, env);
         if (!uploaded.ok || !uploaded.url) return json({ ok: false, error: uploaded.error || "Request attachment upload failed." }, 502, cors);
         return json({
-          ok: true, purpose, primary: { provider: "imgbb", url: uploaded.url, deleteUrl: uploaded.deleteUrl || null },
+          ok: true, purpose, primary: { provider: "imgbb", url: uploaded.url, id: uploaded.id || null, idEncoded: uploaded.idEncoded || null, deleteUrl: uploaded.deleteUrl || null },
           backup: null, providers: { imgbb: { ok: true, url: uploaded.url }, freeimage: { ok: false, skipped: true } },
           partialSuccess: false, missingProvider: null,
         }, 200, cors);
@@ -238,8 +239,8 @@ export default {
       const backup = backupProvider ? results[backupProvider] : null;
       const missingProvider = backupProvider ? null : (primaryProvider === "imgbb" ? "freeimage" : "imgbb");
       return json({
-        ok: true, purpose, primary: { provider: primaryProvider, url: primary.url, deleteUrl: primary.deleteUrl || null },
-        backup: backup ? { provider: backupProvider, url: backup.url } : null,
+        ok: true, purpose, primary: { provider: primaryProvider, url: primary.url, id: primary.id || null, idEncoded: primary.idEncoded || null, deleteUrl: primary.deleteUrl || null },
+        backup: backup ? { provider: backupProvider, url: backup.url, id: backup.id || null, idEncoded: backup.idEncoded || null } : null,
         providers: results, partialSuccess: !backup, missingProvider,
       }, 200, cors);
     } catch (error) {
