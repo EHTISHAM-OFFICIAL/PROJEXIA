@@ -557,6 +557,7 @@ export default function ProjectForm() {
               onUpload={async (file) => {
                 const uploaded = await imgbbService.upload(file);
                 update('media', { ...draft.media, thumbnailUrl: uploaded.url });
+                return uploaded;
               }}
               onClear={() => update('media', { ...draft.media, thumbnailUrl: '' })}
             />
@@ -569,6 +570,7 @@ export default function ProjectForm() {
               onUpload={async (file) => {
                 const uploaded = await imgbbService.upload(file);
                 update('media', { ...draft.media, heroImageUrl: uploaded.url });
+                return uploaded;
               }}
               onClear={() => update('media', { ...draft.media, heroImageUrl: null })}
             />
