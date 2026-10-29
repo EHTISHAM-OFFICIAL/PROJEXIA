@@ -14,7 +14,7 @@ import { ImageProcessingDialog } from '../../components/forms/ImageProcessingDia
 import { ListEditor, TableEditor } from '../../components/forms/ListEditor';
 import { schoolModelService, DEFAULT_SCHOOL_SETTINGS } from '../../services/schoolModelService';
 import type { SchoolModelComponent, SchoolModelDraft, SchoolModelSpecification, SchoolSettings } from '../../services/schoolModelService';
-import { imgbbService } from '../../services/imgbbService';
+import { imgbbService, type UploadedImage } from '../../services/imgbbService';
 import { slugify } from '../../utils/slug';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -59,6 +59,8 @@ export default function SchoolModelForm() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [galleryPartialBackup, setGalleryPartialBackup] = useState<{ file: File; upload: UploadedImage } | null>(null);
+  const [retryingGalleryBackup, setRetryingGalleryBackup] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [initialSnapshot, setInitialSnapshot] = useState<string | null>(null);
 
@@ -178,12 +180,37 @@ export default function SchoolModelForm() {
       setGallery(next.join('\n'));
       update('galleryUrls', next);
       setGalleryQueue((current) => current.slice(1));
-      setNotice('Gallery image uploaded. Save the model to keep your changes.');
+      setGalleryPartialBackup(uploaded.missingProvider ? { file, upload: uploaded } : null);
+      setNotice(uploaded.missingProvider ? `Gallery image uploaded to ${uploaded.primaryProvider === 'imgbb' ? 'ImgBB' : 'Freeimage.host'}, but the backup failed. Retry the missing host below.` : uploaded.fallbackSaved === false ? 'Both hosts received the image, but fallback metadata could not be saved. Check Firestore rules.' : 'Gallery image uploaded to both image hosts. Save the model to keep your changes.');
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Image upload failed. You can paste image URLs instead.');
       throw caught;
     } finally {
       setUploading(false);
+    }
+  };
+
+  const retryGalleryBackup = async () => {
+    if (!galleryPartialBackup?.upload.missingProvider) return;
+    setRetryingGalleryBackup(true);
+    setError('');
+    try {
+      const result = await imgbbService.retryMissingProvider(
+        galleryPartialBackup.file,
+        galleryPartialBackup.upload.missingProvider,
+        galleryPartialBackup.upload.url,
+        galleryPartialBackup.upload.primaryProvider,
+      );
+      if (result.fallbackSaved === false) {
+        setError('The backup upload succeeded, but fallback metadata could not be saved. Check Firestore rules.');
+      } else {
+        setGalleryPartialBackup(null);
+        setNotice('Backup upload completed. Save the model to keep your changes.');
+      }
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Could not retry the missing backup.');
+    } finally {
+      setRetryingGalleryBackup(false);
     }
   };
 
@@ -230,6 +257,7 @@ export default function SchoolModelForm() {
 
     {hasUnsavedChanges&&<div className="mt-4 rounded-lg border border-state-warning/40 bg-state-warning/5 px-4 py-3 text-sm text-content-secondary" role="status">You have unsaved changes. Save the model before leaving, or discard them when prompted.</div>}
     {(error||notice)&&<div className="mt-5"><Alert tone={error?'danger':'success'}>{error||notice}</Alert></div>}
+    {galleryPartialBackup?.upload.missingProvider&&<div className="mt-3"><Button variant="secondary" onClick={() => void retryGalleryBackup()} loading={retryingGalleryBackup} disabled={retryingGalleryBackup}>{retryingGalleryBackup?'Retrying backup…':'Retry missing gallery backup'}</Button></div>}
 
     {previewOpen&&<div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4" role="dialog" aria-modal="true" aria-label="School model preview"><div className="w-full max-w-2xl rounded-2xl border border-line bg-bg p-5 shadow-2xl sm:p-7"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-wide text-accent">Live preview</p><h2 className="mt-1 text-xl font-semibold">Catalog card preview</h2></div><button type="button" onClick={()=>setPreviewOpen(false)} className="rounded-lg border border-line px-3 py-1.5 text-sm hover:bg-surface-raised">Close</button></div><div className="mt-5 overflow-hidden rounded-xl border border-line bg-surface sm:flex">{draft.thumbnailUrl?<img src={draft.thumbnailUrl} alt="" className="aspect-[16/10] w-full object-cover sm:w-2/5" onError={(event)=>{event.currentTarget.style.display='none'}}/>:<div className="flex aspect-[16/10] w-full items-center justify-center bg-surface-raised text-content-muted sm:w-2/5"><ImagePlus size={28}/></div>}<div className="flex flex-1 flex-col p-5"><div className="flex flex-wrap gap-2"><span className="rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent">{draft.category||'Category'}</span>{draft.gradeRange&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.gradeRange}</span>}{draft.subcategory&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.subcategory}</span>}{draft.modelType&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.modelType}</span>}{draft.difficulty&&<span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-content-secondary">{draft.difficulty}</span>}</div><h3 className="mt-3 text-lg font-semibold">{draft.title||'Your school model title'}</h3><p className="mt-2 text-sm leading-relaxed text-content-secondary">{draft.shortDescription||'Your short description will appear here.'}</p>{draft.dimensions&&<p className="mt-auto pt-4 text-xs text-content-muted">Approx. dimensions: {draft.dimensions}</p>}</div></div><p className="mt-4 text-xs text-content-muted">This is a preview of the catalog card, not a published page.</p></div></div>}
 
