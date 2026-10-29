@@ -7,6 +7,10 @@ export interface Env {
 
 type Provider = "imgbb" | "freeimage";
 type Purpose = "admin" | "request";
+const DEFAULT_MAX_FILE_SIZE_MB = 10;
+const MIN_MAX_FILE_SIZE_MB = 1;
+const MAX_MAX_FILE_SIZE_MB = 10;
+
 type ProviderResult = {
   ok: boolean;
   url?: string;
@@ -106,6 +110,16 @@ async function requireAdmin(token: string, env: Env): Promise<Record<string, unk
   return claims;
 }
 
+async function getMaxFileSizeMb(token: string, env: Env): Promise<number> {
+  const url = "https://firestore.googleapis.com/v1/projects/" + encodeURIComponent(env.FIREBASE_PROJECT_ID) + "/databases/(default)/documents/settings/imageHosting";
+  const response = await fetch(url, { headers: { authorization: "Bearer " + token } });
+  if (response.status === 404) return DEFAULT_MAX_FILE_SIZE_MB;
+  if (!response.ok) throw new Error("Could not read the image upload limit from website settings.");
+  const payload = await response.json() as { fields?: { maxFileSizeMb?: { integerValue?: string } } };
+  const configured = Number(payload.fields?.maxFileSizeMb?.integerValue);
+  if (!Number.isInteger(configured) || configured < MIN_MAX_FILE_SIZE_MB || configured > MAX_MAX_FILE_SIZE_MB) return DEFAULT_MAX_FILE_SIZE_MB;
+  return configured;
+}
 function readBearer(request: Request): string {
   const authorization = request.headers.get("authorization") || "";
   const match = authorization.match(/^Bearer\s+(.+)$/i);
@@ -193,18 +207,20 @@ export default {
       const form = await request.formData();
       const file = form.get("file");
       if (!(file instanceof File)) return json({ ok: false, error: "Choose an image file." }, 400, cors);
-      if (file.size <= 0 || file.size > 5 * 1024 * 1024) {
-        return json({ ok: false, error: "Images must be between 1 byte and 5 MB." }, 413, cors);
+      const purpose = String(form.get("purpose") || "admin") as Purpose;
+      if (purpose !== "admin" && purpose !== "request") return json({ ok: false, error: "Invalid upload purpose." }, 400, cors);
+      if (purpose === "admin") await requireAdmin(token, env);
+      else await verifyFirebaseToken(token, env.FIREBASE_PROJECT_ID);
+
+      const maxFileSizeMb = await getMaxFileSizeMb(token, env);
+      const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024;
+      if (file.size <= 0 || file.size > maxFileSizeBytes) {
+        return json({ ok: false, error: "Images must be between 1 byte and " + maxFileSizeMb + " MB. The current limit is configured in Admin → Settings → Image hosting." }, 413, cors);
       }
       const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/bmp"]);
       if (!allowedTypes.has(file.type.toLowerCase())) {
         return json({ ok: false, error: "Use a JPG, PNG, WebP, GIF, or BMP image." }, 415, cors);
       }
-
-      const purpose = String(form.get("purpose") || "admin") as Purpose;
-      if (purpose !== "admin" && purpose !== "request") return json({ ok: false, error: "Invalid upload purpose." }, 400, cors);
-      if (purpose === "admin") await requireAdmin(token, env);
-      else await verifyFirebaseToken(token, env.FIREBASE_PROJECT_ID);
 
       const onlyProvider = form.get("onlyProvider");
       if (purpose === "admin" && (onlyProvider === "imgbb" || onlyProvider === "freeimage")) {
