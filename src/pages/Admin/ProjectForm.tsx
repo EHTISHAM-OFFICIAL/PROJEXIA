@@ -933,6 +933,7 @@ function GalleryEditor({
                 onChange(gallery.map((item, position) => position === index
                   ? { ...item, url: uploaded.url, storagePath: uploaded.deleteUrl }
                   : item));
+                return uploaded;
               }}
               onClear={() => onChange(gallery.filter((_, position) => position !== index).map((item, order) => ({ ...item, order })))}
             />
@@ -977,6 +978,7 @@ function GalleryEditor({
               order: gallery.length,
             },
           ]);
+          return uploaded;
         }}
         onClear={() => undefined}
       />
