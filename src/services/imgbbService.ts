@@ -174,6 +174,7 @@ export const imgbbService = {
     missingProvider: ImageProvider,
     primaryUrl: string,
     primaryProvider: ImageProvider,
+    primaryIdentifiers: { id?: string; idEncoded?: string } = {},
   ): Promise<UploadedImage> {
     const config = await readConfig();
     const payload = await postUpload(file, "admin", config, { onlyProvider: missingProvider });
@@ -181,7 +182,7 @@ export const imgbbService = {
     if (!uploaded?.url || uploaded.provider !== missingProvider) {
       throw new Error("The backup host did not return a valid image URL.");
     }
-    const fallbackSaved = await saveFallback(primaryUrl, uploaded.url, primaryProvider, missingProvider, { backupId: uploaded.id ?? undefined, backupIdEncoded: uploaded.idEncoded ?? undefined });
+    const fallbackSaved = await saveFallback(primaryUrl, uploaded.url, primaryProvider, missingProvider, { primaryId: primaryIdentifiers.id, primaryIdEncoded: primaryIdentifiers.idEncoded, backupId: uploaded.id ?? undefined, backupIdEncoded: uploaded.idEncoded ?? undefined });
     return {
       url: primaryUrl,
       deleteUrl: "",
