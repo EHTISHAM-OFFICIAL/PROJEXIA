@@ -10,8 +10,12 @@ export interface UploadedImage {
   /** ImgBB's provider delete link, retained only for the existing request-attachment workflow. */
   deleteUrl: string;
   primaryProvider: ImageProvider;
+  primaryId?: string;
+  primaryIdEncoded?: string;
   backupUrl?: string;
   backupProvider?: ImageProvider;
+  backupId?: string;
+  backupIdEncoded?: string;
   missingProvider?: ImageProvider | null;
   partialSuccess?: boolean;
   fallbackSaved?: boolean;
@@ -25,12 +29,12 @@ interface HostingConfig {
 interface WorkerUploadResponse {
   ok?: boolean;
   error?: string;
-  primary?: { provider: ImageProvider; url: string; deleteUrl?: string | null };
-  backup?: { provider: ImageProvider; url: string } | null;
+  primary?: { provider: ImageProvider; url: string; id?: string | null; idEncoded?: string | null; deleteUrl?: string | null };
+  backup?: { provider: ImageProvider; url: string; id?: string | null; idEncoded?: string | null } | null;
   providers?: Record<string, { ok?: boolean; error?: string; url?: string }>;
   partialSuccess?: boolean;
   missingProvider?: ImageProvider | null;
-  uploaded?: { provider: ImageProvider; url: string; deleteUrl?: string | null };
+  uploaded?: { provider: ImageProvider; url: string; id?: string | null; idEncoded?: string | null; deleteUrl?: string | null };
 }
 
 const configRef = doc(db, "settings", "imageHosting");
@@ -74,7 +78,7 @@ async function imageHash(url: string): Promise<string> {
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
-async function saveFallback(primaryUrl: string, backupUrl: string, primaryProvider: ImageProvider, backupProvider: ImageProvider): Promise<boolean> {
+async function saveFallback(primaryUrl: string, backupUrl: string, primaryProvider: ImageProvider, backupProvider: ImageProvider, identifiers: { primaryId?: string; primaryIdEncoded?: string; backupId?: string; backupIdEncoded?: string } = {}): Promise<boolean> {
   try {
     const id = await imageHash(primaryUrl);
     await setDoc(doc(db, assetCollection, id), {
@@ -82,6 +86,10 @@ async function saveFallback(primaryUrl: string, backupUrl: string, primaryProvid
       backupUrl,
       primaryProvider,
       backupProvider,
+      primaryId: identifiers.primaryId ?? null,
+      primaryIdEncoded: identifiers.primaryIdEncoded ?? null,
+      backupId: identifiers.backupId ?? null,
+      backupIdEncoded: identifiers.backupIdEncoded ?? null,
       updatedAt: serverTimestamp(),
     });
     return true;
@@ -129,8 +137,12 @@ function toUploadedImage(payload: WorkerUploadResponse): UploadedImage {
     url: payload.primary.url,
     deleteUrl: payload.primary.deleteUrl || "",
     primaryProvider: payload.primary.provider,
+    primaryId: payload.primary.id ?? undefined,
+    primaryIdEncoded: payload.primary.idEncoded ?? undefined,
     backupUrl: payload.backup?.url,
     backupProvider: payload.backup?.provider,
+    backupId: payload.backup?.id ?? undefined,
+    backupIdEncoded: payload.backup?.idEncoded ?? undefined,
     missingProvider: payload.missingProvider ?? null,
     partialSuccess: payload.partialSuccess === true,
   };
@@ -143,7 +155,7 @@ export const imgbbService = {
     const payload = await postUpload(file, "admin", config);
     const uploaded = toUploadedImage(payload);
     if (uploaded.backupUrl && uploaded.backupProvider) {
-      uploaded.fallbackSaved = await saveFallback(uploaded.url, uploaded.backupUrl, uploaded.primaryProvider, uploaded.backupProvider);
+      uploaded.fallbackSaved = await saveFallback(uploaded.url, uploaded.backupUrl, uploaded.primaryProvider, uploaded.backupProvider, { primaryId: uploaded.primaryId, primaryIdEncoded: uploaded.primaryIdEncoded, backupId: uploaded.backupId, backupIdEncoded: uploaded.backupIdEncoded });
     }
     return uploaded;
   },
@@ -169,13 +181,15 @@ export const imgbbService = {
     if (!uploaded?.url || uploaded.provider !== missingProvider) {
       throw new Error("The backup host did not return a valid image URL.");
     }
-    const fallbackSaved = await saveFallback(primaryUrl, uploaded.url, primaryProvider, missingProvider);
+    const fallbackSaved = await saveFallback(primaryUrl, uploaded.url, primaryProvider, missingProvider, { backupId: uploaded.id ?? undefined, backupIdEncoded: uploaded.idEncoded ?? undefined });
     return {
       url: primaryUrl,
       deleteUrl: "",
       primaryProvider,
       backupUrl: uploaded.url,
       backupProvider: missingProvider,
+      backupId: uploaded.id ?? undefined,
+      backupIdEncoded: uploaded.idEncoded ?? undefined,
       missingProvider: null,
       partialSuccess: false,
       fallbackSaved,
