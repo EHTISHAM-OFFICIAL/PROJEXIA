@@ -1,6 +1,6 @@
 name = "projexiahub-image-gateway"
 main = "src/index.ts"
-compatibility_date = "2026-10-30"
+compatibility_date = "2026-10-29"
 
 [vars]
 FIREBASE_PROJECT_ID = "mectec-shop"
