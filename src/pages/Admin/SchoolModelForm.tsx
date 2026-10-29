@@ -201,6 +201,7 @@ export default function SchoolModelForm() {
         galleryPartialBackup.upload.missingProvider,
         galleryPartialBackup.upload.url,
         galleryPartialBackup.upload.primaryProvider,
+        { id: galleryPartialBackup.upload.primaryId, idEncoded: galleryPartialBackup.upload.primaryIdEncoded },
       );
       if (result.fallbackSaved === false) {
         setError('The backup upload succeeded, but fallback metadata could not be saved. Check Firestore rules.');
