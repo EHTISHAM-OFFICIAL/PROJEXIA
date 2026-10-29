@@ -68,6 +68,11 @@ export function SiteIdentitySettings() {
   const [partialBackup, setPartialBackup] = useState<{ file: File; upload: UploadedImage } | null>(null);
   const [retryingBackup, setRetryingBackup] = useState(false);
   const [pendingImage, setPendingImage] = useState<{ kind: "site" | "favicon"; file: File } | null>(null);
+  const [maxImageSizeMb, setMaxImageSizeMb] = useState(10);
+
+  useEffect(() => {
+    imgbbService.getHostingConfig().then((config) => setMaxImageSizeMb(config.maxFileSizeMb)).catch(() => setMaxImageSizeMb(10));
+  }, []);
 
   useEffect(() => {
     setDraft(settings);
@@ -89,8 +94,8 @@ export function SiteIdentitySettings() {
       setLogoError("Choose a PNG, JPG, or WebP image file.");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setLogoError("Logo files must be 5 MB or smaller.");
+    if (file.size > maxImageSizeMb * 1024 * 1024) {
+      setLogoError(`Logo files must be ${maxImageSizeMb} MB or smaller. Change this in Admin → Settings → Image hosting.`);
       return;
     }
     setPendingImage({ kind, file });
@@ -99,7 +104,7 @@ export function SiteIdentitySettings() {
   const uploadPreparedLogo = async (file: File) => {
     if (!pendingImage) return;
     if (!file.type.startsWith("image/")) throw new Error("Choose an image file.");
-    if (file.size > 5 * 1024 * 1024) throw new Error("Prepared logo files must be 5 MB or smaller. Try a smaller crop or keep the original.");
+    if (file.size > maxImageSizeMb * 1024 * 1024) throw new Error(`Prepared logo files must be ${maxImageSizeMb} MB or smaller. Change this in Admin → Settings → Image hosting.`);
     const kind = pendingImage.kind;
     setLogoUploading(kind);
     setLogoError(null);

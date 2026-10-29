@@ -24,6 +24,7 @@ export interface UploadedImage {
 interface HostingConfig {
   workerUrl: string;
   preferredProvider: ImageProvider;
+  maxFileSizeMb: number;
 }
 
 interface WorkerUploadResponse {
@@ -40,6 +41,11 @@ interface WorkerUploadResponse {
 const configRef = doc(db, "settings", "imageHosting");
 const legacyImgBbRef = doc(db, "settings", "imgbb");
 const assetCollection = "imageHostingAssets";
+
+function normalizeMaxFileSizeMb(value: unknown): number {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 10 ? parsed : 10;
+}
 
 function normalizeWorkerUrl(value: string): string {
   return value.trim().replace(/\/+$/, "");
@@ -64,6 +70,7 @@ async function readConfig(): Promise<HostingConfig> {
   return {
     workerUrl,
     preferredProvider: data.preferredProvider === "freeimage" ? "freeimage" : "imgbb",
+    maxFileSizeMb: normalizeMaxFileSizeMb(data.maxFileSizeMb),
   };
 }
 
@@ -106,6 +113,10 @@ async function postUpload(
   options: { onlyProvider?: ImageProvider } = {},
 ): Promise<WorkerUploadResponse> {
   const token = await currentToken();
+  const maxBytes = config.maxFileSizeMb * 1024 * 1024;
+  if (file.size > maxBytes) {
+    throw new Error("This image is " + (file.size / (1024 * 1024)).toFixed(2) + " MB. The current upload limit is " + config.maxFileSizeMb + " MB per file. You can change it in Admin → Settings → Image hosting.");
+  }
   const form = new FormData();
   form.append("file", file, file.name || "image-upload");
   form.append("purpose", purpose);
@@ -213,7 +224,7 @@ export const imgbbService = {
   },
 
   /** Saves the non-secret Worker URL and preference; provider keys stay in Cloudflare encrypted secrets. */
-  async saveHostingConfig(workerUrl: string, preferredProvider: ImageProvider): Promise<void> {
+  async saveHostingConfig(workerUrl: string, preferredProvider: ImageProvider, maxFileSizeMb: number): Promise<void> {
     const normalized = normalizeWorkerUrl(workerUrl);
     if (normalized) {
       const parsed = new URL(normalized);
@@ -221,9 +232,11 @@ export const imgbbService = {
         throw new Error("The Cloudflare Worker URL must use HTTPS.");
       }
     }
+    const safeMaxFileSizeMb = normalizeMaxFileSizeMb(maxFileSizeMb);
     await setDoc(configRef, {
       workerUrl: normalized,
       preferredProvider,
+      maxFileSizeMb: safeMaxFileSizeMb,
       updatedAt: serverTimestamp(),
     }, { merge: true });
 
@@ -237,6 +250,7 @@ export const imgbbService = {
     return {
       workerUrl: typeof data.workerUrl === "string" ? data.workerUrl : "",
       preferredProvider: data.preferredProvider === "freeimage" ? "freeimage" : "imgbb",
+      maxFileSizeMb: normalizeMaxFileSizeMb(data.maxFileSizeMb),
     };
   },
 

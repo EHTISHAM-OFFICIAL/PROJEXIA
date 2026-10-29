@@ -18,6 +18,7 @@ export function ImageHostingSettings() {
   const { notify } = useToast();
   const [workerUrl, setWorkerUrl] = useState("");
   const [preferredProvider, setPreferredProvider] = useState<ImageProvider>("imgbb");
+  const [maxFileSizeMb, setMaxFileSizeMb] = useState(10);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -29,6 +30,7 @@ export function ImageHostingSettings() {
       .then((config) => {
         setWorkerUrl(config.workerUrl);
         setPreferredProvider(config.preferredProvider);
+        setMaxFileSizeMb(config.maxFileSizeMb);
       })
       .catch((caught) => setError(toUserMessage(caught, "Could not load image hosting settings.")))
       .finally(() => setLoading(false));
@@ -42,11 +44,11 @@ export function ImageHostingSettings() {
     setSaving(true);
     setError(null);
     try {
-      await imgbbService.saveHostingConfig(workerUrl, preferredProvider);
+      await imgbbService.saveHostingConfig(workerUrl, preferredProvider, maxFileSizeMb);
       setWorkerUrl(workerUrl.trim().replace(/\/+$/, ""));
       notify({
         title: "Image hosting settings saved",
-        message: "New admin uploads will use both configured hosts. Provider API keys remain in Cloudflare.",
+        message: "New uploads will use both configured hosts with a " + maxFileSizeMb + " MB per-file limit. Provider API keys remain in Cloudflare.",
         tone: "success",
       });
     } catch (caught) {
@@ -141,6 +143,30 @@ export function ImageHostingSettings() {
           </select>
         </Field>
 
+        <Field
+          label="Maximum image size per file"
+          htmlFor="image-max-file-size"
+          hint="Choose 1–10 MB. The Cloudflare Worker enforces this limit for admin uploads and customer request attachments."
+        >
+          <div className="flex items-center gap-3">
+            <input
+              id="image-max-file-size"
+              type="number"
+              min={1}
+              max={10}
+              step={1}
+              value={maxFileSizeMb}
+              onChange={(event) => {
+                const value = Number(event.target.value);
+                if (Number.isFinite(value)) setMaxFileSizeMb(Math.min(10, Math.max(1, Math.trunc(value))));
+              }}
+              disabled={loading || saving}
+              className="min-h-11 w-28 rounded-lg border border-line bg-surface-raised px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+            />
+            <span className="text-sm text-content-secondary">MB per image</span>
+          </div>
+          <p className="mt-1 text-xs text-content-muted">Default: 10 MB. Maximum allowed setting: 10 MB per file.</p>
+        </Field>
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button onClick={() => void save()} loading={saving || loading} disabled={loading || saving}>
             <span className="inline-flex items-center gap-2"><Save size={15} /> {saving ? "Saving…" : "Save image hosting settings"}</span>
@@ -154,7 +180,7 @@ export function ImageHostingSettings() {
       <div className="mt-6 border-t border-line pt-5">
         <h3 className="text-sm font-semibold">How the setup behaves</h3>
         <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-content-secondary">
-          <li>Admin uploads are sent to ImgBB and Freeimage.host independently.</li>
+          <li>Admin uploads are sent to ImgBB and Freeimage.host independently, subject to the configured per-file size limit.</li>
           <li>If both succeed, the preferred host is primary and the second URL is saved for fallback.</li>
           <li>If one provider fails, the image can still be saved and the editor offers a retry for the missing backup.</li>
           <li>Existing ImgBB-only images remain compatible; fallback metadata is checked only if the primary image fails to load.</li>
