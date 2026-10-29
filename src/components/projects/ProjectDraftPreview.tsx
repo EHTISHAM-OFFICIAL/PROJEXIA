@@ -1,5 +1,6 @@
 import { ExternalLink, X } from 'lucide-react';
 import type { ProjectDraft } from '../../types/project';
+import { Image } from '../ui/Image';
 import { InlineText, Prose, BulletList } from './CaseStudySection';
 
 export function ProjectDraftPreview({
@@ -41,7 +42,7 @@ export function ProjectDraftPreview({
         <article>
           {hasImage ? (
             <div className="relative aspect-[16/7] overflow-hidden bg-surface">
-              <img src={image!} alt="" className="h-full w-full object-cover" />
+              <Image src={image!} alt="" className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5 text-white sm:p-9">
                 <p className="mb-3 text-sm text-white/80">{draft.category}{draft.subcategory ? ` · ${draft.subcategory}` : ''}</p>
