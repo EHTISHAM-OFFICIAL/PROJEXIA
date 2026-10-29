@@ -195,6 +195,7 @@ export default function BlogForm() {
               onUpload={async (file) => {
                 const uploaded = await imgbbService.upload(file);
                 update('coverImageUrl', uploaded.url);
+                return uploaded;
               }}
               onClear={() => update('coverImageUrl', null)}
             />
