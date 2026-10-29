@@ -169,6 +169,36 @@ async function getMaxFileSizeMb(token: string, env: Env): Promise<number> {
     return DEFAULT_MAX_FILE_SIZE_MB;
   return configured;
 }
+
+async function hasValidImageSignature(file: File): Promise<boolean> {
+  const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  const startsWith = (...signature: number[]) =>
+    signature.every((value, index) => bytes[index] === value);
+
+  switch (file.type.toLowerCase()) {
+    case "image/jpeg":
+      return startsWith(0xff, 0xd8, 0xff);
+    case "image/png":
+      return startsWith(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);
+    case "image/gif":
+      return (
+        (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46 &&
+          bytes[3] === 0x38 && (bytes[4] === 0x37 || bytes[4] === 0x39) &&
+          bytes[5] === 0x61)
+      );
+    case "image/webp":
+      return (
+        bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 &&
+        bytes[3] === 0x46 && bytes[8] === 0x57 && bytes[9] === 0x45 &&
+        bytes[10] === 0x42 && bytes[11] === 0x50
+      );
+    case "image/bmp":
+      return bytes[0] === 0x42 && bytes[1] === 0x4d;
+    default:
+      return false;
+  }
+}
+
 function readBearer(request: Request): string {
   const authorization = request.headers.get("authorization") || "";
   const match = authorization.match(/^Bearer\s+(.+)$/i);
@@ -327,6 +357,19 @@ export default {
 
     try {
       const token = readBearer(request);
+      // Authenticate and read the configured limit before parsing the multipart body.
+      await verifyFirebaseToken(token, env.FIREBASE_PROJECT_ID);
+      const maxFileSizeMb = await getMaxFileSizeMb(token, env);
+      const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024;
+      const contentLength = Number(request.headers.get("content-length") || 0);
+      // Allow multipart boundaries and form fields, but reject clearly oversized bodies early.
+      if (contentLength > maxFileSizeBytes + 512 * 1024) {
+        return json(
+          { ok: false, error: `The upload request exceeds the configured ${maxFileSizeMb} MB image limit.` },
+          413,
+          cors,
+        );
+      }
       const form = await request.formData();
       const file = form.get("file");
       if (!(file instanceof File))
@@ -335,10 +378,6 @@ export default {
       if (purpose !== "admin" && purpose !== "request")
         return json({ ok: false, error: "Invalid upload purpose." }, 400, cors);
       if (purpose === "admin") await requireAdmin(token, env);
-      else await verifyFirebaseToken(token, env.FIREBASE_PROJECT_ID);
-
-      const maxFileSizeMb = await getMaxFileSizeMb(token, env);
-      const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024;
       if (file.size <= 0 || file.size > maxFileSizeBytes) {
         return json(
           {
@@ -362,6 +401,13 @@ export default {
       if (!allowedTypes.has(file.type.toLowerCase())) {
         return json(
           { ok: false, error: "Use a JPG, PNG, WebP, GIF, or BMP image." },
+          415,
+          cors,
+        );
+      }
+      if (!(await hasValidImageSignature(file))) {
+        return json(
+          { ok: false, error: "The file contents do not match a supported image format." },
           415,
           cors,
         );
