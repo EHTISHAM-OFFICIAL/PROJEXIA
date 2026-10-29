@@ -152,14 +152,14 @@ export const REQUEST_PRIORITY_TONE: Record<
  */
 export const ATTACHMENT_RULES = {
   maxFiles: 5,
-  maxSizeBytes: 5 * 1024 * 1024,
+  maxSizeBytes: 10 * 1024 * 1024,
   allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/bmp'],
   allowedExtensions: ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp'],
 } as const;
 
 /** Project image rules, used by the admin media uploader. */
 export const PROJECT_IMAGE_RULES = {
-  maxSizeBytes: 5 * 1024 * 1024,
+  maxSizeBytes: 10 * 1024 * 1024,
   allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
   allowedExtensions: ['.jpg', '.jpeg', '.png', '.webp', '.gif'],
 } as const;
