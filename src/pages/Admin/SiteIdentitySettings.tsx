@@ -16,6 +16,7 @@ import { Button } from "../../components/ui/Button";
 import { Field } from "../../components/forms/Field";
 import { TextInput } from "../../components/forms/Inputs";
 import { ImageProcessingDialog } from "../../components/forms/ImageProcessingDialog";
+import { Image } from "../../components/ui/Image";
 import { useSiteSettings } from "../../contexts/SiteSettingsContext";
 import {
   DEFAULT_SITE_SETTINGS,
@@ -298,7 +299,7 @@ export function SiteIdentitySettings() {
             </div>
             <div className="mt-4 flex min-h-24 items-center justify-center rounded-lg border border-dashed border-line bg-surface-raised p-4">
               {draft.showSiteLogo && draft.siteLogoUrl ? (
-                <img
+                <Image
                   src={draft.siteLogoUrl}
                   alt="Website logo preview"
                   className="max-h-20 max-w-full object-contain"
@@ -349,7 +350,7 @@ export function SiteIdentitySettings() {
             </div>
             <div className="mt-4 flex min-h-24 items-center justify-center rounded-lg border border-dashed border-line bg-surface-raised p-4">
               {draft.showFavicon && draft.faviconUrl ? (
-                <img
+                <Image
                   src={draft.faviconUrl}
                   alt="Favicon preview"
                   className="h-12 w-12 rounded-lg object-contain"
