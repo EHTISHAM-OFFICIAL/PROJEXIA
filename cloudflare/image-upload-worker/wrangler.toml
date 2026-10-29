@@ -3,7 +3,5 @@ main = "src/index.ts"
 compatibility_date = "2026-10-30"
 
 [vars]
-# Replace with the project ID from your Firebase configuration.
-FIREBASE_PROJECT_ID = "REPLACE_WITH_FIREBASE_PROJECT_ID"
-# Replace these sample origins with the exact production domain(s) and local dev origin.
-ALLOWED_ORIGINS = "https://REPLACE_WITH_YOUR_SITE.web.app,https://REPLACE_WITH_CUSTOM_DOMAIN,http://localhost:5173"
+FIREBASE_PROJECT_ID = "mectec-shop"
+ALLOWED_ORIGINS = "https://projexia.web.app,http://localhost:5173"
