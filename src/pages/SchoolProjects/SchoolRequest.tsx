@@ -8,6 +8,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Container } from "../../components/ui/Container";
+import { Image } from "../../components/ui/Image";
 import { PageIntro } from "../../components/ui/PageIntro";
 import { Seo } from "../../components/ui/Seo";
 import { Button, ButtonLink } from "../../components/ui/Button";
@@ -677,7 +678,7 @@ export default function SchoolRequest() {
               {selectedModel && (
                 <div className="overflow-hidden rounded-xl border border-accent/20 bg-accent/5 sm:flex">
                   {selectedModel.thumbnailUrl && (
-                    <img
+                    <Image
                       src={selectedModel.thumbnailUrl}
                       alt=""
                       className="aspect-[16/9] w-full object-cover sm:w-40"
