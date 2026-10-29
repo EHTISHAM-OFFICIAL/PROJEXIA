@@ -315,7 +315,7 @@ export default function SchoolModelForm() {
           <Field label="Or paste a thumbnail URL" htmlFor="school-thumbnail-url"><TextInput id="school-thumbnail-url" type="url" value={draft.thumbnailUrl} onChange={(event)=>update('thumbnailUrl',event.target.value)} placeholder="https://…"/></Field>
         </FieldSet>
         <FieldSet legend="Hero image" hint="A larger image for the top of the public detail page. Optional; it can differ from the catalog thumbnail.">
-          <ImageUploadField label="Hero image" value={draft.heroImageUrl || null} disabled={uploading || saving} onUpload={async (file) => { const uploaded = await imgbbService.upload(file); update('heroImageUrl', uploaded.url); setNotice('Hero image uploaded. Save the model to keep the change.'); }} onClear={() => update('heroImageUrl', '')}/>
+          <ImageUploadField label="Hero image" value={draft.heroImageUrl || null} disabled={uploading || saving} onUpload={async (file) => { const uploaded = await imgbbService.upload(file); update('heroImageUrl', uploaded.url); setNotice(uploaded.missingProvider ? 'Hero image uploaded, but its backup is incomplete. Retry the missing provider before finishing.' : 'Hero image uploaded to both hosts. Save the model to keep the change.'); return uploaded; }} onClear={() => update('heroImageUrl', '')}/>
           <Field label="Or paste a hero image URL" htmlFor="school-hero-url"><TextInput id="school-hero-url" type="url" value={draft.heroImageUrl} onChange={(event) => update('heroImageUrl', event.target.value)} placeholder="https://…"/></Field>
         </FieldSet>
         <div className="grid gap-5 sm:grid-cols-2">
@@ -341,7 +341,7 @@ export default function SchoolModelForm() {
                 <button type="button" draggable onDragStart={(event) => { event.dataTransfer.setData('text/plain', String(index)); setDraggingGalleryIndex(index); }} onDragEnd={() => setDraggingGalleryIndex(null)} aria-label={`Drag to reorder gallery image ${index + 1}`} title="Drag to reorder" className="flex shrink-0 items-center justify-center self-start rounded-md p-1 text-content-muted hover:bg-surface-raised sm:self-center"><GripVertical size={16}/></button>
                 <div className="w-full min-w-0 shrink-0 sm:w-44">
                   <ImageUploadField label={`Gallery image ${index + 1}`} value={url} disabled={uploading || saving}
-                    onUpload={async (file) => { const uploaded = await imgbbService.upload(file); const next = lines(gallery).map((item, position) => position === index ? uploaded.url : item); setGallery(next.join('\n')); update('galleryUrls', next); setNotice('Gallery image updated. Save the model to keep the change.'); }}
+                    onUpload={async (file) => { const uploaded = await imgbbService.upload(file); const next = lines(gallery).map((item, position) => position === index ? uploaded.url : item); setGallery(next.join('\n')); update('galleryUrls', next); setNotice(uploaded.missingProvider ? 'Gallery image uploaded, but its backup is incomplete. Retry the missing provider before finishing.' : 'Gallery image updated. Save the model to keep the change.'); return uploaded; }}
                     onClear={() => { const next = lines(gallery).filter((_, position) => position !== index); setGallery(next.join('\n')); update('galleryUrls', next); }}
                   />
                 </div>
