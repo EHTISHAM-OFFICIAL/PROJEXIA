@@ -265,9 +265,10 @@ async function uploadToFreeimage(
   try {
     const form = new FormData();
     form.append("key", env.FREEIMAGE_API_KEY);
+    form.append("action", "upload");
     form.append("source", file, file.name || "upload");
     form.append("format", "json");
-    const response = await fetch("https://freeimage.host/api/1/upload", {
+    const response = await fetch("https://freeimage.host/api/1/upload/", {
       method: "POST",
       body: form,
     });
