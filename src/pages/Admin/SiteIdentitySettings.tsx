@@ -128,6 +128,7 @@ export function SiteIdentitySettings() {
         partialBackup.upload.missingProvider,
         partialBackup.upload.url,
         partialBackup.upload.primaryProvider,
+        { id: partialBackup.upload.primaryId, idEncoded: partialBackup.upload.primaryIdEncoded },
       );
       if (result.fallbackSaved === false) {
         setLogoError("The backup upload succeeded, but fallback metadata could not be saved. Check Firestore rules.");
