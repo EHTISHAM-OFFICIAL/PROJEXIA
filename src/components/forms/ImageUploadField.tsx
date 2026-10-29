@@ -99,6 +99,7 @@ export function ImageUploadField({
         uploadSummary.missingProvider,
         uploadSummary.url,
         uploadSummary.primaryProvider,
+        { id: uploadSummary.primaryId, idEncoded: uploadSummary.primaryIdEncoded },
       );
       setUploadSummary(result.fallbackSaved === false ? result : null);
     } catch (caught) {
