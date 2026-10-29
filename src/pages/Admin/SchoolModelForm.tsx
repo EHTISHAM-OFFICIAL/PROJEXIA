@@ -281,7 +281,7 @@ export default function SchoolModelForm() {
 
       <Group id="school-model-media" title="2. Images & media" subtitle="Help visitors understand what the model looks like">
         <FieldSet legend="Thumbnail" hint="The primary catalog image. A landscape image with a clear subject works best.">
-          <ImageUploadField label="Thumbnail" value={draft.thumbnailUrl||null} disabled={uploading||saving} onUpload={async(file)=>{const uploaded=await imgbbService.upload(file);update('thumbnailUrl',uploaded.url);setNotice('Thumbnail uploaded. Save the model to keep the change.');}} onClear={()=>update('thumbnailUrl','')}/>
+          <ImageUploadField label="Thumbnail" value={draft.thumbnailUrl||null} disabled={uploading||saving} onUpload={async(file)=>{const uploaded=await imgbbService.upload(file);update('thumbnailUrl',uploaded.url);setNotice(uploaded.missingProvider ? `Thumbnail uploaded to ${uploaded.primaryProvider === 'imgbb' ? 'ImgBB' : 'Freeimage.host'}, but the backup failed. Save the model and retry the backup from the upload field.` : 'Thumbnail uploaded to both image hosts. Save the model to keep the change.');return uploaded;}} onClear={()=>update('thumbnailUrl','')}/>
           <Field label="Or paste a thumbnail URL" htmlFor="school-thumbnail-url"><TextInput id="school-thumbnail-url" type="url" value={draft.thumbnailUrl} onChange={(event)=>update('thumbnailUrl',event.target.value)} placeholder="https://…"/></Field>
         </FieldSet>
         <FieldSet legend="Hero image" hint="A larger image for the top of the public detail page. Optional; it can differ from the catalog thumbnail.">
