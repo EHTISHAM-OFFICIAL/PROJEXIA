@@ -5,10 +5,11 @@ import { validateProjectImage } from '../../utils/fileValidation';
 import { PROJECT_IMAGE_RULES } from '../../constants/requestOptions';
 import { formatFileSize } from '../../utils/formatting';
 import { ImageProcessingDialog } from './ImageProcessingDialog';
+import { imgbbService, type UploadedImage } from '../../services/imgbbService';
 
 interface ImageUploadFieldProps {
   value: string | null;
-  onUpload: (file: File) => Promise<void>;
+  onUpload: (file: File) => Promise<void | UploadedImage>;
   onClear: () => void;
   label: string;
   disabled?: boolean;
@@ -27,6 +28,8 @@ export function ImageUploadField({
   const [error, setError] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [lastUploadedFile, setLastUploadedFile] = useState<File | null>(null);
+  const [uploadSummary, setUploadSummary] = useState<UploadedImage | null>(null);
+  const [retryingBackup, setRetryingBackup] = useState(false);
   const inputId = `image-${label.replace(/\\W+/g, '-').toLowerCase()}`;
 
   const handleFile = (file: File | undefined) => {
@@ -38,6 +41,7 @@ export function ImageUploadField({
       return;
     }
     setError(null);
+    setUploadSummary(null);
     setPendingFile(file);
   };
 
@@ -72,8 +76,9 @@ export function ImageUploadField({
     setBusy(true);
     setError(null);
     try {
-      await onUpload(file);
+      const result = await onUpload(file);
       setLastUploadedFile(file);
+      setUploadSummary(result && (result.partialSuccess || result.fallbackSaved === false) ? result : null);
       setPendingFile(null);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Upload failed.');
@@ -81,6 +86,25 @@ export function ImageUploadField({
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = '';
+    }
+  };
+
+  const retryBackup = async () => {
+    if (!lastUploadedFile || !uploadSummary?.missingProvider) return;
+    setRetryingBackup(true);
+    setError(null);
+    try {
+      const result = await imgbbService.retryMissingProvider(
+        lastUploadedFile,
+        uploadSummary.missingProvider,
+        uploadSummary.url,
+        uploadSummary.primaryProvider,
+      );
+      setUploadSummary(result.fallbackSaved === false ? result : null);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Could not retry the backup host.');
+    } finally {
+      setRetryingBackup(false);
     }
   };
 
@@ -137,6 +161,23 @@ export function ImageUploadField({
         </div>
       )}
       {pendingFile && <ImageProcessingDialog file={pendingFile} title={value ? `Edit ${label.toLowerCase()}` : `Prepare ${label.toLowerCase()}`} onCancel={() => { setPendingFile(null); if (inputRef.current) inputRef.current.value = ''; }} onUse={uploadPreparedFile} />}
+      {uploadSummary && (
+        <div className="rounded-lg border border-line bg-surface-raised p-3 text-xs leading-relaxed text-content-secondary" role="status">
+          {uploadSummary.missingProvider ? (
+            <>
+              <p>
+                Uploaded to {uploadSummary.primaryProvider === 'imgbb' ? 'ImgBB' : 'Freeimage.host'}, but {uploadSummary.missingProvider === 'imgbb' ? 'ImgBB' : 'Freeimage.host'} did not finish. The image is saved; its backup is not ready yet.
+              </p>
+              <button type="button" onClick={() => void retryBackup()} disabled={retryingBackup || busy} className="mt-2 inline-flex min-h-8 items-center justify-center gap-2 rounded-lg border border-line px-3 py-1.5 font-medium text-content transition-colors hover:border-accent hover:text-accent disabled:opacity-50">
+                {retryingBackup ? <Loader2 size={14} className="animate-spin" /> : <ImagePlus size={14} />}
+                {retryingBackup ? 'Retrying backup…' : 'Retry missing backup'}
+              </button>
+            </>
+          ) : (
+            <p>Both hosts received the image, but fallback metadata could not be saved. Check the image-hosting Firestore rule and try uploading again.</p>
+          )}
+        </div>
+      )}
       {error && <p className="text-xs text-state-danger" role="alert">{error}</p>}
     </div>
   );
