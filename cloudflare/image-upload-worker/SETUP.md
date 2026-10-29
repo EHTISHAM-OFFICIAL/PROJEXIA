@@ -14,6 +14,8 @@ This Worker keeps both image-host API keys out of the React bundle and Firestore
    - `FREEIMAGE_API_KEY`
 5. Deploy the Worker and copy its HTTPS `workers.dev` URL.
 
+The default maximum image size is **10 MB per file**. Admins can change it in **Admin → Settings → Image hosting** to a whole-number value from **1 MB to 10 MB**. The setting is stored in the public, non-secret `settings/imageHosting` document and enforced by the Worker for both admin uploads and authenticated customer request attachments. The browser also checks the saved limit before sending the file, but the Worker is authoritative.
+
 Do not put provider keys in chat, GitHub, `.env`, Vite variables, Firestore, or the browser admin form. If a provider key was ever committed to this repository, rotate it with that provider first. Deleting it from the latest file does not erase Git history.
 
 ## 2. Configure the website
