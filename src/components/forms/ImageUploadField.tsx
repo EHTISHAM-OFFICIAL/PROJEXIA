@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ImagePlus, Loader2, Pencil, X } from 'lucide-react';
 import { Image } from '../ui/Image';
 import { validateProjectImage } from '../../utils/fileValidation';
@@ -30,10 +30,20 @@ export function ImageUploadField({
   const [lastUploadedFile, setLastUploadedFile] = useState<File | null>(null);
   const [uploadSummary, setUploadSummary] = useState<UploadedImage | null>(null);
   const [retryingBackup, setRetryingBackup] = useState(false);
+  const [maxFileSizeMb, setMaxFileSizeMb] = useState(10);
+
+  useEffect(() => {
+    imgbbService.getHostingConfig().then((config) => setMaxFileSizeMb(config.maxFileSizeMb)).catch(() => setMaxFileSizeMb(10));
+  }, []);
   const inputId = `image-${label.replace(/\\W+/g, '-').toLowerCase()}`;
 
   const handleFile = (file: File | undefined) => {
     if (!file) return;
+    if (file.size > maxFileSizeMb * 1024 * 1024) {
+      setError(`This image exceeds the current ${maxFileSizeMb} MB per-file limit. Change it in Admin → Settings → Image hosting.`);
+      if (inputRef.current) inputRef.current.value = '';
+      return;
+    }
     const result = validateProjectImage(file);
     if (!result.valid) {
       setError(result.error ?? 'That file cannot be uploaded.');
@@ -71,6 +81,7 @@ export function ImageUploadField({
   };
 
   const uploadPreparedFile = async (file: File) => {
+    if (file.size > maxFileSizeMb * 1024 * 1024) throw new Error(`This image exceeds the current ${maxFileSizeMb} MB per-file limit. Change it in Admin → Settings → Image hosting.`);
     const validation = validateProjectImage(file);
     if (!validation.valid) throw new Error(validation.error ?? 'The prepared image cannot be uploaded.');
     setBusy(true);
@@ -157,7 +168,7 @@ export function ImageUploadField({
             {busy ? 'Uploading…' : `Upload ${label.toLowerCase()}`}
           </label>
           <p className="mt-2.5 text-xs text-content-muted">
-            JPG, PNG, WebP or GIF up to {formatFileSize(PROJECT_IMAGE_RULES.maxSizeBytes)}
+            JPG, PNG, WebP or GIF up to {maxFileSizeMb} MB
           </p>
         </div>
       )}
