@@ -35,6 +35,10 @@ export function ImageHostingSettings() {
   }, []);
 
   const save = async () => {
+    if (!workerUrl.trim()) {
+      setError("Deploy the Cloudflare Worker first, then paste its HTTPS URL here.");
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
