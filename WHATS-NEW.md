@@ -6,7 +6,7 @@ don't just drop files in, since dozens changed across 8 features.
 ## ⚠️ Required steps, in order
 
 1. **Keep your existing `.env`** — it isn't in this zip on purpose, so your
-   real Firebase credentials for `mectec-shop` aren't touched. Copy your old
+   real Firebase credentials for your current PROJEXIAHUB Firebase project aren't touched. Copy your old
    `.env` file into this new folder before doing anything else.
 
 2. **Configure secure image hosting** — do not put provider keys in `.env`, GitHub, or the browser bundle. Use the Cloudflare Worker setup guide in `cloudflare/image-upload-worker/SETUP.md`; add `IMGBB_API_KEY` and `FREEIMAGE_API_KEY` as encrypted Worker secrets.
@@ -57,8 +57,8 @@ project/origin settings, then save the Worker URL under Admin → Settings →
 Image hosting. Deploy the updated Firestore rules with
 `firebase deploy --only firestore:rules`.
 
-If a provider key was ever committed to the repository, rotate it with the
-provider. Removing it from the current files does not erase Git history.
+If any API credential was ever committed to the repository, rotate it with
+the provider/service. This also applies to credentials unrelated to image hosting. Removing it from the current files does not erase Git history.
 Neither image host guarantees permanent backup; keep original project photos
 in a separate archive. Removing a website image removes its content reference
 but does not guarantee deletion from the remote image host.
