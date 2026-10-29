@@ -9,12 +9,7 @@ don't just drop files in, since dozens changed across 8 features.
    real Firebase credentials for `mectec-shop` aren't touched. Copy your old
    `.env` file into this new folder before doing anything else.
 
-2. **Add the imgBB key to your `.env`** if it isn't already there:
-   ```
-   VITE_IMGBB_API_KEY=fb83cf6fc0439db00cbe2607d548638b
-   ```
-   This is the key you gave me. It's also editable later from
-   `/admin/settings` without touching `.env` again.
+2. **Configure secure image hosting** — do not put provider keys in `.env`, GitHub, or the browser bundle. Use the Cloudflare Worker setup guide in `cloudflare/image-upload-worker/SETUP.md`; add `IMGBB_API_KEY` and `FREEIMAGE_API_KEY` as encrypted Worker secrets.
 
 3. **Redeploy Firestore rules and indexes** — several new collections
    (`posts`, `testimonials`) and the `settings` collection need rules:
@@ -48,9 +43,7 @@ request attachments — now goes through `src/services/imgbbService.ts`
 instead of Firebase Storage. This removes the Blaze-plan requirement
 entirely; the whole app now runs on Firebase's free Spark plan.
 
-The API key resolves from `/admin/settings` first, falling back to
-`VITE_IMGBB_API_KEY` in `.env`. Change it anytime from the admin panel
-without a redeploy.
+The admin panel stores only the Worker URL and preferred provider. API keys remain in Cloudflare encrypted Worker secrets and must never be exposed to the browser.
 
 **Known limitation**: imgBB's free tier has no reliable API-based delete —
 only a one-time "delete URL" that has to be visited manually in a browser.
