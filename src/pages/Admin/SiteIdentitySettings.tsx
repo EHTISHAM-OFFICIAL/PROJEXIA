@@ -110,7 +110,7 @@ export function SiteIdentitySettings() {
       if (uploaded.fallbackSaved === false) setLogoError("Both hosts received the image, but fallback metadata could not be saved. Check Firestore rules and upload again.");
       setPendingImage(null);
     } catch (caught) {
-      const message = toUserMessage(caught, "Could not upload the image. Check the imgBB configuration in Admin Settings.");
+      const message = toUserMessage(caught, "Could not upload the image. Check the Cloudflare image-hosting settings in Admin Settings.");
       setLogoError(message);
       throw new Error(message);
     } finally {
