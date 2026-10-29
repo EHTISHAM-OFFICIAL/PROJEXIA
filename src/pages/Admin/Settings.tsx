@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   CheckCircle2,
-  ImageIcon,
   Mail,
   Palette,
   RotateCcw,
@@ -20,7 +19,7 @@ import { Badge } from "../../components/ui/Badge";
 import { Field } from "../../components/forms/Field";
 import { TextInput } from "../../components/forms/Inputs";
 
-import { imgbbService } from "../../services/imgbbService";
+import { ImageHostingSettings } from "./ImageHostingSettings";
 import { emailNotificationService } from "../../services/emailNotificationService";
 import { themeService, DEFAULT_THEME } from "../../services/themeService";
 import { useTheme } from "../../hooks/useTheme";
@@ -277,15 +276,6 @@ export default function Settings() {
   const { notify } = useToast();
 
   /* ================================================================
-     IMGBB STATE
-     ================================================================= */
-
-  const [apiKey, setApiKey] = useState("");
-  const [imgbbSaving, setImgbbSaving] = useState(false);
-  const [imgbbError, setImgbbError] = useState<string | null>(null);
-  const [imgbbSaved, setImgbbSaved] = useState(false);
-
-  /* ================================================================
      EMAIL STATE
      ================================================================= */
 
@@ -340,12 +330,10 @@ export default function Settings() {
 
   useEffect(() => {
     Promise.all([
-      imgbbService.getApiKeyOverride(),
       emailNotificationService.getConfigOverride(),
       requestSettingsService.getSecuritySettings(),
     ])
-      .then(([imgbbOverride, emailOverride, requestSecurity]) => {
-        setApiKey(imgbbOverride ?? "");
+      .then(([emailOverride, requestSecurity]) => {
 
         setEmailConfig({
           serviceId: emailOverride.serviceId ?? "",
@@ -388,28 +376,6 @@ export default function Settings() {
         setLoading(false);
       });
   }, []);
-
-  /* ================================================================
-     IMGBB
-     ================================================================= */
-
-  const handleSaveImgbb = async () => {
-    setImgbbSaving(true);
-    setImgbbError(null);
-    setImgbbSaved(false);
-
-    try {
-      await imgbbService.saveApiKeyOverride(apiKey || null);
-      setImgbbSaved(true);
-      notify({ title: "Image hosting settings saved", message: "New uploads will use the updated configuration.", tone: "success" });
-    } catch (caught) {
-      const message = toUserMessage(caught, "Could not save the API key.");
-      setImgbbError(message);
-      notify({ title: "Could not save image hosting settings", message, tone: "error" });
-    } finally {
-      setImgbbSaving(false);
-    }
-  };
 
   /* ================================================================
      EMAIL
@@ -631,80 +597,7 @@ export default function Settings() {
           IMGBB
           ============================================================ */}
 
-      <section id="image-hosting" className="mt-10 scroll-mt-28 max-w-4xl rounded-2xl border border-line bg-surface/40 p-5 sm:p-7">
-        <div className="flex items-center gap-2.5">
-          <ImageIcon
-            size={17}
-            className="text-content-muted"
-            aria-hidden="true"
-          />
-
-          <h2 className="text-lg font-semibold tracking-tight">
-            Image hosting — imgBB
-          </h2>
-        </div>
-
-        <p className="mt-2 text-sm leading-relaxed text-content-secondary">
-          Every image uploaded through the admin panel and the request form goes
-          to imgBB (free, no Firebase Storage / Blaze plan needed). A key from{" "}
-          <a
-            href="https://api.imgbb.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent underline underline-offset-2 hover:text-accent-hover"
-          >
-            api.imgbb.com
-          </a>{" "}
-          is already set as a default in this project's environment. Set one
-          here only if you want to change it — for example, to rotate the key or
-          use a different account — without a redeploy.
-        </p>
-
-        {imgbbError && (
-          <div className="mt-5">
-            <Alert tone="danger">{imgbbError}</Alert>
-          </div>
-        )}
-
-        {imgbbSaved && (
-          <div className="mt-5">
-            <Alert tone="success">
-              <span className="flex items-center gap-2">
-                <CheckCircle2 size={15} aria-hidden="true" />
-                Saved. New uploads will use this key immediately.
-              </span>
-            </Alert>
-          </div>
-        )}
-
-        <div className="mt-5 flex flex-col gap-5">
-          <Field
-            label="imgBB API key override"
-            htmlFor="imgbbKey"
-            hint={
-              imgbbService.hasEnvDefault()
-                ? "Leave blank to use the default key already configured for this project."
-                : "No default key is set in this project — an override here is required for uploads to work."
-            }
-          >
-            <TextInput
-              id="imgbbKey"
-              value={apiKey}
-              onChange={(event) => setApiKey(event.target.value)}
-              placeholder="Paste a key from api.imgbb.com"
-            />
-          </Field>
-
-          <div>
-            <Button
-              onClick={() => void handleSaveImgbb()}
-              loading={imgbbSaving}
-            >
-              {imgbbSaving ? "Saving…" : "Save"}
-            </Button>
-          </div>
-        </div>
-      </section>
+      <ImageHostingSettings />
 
       {/* ============================================================
           EMAIL NOTIFICATIONS
