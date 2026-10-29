@@ -5,9 +5,9 @@ Testimonials section — only worth building once you have real client quotes to
 A build-log/blog section — good for SEO, shows ongoing activity between finished projects.
 Make sure the banner remains visible; currently, it has a close button, but make sure there's no close button, or add that option inside the admin panel so the admin can allow it if they want. Also, the OFFER text should look more energetic and engaging to attract users. Also, make sure that the  banner text is moving, like kind of rotating, going from one side appearing from other; moreover, make the banner size a little bit bigger so it becomes more noticeable. Make all these things customizable, so the admin has full control directly through the admin panel.
 Also, I want an AI integration through which we can chat only about website-related things.
-Furthermore, I want this imgBB API integration instead of Firebase Storage, because in the Spark plan there is no free Firebase Storage available, so for that purpose I want to use the imgBB API. Here's the API key: "fb83cf6fc0439db00cbe2607d548638b". Make sure it is properly customizable through the admin panel and also in the project image upload section.
+Furthermore, I want this imgBB API integration instead of Firebase Storage, because in the Spark plan there is no free Firebase Storage available, so for that purpose I want to use the imgBB API. Provider API keys must be configured as encrypted Cloudflare Worker secrets; never commit them.. Make sure it is properly customizable through the admin panel and also in the project image upload section.
 
-Add all these functionalities properly and nicely.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
+Add all these functionalities properly and nicely.[REDACTED — rotate this credential]
 
 
 
