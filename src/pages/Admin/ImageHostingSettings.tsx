@@ -100,7 +100,7 @@ export function ImageHostingSettings() {
 
       {status && (
         <div className="mt-4 space-y-2">
-          <Alert tone={status.ok && status.firebaseProjectConfigured && status.providers.imgbb && status.providers.freeimage ? "success" : "warning"}>
+          <Alert tone={status.ok && status.firebaseProjectConfigured && status.providers.imgbb && status.providers.freeimage ? "success" : "info"}>
             <div className="space-y-1">
               <p className="flex items-center gap-2 font-medium"><CheckCircle2 size={15} /> Worker is reachable.</p>
               <p>Firebase project ID: {status.firebaseProjectConfigured ? "configured" : "missing"}</p>
