@@ -416,6 +416,21 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------
+    // imageHostingAssets — public fallback URLs only; no provider keys or delete URLs.
+    match /imageHostingAssets/{assetId} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // settings/imageHosting contains only the public Worker URL and provider preference.
+    match /settings/imageHosting {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
     // settings — site-wide config, e.g. settings/banner
     // ---------------------------------------------------------------------
     match /settings/{docId} {
