@@ -22,7 +22,7 @@ import {
   type SiteSettings,
 } from "../../services/siteSettingsService";
 import { toUserMessage } from "../../utils/errors";
-import { imgbbService } from "../../services/imgbbService";
+import { imgbbService, type UploadedImage } from "../../services/imgbbService";
 import { useToast } from "../../contexts/ToastContext";
 
 function VisibilityToggle({
@@ -64,6 +64,8 @@ export function SiteIdentitySettings() {
     null,
   );
   const [logoError, setLogoError] = useState<string | null>(null);
+  const [partialBackup, setPartialBackup] = useState<{ file: File; upload: UploadedImage } | null>(null);
+  const [retryingBackup, setRetryingBackup] = useState(false);
   const [pendingImage, setPendingImage] = useState<{ kind: "site" | "favicon"; file: File } | null>(null);
 
   useEffect(() => {
@@ -103,6 +105,8 @@ export function SiteIdentitySettings() {
     try {
       const uploaded = await imgbbService.upload(file);
       update(kind === "site" ? "siteLogoUrl" : "faviconUrl", uploaded.url);
+      setPartialBackup(uploaded.missingProvider ? { file, upload: uploaded } : null);
+      if (uploaded.fallbackSaved === false) setLogoError("Both hosts received the image, but fallback metadata could not be saved. Check Firestore rules and upload again.");
       setPendingImage(null);
     } catch (caught) {
       const message = toUserMessage(caught, "Could not upload the image. Check the imgBB configuration in Admin Settings.");
@@ -110,6 +114,30 @@ export function SiteIdentitySettings() {
       throw new Error(message);
     } finally {
       setLogoUploading(null);
+    }
+  };
+
+  const retryLogoBackup = async () => {
+    if (!partialBackup?.upload.missingProvider) return;
+    setRetryingBackup(true);
+    setLogoError(null);
+    try {
+      const result = await imgbbService.retryMissingProvider(
+        partialBackup.file,
+        partialBackup.upload.missingProvider,
+        partialBackup.upload.url,
+        partialBackup.upload.primaryProvider,
+      );
+      if (result.fallbackSaved === false) {
+        setLogoError("The backup upload succeeded, but fallback metadata could not be saved. Check Firestore rules.");
+      } else {
+        setPartialBackup(null);
+        notify({ title: "Image backup completed", message: "The missing provider now has a copy of this image.", tone: "success" });
+      }
+    } catch (caught) {
+      setLogoError(toUserMessage(caught, "Could not retry the missing image backup."));
+    } finally {
+      setRetryingBackup(false);
     }
   };
 
@@ -242,6 +270,18 @@ export function SiteIdentitySettings() {
         {logoError && (
           <div className="mt-4">
             <Alert tone="danger">{logoError}</Alert>
+          </div>
+        )}
+        {partialBackup?.upload.missingProvider && (
+          <div className="mt-4 rounded-xl border border-line bg-surface p-4">
+            <p className="text-sm text-content-secondary">
+              The image was uploaded to {partialBackup.upload.primaryProvider === "imgbb" ? "ImgBB" : "Freeimage.host"}, but {partialBackup.upload.missingProvider === "imgbb" ? "ImgBB" : "Freeimage.host"} did not finish. You can retry only the missing backup without uploading to the working host again.
+            </p>
+            <div className="mt-3">
+              <Button variant="secondary" onClick={() => void retryLogoBackup()} loading={retryingBackup} disabled={retryingBackup}>
+                {retryingBackup ? "Retrying backup…" : "Retry missing backup"}
+              </Button>
+            </div>
           </div>
         )}
 
