@@ -3,7 +3,6 @@ import { ImagePlus, Loader2, Pencil, X } from 'lucide-react';
 import { Image } from '../ui/Image';
 import { validateProjectImage } from '../../utils/fileValidation';
 import { PROJECT_IMAGE_RULES } from '../../constants/requestOptions';
-import { formatFileSize } from '../../utils/formatting';
 import { ImageProcessingDialog } from './ImageProcessingDialog';
 import { imgbbService, type UploadedImage } from '../../services/imgbbService';
 
