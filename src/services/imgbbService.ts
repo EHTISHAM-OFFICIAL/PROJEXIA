@@ -1,82 +1,253 @@
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { COLLECTIONS, db } from '../firebase/firestore';
+import { deleteDoc, doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { auth } from "../firebase/auth";
+import { db } from "../firebase/firestore";
 
-const settingsRef = doc(db, COLLECTIONS.settings, 'imgbb');
+export type ImageProvider = "imgbb" | "freeimage";
+export type UploadPurpose = "admin" | "request";
 
 export interface UploadedImage {
   url: string;
-  /** imgBB's own delete link. There is no API-based delete without visiting
-   *  this URL in a browser — that's a real limitation of the free tier, kept
-   *  here so an admin can manually remove an image later if they need to. */
+  /** ImgBB's provider delete link, retained only for the existing request-attachment workflow. */
   deleteUrl: string;
+  primaryProvider: ImageProvider;
+  backupUrl?: string;
+  backupProvider?: ImageProvider;
+  missingProvider?: ImageProvider | null;
+  partialSuccess?: boolean;
+  fallbackSaved?: boolean;
 }
 
-/**
- * Resolves which API key to use: an admin-set override in Firestore takes
- * priority, falling back to the build-time env var. This is what makes the
- * key "customizable through the admin panel" without needing a redeploy.
- */
-async function resolveApiKey(): Promise<string> {
-  try {
-    const snapshot = await getDoc(settingsRef);
-    const override = snapshot.exists() ? (snapshot.data().apiKey as string | undefined) : undefined;
-    if (override && override.trim()) return override.trim();
-  } catch {
-    // Firestore unreachable — fall through to the env default rather than fail outright.
-  }
+interface HostingConfig {
+  workerUrl: string;
+  preferredProvider: ImageProvider;
+}
 
-  const envKey = import.meta.env.VITE_IMGBB_API_KEY as string | undefined;
-  if (!envKey) {
-    throw new Error(
-      'No imgBB API key configured. Set VITE_IMGBB_API_KEY in .env, or add one in Admin → Settings.'
-    );
+interface WorkerUploadResponse {
+  ok?: boolean;
+  error?: string;
+  primary?: { provider: ImageProvider; url: string; deleteUrl?: string | null };
+  backup?: { provider: ImageProvider; url: string } | null;
+  providers?: Record<string, { ok?: boolean; error?: string; url?: string }>;
+  partialSuccess?: boolean;
+  missingProvider?: ImageProvider | null;
+  uploaded?: { provider: ImageProvider; url: string; deleteUrl?: string | null };
+}
+
+const configRef = doc(db, "settings", "imageHosting");
+const legacyImgBbRef = doc(db, "settings", "imgbb");
+const assetCollection = "imageHostingAssets";
+
+function normalizeWorkerUrl(value: string): string {
+  return value.trim().replace(/\/+$/, "");
+}
+
+async function readConfig(): Promise<HostingConfig> {
+  const snapshot = await getDoc(configRef);
+  const data = snapshot.exists() ? snapshot.data() : {};
+  const workerUrl = typeof data.workerUrl === "string" ? normalizeWorkerUrl(data.workerUrl) : "";
+  if (!workerUrl) {
+    throw new Error("Image uploads are not configured yet. Open Admin → Settings → Image hosting and save your Cloudflare Worker URL.");
   }
-  return envKey;
+  let parsed: URL;
+  try {
+    parsed = new URL(workerUrl);
+  } catch {
+    throw new Error("The Cloudflare Worker URL is invalid. Check Admin → Settings → Image hosting.");
+  }
+  if (parsed.protocol !== "https:" && parsed.hostname !== "localhost") {
+    throw new Error("The Cloudflare Worker URL must use HTTPS.");
+  }
+  return {
+    workerUrl,
+    preferredProvider: data.preferredProvider === "freeimage" ? "freeimage" : "imgbb",
+  };
+}
+
+async function currentToken(): Promise<string> {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Sign in before uploading an image.");
+  return user.getIdToken();
+}
+
+async function imageHash(url: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(url));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function saveFallback(primaryUrl: string, backupUrl: string, primaryProvider: ImageProvider, backupProvider: ImageProvider): Promise<boolean> {
+  try {
+    const id = await imageHash(primaryUrl);
+    await setDoc(doc(db, assetCollection, id), {
+      primaryUrl,
+      backupUrl,
+      primaryProvider,
+      backupProvider,
+      updatedAt: serverTimestamp(),
+    });
+    return true;
+  } catch {
+    // The image upload itself has succeeded; don't pretend the provider upload failed.
+    return false;
+  }
+}
+
+async function postUpload(
+  file: File,
+  purpose: UploadPurpose,
+  config: HostingConfig,
+  options: { onlyProvider?: ImageProvider } = {},
+): Promise<WorkerUploadResponse> {
+  const token = await currentToken();
+  const form = new FormData();
+  form.append("file", file, file.name || "image-upload");
+  form.append("purpose", purpose);
+  form.append("preferredProvider", config.preferredProvider);
+  if (options.onlyProvider) form.append("onlyProvider", options.onlyProvider);
+
+  let response: Response;
+  try {
+    response = await fetch(`${config.workerUrl}/upload`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${token}` },
+      body: form,
+    });
+  } catch {
+    throw new Error("Could not reach the Cloudflare image gateway. Check its URL and allowed website origins in Cloudflare.");
+  }
+  const payload = await response.json().catch(() => ({})) as WorkerUploadResponse;
+  if (!response.ok || payload.ok !== true) {
+    throw new Error(payload.error || "The image gateway could not upload this image.");
+  }
+  return payload;
+}
+
+function toUploadedImage(payload: WorkerUploadResponse): UploadedImage {
+  if (!payload.primary?.url || !payload.primary.provider) {
+    throw new Error("The image gateway returned an incomplete upload result.");
+  }
+  return {
+    url: payload.primary.url,
+    deleteUrl: payload.primary.deleteUrl || "",
+    primaryProvider: payload.primary.provider,
+    backupUrl: payload.backup?.url,
+    backupProvider: payload.backup?.provider,
+    missingProvider: payload.missingProvider ?? null,
+    partialSuccess: payload.partialSuccess === true,
+  };
 }
 
 export const imgbbService = {
-  /** Uploads one image to imgBB and returns its permanent hosted URL. */
+  /** Admin uploads go to both hosts. The request form uses uploadMany() to preserve its existing ImgBB-only behavior. */
   async upload(file: File): Promise<UploadedImage> {
-    const apiKey = await resolveApiKey();
-
-    const formData = new FormData();
-    formData.append('image', file);
-
-    const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    const json = await response.json();
-
-    if (!response.ok || !json?.success) {
-      const message = json?.error?.message ?? 'Image upload failed.';
-      throw new Error(message);
+    const config = await readConfig();
+    const payload = await postUpload(file, "admin", config);
+    const uploaded = toUploadedImage(payload);
+    if (uploaded.backupUrl && uploaded.backupProvider) {
+      uploaded.fallbackSaved = await saveFallback(uploaded.url, uploaded.backupUrl, uploaded.primaryProvider, uploaded.backupProvider);
     }
-
-    return {
-      url: json.data.url as string,
-      deleteUrl: json.data.delete_url as string,
-    };
+    return uploaded;
   },
 
   async uploadMany(files: File[]): Promise<UploadedImage[]> {
-    return Promise.all(files.map((file) => imgbbService.upload(file)));
+    const config = await readConfig();
+    return Promise.all(files.map(async (file) => {
+      const payload = await postUpload(file, "request", config);
+      return toUploadedImage(payload);
+    }));
   },
 
-  /** Admin-only, enforced by firestore.rules — see settings/{docId}. */
-  async saveApiKeyOverride(apiKey: string | null): Promise<void> {
-    await setDoc(settingsRef, { apiKey: apiKey?.trim() || null, updatedAt: serverTimestamp() });
+  /** Retry only the provider that failed, without re-uploading to the host that already succeeded. */
+  async retryMissingProvider(
+    file: File,
+    missingProvider: ImageProvider,
+    primaryUrl: string,
+    primaryProvider: ImageProvider,
+  ): Promise<UploadedImage> {
+    const config = await readConfig();
+    const payload = await postUpload(file, "admin", config, { onlyProvider: missingProvider });
+    const uploaded = payload.uploaded;
+    if (!uploaded?.url || uploaded.provider !== missingProvider) {
+      throw new Error("The backup host did not return a valid image URL.");
+    }
+    const fallbackSaved = await saveFallback(primaryUrl, uploaded.url, primaryProvider, missingProvider);
+    return {
+      url: primaryUrl,
+      deleteUrl: "",
+      primaryProvider,
+      backupUrl: uploaded.url,
+      backupProvider: missingProvider,
+      missingProvider: null,
+      partialSuccess: false,
+      fallbackSaved,
+    };
   },
 
-  async getApiKeyOverride(): Promise<string | null> {
-    const snapshot = await getDoc(settingsRef);
-    if (!snapshot.exists()) return null;
-    return (snapshot.data().apiKey as string | null) ?? null;
+  /** Called only after the preferred image URL fails to load. */
+  async getBackupImageUrl(primaryUrl: string): Promise<string | null> {
+    try {
+      const id = await imageHash(primaryUrl);
+      const snapshot = await getDoc(doc(db, assetCollection, id));
+      if (!snapshot.exists()) return null;
+      const data = snapshot.data();
+      return data.primaryUrl === primaryUrl && typeof data.backupUrl === "string" && data.backupUrl.startsWith("https://")
+        ? data.backupUrl
+        : null;
+    } catch {
+      return null;
+    }
   },
 
-  /** Whether an env default exists at all, shown in the admin UI. */
-  hasEnvDefault(): boolean {
-    return Boolean(import.meta.env.VITE_IMGBB_API_KEY);
+  /** Saves the non-secret Worker URL and preference; provider keys stay in Cloudflare encrypted secrets. */
+  async saveHostingConfig(workerUrl: string, preferredProvider: ImageProvider): Promise<void> {
+    const normalized = normalizeWorkerUrl(workerUrl);
+    if (normalized) {
+      const parsed = new URL(normalized);
+      if (parsed.protocol !== "https:" && parsed.hostname !== "localhost") {
+        throw new Error("The Cloudflare Worker URL must use HTTPS.");
+      }
+    }
+    await setDoc(configRef, {
+      workerUrl: normalized,
+      preferredProvider,
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+
+    // Remove the old client-configured ImgBB key document if it exists.
+    await deleteDoc(legacyImgBbRef).catch(() => undefined);
+  },
+
+  async getHostingConfig(): Promise<HostingConfig> {
+    const snapshot = await getDoc(configRef);
+    const data = snapshot.exists() ? snapshot.data() : {};
+    return {
+      workerUrl: typeof data.workerUrl === "string" ? data.workerUrl : "",
+      preferredProvider: data.preferredProvider === "freeimage" ? "freeimage" : "imgbb",
+    };
+  },
+
+  async checkWorker(workerUrl: string): Promise<{
+    ok: boolean;
+    providers: { imgbb: boolean; freeimage: boolean };
+    firebaseProjectConfigured: boolean;
+  }> {
+    const normalized = normalizeWorkerUrl(workerUrl);
+    if (!normalized) throw new Error("Enter your deployed Cloudflare Worker URL first.");
+    let response: Response;
+    try {
+      response = await fetch(`${normalized}/health`, { cache: "no-store" });
+    } catch {
+      throw new Error("Could not reach the Worker. Check its URL and ALLOWED_ORIGINS setting.");
+    }
+    if (!response.ok) throw new Error("The Worker health check failed. Check the deployment and allowed website origins.");
+    const data = await response.json() as {
+      ok?: boolean;
+      providers?: { imgbb?: boolean; freeimage?: boolean };
+      firebaseProjectConfigured?: boolean;
+    };
+    return {
+      ok: data.ok === true,
+      providers: { imgbb: data.providers?.imgbb === true, freeimage: data.providers?.freeimage === true },
+      firebaseProjectConfigured: data.firebaseProjectConfigured === true,
+    };
   },
 };
