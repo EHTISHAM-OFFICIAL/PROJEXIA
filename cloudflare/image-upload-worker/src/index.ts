@@ -262,45 +262,105 @@ async function uploadToFreeimage(
       ok: false,
       error: "Freeimage.host API key is not configured in Cloudflare.",
     };
+
   try {
+    // Freeimage.host API v1 requires a multipart POST for local image files.
+    // Its documented parameters are key, action=upload, source, and format=json.
     const form = new FormData();
     form.append("key", env.FREEIMAGE_API_KEY);
     form.append("action", "upload");
     form.append("source", file, file.name || "upload");
     form.append("format", "json");
+
     const response = await fetch("https://freeimage.host/api/1/upload/", {
       method: "POST",
+      headers: { accept: "application/json" },
       body: form,
+      signal: AbortSignal.timeout(45_000),
     });
-    const payload = (await response.json()) as {
+
+    const responseText = await response.text();
+    let payload: {
       status_code?: number;
       success?: { code?: number; message?: string };
       image?: { url?: string; id_encoded?: string };
       error?: { message?: string };
-    };
-    const url = payload.image?.url;
+    } | null = null;
+
+    try {
+      payload = JSON.parse(responseText);
+    } catch {
+      payload = null;
+    }
+
+    if (!response.ok) {
+      const detail =
+        payload?.error?.message ||
+        payload?.success?.message ||
+        responseText.replace(/\s+/g, " ").slice(0, 300);
+      return {
+        ok: false,
+        error: `Freeimage.host API returned HTTP ${response.status}${detail ? `: ${detail}` : "."}`,
+      };
+    }
+
+    if (!payload) {
+      return {
+        ok: false,
+        error:
+          "Freeimage.host returned a non-JSON response: " +
+          responseText.replace(/\s+/g, " ").slice(0, 300),
+      };
+    }
+
+    const rawUrl = payload.image?.url;
     if (
-      !response.ok ||
       payload.status_code !== 200 ||
       payload.success?.code !== 200 ||
-      !url ||
-      new URL(url).protocol !== "https:"
+      !rawUrl
     ) {
       return {
         ok: false,
         error:
           payload.error?.message ||
           payload.success?.message ||
-          "Freeimage.host rejected the upload.",
+          "Freeimage.host did not return a successful image upload.",
       };
     }
-    return { ok: true, url, idEncoded: payload.image?.id_encoded };
+
+    // The API's own examples may return HTTP URLs. Only accept Freeimage.host
+    // image URLs, then use HTTPS for display/storage.
+    let imageUrl: URL;
+    try {
+      imageUrl = new URL(rawUrl);
+    } catch {
+      return { ok: false, error: "Freeimage.host returned an invalid image URL." };
+    }
+    const host = imageUrl.hostname.toLowerCase();
+    if (
+      (imageUrl.protocol !== "http:" && imageUrl.protocol !== "https:") ||
+      !(host === "freeimage.host" || host.endsWith(".freeimage.host"))
+    ) {
+      return {
+        ok: false,
+        error: "Freeimage.host returned an unexpected image URL host.",
+      };
+    }
+    imageUrl.protocol = "https:";
+
+    return {
+      ok: true,
+      url: imageUrl.toString(),
+      idEncoded: payload.image?.id_encoded,
+    };
   } catch (error) {
     return {
       ok: false,
       error:
         error instanceof Error
-          ? error.message
+          ? error.name === "TimeoutError"
+            ? "Freeimage.host upload timed out after 45 seconds."
+            : error.message
           : "Freeimage.host upload failed.",
     };
   }
