@@ -264,29 +264,43 @@ async function uploadToFreeimage(
     };
 
   try {
-    // Freeimage.host API v1 requires a multipart POST for local image files.
-    // Its documented parameters are key, action=upload, source, and format=json.
+    // Freeimage.host API v1: local files must be sent as multipart POST.
     const form = new FormData();
     form.append("key", env.FREEIMAGE_API_KEY);
     form.append("action", "upload");
     form.append("source", file, file.name || "upload");
     form.append("format", "json");
 
+    // Do not silently follow a website/security redirect: it can turn an API
+    // JSON response into the provider's HTML homepage or challenge page.
     const response = await fetch("https://freeimage.host/api/1/upload/", {
       method: "POST",
       headers: { accept: "application/json" },
       body: form,
+      redirect: "manual",
       signal: AbortSignal.timeout(45_000),
     });
 
+    const contentType = response.headers.get("content-type") || "unknown";
+    const location = response.headers.get("location");
     const responseText = await response.text();
+
+    // A redirect from an API endpoint is not a successful JSON upload.
+    if (response.status >= 300 && response.status < 400) {
+      return {
+        ok: false,
+        error:
+          `Freeimage.host API redirected the upload (HTTP ${response.status}, content-type: ${contentType})` +
+          (location ? `, location: ${location.slice(0, 250)}` : "."),
+      };
+    }
+
     let payload: {
       status_code?: number;
       success?: { code?: number; message?: string };
       image?: { url?: string; id_encoded?: string };
       error?: { message?: string };
     } | null = null;
-
     try {
       payload = JSON.parse(responseText);
     } catch {
@@ -297,10 +311,12 @@ async function uploadToFreeimage(
       const detail =
         payload?.error?.message ||
         payload?.success?.message ||
-        responseText.replace(/\s+/g, " ").slice(0, 300);
+        responseText.replace(/\s+/g, " ").slice(0, 180);
       return {
         ok: false,
-        error: `Freeimage.host API returned HTTP ${response.status}${detail ? `: ${detail}` : "."}`,
+        error:
+          `Freeimage.host API returned HTTP ${response.status} (content-type: ${contentType})` +
+          (detail ? `: ${detail}` : "."),
       };
     }
 
@@ -308,8 +324,9 @@ async function uploadToFreeimage(
       return {
         ok: false,
         error:
-          "Freeimage.host returned a non-JSON response: " +
-          responseText.replace(/\s+/g, " ").slice(0, 300),
+          `Freeimage.host returned non-JSON content (HTTP ${response.status}, content-type: ${contentType})` +
+          (location ? `, location: ${location.slice(0, 250)}` : "") +
+          `: ${responseText.replace(/\s+/g, " ").slice(0, 180)}`,
       };
     }
 
@@ -328,8 +345,8 @@ async function uploadToFreeimage(
       };
     }
 
-    // The API's own examples may return HTTP URLs. Only accept Freeimage.host
-    // image URLs, then use HTTPS for display/storage.
+    // The API documentation examples may return HTTP URLs. Accept only
+    // Freeimage.host image URLs and normalize them to HTTPS.
     let imageUrl: URL;
     try {
       imageUrl = new URL(rawUrl);
