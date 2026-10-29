@@ -1,4 +1,5 @@
 import { useSiteSettings } from "../../contexts/SiteSettingsContext";
+import { Image } from "../ui/Image";
 
 type WordmarkProps = {
   size?: "sm" | "md";
@@ -12,11 +13,10 @@ export function Wordmark({ size = "md" }: WordmarkProps) {
   return (
     <span className="inline-flex items-center gap-2.5">
       {settings.showSiteLogo && (
-        <img
+        <Image
           src={settings.siteLogoUrl || "/icons/logo-mark.svg?v=2"}
           alt=""
-          width={32}
-          height={32}
+          eager
           className={`rounded-lg object-contain ${iconSize}`}
         />
       )}
