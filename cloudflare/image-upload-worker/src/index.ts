@@ -273,7 +273,7 @@ async function uploadToFreeimage(
 
     // Do not silently follow a website/security redirect: it can turn an API
     // JSON response into the provider's HTML homepage or challenge page.
-    const response = await fetch("https://freeimage.host/api/1/upload/", {
+    const response = await fetch("https://freeimage.host/api/1/upload", {
       method: "POST",
       headers: { accept: "application/json" },
       body: form,
