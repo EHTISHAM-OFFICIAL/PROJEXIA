@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "../ui/Container";
 import { ButtonLink } from "../ui/Button";
 import { useSiteSettings } from "../../contexts/SiteSettingsContext";
-import { CircuitBoard } from "./CircuitBoard";
+import { HoloChip } from "./HoloChip";
 
 export function Hero() {
   const { settings } = useSiteSettings();
@@ -39,13 +39,13 @@ export function Hero() {
             </div>
           </div>
 
-          {/* The one deliberate flourish on the page: a live circuit board
-              with data pulses, grounded in what the business actually builds. */}
+          {/* The one deliberate flourish on the page: a rotating 3D chip hologram
+              with orbiting data, grounded in what the business actually builds. */}
           <div
             className="relative min-w-0 animate-fade-up"
             style={{ animationDelay: "120ms" }}
           >
-            <CircuitBoard className="mx-auto block aspect-square w-full max-w-[340px] sm:max-w-[500px]" />
+            <HoloChip className="mx-auto block aspect-square w-full max-w-[340px] sm:max-w-[520px]" />
             <p className="mt-2 text-center font-mono text-[10px] tracking-wide text-content-muted sm:text-xs">
               REQUEST → BUILD → TEST → DELIVER
             </p>
