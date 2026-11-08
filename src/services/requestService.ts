@@ -70,6 +70,17 @@ function generateRequestNumber(): string {
   return `PROJEXIA-${new Date().getFullYear()}-${suffix}`;
 }
 
+/** SHA-256 hex of the normalised email, so the public lookup record never holds the address itself. */
+async function hashEmail(email: string): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(email.trim().toLowerCase()),
+  );
+  return Array.from(new Uint8Array(digest), (b) =>
+    b.toString(16).padStart(2, "0"),
+  ).join("");
+}
+
 function dateToTimestamp(value: string | undefined): Timestamp | null {
   if (!value) return null;
   const parsed = new Date(value);
@@ -294,7 +305,7 @@ export const requestService = {
         requestId: requestRef.id,
         status: "new" satisfies RequestStatus,
         projectTitle: values.projectTitle,
-        email: values.email.trim().toLowerCase(),
+        emailHash: await hashEmail(values.email),
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         customerUpdate: null,
@@ -811,8 +822,13 @@ export const requestService = {
 
     const data = snapshot.data();
     if (data.deletedAt) return null;
-    if ((data.email as string)?.toLowerCase() !== email.trim().toLowerCase())
-      return null;
+    // New records store a hash; older ones still hold the plain email.
+    const matches =
+      typeof data.emailHash === "string"
+        ? data.emailHash === (await hashEmail(email))
+        : (data.email as string | undefined)?.toLowerCase() ===
+          email.trim().toLowerCase();
+    if (!matches) return null;
 
     return {
       requestNumber: data.requestNumber ?? normalizedNumber,

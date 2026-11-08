@@ -1,4 +1,4 @@
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore';
 import {
   createUserWithEmailAndPassword,
   deleteUser,
@@ -60,25 +60,27 @@ export async function registerUser(
   );
 
   try {
-    const lookupRef = usernameLookupRef(username);
-    const existingLookup = await getDoc(lookupRef);
-    if (existingLookup.exists()) {
-      throw new Error('Could not create your account. That username is already in use. Please choose another username.');
-    }
-
-    await setDoc(doc(db, USERS_COLLECTION, credential.user.uid), {
+    // One atomic write. The rules refuse the username lookup if it already
+    // exists, so two people can never claim the same username, and a failure
+    // cannot leave a profile without a lookup (or the reverse).
+    const batch = writeBatch(db);
+    batch.set(doc(db, USERS_COLLECTION, credential.user.uid), {
       uid: credential.user.uid,
       username,
       recoveryEmail: accountEmail,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
-
-    await setDoc(lookupRef, {
+    batch.set(usernameLookupRef(username), {
       uid: credential.user.uid,
       authEmail: accountEmail,
       createdAt: serverTimestamp(),
     });
+    try {
+      await batch.commit();
+    } catch {
+      throw new Error('Could not create your account. That username may already be in use. Please choose another username.');
+    }
 
     return credential.user;
   } catch (error) {

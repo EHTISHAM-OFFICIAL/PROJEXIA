@@ -316,7 +316,11 @@ service cloud.firestore {
         && request.resource.data.requestId is string
         && request.resource.data.status == 'new'
         && isString(request.resource.data.projectTitle, 120)
-        && isString(request.resource.data.email, 200)
+        && (
+          (request.resource.data.emailHash is string
+            && request.resource.data.emailHash.size() == 64)
+          || isString(request.resource.data.email, 200)
+        )
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time);
 

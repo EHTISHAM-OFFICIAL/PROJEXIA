@@ -30,7 +30,7 @@ The site will load, but the projects page will be empty until Firestore has data
 
 ## Firebase setup
 
-You need a Firebase project with Firestore, Authentication and Storage enabled.
+You need a Firebase project with Firestore and Authentication enabled. Firebase Storage is **not** used: images are uploaded through the Cloudflare Worker in `cloudflare/image-upload-worker` (ImgBB / Freeimage.host), so the free Spark plan is enough.
 
 ### 1. Environment variables
 
@@ -47,13 +47,12 @@ VITE_FIREBASE_APP_ID=
 
 Vite reads `.env` only at startup, so restart the dev server after editing it.
 
-**These values are not secrets.** They ship inside the JavaScript bundle by design — they identify your project, they do not authorise anything. All real security comes from `firestore.rules` and `storage.rules`. `.env` is gitignored for config hygiene (different values per environment), not secrecy.
+**These values are not secrets.** They ship inside the JavaScript bundle by design — they identify your project, they do not authorise anything. All real security comes from `firestore.rules`. `.env` is gitignored for config hygiene (different values per environment), not secrecy.
 
 ### 2. Enable the services
 
 - **Firestore** → Create database → start in **production mode** (the rules in this repo replace the defaults).
-- **Authentication** → Sign-in method → enable **Email/Password**. Nothing else is needed; there is no public sign-up.
-- **Storage** → Get started.
+- **Authentication** → Sign-in method → enable **Email/Password**. Customers register on the site with a username, password and a required email (used for password reset). Admin accounts are still created by hand (step 4).
 
 ### 3. Deploy the rules and indexes
 
@@ -61,7 +60,7 @@ Vite reads `.env` only at startup, so restart the dev server after editing it.
 npm install -g firebase-tools
 firebase login
 firebase use --add            # select your project
-firebase deploy --only firestore:rules,firestore:indexes,storage:rules
+firebase deploy --only firestore:rules,firestore:indexes
 ```
 
 Do this **before** putting the site online. Until the rules are deployed, Firestore's default rules apply and your data is either fully locked or fully open depending on the mode you chose.
@@ -135,7 +134,7 @@ firebase deploy --only hosting
 Or everything at once:
 
 ```bash
-firebase deploy --only hosting,firestore:rules,firestore:indexes,storage:rules
+firebase deploy --only hosting,firestore:rules,firestore:indexes
 ```
 
 `firebase.json` rewrites all routes to `index.html`, which is what makes deep links like `/projects/some-slug` work in a single-page app. Hashed assets get a one-year immutable cache; `index.html` is never cached, so a deploy takes effect immediately.
@@ -156,7 +155,7 @@ Full field types are in `src/types/project.ts`. Every optional section disappear
 
 ### `projectRequests/{autoId}`
 
-Public **create only**. No public read, update or delete. Admin full access.
+Created by signed-in customers; owners can read their own and edit/delete within the admin-configured window. Admin full access.
 
 Nested blocks mirror the ten form sections: `contact`, `project`, `technical`, `software`, `scale`, `budget`, `timeline`, `references`, `attachments[]`, `additionalRequirements`, `consent`, plus `admin` (internal notes and quote) and `metadata`.
 
@@ -170,16 +169,9 @@ A user can read only their own document. Not listable, not writable from the cli
 
 ---
 
-## Storage layout
+## Image uploads
 
-```
-projects/{projectId}/thumbnail/{file}     public read, admin write
-projects/{projectId}/gallery/{file}       public read, admin write
-projects/{projectId}/videos/{file}        public read, admin write
-projectRequests/{requestId}/attachments/{file}   admin read, public create only
-```
-
-Request attachments are **not** publicly readable — they can contain private drawings or specifications. Limits (5 files, 5 MB each, specific MIME types) are enforced in `storage.rules`; the same values in `src/constants/requestOptions.ts` exist only to give fast feedback in the browser.
+There is no Firebase Storage. The browser sends images to a Cloudflare Worker (`cloudflare/image-upload-worker`), which verifies the Firebase sign-in token, checks type/size/file signature, and uploads to ImgBB (and Freeimage.host as a backup for admin uploads). Provider API keys live only in encrypted Worker secrets (`wrangler secret put IMGBB_API_KEY`, `FREEIMAGE_API_KEY`), never in this repo. The Worker URL and size limit are set in Admin → Settings → Image hosting; keep `ALLOWED_ORIGINS` in `wrangler.toml` limited to your real site origins.
 
 ---
 
@@ -214,7 +206,7 @@ Meta tags are set on navigation by `src/components/ui/Seo.tsx`. Google executes 
 
 **What does not work:** link-preview crawlers that do not run JavaScript — WhatsApp, Slack, Facebook, Twitter. A link shared there shows the tags from `index.html`, not the project-specific ones. If previews matter, pre-render with `vite-plugin-ssr` or move the project pages to a framework with static generation.
 
-`public/sitemap.xml` lists the five static pages. Project URLs are not in it. To add them, write a small script that reads published projects and regenerates the file as part of your deploy.
+`public/sitemap.xml` is regenerated from Firestore by `scripts/generate-sitemap.mjs`, which runs automatically before every `npm run build` (`prebuild`). Commit the regenerated file only if you want it in git; it is rebuilt on each deploy.
 
 ---
 
@@ -236,7 +228,7 @@ The request and contact forms are open to the internet by necessity. They have h
 
 **Projects page is empty but data exists in Firestore** — check `published` is `true` (boolean, not the string `"true"`), and that the rules are deployed.
 
-**Images do not appear after upload** — check the Storage rules are deployed and that you are signed in as an admin.
+**Images do not upload** — check the Worker URL in Admin → Settings → Image hosting, that your site origin is in `ALLOWED_ORIGINS`, and that the provider secrets are set (`/health` on the Worker shows which are configured).
 
 **"Permission denied" when submitting a request** — the rules validate the payload. The most common causes are consent checkboxes not being `true`, or `status` not being `'new'`.
 
