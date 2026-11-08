@@ -2,13 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "../ui/Container";
 import { ButtonLink } from "../ui/Button";
 import { useSiteSettings } from "../../contexts/SiteSettingsContext";
-import { ScopeTrace } from "./ScopeTrace";
-
-const INDICATORS = [
-  { label: "PWR", tone: "bg-state-success" },
-  { label: "SIG", tone: "bg-accent" },
-  { label: "OUT", tone: "bg-state-info" },
-] as const;
+import { CircuitBoard } from "./CircuitBoard";
 
 export function Hero() {
   const { settings } = useSiteSettings();
@@ -45,45 +39,16 @@ export function Hero() {
             </div>
           </div>
 
-          {/* The one deliberate flourish on the page: a live oscilloscope
-              (analog channel plus a digital data line), grounded in what an
-              electronics bench actually looks like. */}
+          {/* The one deliberate flourish on the page: a live circuit board
+              with data pulses, grounded in what the business actually builds. */}
           <div
             className="relative min-w-0 animate-fade-up"
             style={{ animationDelay: "120ms" }}
           >
-            <div className="overflow-hidden rounded-card border border-line bg-surface">
-              <div className="flex items-center justify-between gap-3 border-b border-line px-3 py-3 sm:px-4">
-                <span className="min-w-0 truncate font-mono text-[10px] tracking-wide text-content-muted sm:text-xs">
-                  BENCH.TRACE — LIVE
-                </span>
-                <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-                  {INDICATORS.map((indicator, index) => (
-                    <span
-                      key={indicator.label}
-                      className="flex items-center gap-1 sm:gap-1.5"
-                    >
-                      <span
-                        className={`h-1.5 w-1.5 rounded-full ${indicator.tone} animate-pulse`}
-                        style={{ animationDelay: `${index * 200}ms` }}
-                        aria-hidden="true"
-                      />
-                      <span className="font-mono text-[10px] text-content-muted">
-                        {indicator.label}
-                      </span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <ScopeTrace className="relative h-44 w-full sm:h-64" />
-
-              <div className="flex items-center justify-center border-t border-line px-3 py-3 sm:px-4">
-                <span className="text-center font-mono text-[10px] leading-relaxed text-content-muted sm:text-xs">
-                  REQUEST → BUILD → TEST → DELIVER
-                </span>
-              </div>
-            </div>
+            <CircuitBoard className="mx-auto block aspect-square w-full max-w-[340px] sm:max-w-[500px]" />
+            <p className="mt-2 text-center font-mono text-[10px] tracking-wide text-content-muted sm:text-xs">
+              REQUEST → BUILD → TEST → DELIVER
+            </p>
           </div>
         </div>
       </Container>
