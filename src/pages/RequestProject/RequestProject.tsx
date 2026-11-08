@@ -130,10 +130,15 @@ export default function RequestProject() {
     "electronics" | "school" | null
   >(null);
   const [requestMode, setRequestMode] = useState<"quick" | "detailed">("quick");
+<<<<<<< HEAD
   // Keep the section navigator tied directly to the selected form mode.
   // Quick mode intentionally exposes only Contact, The project, and Send.
   const visibleSectionLinks = requestMode === "quick"
     ? SECTION_LINKS.filter(({ id }) => id === "contact" || id === "basics" || id === "consent")
+=======
+  const visibleSectionLinks = requestMode === "quick"
+    ? SECTION_LINKS.filter((section) => ["contact", "basics", "consent"].includes(section.id))
+>>>>>>> origin/feature/simplified-project-requests
     : SECTION_LINKS;
   const { user } = useAuth();
 
