@@ -4,4 +4,4 @@ compatibility_date = "2026-10-29"
 
 [vars]
 FIREBASE_PROJECT_ID = "mectec-shop"
-ALLOWED_ORIGINS = "https://projexia.web.app,http://localhost:5173"
+ALLOWED_ORIGINS = "https://projexiahub.web.app,https://projexia.web.app,http://localhost:5173"
