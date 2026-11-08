@@ -1,12 +1,21 @@
-import { Link } from 'react-router-dom';
-import { ArrowUpRight, Eye } from 'lucide-react';
-import { Badge } from '../ui/Badge';
-import { InlineText } from './CaseStudySection';
-import { Image } from '../ui/Image';
-import { DIFFICULTY_LABEL, STATUS_LABEL, STATUS_TONE } from '../../constants/projectOptions';
-import { formatCompactNumber, formatCurrency, formatShortDate, truncate } from '../../utils/formatting';
-import { useSiteSettings } from '../../contexts/SiteSettingsContext';
-import type { Project } from '../../types/project';
+import { Link } from "react-router-dom";
+import { ArrowUpRight, Eye } from "lucide-react";
+import { Badge } from "../ui/Badge";
+import { InlineText } from "./CaseStudySection";
+import { Image } from "../ui/Image";
+import {
+  DIFFICULTY_LABEL,
+  STATUS_LABEL,
+  STATUS_TONE,
+} from "../../constants/projectOptions";
+import {
+  formatCompactNumber,
+  formatCurrency,
+  formatShortDate,
+  truncate,
+} from "../../utils/formatting";
+import { useSiteSettings } from "../../contexts/SiteSettingsContext";
+import type { Project } from "../../types/project";
 
 export function ProjectCard({ project }: { project: Project }) {
   const { settings } = useSiteSettings();
@@ -26,14 +35,17 @@ export function ProjectCard({ project }: { project: Project }) {
         to={`/projects/${project.slug}`}
         className="flex h-full min-w-0 flex-col rounded-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
       >
-        <div className="relative shrink-0 overflow-hidden bg-surface-raised" style={{ aspectRatio: settings.projectCardImageRatio }}>
+        <div
+          className="relative shrink-0 overflow-hidden bg-surface-raised"
+          style={{ aspectRatio: settings.projectCardImageRatio }}
+        >
           <Image
             src={project.media.thumbnailUrl}
             alt={`${project.title} project thumbnail`}
             className="h-full w-full object-contain"
           />
           <div className="absolute left-3 top-3 max-w-[calc(100%-1.5rem)]">
-            <Badge tone={STATUS_TONE[project.status] ?? 'neutral'}>
+            <Badge tone={STATUS_TONE[project.status] ?? "neutral"}>
               {STATUS_LABEL[project.status] ?? project.status}
             </Badge>
           </div>
@@ -42,8 +54,12 @@ export function ProjectCard({ project }: { project: Project }) {
         <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-content-muted">
             <span>{project.category}</span>
-            <span aria-hidden="true" className="text-content-muted/70">/</span>
-            <span>{DIFFICULTY_LABEL[project.difficulty] ?? project.difficulty}</span>
+            <span aria-hidden="true" className="text-content-muted/70">
+              /
+            </span>
+            <span>
+              {DIFFICULTY_LABEL[project.difficulty] ?? project.difficulty}
+            </span>
           </div>
 
           <h3 className="mt-2 text-lg font-semibold leading-snug tracking-tight text-content sm:mt-2.5">
@@ -54,19 +70,31 @@ export function ProjectCard({ project }: { project: Project }) {
             {truncate(project.shortDescription, 120)}
           </p>
 
-          {showPrice && project.showPriceOnCard !== false && (Boolean(project.estimatedCost?.label?.trim()) || (project.estimatedCost?.amount !== null && project.estimatedCost?.amount !== undefined && Number.isFinite(Number(project.estimatedCost.amount)) && Number(project.estimatedCost.amount) > 0)) && (
-            <p className="mt-3 inline-flex w-fit items-center rounded-full border border-accent/25 bg-accent/5 px-3 py-1.5 text-sm font-semibold text-accent">
-              {project.estimatedCost.label?.trim() && !/^\s*[\d,]+(?:\.\d+)?\s*$/.test(project.estimatedCost.label)
-                ? project.estimatedCost.label
-                : formatCurrency(Number(project.estimatedCost.amount), project.estimatedCost.currency || 'PKR')}
-            </p>
-          )}
+          {showPrice &&
+            project.showPriceOnCard !== false &&
+            (Boolean(project.estimatedCost?.label?.trim()) ||
+              (project.estimatedCost?.amount !== null &&
+                project.estimatedCost?.amount !== undefined &&
+                Number.isFinite(Number(project.estimatedCost.amount)) &&
+                Number(project.estimatedCost.amount) > 0)) && (
+              <p className="mt-3 inline-flex w-fit items-center rounded-full border border-accent/25 bg-accent/5 px-3 py-1.5 text-sm font-semibold text-accent">
+                {project.estimatedCost.label?.trim() &&
+                !/^\s*[\d,]+(?:\.\d+)?\s*$/.test(project.estimatedCost.label)
+                  ? project.estimatedCost.label
+                  : formatCurrency(
+                      Number(project.estimatedCost.amount),
+                      project.estimatedCost.currency || "PKR",
+                    )}
+              </p>
+            )}
 
           {visibleTech.length > 0 && (
             <ul className="mt-3 flex flex-wrap gap-1.5 sm:mt-4">
               {visibleTech.map((tech) => (
                 <li key={tech}>
-                  <Badge><InlineText text={tech} allowLinks={false} /></Badge>
+                  <Badge>
+                    <InlineText text={tech} allowLinks={false} />
+                  </Badge>
                 </li>
               ))}
               {hiddenTechCount > 0 && (
@@ -81,7 +109,9 @@ export function ProjectCard({ project }: { project: Project }) {
             <div className="mt-auto flex min-w-0 items-center justify-between gap-2 border-t border-line pt-3 sm:gap-3 sm:pt-4">
               <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-content-muted sm:gap-x-3 sm:text-xs">
                 {showDate && (
-                  <span>{formatShortDate(project.completedAt ?? project.createdAt)}</span>
+                  <span>
+                    {formatShortDate(project.completedAt ?? project.createdAt)}
+                  </span>
                 )}
                 {showViews && (
                   <span className="inline-flex items-center gap-1">
