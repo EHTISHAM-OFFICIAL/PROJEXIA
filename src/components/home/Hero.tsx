@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "../ui/Container";
 import { ButtonLink } from "../ui/Button";
 import { useSiteSettings } from "../../contexts/SiteSettingsContext";
+import { ScopeTrace } from "./ScopeTrace";
 
 const INDICATORS = [
   { label: "PWR", tone: "bg-state-success" },
@@ -44,9 +45,9 @@ export function Hero() {
             </div>
           </div>
 
-          {/* The one deliberate flourish on the page: an oscilloscope-style
-              signal trace, grounded in what an electronics bench actually
-              looks like, rather than generic decoration. */}
+          {/* The one deliberate flourish on the page: a live oscilloscope
+              (analog channel plus a digital data line), grounded in what an
+              electronics bench actually looks like. */}
           <div
             className="relative min-w-0 animate-fade-up"
             style={{ animationDelay: "120ms" }}
@@ -54,7 +55,7 @@ export function Hero() {
             <div className="overflow-hidden rounded-card border border-line bg-surface">
               <div className="flex items-center justify-between gap-3 border-b border-line px-3 py-3 sm:px-4">
                 <span className="min-w-0 truncate font-mono text-[10px] tracking-wide text-content-muted sm:text-xs">
-                  BENCH.TRACE — CH1
+                  BENCH.TRACE — LIVE
                 </span>
                 <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                   {INDICATORS.map((indicator, index) => (
@@ -75,59 +76,7 @@ export function Hero() {
                 </div>
               </div>
 
-              <svg
-                viewBox="0 0 400 220"
-                className="h-44 w-full sm:h-64"
-                role="img"
-                aria-label="Decorative oscilloscope trace"
-              >
-                <defs>
-                  <pattern
-                    id="scope-grid"
-                    width="20"
-                    height="20"
-                    patternUnits="userSpaceOnUse"
-                  >
-                    <path
-                      d="M 20 0 L 0 0 0 20"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                      className="text-content-muted/10"
-                    />
-                  </pattern>
-                  <linearGradient
-                    id="trace-gradient"
-                    x1="0"
-                    y1="0"
-                    x2="1"
-                    y2="0"
-                  >
-                    <stop
-                      offset="0%"
-                      style={{ stopColor: "rgb(var(--color-accent))" }}
-                    />
-                    <stop
-                      offset="100%"
-                      style={{ stopColor: "rgb(var(--color-accent2))" }}
-                    />
-                  </linearGradient>
-                </defs>
-                <rect width="400" height="220" fill="url(#scope-grid)" />
-                <path
-                  d="M0,110 L40,110 L55,60 L70,160 L85,40 L100,180 L115,110 L160,110
-                     L175,70 L190,150 L205,50 L220,170 L235,110 L280,110
-                     L295,65 L310,155 L325,45 L340,175 L355,110 L400,110"
-                  fill="none"
-                  stroke="url(#trace-gradient)"
-                  strokeWidth="2.5"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  pathLength={1}
-                  strokeDasharray={1}
-                  className="animate-trace-draw"
-                />
-              </svg>
+              <ScopeTrace className="relative h-44 w-full sm:h-64" />
 
               <div className="flex items-center justify-center border-t border-line px-3 py-3 sm:px-4">
                 <span className="text-center font-mono text-[10px] leading-relaxed text-content-muted sm:text-xs">
