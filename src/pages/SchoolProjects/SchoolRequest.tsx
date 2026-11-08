@@ -117,11 +117,7 @@ export default function SchoolRequest() {
   const [error, setError] = useState("");
   const [number, setNumber] = useState("");
   const [copied, setCopied] = useState(false);
-<<<<<<< HEAD
   const [requestMode, setRequestMode] = useState<"quick" | "detailed">("quick");
-=======
-  const [requestMode, setRequestMode] = useState<'quick' | 'detailed'>('quick');
->>>>>>> origin/feature/simplified-project-requests
 
   useEffect(() => {
     let live = true;
@@ -184,7 +180,6 @@ export default function SchoolRequest() {
     "school-extra": Boolean(customization.trim() || additionalNotes.trim()),
     "school-consent": consent,
   };
-<<<<<<< HEAD
   // Quick mode keeps the form's essential fields while the sidebar stays at three checkpoints.
   const sidebarSections =
     requestMode === "quick"
@@ -199,10 +194,6 @@ export default function SchoolRequest() {
     ([id, complete]) =>
       complete && sidebarSections.some((section) => section.id === id),
   ).length;
-=======
-  const visibleSections = requestMode === 'quick' ? SECTIONS.filter((section) => ['school-contact', 'school-model-choice', 'school-learning', 'school-specifications', 'school-consent'].includes(section.id)) : SECTIONS;
-  const filled = Object.entries(sectionCompletion).filter(([id, complete]) => complete && visibleSections.some((section) => section.id === id)).length;
->>>>>>> origin/feature/simplified-project-requests
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -389,7 +380,6 @@ export default function SchoolRequest() {
             <ArrowRight size={15} />
           </Link>
         </div>
-<<<<<<< HEAD
         <section
           aria-label="Choose request form detail"
           className="mt-6 rounded-2xl border border-line bg-surface p-4 sm:p-5"
@@ -434,20 +424,12 @@ export default function SchoolRequest() {
                 All 9 sections
               </span>
             </button>
-=======
-        <section aria-label="Choose request form detail" className="mt-6 rounded-2xl border border-line bg-surface p-4 sm:p-5">
-          <div className="mb-3"><p className="text-sm font-semibold">Choose your request style</p><p className="mt-1 text-sm text-content-secondary">Quick mode asks only for the essentials. Detailed mode adds build, budget, timing and reference options. Switching keeps your draft.</p></div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <button type="button" aria-pressed={requestMode === 'quick'} onClick={() => setRequestMode('quick')} className={`rounded-xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${requestMode === 'quick' ? 'border-accent bg-accent/5' : 'border-line hover:bg-surface-raised'}`}><span className="block text-sm font-semibold">Quick request</span><span className="mt-1 block text-sm leading-relaxed text-content-secondary">Contact, model choice, learning needs, quantity and permission to contact you.</span><span className="mt-2 block text-xs font-medium text-accent">5 essential sections</span></button>
-            <button type="button" aria-pressed={requestMode === 'detailed'} onClick={() => setRequestMode('detailed')} className={`rounded-xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${requestMode === 'detailed' ? 'border-accent bg-accent/5' : 'border-line hover:bg-surface-raised'}`}><span className="block text-sm font-semibold">Detailed request</span><span className="mt-1 block text-sm leading-relaxed text-content-secondary">Include classroom/build requirements, dimensions, budget, deadlines and attachments.</span><span className="mt-2 block text-xs font-medium text-accent">All 9 sections</span></button>
->>>>>>> origin/feature/simplified-project-requests
           </div>
         </section>
         <div className="mt-6 grid gap-6 lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-10">
           <aside className="hidden lg:block">
             <div className="sticky top-24 rounded-xl border border-line bg-surface p-4">
               <p className="text-sm font-semibold">Your request</p>
-<<<<<<< HEAD
               <p className="mt-1 text-xs text-content-muted">
                 {filled} of {sidebarSections.length} checkpoints covered
               </p>
@@ -483,12 +465,6 @@ export default function SchoolRequest() {
                     <span className="flex-1">{section.label}</span>
                   </a>
                 ))}
-=======
-              <p className="mt-1 text-xs text-content-muted">{filled} of {visibleSections.length} checkpoints covered</p>
-              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-raised"><div className="h-full rounded-full bg-accent transition-all" style={{width: (filled / visibleSections.length * 100) + '%'}}/></div>
-              <nav aria-label="Quote request sections" className="mt-4 flex flex-col gap-1">
-                {visibleSections.map((section, index) => <a key={section.id} href={'#' + section.id} className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-content-secondary transition hover:bg-surface-raised hover:text-content"><span className="font-mono text-[11px] text-content-muted">{String(index + 1).padStart(2, '0')}</span>{sectionCompletion[section.id] ? <CheckCircle2 size={14} className="shrink-0 text-state-success"/> : <span className="h-3.5 w-3.5 shrink-0 rounded-full border border-line"/>}<span className="flex-1">{section.label}</span></a>)}
->>>>>>> origin/feature/simplified-project-requests
               </nav>
               <div className="mt-4 rounded-lg bg-surface-raised p-3">
                 <ShieldCheck size={16} className="text-accent" />
@@ -624,7 +600,6 @@ export default function SchoolRequest() {
                   />
                 </Field>
               </div>
-<<<<<<< HEAD
               <FieldSet legend="Preferred way to be contacted">
                 <RadioGroup
                   name="school-contact-method"
@@ -632,52 +607,6 @@ export default function SchoolRequest() {
                   value={contactMethod}
                   onChange={setContactMethod}
                 />
-=======
-            </FormSection>
-
-            <FormSection id="school-learning" step={3} title="Learning goals & content" description="Tell us what the model should teach, demonstrate or help explain.">
-              <Field label="What should students learn or understand?" required hint="At least 20 characters. Describe the concept, process or key parts to show."><TextArea rows={6} maxLength={4000} value={details} onChange={(e)=>setDetails(e.target.value)} placeholder="Explain the concept, what needs to be visible or movable, how it will be demonstrated, and any labels or language needed."/></Field>
-              <Field label="Customization"><TextArea rows={3} maxLength={1200} value={customization} onChange={(e)=>setCustomization(e.target.value)} placeholder="Colors, labels, language, working parts, school logo, accessibility or special instructions"/></Field>
-            </FormSection>
-
-            {requestMode === 'detailed' && <>
-            <FormSection id="school-build-requirements" step={4} title="Build & classroom requirements" description="These choices help distinguish a printed chart from a physical or working model. Choose what you know; “not sure” is completely fine.">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Preferred model format" hint="Choose the closest match."><Select value={modelFormat} onChange={(e) => setModelFormat(e.target.value)} options={['Not sure yet','Printed / laminated chart','Static 3D model','Working mechanical model','Electrical / electronic demonstration','Interactive display','Exhibition centerpiece','Digital / presentation aid']}/></Field>
-                <Field label="How should it work?" hint="Helps us understand moving or powered parts."><Select value={interaction} onChange={(e) => setInteraction(e.target.value)} options={['Not sure yet','Display only, no moving parts','Manual moving parts','Powered / motorized movement','Lights, sensors or electronics','Hands-on student interaction']}/></Field>
-                <Field label="Preferred materials" hint="Alternatives can be suggested after review."><TextInput value={preferredMaterials} maxLength={200} onChange={(e) => setPreferredMaterials(e.target.value)} placeholder="e.g. wood, acrylic, foam board, recycled material"/></Field>
-                <Field label="Label / content language"><Select value={labelLanguage} onChange={(e) => setLabelLanguage(e.target.value)} options={['English','Urdu','English and Urdu','Other / discuss']}/></Field>
-                <Field label="Assembly needed?" hint="For large displays or multi-part models."><Select value={assemblyRequirement} onChange={(e) => setAssemblyRequirement(e.target.value)} options={['Not sure','Ready to display','Basic assembly is fine','Assembly instructions needed','On-site setup requested']}/></Field>
-                <Field label="Where will it be used?" hint="Helps plan stability, portability and finish."><Select value={displayEnvironment} onChange={(e) => setDisplayEnvironment(e.target.value)} options={['Classroom','Wall display','Tabletop demonstration','School exhibition / competition','Laboratory','Outdoor display','Multiple locations']}/></Field>
-              </div>
-              <Field label="Power, electronics or special mechanism requirements" hint="Mention a power source, moving parts, switches, lighting, sound or other practical constraints."><TextArea rows={3} maxLength={600} value={powerRequirements} onChange={(e) => setPowerRequirements(e.target.value)} placeholder="e.g. battery powered, safe for classroom use, no exposed wiring, easy to transport"/></Field>
-            </FormSection>
-            </>}
-
-            <FormSection id="school-specifications" step={5} title="Size, quantity & delivery" description="Estimates are fine. If you do not know the exact dimensions, leave them blank.">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Quantity" required hint="How many copies or models?"><TextInput type="number" min={1} value={quantity} onChange={(e)=>setQuantity(e.target.value)} placeholder="1"/></Field>
-                <Field label="Approximate dimensions" hint="Approximate size with units; leave blank if unsure."><TextInput className="h-11" value={dimensions} maxLength={120} onChange={(e)=>setDimensions(e.target.value)} placeholder="e.g. 60 × 90 cm, tabletop size"/></Field>
-              </div>
-            </FormSection>
-
-            {requestMode === 'detailed' && <>
-            <FormSection id="school-budget-timeline" step={6} title="Budget & timing" description="These details help us judge scope. A quote is confirmed only after review.">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Budget range"><Select value={budgetRange} onChange={(e)=>setBudgetRange(e.target.value)} options={['Under PKR 2,000','PKR 2,000–5,000','PKR 5,000–10,000','PKR 10,000–25,000','PKR 25,000+','Not decided yet']} placeholder="No budget set"/></Field>
-                <Field label="Preferred start date"><TextInput type="date" value={startDate} onChange={(e)=>setStartDate(e.target.value)}/></Field>
-                <Field label="Needed by"><TextInput type="date" min={startDate || undefined} value={deadline} onChange={(e)=>setDeadline(e.target.value)}/></Field>
-                <Field label="Timeline flexibility"><Select value={flexibility} onChange={(e)=>setFlexibility(e.target.value)} options={['Flexible','Some flexibility','Fixed deadline','Not sure']}/></Field>
-              </div>
-              <FieldSet legend="Urgency"><RadioGroup name="school-urgency" options={['Normal','Urgent']} value={urgency} onChange={setUrgency}/></FieldSet>
-              <Field label="Budget notes"><TextArea rows={3} maxLength={800} value={budgetNotes} onChange={(e)=>setBudgetNotes(e.target.value)} placeholder="Budget includes materials, delivery, or any constraints we should know about."/></Field>
-            </FormSection>
-
-            <FormSection id="school-references" step={7} title="References & attachments" description="Photos, sketches or links make it easier to understand what you have in mind.">
-              <FieldSet legend="Reference links" hint="Add a YouTube video, example image, or webpage.">
-                <div className="space-y-2">{referenceLinks.map((link,index)=><div key={index} className="flex gap-2"><TextInput type="url" value={link} onChange={(e)=>setReferenceLinks((current)=>current.map((item,i)=>i===index?e.target.value:item))} placeholder="https://…"/><button type="button" disabled={referenceLinks.length===1} onClick={()=>setReferenceLinks((current)=>current.filter((_,i)=>i!==index))} className="rounded-lg border border-line px-3 text-sm text-content-secondary hover:bg-surface-raised disabled:opacity-40" aria-label="Remove reference link">×</button></div>)}</div>
-                <button type="button" onClick={()=>setReferenceLinks((current)=>current.length<8?[...current,'']:current)} disabled={referenceLinks.length>=8} className="mt-3 inline-flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm font-medium hover:bg-surface-raised disabled:opacity-40"><span aria-hidden="true">+</span> Add another link</button>
->>>>>>> origin/feature/simplified-project-requests
               </FieldSet>
             </FormSection>
 
@@ -816,7 +745,6 @@ export default function SchoolRequest() {
               </div>
             </FormSection>
 
-<<<<<<< HEAD
             <FormSection
               id="school-learning"
               step={3}
@@ -1197,12 +1125,6 @@ export default function SchoolRequest() {
                   </span>
                 </span>
               </label>
-=======
-            </>}
-
-            <FormSection id="school-consent" step={9} title="Review & send" description="Please confirm that we may contact you about this specific request.">
-              <label className="flex items-start gap-3 rounded-xl border border-line bg-surface p-4 text-sm leading-relaxed text-content"><input type="checkbox" checked={consent} onChange={(e)=>setConsent(e.target.checked)} className="mt-1 h-4 w-4 accent-accent"/><span>I confirm these details are accurate to the best of my knowledge and agree that PROJEXIAHUB may contact me about this quote request.<span className="mt-1 block text-xs text-content-muted">Your details are used to respond to this enquiry, not to publish a listing.</span></span></label>
->>>>>>> origin/feature/simplified-project-requests
               {error && <Alert tone="danger">{error}</Alert>}
               <div className="flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center">
                 <Button type="submit" loading={busy} disabled={busy}>
