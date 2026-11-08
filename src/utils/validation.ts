@@ -113,12 +113,8 @@ export const projectRequestSchema = z
     existingCodeDescription: optionalText(1000),
 
     // Section J — consent
-    agreeToTerms: z.literal(true, {
-      errorMap: () => ({ message: 'Please accept the terms before submitting.' }),
-    }),
-    allowContact: z.literal(true, {
-      errorMap: () => ({ message: 'We need your permission to reply to this request.' }),
-    }),
+    agreeToTerms: z.literal(true, { message: 'Please accept the terms before submitting.' }),
+    allowContact: z.literal(true, { message: 'We need your permission to reply to this request.' }),
 
     /** Honeypot. Bots fill hidden fields; people never see this one. */
     website: z.string().max(0).optional().or(z.literal('')),
@@ -126,14 +122,14 @@ export const projectRequestSchema = z
   .superRefine((values, ctx) => {
     if (values.preferredContactMethod === 'WhatsApp' && !values.whatsapp) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['whatsapp'],
         message: 'Add your WhatsApp number, or choose a different contact method.',
       });
     }
     if (values.preferredContactMethod === 'Phone' && !values.phone) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['phone'],
         message: 'Add your phone number, or choose a different contact method.',
       });
@@ -141,7 +137,7 @@ export const projectRequestSchema = z
     if (values.desiredStartDate && values.desiredDeadline) {
       if (new Date(values.desiredDeadline) < new Date(values.desiredStartDate)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           path: ['desiredDeadline'],
           message: 'The deadline cannot be before the start date.',
         });
@@ -149,14 +145,14 @@ export const projectRequestSchema = z
     }
     if (values.hasExistingHardware && !values.existingHardwareDescription) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['existingHardwareDescription'],
         message: 'Tell us what hardware you already have.',
       });
     }
     if (values.hasExistingCode && !values.existingCodeDescription) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['existingCodeDescription'],
         message: 'Tell us what code you already have.',
       });

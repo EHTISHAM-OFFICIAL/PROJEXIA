@@ -24,6 +24,7 @@ The site will load, but the projects page will be empty until Firestore has data
 | `npm run build` | Type-check, then build to `dist/` |
 | `npm run preview` | Serve the production build locally |
 | `npm run lint` | Type-check only, no build |
+| `npm test` | Run the unit tests (validation, file checks, help bot) |
 | `npm run seed` | Add sample projects to Firestore |
 
 ---
