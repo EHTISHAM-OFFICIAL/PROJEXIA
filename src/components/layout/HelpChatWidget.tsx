@@ -8,11 +8,7 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSiteSettings } from "../../contexts/SiteSettingsContext";
-import {
-  findHelpAnswer,
-  suggestWhileTyping,
-  type HelpResponse,
-} from "../../utils/helpBot";
+import type { HelpResponse } from "../../utils/helpBot";
 
 /* =========================================================
    CONFIGURATION
@@ -121,6 +117,21 @@ function createMessageId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
+type HelpBotModule = typeof import("../../utils/helpBot");
+
+let helpBotModulePromise: Promise<HelpBotModule> | null = null;
+
+function loadHelpBotModule(): Promise<HelpBotModule> {
+  if (!helpBotModulePromise) {
+    helpBotModulePromise = import("../../utils/helpBot").catch((error: unknown) => {
+      helpBotModulePromise = null;
+      throw error;
+    });
+  }
+
+  return helpBotModulePromise;
+}
+
 /* =========================================================
    COMPONENT
    ========================================================= */
@@ -134,6 +145,25 @@ export function HelpChatWidget() {
      ------------------------------------------------------- */
 
   const [isOpen, setIsOpen] = useState(false);
+  const [helpBot, setHelpBot] = useState<HelpBotModule | null>(null);
+  const [isLoadingHelpBot, setIsLoadingHelpBot] = useState(false);
+  const [helpBotLoadFailed, setHelpBotLoadFailed] = useState(false);
+
+  const openChat = useCallback(() => {
+    setIsOpen(true);
+
+    if (helpBot || isLoadingHelpBot) {
+      return;
+    }
+
+    setIsLoadingHelpBot(true);
+    setHelpBotLoadFailed(false);
+
+    void loadHelpBotModule()
+      .then(setHelpBot)
+      .catch(() => setHelpBotLoadFailed(true))
+      .finally(() => setIsLoadingHelpBot(false));
+  }, [helpBot, isLoadingHelpBot]);
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -230,8 +260,8 @@ export function HelpChatWidget() {
       return latestAssistantSuggestions;
     }
 
-    return suggestWhileTyping(trimmedInput);
-  }, [deferredInput, latestAssistantSuggestions, isOpen]);
+    return helpBot ? helpBot.suggestWhileTyping(trimmedInput) : [];
+  }, [deferredInput, helpBot, latestAssistantSuggestions, isOpen]);
 
   /* =========================================================
      AUTO SCROLL
@@ -294,8 +324,9 @@ export function HelpChatWidget() {
   const sendMessage = useCallback(
     (questionOverride?: string) => {
       const question = (questionOverride ?? input).trim();
+      const engine = helpBot;
 
-      if (!question || isTyping) {
+      if (!question || isTyping || !engine) {
         return;
       }
 
@@ -316,7 +347,7 @@ export function HelpChatWidget() {
        * It does not execute during typing.
        */
       responseTimerRef.current = window.setTimeout(() => {
-        const response = findHelpAnswer(question);
+        const response = engine.findHelpAnswer(question);
 
         const assistantMessage: ChatMessage = {
           id: createMessageId(),
@@ -330,7 +361,7 @@ export function HelpChatWidget() {
         responseTimerRef.current = null;
       }, TYPING_DELAY);
     },
-    [input, isTyping],
+    [helpBot, input, isTyping],
   );
 
   /* =========================================================
@@ -778,7 +809,7 @@ export function HelpChatWidget() {
         <button
           className="mectec-help-launcher"
           type="button"
-          onClick={() => setIsOpen(true)}
+          onClick={openChat}
           aria-label={`Open ${settings.name} Help Assistant`}
           title={`${settings.name} Help Assistant`}
           style={{
@@ -1357,8 +1388,14 @@ export function HelpChatWidget() {
                 setInput(event.target.value);
               }}
               onKeyDown={handleInputKeyDown}
-              disabled={isTyping}
-              placeholder={`Ask ${settings.name} anything...`}
+              disabled={isTyping || !helpBot}
+              placeholder={
+                helpBot
+                  ? `Ask ${settings.name} anything...`
+                  : helpBotLoadFailed
+                    ? "Assistant couldn't load. Please retry."
+                    : "Preparing Help Assistant..."
+              }
               aria-label={`Ask ${settings.name} anything`}
               style={{
                 flex: 1,
@@ -1381,7 +1418,7 @@ export function HelpChatWidget() {
             <button
               type="button"
               onClick={() => sendMessage()}
-              disabled={isTyping || !input.trim()}
+              disabled={isTyping || !helpBot || !input.trim()}
               aria-label="Send message"
               title="Send message"
               style={{
