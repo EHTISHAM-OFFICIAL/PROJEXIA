@@ -2780,6 +2780,33 @@ function getGreetingResponse(normalizedQuestion: string): HelpResponse {
 }
 
 function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
+  /*
+   * Broad service questions should always use the canonical service
+   * overview instead of competing with narrower technical entries.
+   * This is deterministic and avoids fuzzy-ranking ambiguity between
+   * the general and services knowledge categories.
+   */
+  const asksBroadServices =
+    /\\b(what|which|list|describe|tell me about).{0,50}\\bservices?\\b/i.test(
+      normalizedQuestion,
+    ) ||
+    /\\b(do you|can you).{0,60}\\b(provide|offer|make|build).{0,60}\\b(school|college|university|fyp)\\b/i.test(
+      normalizedQuestion,
+    ) ||
+    /\\bwhat kind of projects can you make\\b/i.test(normalizedQuestion);
+
+  if (asksBroadServices) {
+    const serviceOverview = HELP_KNOWLEDGE.find(
+      (entry) => entry.id === "services-overview",
+    );
+
+    if (serviceOverview) {
+      return {
+        answer: cleanAnswer(serviceOverview.answer),
+      };
+    }
+  }
+
   if (/\b(what is your name|who are you)\b/i.test(normalizedQuestion)) {
     return {
       answer:
