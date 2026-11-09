@@ -15,6 +15,8 @@ describe('help bot', () => {
       'What services does ProjexiaHub provide?',
       'What kind of projects can you make?',
       'Do you provide school, college and university projects?',
+      'Do you provide school and university projects?',
+      'Do you make school and university projects?',
     ];
 
     for (const question of questions) {
