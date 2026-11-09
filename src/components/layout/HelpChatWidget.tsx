@@ -117,16 +117,25 @@ function createMessageId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-type HelpBotModule = typeof import("../../utils/helpBot");
+type HelpBotModule = typeof import("../../utils/helpBot") &
+  typeof import("../../utils/helpOnlineKnowledge");
 
 let helpBotModulePromise: Promise<HelpBotModule> | null = null;
 
 function loadHelpBotModule(): Promise<HelpBotModule> {
   if (!helpBotModulePromise) {
-    helpBotModulePromise = import("../../utils/helpBot").catch((error: unknown) => {
-      helpBotModulePromise = null;
-      throw error;
-    });
+    helpBotModulePromise = Promise.all([
+      import("../../utils/helpBot"),
+      import("../../utils/helpOnlineKnowledge"),
+    ])
+      .then(([engine, onlineKnowledge]) => ({
+        ...engine,
+        ...onlineKnowledge,
+      }))
+      .catch((error: unknown) => {
+        helpBotModulePromise = null;
+        throw error;
+      });
   }
 
   return helpBotModulePromise;
@@ -347,18 +356,34 @@ export function HelpChatWidget() {
        * It does not execute during typing.
        */
       responseTimerRef.current = window.setTimeout(() => {
-        const response = engine.findHelpAnswer(question);
+        const localResponse = engine.findHelpAnswer(question);
 
-        const assistantMessage: ChatMessage = {
-          id: createMessageId(),
-          role: "assistant",
-          text: response.answer,
-          response,
-        };
+        void engine
+          .lookupGeneralKnowledge(question, localResponse)
+          .then((response) => {
+            const assistantMessage: ChatMessage = {
+              id: createMessageId(),
+              role: "assistant",
+              text: response.answer,
+              response,
+            };
 
-        setMessages((current) => [...current, assistantMessage]);
-        setIsTyping(false);
-        responseTimerRef.current = null;
+            setMessages((current) => [...current, assistantMessage]);
+          })
+          .catch(() => {
+            const assistantMessage: ChatMessage = {
+              id: createMessageId(),
+              role: "assistant",
+              text: localResponse.answer,
+              response: localResponse,
+            };
+
+            setMessages((current) => [...current, assistantMessage]);
+          })
+          .finally(() => {
+            setIsTyping(false);
+            responseTimerRef.current = null;
+          });
       }, TYPING_DELAY);
     },
     [helpBot, input, isTyping],
@@ -1139,6 +1164,28 @@ export function HelpChatWidget() {
                   }}
                 >
                   {message.text}
+                  {message.response?.source && (
+                    <div
+                      style={{
+                        marginTop: 9,
+                        paddingTop: 7,
+                        borderTop: "1px solid rgba(148,163,184,0.25)",
+                        fontSize: 11.5,
+                      }}
+                    >
+                      <a
+                        href={message.response.source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: "var(--chat-accent)",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        Source: {message.response.source.label}
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             );
