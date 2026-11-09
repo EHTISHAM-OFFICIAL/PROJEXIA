@@ -9,6 +9,24 @@ describe('help bot', () => {
     expect(answer.answer.length).toBeGreaterThan(20);
   });
 
+  it('answers broad service questions with the complete service overview', () => {
+    const questions = [
+      'What services does the studio provide?',
+      'What services does ProjexiaHub provide?',
+      'What kind of projects can you make?',
+      'Do you provide school, college and university projects?',
+    ];
+
+    for (const question of questions) {
+      resetHelpContext();
+      const response = findHelpAnswer(question);
+      expect(response.answer).toContain('School projects');
+      expect(response.answer).toContain('University projects');
+      expect(response.answer).toContain('Arduino-based');
+      expect(response.answer).not.toContain("I’m not confident I understood");
+    }
+  });
+
   it('does not throw on empty or nonsense input', () => {
     expect(() => findHelpAnswer('')).not.toThrow();
     expect(() => findHelpAnswer('asdkjh qweoiu zzzz')).not.toThrow();
