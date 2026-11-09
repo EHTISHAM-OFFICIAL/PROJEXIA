@@ -60,7 +60,7 @@ function isGeneralKnowledgeQuestion(question: string): boolean {
 
 async function fetchJson<T>(url: URL): Promise<T> {
   const controller = new AbortController();
-  const timeout = window.setTimeout(
+  const timeout = setTimeout(
     () => controller.abort(),
     REQUEST_TIMEOUT_MS,
   );
@@ -80,7 +80,7 @@ async function fetchJson<T>(url: URL): Promise<T> {
 
     return (await response.json()) as T;
   } finally {
-    window.clearTimeout(timeout);
+    clearTimeout(timeout);
   }
 }
 
@@ -97,8 +97,9 @@ export async function lookupGeneralKnowledge(
   localResponse: HelpResponse,
 ): Promise<HelpResponse> {
   if (
-    !localResponse.answer.startsWith(
-      "I don't have a specific answer for that yet.",
+    !(
+      localResponse.answer.startsWith("I don't have a specific answer for that yet.") ||
+      localResponse.answer.startsWith("I’m not confident I understood")
     ) ||
     !isGeneralKnowledgeQuestion(question)
   ) {
