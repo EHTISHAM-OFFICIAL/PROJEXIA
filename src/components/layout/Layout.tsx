@@ -5,10 +5,8 @@ import { Footer } from './Footer';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { WhatsAppFab } from './WhatsAppFab';
 
-// The help bot ships ~85,000 lines of knowledge-base text. Loading it with the
-// first page would more than double the initial download for a feature most
-// visitors never open, so it is split into its own file and fetched once the
-// browser is idle.
+// Defer the chat interface until the browser is idle. The much larger local
+// matching engine and knowledge base are loaded only when a visitor opens chat.
 const HelpChatWidget = lazy(() =>
   import('./HelpChatWidget').then((module) => ({ default: module.HelpChatWidget }))
 );
