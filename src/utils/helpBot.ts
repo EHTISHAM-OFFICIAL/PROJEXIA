@@ -2787,13 +2787,13 @@ function handleDirectQuestion(normalizedQuestion: string): HelpResponse | null {
    * the general and services knowledge categories.
    */
   const asksBroadServices =
-    /\\b(what|which|list|describe|tell me about).{0,50}\\bservices?\\b/i.test(
+    /\b(what|which|list|describe|tell me about).{0,50}\bservices?\b/i.test(
       normalizedQuestion,
     ) ||
-    /\\b(do you|can you).{0,60}\\b(provide|offer|make|build).{0,60}\\b(school|college|university|fyp)\\b/i.test(
+    /\b(do you|can you).{0,60}\b(provide|offer|make|build).{0,60}\b(school|college|university|fyp)\b/i.test(
       normalizedQuestion,
     ) ||
-    /\\bwhat kind of projects can you make\\b/i.test(normalizedQuestion);
+    /\bwhat kind of projects can you make\b/i.test(normalizedQuestion);
 
   if (asksBroadServices) {
     const serviceOverview = HELP_KNOWLEDGE.find(
