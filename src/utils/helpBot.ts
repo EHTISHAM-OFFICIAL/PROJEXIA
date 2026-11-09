@@ -3785,6 +3785,30 @@ function createHelpResponse(question: string): HelpResponse | null {
    *
    * THIS MUST HAPPEN BEFORE FUZZY KNOWLEDGE SEARCH.
    */
+  /*
+   * Resolve broad service questions before navigation and fuzzy
+   * matching. Token checks keep this deterministic and avoid
+   * ranking ambiguity between general and service knowledge.
+   */
+  const serviceWords = normalizedQuestion.split(/\s+/);
+  const asksForServiceOverview =
+    serviceWords.includes("service") ||
+    serviceWords.includes("services") ||
+    (["school", "college", "university", "fyp"].some((word) =>
+      serviceWords.includes(word),
+    ) &&
+      ["provide", "offer", "make", "build"].some((word) =>
+        serviceWords.includes(word),
+      )) ||
+    normalizedQuestion.includes("what kind of projects can you make");
+
+  if (asksForServiceOverview) {
+    return {
+      answer:
+        "ProjexiaHub provides project-building services for students and custom project requirements. Our services include:\n\n• School projects, educational models and charts\n• College projects and practical demonstrations\n• University projects and Final Year Projects (FYPs)\n• Electronics and mechanical projects\n• Breadboard circuits and prototypes\n• Analog electronics projects\n• Arduino-based and other microcontroller projects\n• Customized projects developed around the requirements you provide\n\nShare your project idea, required features and deadline through the Project Request form so the requirements can be reviewed. Pricing and feasibility are discussed according to the specific project; we do not quote a fixed price before reviewing its requirements.",
+    };
+  }
+
   const navigation = detectNavigation(normalizedQuestion);
 
   if (navigation) {
