@@ -15,6 +15,10 @@ export interface HelpResponse {
   action?: HelpAction;
   suggestedQuestions?: string[];
   relatedQuestions?: string[];
+  source?: {
+    label: string;
+    url: string;
+  };
 }
 
 /* =========================================================
