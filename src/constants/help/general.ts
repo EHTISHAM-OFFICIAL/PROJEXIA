@@ -559,6 +559,10 @@ export const GENERAL_HELP = [
     variations: [
       "Can you make university projects",
       "Do you help students",
+      "Do you provide school and university projects",
+      "Do you provide school projects and university projects",
+      "Do you make school and university projects",
+      "Can you make school projects",
       "Can ProjexiaHub build an FYP",
       "Can you make an engineering project",
     ],
