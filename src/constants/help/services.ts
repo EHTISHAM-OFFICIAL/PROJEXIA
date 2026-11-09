@@ -34,7 +34,7 @@ export const SERVICES_HELP: HelpEntry[] = [
       "breadboard", "analog", "Arduino", "custom", "customized",
     ],
     answer:
-      "ProjexiaHub provides project-building services for students and custom project requirements. Our services include:\\n\\n• School projects, educational models and charts\\n• College projects and practical demonstrations\\n• University projects and Final Year Projects (FYPs)\\n• Electronics and mechanical projects\\n• Breadboard circuits and prototypes\\n• Analog electronics projects\\n• Arduino-based and other microcontroller projects\\n• Customized projects developed around the requirements you provide\\n\\nShare your project idea, required features and deadline through the Project Request form so the requirements can be reviewed. Pricing and feasibility are discussed according to the specific project; we do not quote a fixed price before reviewing its requirements.",
+      "ProjexiaHub provides project-building services for students and custom project requirements. Our services include:\n\n• School projects, educational models and charts\n• College projects and practical demonstrations\n• University projects and Final Year Projects (FYPs)\n• Electronics and mechanical projects\n• Breadboard circuits and prototypes\n• Analog electronics projects\n• Arduino-based and other microcontroller projects\n• Customized projects developed around the requirements you provide\n\nShare your project idea, required features and deadline through the Project Request form so the requirements can be reviewed. Pricing and feasibility are discussed according to the specific project; we do not quote a fixed price before reviewing its requirements.",
     priority: 120,
   },
 
