@@ -3800,7 +3800,7 @@ function createHelpResponse(question: string): HelpResponse | null {
       ["provide", "offer", "make", "build"].some((word) =>
         serviceWords.includes(word),
       )) ||
-    normalizedQuestion.includes("what kind of projects can you make");
+    normalizedQuestion.includes("what kind of project can you make");
 
   if (asksForServiceOverview) {
     return {
