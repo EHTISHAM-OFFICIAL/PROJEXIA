@@ -81,7 +81,7 @@ describe("online general knowledge fallback", () => {
       vi.fn().mockRejectedValue(new Error("Network unavailable")),
     );
 
-    const result = await lookupGeneralKnowledge("What is USB HID?", FALLBACK);
+    const result = await lookupGeneralKnowledge("What is UART?", FALLBACK);
 
     expect(result).toBe(FALLBACK);
   });
