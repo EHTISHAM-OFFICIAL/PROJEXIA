@@ -303,7 +303,7 @@ export function HelpChatWidget() {
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [isOpen, isTyping]);
+  }, [helpBot, isOpen, isTyping]);
 
   /* =========================================================
      CLEANUP RESPONSE TIMER
@@ -1460,7 +1460,27 @@ export function HelpChatWidget() {
               fontSize: 10.5,
             }}
           >
-            {settings.name} Help Assistant
+            {helpBotLoadFailed ? (
+              <button
+                type="button"
+                onClick={openChat}
+                style={{
+                  border: "none",
+                  padding: 0,
+                  background: "transparent",
+                  color: "#ea580c",
+                  font: "inherit",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}
+              >
+                Couldn't load assistant — tap to retry
+              </button>
+            ) : isLoadingHelpBot ? (
+              "Loading Help Assistant..."
+            ) : (
+              `${settings.name} Help Assistant`
+            )}
           </div>
         </div>
 
