@@ -22,10 +22,10 @@ describe('help bot', () => {
     for (const question of questions) {
       resetHelpContext();
       const response = findHelpAnswer(question);
-      expect(response.answer).toContain('School projects');
-      expect(response.answer).toContain('University projects');
-      expect(response.answer).toContain('Arduino-based');
-      expect(response.answer).not.toContain("I’m not confident I understood");
+      expect(response.answer, `Question: ${question}`).toContain('School projects');
+      expect(response.answer, `Question: ${question}`).toContain('University projects');
+      expect(response.answer, `Question: ${question}`).toContain('Arduino-based');
+      expect(response.answer, `Question: ${question}`).not.toContain("I’m not confident I understood");
     }
   });
 
