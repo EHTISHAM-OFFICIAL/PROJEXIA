@@ -17,11 +17,10 @@ function DeferredHelpChat() {
 
   useEffect(() => {
     const start = () => setReady(true);
-    // Older Safari has no requestIdleCallback, so fall back to a short timer.
-    const idle = (window as Window & {
+    const idle = window as Window & {
       requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
       cancelIdleCallback?: (id: number) => void;
-    });
+    };
     if (idle.requestIdleCallback) {
       const id = idle.requestIdleCallback(start, { timeout: 3000 });
       return () => idle.cancelIdleCallback?.(id);
@@ -60,13 +59,13 @@ function BackToTopButton() {
 
   return (
     <>
-      <style>{'@keyframes backToTopBounce { 0%, 100% { transform: translateY(0); } 24% { transform: translateY(-12px); } 48% { transform: translateY(1px); } 72% { transform: translateY(-7px); } } @media (prefers-reduced-motion: no-preference) { .back-to-top-bounce { animation: backToTopBounce 850ms cubic-bezier(0.34, 1.56, 0.64, 1) infinite; will-change: transform; } } @media (prefers-reduced-motion: reduce) { .back-to-top-bounce { animation: none; } }'}</style>
+      <style>{'@keyframes backToTopVerticalBounce { 0%, 100% { translate: 0 0; } 30% { translate: 0 -10px; } 55% { translate: 0 0; } 76% { translate: 0 -5px; } } @media (prefers-reduced-motion: no-preference) { .back-to-top-bounce { animation: backToTopVerticalBounce 700ms ease-in-out infinite; will-change: translate; } } @media (prefers-reduced-motion: reduce) { .back-to-top-bounce { animation: none; } }'}</style>
       <button
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })}
         aria-label="Back to top"
         title="Back to top"
-        className="back-to-top-bounce fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-[calc(1.25rem+3.5rem+0.75rem)] z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-accent/30 bg-surface text-accent shadow-[0_10px_30px_-10px_rgba(0,0,0,0.55)] transition-colors duration-200 hover:bg-accent hover:text-onAccent hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:right-[calc(2rem+3.5rem+0.75rem)] sm:h-14 sm:w-14"
+        className="back-to-top-bounce inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-surface text-accent shadow-[0_10px_30px_-10px_rgba(0,0,0,0.55)] transition-colors duration-200 hover:bg-accent hover:text-onAccent hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
       >
         <ArrowUp size={22} strokeWidth={2.5} aria-hidden="true" />
       </button>
@@ -95,8 +94,17 @@ export function Layout() {
         <Outlet />
       </main>
       <Footer />
-      <WhatsAppFab />
-      <BackToTopButton />
+
+      {/* One shared dock prevents independently positioned controls from overlapping. */}
+      <div className="pointer-events-none fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-50 flex items-center gap-3 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:right-8">
+        <div className="pointer-events-auto">
+          <BackToTopButton />
+        </div>
+        <div className="pointer-events-auto">
+          <WhatsAppFab />
+        </div>
+      </div>
+
       <DeferredHelpChat />
     </div>
   );
