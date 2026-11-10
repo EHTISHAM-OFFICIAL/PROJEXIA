@@ -7,8 +7,8 @@ export function usePublishedProjects() {
   return useAsync<Project[]>(() => projectService.getPublishedProjects(), []);
 }
 
-export function useFeaturedProjects(limitCount = 3) {
-  return useAsync<Project[]>(() => projectService.getFeaturedProjects(limitCount), [limitCount]);
+export function useFeaturedProjects() {
+  return useAsync<Project[]>(() => projectService.getFeaturedProjects(), []);
 }
 
 export function useAllProjects() {
