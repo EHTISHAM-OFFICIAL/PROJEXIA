@@ -2,6 +2,7 @@ import { GripVertical, Plus, X } from 'lucide-react';
 import { useState } from 'react';
 import { TextInput } from './Inputs';
 import { RichTextEditor } from './RichTextEditor';
+import { splitEntries } from '../../utils/splitEntries';
 
 /** Edits a string[] field (objectives, features, challenges, tags, technologies). */
 export function ListEditor({
@@ -19,6 +20,13 @@ export function ListEditor({
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 
   const update = (index: number, value: string) => {
+    const entries = splitEntries(value);
+    if (entries.length > 1) {
+      const next = [...rows];
+      next.splice(index, 1, ...entries);
+      onChange(next);
+      return;
+    }
     const next = [...rows];
     next[index] = value;
     onChange(next);
@@ -99,6 +107,16 @@ export function TableEditor<T extends object>({
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 
   const update = (index: number, key: Extract<keyof T, string>, value: string | boolean) => {
+    const firstColumnKey = columns[0]?.key;
+    if (typeof value === 'string' && key === firstColumnKey) {
+      const entries = splitEntries(value);
+      if (entries.length > 1) {
+        const next = [...data];
+        next.splice(index, 1, ...entries.map((entry) => ({ ...emptyRow, [key]: entry } as T)));
+        onChange(next);
+        return;
+      }
+    }
     const type = columns.find((column) => column.key === key)?.type;
     const next = data.map((row, position) => {
       if (position !== index) return row;
