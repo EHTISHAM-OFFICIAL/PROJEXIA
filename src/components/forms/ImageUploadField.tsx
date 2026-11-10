@@ -12,6 +12,7 @@ interface ImageUploadFieldProps {
   onClear: () => void;
   label: string;
   disabled?: boolean;
+  previewFit?: "cover" | "contain";
 }
 
 /** Uploads one image immediately and lets admins reopen the image preparation editor. */
@@ -21,6 +22,7 @@ export function ImageUploadField({
   onClear,
   label,
   disabled = false,
+  previewFit = "cover",
 }: ImageUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -133,7 +135,7 @@ export function ImageUploadField({
       {value ? (
         <div className="w-full max-w-sm overflow-hidden rounded-xl border border-line bg-surface">
           <div className="relative">
-            <Image src={value} alt={`${label} preview`} className="aspect-[16/10] w-full object-cover" />
+            <Image src={value} alt={`${label} preview`} className={`aspect-[16/10] w-full bg-surface-raised object-${previewFit}`} />
             <span className="absolute left-2 top-2 rounded-md bg-bg/85 px-2 py-1 text-xs font-medium text-content shadow-sm">Uploaded</span>
           </div>
           <div className="flex items-center gap-2 border-t border-line p-2">
