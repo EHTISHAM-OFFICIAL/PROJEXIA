@@ -6,7 +6,7 @@ import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 export function WhatsAppFab() {
   const { settings } = useSiteSettings();
   const href = settings.showWhatsapp
-    ? whatsappLink(`Hello ${settings.name}, I have a question about a project.`, settings.whatsapp)
+    ? whatsappLink(\`Hello \${settings.name}, I have a question about a project.\`, settings.whatsapp)
     : null;
   if (!href) return null;
 
@@ -15,8 +15,8 @@ export function WhatsAppFab() {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`Message ${settings.name} on WhatsApp`}
-      className="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-onAccent shadow-[0_10px_30px_-8px_rgba(0,0,0,0.6)] transition-transform hover:-translate-y-0.5 active:scale-95 sm:right-8 md:bottom-6"
+      aria-label={\`Message \${settings.name} on WhatsApp\`}
+      className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-onAccent shadow-[0_10px_30px_-8px_rgba(0,0,0,0.6)] transition-transform hover:-translate-y-0.5 active:scale-95 sm:right-8 md:bottom-6"
     >
       <span className="absolute inset-0 rounded-full bg-accent/40 animate-ping" aria-hidden="true" />
       <MessageCircle size={22} className="relative" aria-hidden="true" />
