@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { ArrowUp } from 'lucide-react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { AnnouncementBanner } from './AnnouncementBanner';
@@ -36,6 +37,55 @@ function DeferredHelpChat() {
   ) : null;
 }
 
+function BackToTopButton() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const updateVisibility = () => {
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const nextVisible = scrollableHeight > 0 && window.scrollY / scrollableHeight >= 0.5;
+      setVisible((current) => current === nextVisible ? current : nextVisible);
+    };
+
+    updateVisibility();
+    window.addEventListener('scroll', updateVisibility, { passive: true });
+    window.addEventListener('resize', updateVisibility);
+    return () => {
+      window.removeEventListener('scroll', updateVisibility);
+      window.removeEventListener('resize', updateVisibility);
+    };
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <>
+      <style>{`@keyframes backToTopDance {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        20% { transform: translateY(-3px) rotate(-5deg); }
+        40% { transform: translateY(0) rotate(4deg); }
+        60% { transform: translateY(-2px) rotate(-3deg); }
+        80% { transform: translateY(0) rotate(2deg); }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .back-to-top-dance { animation: backToTopDance 2.8s ease-in-out infinite; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .back-to-top-dance { animation: none; }
+      }`}</style>
+    <button
+      type="button"
+      onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })}
+      aria-label="Back to top"
+      title="Back to top"
+      className="back-to-top-dance fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-[5rem] z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-accent/30 bg-surface text-accent shadow-[0_10px_30px_-10px_rgba(0,0,0,0.55)] transition-colors duration-200 hover:bg-accent hover:text-onAccent hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:right-32 sm:h-14 sm:w-14"
+    >
+      <ArrowUp size={22} strokeWidth={2.5} aria-hidden="true" />
+    </button>
+    </>
+  );
+}
+
 export function Layout() {
   const { pathname } = useLocation();
 
@@ -58,6 +108,7 @@ export function Layout() {
       </main>
       <Footer />
       <WhatsAppFab />
+      <BackToTopButton />
       <DeferredHelpChat />
     </div>
   );

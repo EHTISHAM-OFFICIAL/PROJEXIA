@@ -578,13 +578,12 @@ export default function RequestProject() {
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setServiceChoice(null)}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-accent/30 px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent/10"
+          <Link
+            to="/request-school-model"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-orange-500 bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition duration-200 hover:-translate-y-0.5 hover:border-orange-600 hover:bg-orange-600 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
           >
-            Choose another project type <ArrowRight size={15} />
-          </button>
+            Need a school model / project instead? <ArrowRight size={15} />
+          </Link>
         </div>
       </Container>
       <Container className="pt-5">

@@ -97,14 +97,13 @@ export const projectService = {
     return snapshot.docs.map(toProject);
   },
 
-  async getFeaturedProjects(limitCount = 3): Promise<Project[]> {
+  async getFeaturedProjects(): Promise<Project[]> {
     const snapshot = await getDocs(
       query(
         projectsRef,
         where('published', '==', true),
         where('featured', '==', true),
-        orderBy('createdAt', 'desc'),
-        fsLimit(limitCount)
+        orderBy('createdAt', 'desc')
       )
     );
     return snapshot.docs.map(toProject);

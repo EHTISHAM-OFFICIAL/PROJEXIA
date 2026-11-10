@@ -6,25 +6,24 @@ import { ErrorState } from '../ui/ErrorState';
 import { ProjectGrid } from '../projects/ProjectGrid';
 import { ProjectGridSkeleton } from '../ui/Skeleton';
 import { useFeaturedProjects } from '../../hooks/useProjects';
-import { FEATURED_PROJECTS_LIMIT } from '../../constants/projectOptions';
 
 export function FeaturedProjects() {
-  const { data, loading, error, reload } = useFeaturedProjects(FEATURED_PROJECTS_LIMIT);
+  const { data, loading, error, reload } = useFeaturedProjects();
 
   return (
     <Section className="border-b border-line">
       <SectionHeading
         title="Selected work"
-        description="A few builds that show the range — from a single sensor loop to a connected system."
+        description="Explore the electronics and mechanical builds currently featured by ProjexiaHub."
       >
-        <ButtonLink to="/projects" variant="secondary" size="sm">
-          All projects
+        <ButtonLink to="/projects" variant="primary" size="lg" className="w-full font-semibold shadow-md hover:shadow-lg sm:w-auto">
+          View all electronics projects
           <ArrowRight size={15} aria-hidden="true" />
         </ButtonLink>
       </SectionHeading>
 
       <div className="mt-12">
-        {loading && <ProjectGridSkeleton count={FEATURED_PROJECTS_LIMIT} />}
+        {loading && <ProjectGridSkeleton count={3} />}
         {!loading && error && <ErrorState message={error} onRetry={reload} />}
         {!loading && !error && data && data.length === 0 && (
           <EmptyState
