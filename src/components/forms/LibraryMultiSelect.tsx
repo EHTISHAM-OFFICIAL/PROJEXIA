@@ -18,6 +18,7 @@ const normalizeLibraryName = (value: string) => value
   .replace(/\s+/g, ' ');
 
 
+// Preserve the user's selected text while applying inline markdown shortcuts without a toolbar.
 function handleInlineShortcut(
   event: React.KeyboardEvent<HTMLInputElement>,
   value: string,
