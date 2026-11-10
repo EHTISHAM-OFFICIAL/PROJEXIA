@@ -353,7 +353,7 @@ export default function SchoolProjects() {
                     {model.objectives.map((x, i) => (
                       <li key={i} className="flex gap-2.5">
                         <span className="mt-0.5 text-accent" aria-hidden="true">✓</span>
-                        <span>{x}</span>
+                        <span>{renderSchoolInline(x)}</span>
                       </li>
                     ))}
                   </ul>
@@ -364,7 +364,7 @@ export default function SchoolProjects() {
                 <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
                   <h2 className="font-semibold">Materials required</h2>
                   <ul className="mt-3 space-y-2 text-sm leading-6 text-content-secondary">
-                    {model.materials.map((x, i) => <li key={i} className="flex gap-2"><span className="text-accent" aria-hidden="true">•</span><span>{x}</span></li>)}
+                    {model.materials.map((x, i) => <li key={i} className="flex gap-2"><span className="text-accent" aria-hidden="true">•</span><span>{renderSchoolInline(x)}</span></li>)}
                   </ul>
                 </section>
               )}
@@ -373,7 +373,7 @@ export default function SchoolProjects() {
                 <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
                   <h2 className="font-semibold">Key features</h2>
                   <ul className="mt-3 space-y-2 text-sm leading-6 text-content-secondary">
-                    {model.features.map((x, i) => <li key={i} className="flex gap-2"><span className="text-accent" aria-hidden="true">•</span><span>{x}</span></li>)}
+                    {model.features.map((x, i) => <li key={i} className="flex gap-2"><span className="text-accent" aria-hidden="true">•</span><span>{renderSchoolInline(x)}</span></li>)}
                   </ul>
                 </section>
               )}
@@ -382,7 +382,7 @@ export default function SchoolProjects() {
                 <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
                   <h2 className="font-semibold">Customization options</h2>
                   <ul className="mt-3 space-y-2 text-sm leading-6 text-content-secondary">
-                    {model.customizationOptions.map((x, i) => <li key={i} className="flex gap-2"><span className="text-accent" aria-hidden="true">•</span><span>{x}</span></li>)}
+                    {model.customizationOptions.map((x, i) => <li key={i} className="flex gap-2"><span className="text-accent" aria-hidden="true">•</span><span>{renderSchoolInline(x)}</span></li>)}
                   </ul>
                 </section>
               )}
@@ -615,13 +615,13 @@ export default function SchoolProjects() {
                     {x.difficulty && <Badge>{x.difficulty}</Badge>}
                   </div>
 
-                  <h2 className="mt-3 line-clamp-2 text-base font-semibold leading-snug text-content sm:text-lg">{x.title}</h2>
-                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-content-secondary">
+                  <h2 className="mt-3 line-clamp-2 text-lg font-semibold leading-snug text-content sm:text-xl">{x.title}</h2>
+                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-content-secondary sm:text-base sm:leading-7">
                     {x.shortDescription}
                   </p>
 
                   {(x.subject || x.gradeRange || x.subcategory) && (
-                    <p className="mt-3 text-xs text-content-muted">
+                    <p className="mt-3 text-xs text-content-muted sm:text-sm">
                       {[x.subject, x.gradeRange, x.subcategory]
                         .filter(Boolean)
                         .join(" · ")}

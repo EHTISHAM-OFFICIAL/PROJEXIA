@@ -62,11 +62,11 @@ export function ProjectCard({ project }: { project: Project }) {
             </span>
           </div>
 
-          <h3 className="mt-2 text-lg font-semibold leading-snug tracking-tight text-content sm:mt-2.5">
+          <h3 className="mt-2 text-xl font-semibold leading-snug tracking-tight text-content sm:mt-2.5 sm:text-xl lg:text-2xl">
             {project.title}
           </h3>
 
-          <p className="mt-2 break-words text-sm leading-relaxed text-content-secondary">
+          <p className="mt-2 break-words text-sm leading-relaxed text-content-secondary sm:text-base sm:leading-7">
             {truncate(project.shortDescription, 120)}
           </p>
 

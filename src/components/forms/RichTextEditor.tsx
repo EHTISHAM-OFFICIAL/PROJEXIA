@@ -19,7 +19,7 @@ export function RichTextEditor({
   rows = 5,
   placeholder,
   inlineOnly = false,
-  showToolbar = true,
+  showToolbar = false,
 }: {
   id: string;
   value: string;
@@ -69,7 +69,8 @@ export function RichTextEditor({
     const format: Format | null =
       key === 'b' ? 'bold' :
       key === 'i' ? 'italic' :
-      key === 'u' ? 'underline' : null;
+      key === 'u' ? 'underline' :
+      event.shiftKey && (key === '*' || key === '8') ? 'bullet' : null;
     if (!format) return;
     event.preventDefault();
     applyFormat(format);
@@ -118,7 +119,7 @@ export function RichTextEditor({
         aria-describedby={`${id}-format-help`}
       />
       <p id={`${id}-format-help`} className="border-t border-line bg-surface/50 px-3 py-2 text-xs leading-relaxed text-content-muted">
-        {showToolbar ? (inlineOnly ? 'Supports **bold**, *italic* and ++underline++ formatting. ' : 'Supports **bold**, *italic*, ++underline++, ## headings and - bullet lists. ') : ''}Shortcuts: Ctrl/⌘ + B, I or U.
+        {showToolbar ? (inlineOnly ? 'Supports **bold**, *italic* and ++underline++ formatting. ' : 'Supports **bold**, *italic*, ++underline++, ## headings and - bullet lists. ') : ''}Keyboard shortcuts: Ctrl/⌘ + B (bold), I (italic), U (underline), Ctrl/⌘ + Shift+8 (bullet list).
       </p>
     </div>
   );
