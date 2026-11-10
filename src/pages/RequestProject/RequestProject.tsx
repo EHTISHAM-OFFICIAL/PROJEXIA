@@ -578,13 +578,12 @@ export default function RequestProject() {
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setServiceChoice(null)}
+          <Link
+            to="/request-school-model"
             className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-accent/30 px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent/10"
           >
-            Choose another project type <ArrowRight size={15} />
-          </button>
+            Need a school model / project instead? <ArrowRight size={15} />
+          </Link>
         </div>
       </Container>
       <Container className="pt-5">
