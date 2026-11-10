@@ -398,7 +398,7 @@ export default function SchoolModelForm() {
               { key: 'name', label: 'Component / part' },
               { key: 'category', label: 'Type' },
               { key: 'quantity', label: 'Quantity', width: 'w-28' },
-              { key: 'notes', label: 'Notes' },
+              { key: 'notes', label: 'Notes', type: 'richtext' },
               { key: 'optional', label: 'Optional', type: 'checkbox', width: 'w-28' },
             ]}/>
           </FieldSet>
