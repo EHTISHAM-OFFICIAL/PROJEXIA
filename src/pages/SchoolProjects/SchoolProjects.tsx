@@ -452,8 +452,8 @@ export default function SchoolProjects() {
                 />
                 {galleryImages.length > 1 && (
                   <>
-                    <button type="button" onClick={() => setActiveGalleryIndex((activeGalleryIndex - 1 + galleryImages.length) % galleryImages.length)} aria-label="Previous image" className="absolute left-2 grid h-11 w-11 place-items-center rounded-full bg-black/60 text-white ring-1 ring-white/20 transition hover:bg-black/85 sm:left-4 sm:h-12 sm:w-12"><ChevronLeft size={25} /></button>
-                    <button type="button" onClick={() => setActiveGalleryIndex((activeGalleryIndex + 1) % galleryImages.length)} aria-label="Next image" className="absolute right-2 grid h-11 w-11 place-items-center rounded-full bg-black/60 text-white ring-1 ring-white/20 transition hover:bg-black/85 sm:right-4 sm:h-12 sm:w-12"><ChevronRight size={25} /></button>
+                    <button type="button" onClick={() => setActiveGalleryIndex((current) => current === null ? 0 : (current - 1 + galleryImages.length) % galleryImages.length)} aria-label="Previous image" className="absolute left-2 grid h-11 w-11 place-items-center rounded-full bg-black/60 text-white ring-1 ring-white/20 transition hover:bg-black/85 sm:left-4 sm:h-12 sm:w-12"><ChevronLeft size={25} /></button>
+                    <button type="button" onClick={() => setActiveGalleryIndex((current) => current === null ? 0 : (current + 1) % galleryImages.length)} aria-label="Next image" className="absolute right-2 grid h-11 w-11 place-items-center rounded-full bg-black/60 text-white ring-1 ring-white/20 transition hover:bg-black/85 sm:right-4 sm:h-12 sm:w-12"><ChevronRight size={25} /></button>
                   </>
                 )}
               </div>
