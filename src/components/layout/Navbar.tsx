@@ -23,6 +23,15 @@ export function Navbar() {
   useEffect(() => setMobileOpen(false), [location.pathname]);
 
   useEffect(() => {
+    if (!mobileOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [mobileOpen]);
+
+  useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -35,7 +44,8 @@ export function Navbar() {
     <>
     <header
       className={cn(
-        'sticky top-0 z-50 border-b border-line/80 bg-bg/90 backdrop-blur-xl transition-[background-color,box-shadow] duration-200',
+        'sticky top-0 border-b border-line/80 bg-bg/90 backdrop-blur-xl transition-[background-color,box-shadow] duration-200',
+        mobileOpen ? 'z-[60]' : 'z-50',
         scrolled || mobileOpen ? 'shadow-[0_8px_24px_-18px_rgba(0,0,0,0.55)]' : 'shadow-none'
       )}
     >
@@ -111,6 +121,15 @@ export function Navbar() {
       </Container>
 
     </header>
+
+    {mobileOpen && (
+      <button
+        type="button"
+        aria-label="Close navigation menu"
+        onClick={() => setMobileOpen(false)}
+        className="fixed inset-0 z-[55] cursor-default bg-black/35 md:hidden"
+      />
+    )}
 
     {mobileOpen && (
       <div
