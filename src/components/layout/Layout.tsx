@@ -59,7 +59,7 @@ function BackToTopButton() {
 
   return (
     <>
-      <style>{'@keyframes backToTopVerticalBounce { 0%, 100% { translate: 0 0; } 30% { translate: 0 -10px; } 55% { translate: 0 0; } 76% { translate: 0 -5px; } } @media (prefers-reduced-motion: no-preference) { .back-to-top-bounce { animation: backToTopVerticalBounce 700ms ease-in-out infinite; will-change: translate; } } @media (prefers-reduced-motion: reduce) { .back-to-top-bounce { animation: none; } }'}</style>
+      <style>{'@keyframes backToTopBounce { 0%, 100% { transform: translateY(0); } 32% { transform: translateY(-13px); } 58% { transform: translateY(0); } 80% { transform: translateY(-6px); } } .back-to-top-bounce { animation: backToTopBounce 850ms cubic-bezier(0.34, 1.56, 0.64, 1) infinite; will-change: transform; }'}</style>
       <button
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })}
@@ -95,8 +95,8 @@ export function Layout() {
       </main>
       <Footer />
 
-      {/* One shared dock prevents independently positioned controls from overlapping. */}
-      <div className="pointer-events-none fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-50 flex items-center gap-3 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:right-8">
+      {/* Keep Back to Top vertically above WhatsApp with a clear, consistent gap. */}
+      <div className="pointer-events-none fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-50 flex flex-col items-center gap-5 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:right-8">
         <div className="pointer-events-auto">
           <BackToTopButton />
         </div>
