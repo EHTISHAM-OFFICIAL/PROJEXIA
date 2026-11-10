@@ -119,7 +119,7 @@ export function RichTextEditor({
         aria-describedby={`${id}-format-help`}
       />
       <p id={`${id}-format-help`} className="border-t border-line bg-surface/50 px-3 py-2 text-xs leading-relaxed text-content-muted">
-        {showToolbar ? (inlineOnly ? 'Supports **bold**, *italic* and ++underline++ formatting. ' : 'Supports **bold**, *italic*, ++underline++, ## headings and - bullet lists. ') : ''}Keyboard shortcuts: Ctrl/⌘ + B (bold), I (italic), U (underline), Shift+8 (bullet list).
+        {showToolbar ? (inlineOnly ? 'Supports **bold**, *italic* and ++underline++ formatting. ' : 'Supports **bold**, *italic*, ++underline++, ## headings and - bullet lists. ') : ''}Keyboard shortcuts: Ctrl/⌘ + B (bold), I (italic), U (underline), Ctrl/⌘ + Shift+8 (bullet list).
       </p>
     </div>
   );
