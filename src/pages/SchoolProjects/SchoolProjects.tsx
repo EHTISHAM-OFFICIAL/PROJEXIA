@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight, Search, X, ChevronLeft, ChevronRight, Images, Expand } from "lucide-react";
 import { Container } from "../../components/ui/Container";
 import { PageIntro } from "../../components/ui/PageIntro";
 import { Seo } from "../../components/ui/Seo";
@@ -29,6 +29,23 @@ export default function SchoolProjects() {
   const [modelType, setModelType] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState<number | null>(null);
+  const galleryImages = model?.galleryUrls.filter((url, index, urls) => Boolean(url) && urls.indexOf(url) === index) ?? [];
+
+  useEffect(() => {
+    setActiveGalleryIndex(null);
+  }, [slug]);
+
+  useEffect(() => {
+    if (activeGalleryIndex === null || galleryImages.length === 0) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActiveGalleryIndex(null);
+      if (event.key === "ArrowRight") setActiveGalleryIndex((index) => index === null ? 0 : (index + 1) % galleryImages.length);
+      if (event.key === "ArrowLeft") setActiveGalleryIndex((index) => index === null ? 0 : (index - 1 + galleryImages.length) % galleryImages.length);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeGalleryIndex, galleryImages.length]);
 
   useEffect(() => {
     let live = true;
@@ -149,24 +166,22 @@ export default function SchoolProjects() {
 
           <div className="mt-7 grid items-start gap-6 lg:mt-9 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)] lg:gap-8">
             <section aria-label="Model images" className="min-w-0">
-              <Image
-                src={model.heroImageUrl || model.thumbnailUrl}
-                alt={model.title}
-                eager
-                className="aspect-[5/4] w-full rounded-2xl border border-line bg-surface object-cover shadow-sm sm:aspect-[16/11] lg:aspect-[5/4]"
-              />
-              {model.galleryUrls.length > 0 && (
-                <div className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-4">
-                  {model.galleryUrls.map((u, i) => (
-                    <Image
-                      key={u + i}
-                      src={u}
-                      alt={model.title + " gallery " + (i + 1)}
-                      className="aspect-[4/3] w-full rounded-xl border border-line bg-surface object-cover"
-                    />
-                  ))}
+              <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+                <Image
+                  src={model.heroImageUrl || model.thumbnailUrl}
+                  alt={model.title}
+                  eager
+                  className="aspect-[5/4] w-full bg-surface-raised object-contain sm:aspect-[16/10] lg:aspect-[5/4]"
+                />
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-4 py-3">
+                  <span className="text-xs font-medium text-content-secondary">Main project image</span>
+                  {galleryImages.length > 0 && (
+                    <span className="inline-flex items-center gap-1.5 text-xs text-content-muted">
+                      <Images size={14} /> {galleryImages.length} gallery {galleryImages.length === 1 ? "image" : "images"} below
+                    </span>
+                  )}
                 </div>
-              )}
+              </div>
             </section>
 
             <aside className="min-w-0 space-y-5 lg:sticky lg:top-24">
@@ -230,6 +245,39 @@ export default function SchoolProjects() {
               )}
             </aside>
           </div>
+
+          {galleryImages.length > 0 && (
+            <section aria-labelledby="school-model-gallery-title" className="mt-8 rounded-2xl border border-line bg-surface p-4 shadow-sm sm:mt-10 sm:p-6">
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">Inside the project</p>
+                  <h2 id="school-model-gallery-title" className="mt-1 text-xl font-semibold sm:text-2xl">Project gallery</h2>
+                  <p className="mt-1 text-sm leading-6 text-content-secondary">Explore additional views and details. Select any image to view it full size.</p>
+                </div>
+                <span className="rounded-full border border-line bg-bg/60 px-3 py-1.5 text-xs font-medium text-content-secondary">{galleryImages.length} {galleryImages.length === 1 ? "photo" : "photos"}</span>
+              </div>
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-4">
+                {galleryImages.map((url, index) => (
+                  <button
+                    key={url}
+                    type="button"
+                    onClick={() => setActiveGalleryIndex(index)}
+                    aria-label={"Open gallery image " + (index + 1) + " of " + galleryImages.length}
+                    className="group relative min-w-0 overflow-hidden rounded-xl border border-line bg-surface-raised text-left transition duration-200 hover:-translate-y-0.5 hover:border-accent/60 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  >
+                    <Image
+                      src={url}
+                      alt={model.title + " gallery view " + (index + 1)}
+                      className="aspect-[4/3] w-full bg-surface-raised object-contain p-1.5 transition-transform duration-300 group-hover:scale-[1.025] sm:p-2"
+                    />
+                    <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-lg bg-bg/90 px-2 py-1 text-[11px] font-medium text-content shadow-sm backdrop-blur">
+                      <Expand size={12} /> View
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
 
           <div className="mt-8 grid items-start gap-6 lg:mt-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.85fr)] lg:gap-8">
             <div className="min-w-0 space-y-5">
@@ -381,6 +429,44 @@ export default function SchoolProjects() {
             </div>
           </div>
         </Container>
+
+        {activeGalleryIndex !== null && galleryImages[activeGalleryIndex] && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-3 backdrop-blur-sm sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Project image gallery"
+            onMouseDown={(event) => { if (event.target === event.currentTarget) setActiveGalleryIndex(null); }}
+          >
+            <div className="relative flex h-full max-h-[92vh] w-full max-w-6xl flex-col">
+              <div className="flex shrink-0 items-center justify-between gap-3 pb-3 text-white">
+                <p className="min-w-0 truncate text-sm font-medium">{model.title} <span className="ml-2 text-white/60">{activeGalleryIndex + 1} / {galleryImages.length}</span></p>
+                <button type="button" onClick={() => setActiveGalleryIndex(null)} aria-label="Close gallery" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10 transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"><X size={21} /></button>
+              </div>
+              <div className="relative flex min-h-0 flex-1 items-center justify-center">
+                <Image
+                  src={galleryImages[activeGalleryIndex]}
+                  alt={model.title + " gallery image " + (activeGalleryIndex + 1)}
+                  eager
+                  className="max-h-full w-full rounded-xl object-contain"
+                />
+                {galleryImages.length > 1 && (
+                  <>
+                    <button type="button" onClick={() => setActiveGalleryIndex((current) => current === null ? 0 : (current - 1 + galleryImages.length) % galleryImages.length)} aria-label="Previous image" className="absolute left-2 grid h-11 w-11 place-items-center rounded-full bg-black/60 text-white ring-1 ring-white/20 transition hover:bg-black/85 sm:left-4 sm:h-12 sm:w-12"><ChevronLeft size={25} /></button>
+                    <button type="button" onClick={() => setActiveGalleryIndex((current) => current === null ? 0 : (current + 1) % galleryImages.length)} aria-label="Next image" className="absolute right-2 grid h-11 w-11 place-items-center rounded-full bg-black/60 text-white ring-1 ring-white/20 transition hover:bg-black/85 sm:right-4 sm:h-12 sm:w-12"><ChevronRight size={25} /></button>
+                  </>
+                )}
+              </div>
+              <div className="flex shrink-0 justify-center gap-2 overflow-x-auto py-3">
+                {galleryImages.map((url, index) => (
+                  <button key={url} type="button" onClick={() => setActiveGalleryIndex(index)} aria-label={"Show image " + (index + 1)} aria-current={index === activeGalleryIndex ? "true" : undefined} className={"h-12 w-16 shrink-0 overflow-hidden rounded-md border-2 transition sm:h-14 sm:w-20 " + (index === activeGalleryIndex ? "border-accent opacity-100" : "border-white/20 opacity-60 hover:opacity-100")}>
+                    <Image src={url} alt="" className="h-full w-full bg-white/5 object-contain" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </>
     );
   }
@@ -515,22 +601,22 @@ export default function SchoolProjects() {
               <Link
                 key={x.id}
                 to={"/school-projects/" + x.slug}
-                className="overflow-hidden rounded-2xl border border-line bg-surface hover:border-line-strong"
+                className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-sm transition duration-200 hover:-translate-y-1 hover:border-accent/50 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <Image
                   src={x.thumbnailUrl}
                   alt={x.title}
-                  className="aspect-[4/3] w-full object-cover"
+                  className="aspect-[16/10] w-full bg-surface-raised object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 />
-                <div className="p-4">
+                <div className="flex flex-1 flex-col p-4 sm:p-5">
                   <div className="flex flex-wrap gap-2">
                     <Badge tone="accent">{x.category}</Badge>
                     {x.modelType && <Badge>{x.modelType}</Badge>}
                     {x.difficulty && <Badge>{x.difficulty}</Badge>}
                   </div>
 
-                  <h2 className="mt-3 font-semibold">{x.title}</h2>
-                  <p className="mt-2 line-clamp-3 text-sm text-content-secondary">
+                  <h2 className="mt-3 line-clamp-2 text-base font-semibold leading-snug text-content sm:text-lg">{x.title}</h2>
+                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-content-secondary">
                     {x.shortDescription}
                   </p>
 
@@ -542,7 +628,7 @@ export default function SchoolProjects() {
                     </p>
                   )}
 
-                  <span className="mt-4 inline-flex items-center gap-2 text-sm text-accent">
+                  <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-accent transition-colors group-hover:text-accent-hover">
                     View details <ArrowRight size={15} />
                   </span>
                 </div>
