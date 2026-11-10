@@ -378,7 +378,7 @@ export default function SchoolModelForm() {
         <FieldSet legend="Learning objectives" hint="Add each outcome separately. Start with a clear action verb so teachers can see what students should be able to do after using this model.">
           <div className="flex flex-col gap-2">
             <div><p className="text-sm font-semibold">What will learners be able to do?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Use one outcome per row. Keep outcomes observable and specific.</p></div>
-            <RichTextEditor id="school-objectives" rows={4} value={objectives} onChange={setObjectives} placeholder="Add one learning outcome per line. Use Ctrl/⌘+B for bold, Ctrl/⌘+I for italic, or Ctrl/⌘+Shift+8 for bullets."/>
+            <ListEditor values={objectives.split('\n')} onChange={(next) => setObjectives(next.join('\n'))} label="Learning objective" placeholder="e.g. Identify and label the main parts" richTextShortcuts/>
             <p className="text-xs leading-relaxed text-content-muted"><span className="font-semibold text-content">Examples:</span> Identify key parts · Explain the process · Compare two concepts · Predict what happens when one variable changes.</p>
           </div>
         </FieldSet>
@@ -389,7 +389,7 @@ export default function SchoolModelForm() {
           <FieldSet legend="Materials / included supplies" hint="List the main materials supplied with the model, such as boards, labels, fasteners, adhesives or finishing items.">
             <div className="flex flex-col gap-2">
               <div><p className="text-sm font-semibold">What is included?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Add one material or supply per row. Use the parts list for exact quantities and individual notes.</p></div>
-              <RichTextEditor id="school-materials" rows={4} value={materials} onChange={setMaterials} placeholder="List the supplied materials. Use one item per line; keyboard shortcuts add bold, italic or bullet formatting."/>
+              <ListEditor values={materials.split('\n')} onChange={(next) => setMaterials(next.join('\n'))} label="Included material" placeholder="e.g. Printed, laminated labels" richTextShortcuts/>
               <p className="text-xs text-content-muted">{lines(materials).filter(Boolean).length} material item{lines(materials).filter(Boolean).length === 1 ? '' : 's'} listed</p>
             </div>
           </FieldSet>
@@ -417,10 +417,10 @@ export default function SchoolModelForm() {
       <Group id="school-model-features" title="5. Use & customization" subtitle="Add special features, setup, care and customization options">
         <div className="grid gap-5 sm:grid-cols-2">
           <FieldSet legend="Key features" hint="Add each public-facing feature separately. Drag rows to set the display order.">
-            <RichTextEditor id="school-features" rows={4} value={features} onChange={setFeatures} placeholder="Add one feature per line. Use keyboard shortcuts for bold, italic or bullets."/>
+            <ListEditor values={features.split('\n')} onChange={(next) => setFeatures(next.join('\n'))} label="Feature" placeholder="e.g. Labeled key parts" richTextShortcuts/>
           </FieldSet>
           <FieldSet legend="Customization options" hint="Add each available option separately, such as language, colors or size. Drag to reorder.">
-            <RichTextEditor id="school-customization-options" rows={4} value={customizationOptions} onChange={setCustomizationOptions} placeholder="Add one option per line. Use keyboard shortcuts for bold, italic or bullets."/>
+            <ListEditor values={customizationOptions.split('\n')} onChange={(next) => setCustomizationOptions(next.join('\n'))} label="Customization option" placeholder="e.g. Custom dimensions" richTextShortcuts/>
           </FieldSet>
         </div>
         <Field label="Assembly, setup & demonstration notes" htmlFor="school-setup-instructions" hint="Optional public-facing instructions or notes for teachers."><RichTextEditor id="school-setup-instructions" rows={4} value={draft.setupInstructions} onChange={(value) => update('setupInstructions', value)} placeholder="Explain any setup, handling or demonstration steps that are useful to know."/></Field>
