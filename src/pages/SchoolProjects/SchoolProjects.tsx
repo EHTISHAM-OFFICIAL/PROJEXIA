@@ -353,7 +353,7 @@ export default function SchoolProjects() {
                     {model.objectives.map((x, i) => (
                       <li key={i} className="flex gap-2.5">
                         <span className="mt-0.5 text-accent" aria-hidden="true">✓</span>
-                        <span>{x}</span>
+                        <span>{renderSchoolInline(x)}</span>
                       </li>
                     ))}
                   </ul>
@@ -364,7 +364,7 @@ export default function SchoolProjects() {
                 <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
                   <h2 className="font-semibold">Materials required</h2>
                   <ul className="mt-3 space-y-2 text-sm leading-6 text-content-secondary">
-                    {model.materials.map((x, i) => <li key={i} className="flex gap-2"><span className="text-accent" aria-hidden="true">•</span><span>{x}</span></li>)}
+                    {model.materials.map((x, i) => <li key={i} className="flex gap-2"><span className="text-accent" aria-hidden="true">•</span><span>{renderSchoolInline(x)}</span></li>)}
                   </ul>
                 </section>
               )}
