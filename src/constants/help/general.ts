@@ -216,7 +216,7 @@ export const GENERAL_HELP = [
     ],
     keywords: ["services", "offer", "provide", "work", "help"],
     answer:
-      "ProjexiaHub provides electronics, embedded systems, automation, IoT, sensor-based systems, microcontroller projects, prototypes, PCB-related work and custom hardware/software development. Submit a project request for a more specific discussion.",
+      "ProjexiaHub provides project-building services for students and custom project requirements. Our services include:\n\n• School projects, educational models and charts\n• College projects and practical demonstrations\n• University projects and Final Year Projects (FYPs)\n• Electronics and mechanical projects\n• Breadboard circuits and prototypes\n• Analog electronics projects\n• Arduino-based and other microcontroller projects\n• Customized projects developed around the requirements you provide\n\nShare your project idea, required features and deadline through the Project Request form so the requirements can be reviewed. Pricing and feasibility are discussed according to the specific project; we do not quote a fixed price before reviewing its requirements.",
     priority: 10,
   },
 
@@ -559,6 +559,10 @@ export const GENERAL_HELP = [
     variations: [
       "Can you make university projects",
       "Do you help students",
+      "Do you provide school and university projects",
+      "Do you provide school projects and university projects",
+      "Do you make school and university projects",
+      "Can you make school projects",
       "Can ProjexiaHub build an FYP",
       "Can you make an engineering project",
     ],

@@ -8,11 +8,7 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSiteSettings } from "../../contexts/SiteSettingsContext";
-import {
-  findHelpAnswer,
-  suggestWhileTyping,
-  type HelpResponse,
-} from "../../utils/helpBot";
+import type { HelpResponse } from "../../utils/helpBot";
 
 /* =========================================================
    CONFIGURATION
@@ -121,6 +117,30 @@ function createMessageId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
+type HelpBotModule = typeof import("../../utils/helpBot") &
+  typeof import("../../utils/helpOnlineKnowledge");
+
+let helpBotModulePromise: Promise<HelpBotModule> | null = null;
+
+function loadHelpBotModule(): Promise<HelpBotModule> {
+  if (!helpBotModulePromise) {
+    helpBotModulePromise = Promise.all([
+      import("../../utils/helpBot"),
+      import("../../utils/helpOnlineKnowledge"),
+    ])
+      .then(([engine, onlineKnowledge]) => ({
+        ...engine,
+        ...onlineKnowledge,
+      }))
+      .catch((error: unknown) => {
+        helpBotModulePromise = null;
+        throw error;
+      });
+  }
+
+  return helpBotModulePromise;
+}
+
 /* =========================================================
    COMPONENT
    ========================================================= */
@@ -134,6 +154,25 @@ export function HelpChatWidget() {
      ------------------------------------------------------- */
 
   const [isOpen, setIsOpen] = useState(false);
+  const [helpBot, setHelpBot] = useState<HelpBotModule | null>(null);
+  const [isLoadingHelpBot, setIsLoadingHelpBot] = useState(false);
+  const [helpBotLoadFailed, setHelpBotLoadFailed] = useState(false);
+
+  const openChat = useCallback(() => {
+    setIsOpen(true);
+
+    if (helpBot || isLoadingHelpBot) {
+      return;
+    }
+
+    setIsLoadingHelpBot(true);
+    setHelpBotLoadFailed(false);
+
+    void loadHelpBotModule()
+      .then(setHelpBot)
+      .catch(() => setHelpBotLoadFailed(true))
+      .finally(() => setIsLoadingHelpBot(false));
+  }, [helpBot, isLoadingHelpBot]);
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -230,8 +269,8 @@ export function HelpChatWidget() {
       return latestAssistantSuggestions;
     }
 
-    return suggestWhileTyping(trimmedInput);
-  }, [deferredInput, latestAssistantSuggestions, isOpen]);
+    return helpBot ? helpBot.suggestWhileTyping(trimmedInput) : [];
+  }, [deferredInput, helpBot, latestAssistantSuggestions, isOpen]);
 
   /* =========================================================
      AUTO SCROLL
@@ -273,7 +312,7 @@ export function HelpChatWidget() {
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [isOpen, isTyping]);
+  }, [helpBot, isOpen, isTyping]);
 
   /* =========================================================
      CLEANUP RESPONSE TIMER
@@ -294,8 +333,9 @@ export function HelpChatWidget() {
   const sendMessage = useCallback(
     (questionOverride?: string) => {
       const question = (questionOverride ?? input).trim();
+      const engine = helpBot;
 
-      if (!question || isTyping) {
+      if (!question || isTyping || !engine) {
         return;
       }
 
@@ -316,21 +356,37 @@ export function HelpChatWidget() {
        * It does not execute during typing.
        */
       responseTimerRef.current = window.setTimeout(() => {
-        const response = findHelpAnswer(question);
+        const localResponse = engine.findHelpAnswer(question);
 
-        const assistantMessage: ChatMessage = {
-          id: createMessageId(),
-          role: "assistant",
-          text: response.answer,
-          response,
-        };
+        void engine
+          .lookupGeneralKnowledge(question, localResponse)
+          .then((response) => {
+            const assistantMessage: ChatMessage = {
+              id: createMessageId(),
+              role: "assistant",
+              text: response.answer,
+              response,
+            };
 
-        setMessages((current) => [...current, assistantMessage]);
-        setIsTyping(false);
-        responseTimerRef.current = null;
+            setMessages((current) => [...current, assistantMessage]);
+          })
+          .catch(() => {
+            const assistantMessage: ChatMessage = {
+              id: createMessageId(),
+              role: "assistant",
+              text: localResponse.answer,
+              response: localResponse,
+            };
+
+            setMessages((current) => [...current, assistantMessage]);
+          })
+          .finally(() => {
+            setIsTyping(false);
+            responseTimerRef.current = null;
+          });
       }, TYPING_DELAY);
     },
-    [input, isTyping],
+    [helpBot, input, isTyping],
   );
 
   /* =========================================================
@@ -778,7 +834,7 @@ export function HelpChatWidget() {
         <button
           className="mectec-help-launcher"
           type="button"
-          onClick={() => setIsOpen(true)}
+          onClick={openChat}
           aria-label={`Open ${settings.name} Help Assistant`}
           title={`${settings.name} Help Assistant`}
           style={{
@@ -1108,6 +1164,28 @@ export function HelpChatWidget() {
                   }}
                 >
                   {message.text}
+                  {message.response?.source && (
+                    <div
+                      style={{
+                        marginTop: 9,
+                        paddingTop: 7,
+                        borderTop: "1px solid rgba(148,163,184,0.25)",
+                        fontSize: 11.5,
+                      }}
+                    >
+                      <a
+                        href={message.response.source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: "var(--chat-accent)",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        Source: {message.response.source.label}
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -1357,8 +1435,14 @@ export function HelpChatWidget() {
                 setInput(event.target.value);
               }}
               onKeyDown={handleInputKeyDown}
-              disabled={isTyping}
-              placeholder={`Ask ${settings.name} anything...`}
+              disabled={isTyping || !helpBot}
+              placeholder={
+                helpBot
+                  ? `Ask ${settings.name} anything...`
+                  : helpBotLoadFailed
+                    ? "Assistant couldn't load. Please retry."
+                    : "Preparing Help Assistant..."
+              }
               aria-label={`Ask ${settings.name} anything`}
               style={{
                 flex: 1,
@@ -1381,7 +1465,7 @@ export function HelpChatWidget() {
             <button
               type="button"
               onClick={() => sendMessage()}
-              disabled={isTyping || !input.trim()}
+              disabled={isTyping || !helpBot || !input.trim()}
               aria-label="Send message"
               title="Send message"
               style={{
@@ -1423,7 +1507,27 @@ export function HelpChatWidget() {
               fontSize: 10.5,
             }}
           >
-            {settings.name} Help Assistant
+            {helpBotLoadFailed ? (
+              <button
+                type="button"
+                onClick={openChat}
+                style={{
+                  border: "none",
+                  padding: 0,
+                  background: "transparent",
+                  color: "#ea580c",
+                  font: "inherit",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}
+              >
+                Couldn't load assistant — tap to retry
+              </button>
+            ) : isLoadingHelpBot ? (
+              "Loading Help Assistant..."
+            ) : (
+              `${settings.name} Help Assistant`
+            )}
           </div>
         </div>
 

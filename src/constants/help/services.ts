@@ -2,6 +2,46 @@ import type { HelpEntry } from "./types";
 
 export const SERVICES_HELP: HelpEntry[] = [
   // ─────────────────────────────────────────────────────────────
+  // COMPLETE SERVICE OVERVIEW
+  // ─────────────────────────────────────────────────────────────
+  {
+    id: "services-overview",
+    category: "services",
+    intent: "capability",
+    question: "What services does ProjexiaHub provide?",
+    variations: [
+      "What services does ProjexiaHub provide",
+      "What services does the studio provide",
+      "What services do you provide",
+      "What kind of services do you offer",
+      "What does ProjexiaHub do",
+      "What work does ProjexiaHub do",
+      "What projects can you make",
+      "What types of projects do you build",
+      "Can you tell me about your services",
+      "Give me an overview of your services",
+      "What are your main services",
+      "Do you make school projects and models",
+      "Do you provide school college and university projects",
+      "Do you provide school and university projects",
+      "Do you provide school projects and university projects",
+      "Do you make school and university projects",
+      "Can you make electronics and mechanical projects",
+      "Do you make Arduino and breadboard projects",
+      "Do you offer customized projects",
+    ],
+    keywords: [
+      "services", "service", "studio", "provide", "offer", "work",
+      "school", "college", "university", "FYP", "project", "projects",
+      "model", "models", "chart", "charts", "electronics", "mechanical",
+      "breadboard", "analog", "Arduino", "custom", "customized",
+    ],
+    answer:
+      "ProjexiaHub provides project-building services for students and custom project requirements. Our services include:\n\n• School projects, educational models and charts\n• College projects and practical demonstrations\n• University projects and Final Year Projects (FYPs)\n• Electronics and mechanical projects\n• Breadboard circuits and prototypes\n• Analog electronics projects\n• Arduino-based and other microcontroller projects\n• Customized projects developed around the requirements you provide\n\nShare your project idea, required features and deadline through the Project Request form so the requirements can be reviewed. Pricing and feasibility are discussed according to the specific project; we do not quote a fixed price before reviewing its requirements.",
+    priority: 120,
+  },
+
+  // ─────────────────────────────────────────────────────────────
   // CORE ENGINEERING SERVICES
   // ─────────────────────────────────────────────────────────────
   {

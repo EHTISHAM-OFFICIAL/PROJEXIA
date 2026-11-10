@@ -117,37 +117,17 @@ export default function SchoolProjects() {
           image={model.heroImageUrl || model.thumbnailUrl || null}
         />
 
-        <Container className="py-5">
+        <Container className="pt-5 sm:pt-7">
           <Link
             to="/school-projects"
-            className="text-sm text-content-secondary"
+            className="inline-flex items-center gap-2 rounded-lg py-2 text-sm font-medium text-content-secondary transition-colors hover:text-content"
           >
-            ← All school models
+            <span aria-hidden="true">←</span> All school models
           </Link>
         </Container>
 
-        <Container className="grid gap-8 pb-12 lg:grid-cols-2">
-          <div>
-            <Image
-              src={model.heroImageUrl || model.thumbnailUrl}
-              alt={model.title}
-              eager
-              className="aspect-[4/3] w-full rounded-2xl border border-line object-cover"
-            />
-
-            <div className="mt-3 grid grid-cols-3 gap-3">
-              {model.galleryUrls.map((u, i) => (
-                <Image
-                  key={u + i}
-                  src={u}
-                  alt={model.title + " gallery " + (i + 1)}
-                  className="aspect-square w-full rounded-xl border border-line object-cover"
-                />
-              ))}
-            </div>
-          </div>
-
-          <div>
+        <Container className="pb-12 pt-4 sm:pb-16 sm:pt-6">
+          <header className="max-w-4xl">
             <div className="flex flex-wrap gap-2">
               <Badge tone="accent">{model.category}</Badge>
               {model.subject && <Badge>{model.subject}</Badge>}
@@ -157,236 +137,247 @@ export default function SchoolProjects() {
               {model.difficulty && <Badge>{model.difficulty}</Badge>}
               {model.status && <Badge>{model.status}</Badge>}
             </div>
-
-            <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
+            <h1 className="mt-4 text-3xl font-semibold tracking-tight text-content sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
               {model.title}
             </h1>
-            <p className="mt-4 text-content-secondary">
-              {model.shortDescription}
-            </p>
+            {model.shortDescription && (
+              <p className="mt-4 max-w-3xl text-base leading-7 text-content-secondary sm:text-lg sm:leading-8">
+                {model.shortDescription}
+              </p>
+            )}
+          </header>
 
-            <div className="mt-5 space-y-3 leading-relaxed">
-              {renderSchoolText(model.description)}
+          <div className="mt-7 grid items-start gap-6 lg:mt-9 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)] lg:gap-8">
+            <section aria-label="Model images" className="min-w-0">
+              <Image
+                src={model.heroImageUrl || model.thumbnailUrl}
+                alt={model.title}
+                eager
+                className="aspect-[5/4] w-full rounded-2xl border border-line bg-surface object-cover shadow-sm sm:aspect-[16/11] lg:aspect-[5/4]"
+              />
+              {model.galleryUrls.length > 0 && (
+                <div className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-4">
+                  {model.galleryUrls.map((u, i) => (
+                    <Image
+                      key={u + i}
+                      src={u}
+                      alt={model.title + " gallery " + (i + 1)}
+                      className="aspect-[4/3] w-full rounded-xl border border-line bg-surface object-cover"
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            <aside className="min-w-0 space-y-5 lg:sticky lg:top-24">
+              <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm sm:p-6">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-base font-semibold">Model overview</h2>
+                  <span className="rounded-full bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">School model</span>
+                </div>
+                <dl className="mt-4 grid grid-cols-2 gap-3">
+                  {[
+                    ["Category", model.category],
+                    ["Subject", model.subject],
+                    ["Suitable for", model.gradeRange],
+                    ["Format", model.modelType],
+                    ["Difficulty", model.difficulty],
+                    ["Dimensions", model.dimensions],
+                  ].filter((item) => item[1]).map(([label, value]) => (
+                    <div key={label} className="min-w-0 rounded-xl border border-line/80 bg-bg/60 p-3">
+                      <dt className="text-xs text-content-muted">{label}</dt>
+                      <dd className="mt-1 break-words text-sm font-medium text-content">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                {model.estimatedBuildTime && (
+                  <p className="mt-4 border-t border-line pt-4 text-sm text-content-secondary">
+                    <span className="font-medium text-content">Estimated preparation:</span>{" "}
+                    {model.estimatedBuildTime}
+                  </p>
+                )}
+              </section>
+
+              <section className="rounded-2xl border border-accent/25 bg-accent/5 p-5 sm:p-6">
+                <h2 className="font-semibold">Need this model for your school?</h2>
+                <p className="mt-2 text-sm leading-6 text-content-secondary">
+                  Request a quote based on your quantity, size and requirements. No fixed price is assumed.
+                </p>
+                <ButtonLink
+                  to={"/request-school-model?slug=" + encodeURIComponent(model.slug)}
+                  className="mt-4 w-full justify-center sm:w-auto"
+                >
+                  Request a quote <ArrowRight size={16} />
+                </ButtonLink>
+              </section>
+
+              {(model.videoUrl || model.documentationUrl) && (
+                <section className="rounded-2xl border border-line p-5">
+                  <h2 className="font-semibold">Learning resources</h2>
+                  <div className="mt-3 flex flex-col gap-2">
+                    {model.videoUrl && (
+                      <a href={model.videoUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-between gap-3 rounded-lg border border-line px-3 py-2.5 text-sm font-medium transition-colors hover:bg-surface">
+                        Watch demonstration <span aria-hidden="true">↗</span>
+                      </a>
+                    )}
+                    {model.documentationUrl && (
+                      <a href={model.documentationUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-between gap-3 rounded-lg border border-line px-3 py-2.5 text-sm font-medium transition-colors hover:bg-surface">
+                        Open lesson resource <span aria-hidden="true">↗</span>
+                      </a>
+                    )}
+                  </div>
+                </section>
+              )}
+            </aside>
+          </div>
+
+          <div className="mt-8 grid items-start gap-6 lg:mt-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.85fr)] lg:gap-8">
+            <div className="min-w-0 space-y-5">
+              {model.description && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="text-lg font-semibold">About this model</h2>
+                  <div className="mt-3 space-y-3 text-sm leading-7 text-content-secondary sm:text-[15px]">
+                    {renderSchoolText(model.description)}
+                  </div>
+                </section>
+              )}
+
+              {model.problemStatement && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="text-lg font-semibold">Learning need</h2>
+                  <div className="mt-3 space-y-2 text-sm leading-7 text-content-secondary">
+                    {renderSchoolText(model.problemStatement)}
+                  </div>
+                </section>
+              )}
+
+              {model.workingPrinciple && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="text-lg font-semibold">Working principle</h2>
+                  <div className="mt-3 space-y-2 text-sm leading-7 text-content-secondary">
+                    {renderSchoolText(model.workingPrinciple)}
+                  </div>
+                </section>
+              )}
+
+              {model.howToUse && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="text-lg font-semibold">How to use this model</h2>
+                  <div className="mt-3 space-y-2 text-sm leading-7 text-content-secondary">
+                    {renderSchoolText(model.howToUse)}
+                  </div>
+                </section>
+              )}
+
+              {model.setupInstructions && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="text-lg font-semibold">Setup & demonstration notes</h2>
+                  <div className="mt-3 space-y-2 text-sm leading-7 text-content-secondary">
+                    {renderSchoolText(model.setupInstructions)}
+                  </div>
+                </section>
+              )}
+
+              {model.safetyNotes && (
+                <section className="rounded-2xl border border-state-warning/30 bg-state-warning/5 p-5 sm:p-6">
+                  <h2 className="text-lg font-semibold">Handling & safety notes</h2>
+                  <div className="mt-3 space-y-2 text-sm leading-7 text-content-secondary">
+                    {renderSchoolText(model.safetyNotes)}
+                  </div>
+                </section>
+              )}
+
+              {model.maintenanceNotes && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="text-lg font-semibold">Care & storage</h2>
+                  <div className="mt-3 space-y-2 text-sm leading-7 text-content-secondary">
+                    {renderSchoolText(model.maintenanceNotes)}
+                  </div>
+                </section>
+              )}
             </div>
 
-            {model.problemStatement && (
-              <section className="mt-6 rounded-xl border border-line bg-surface p-4">
-                <h2 className="font-semibold">Learning need</h2>
-                <div className="mt-2 space-y-2 text-sm leading-relaxed text-content-secondary">
-                  {renderSchoolText(model.problemStatement)}
-                </div>
-              </section>
-            )}
+            <div className="min-w-0 space-y-5">
+              {model.objectives.length > 0 && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="font-semibold">Learning objectives</h2>
+                  <ul className="mt-3 space-y-2.5 text-sm leading-6 text-content-secondary">
+                    {model.objectives.map((x, i) => (
+                      <li key={i} className="flex gap-2.5">
+                        <span className="mt-0.5 text-accent" aria-hidden="true">✓</span>
+                        <span>{x}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
 
-            {model.workingPrinciple && (
-              <section className="mt-6">
-                <h2 className="font-semibold">Working principle</h2>
-                <div className="mt-2 space-y-2 text-sm leading-relaxed text-content-secondary">
-                  {renderSchoolText(model.workingPrinciple)}
-                </div>
-              </section>
-            )}
+              {model.materials.length > 0 && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="font-semibold">Materials required</h2>
+                  <ul className="mt-3 space-y-2 text-sm leading-6 text-content-secondary">
+                    {model.materials.map((x, i) => <li key={i} className="flex gap-2"><span className="text-accent" aria-hidden="true">•</span><span>{x}</span></li>)}
+                  </ul>
+                </section>
+              )}
 
-            {model.howToUse && (
-              <section className="mt-6">
-                <h2 className="font-semibold">How to use this model</h2>
-                <div className="mt-2 space-y-2 text-sm leading-relaxed text-content-secondary">
-                  {renderSchoolText(model.howToUse)}
-                </div>
-              </section>
-            )}
+              {model.features?.length > 0 && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="font-semibold">Key features</h2>
+                  <ul className="mt-3 space-y-2 text-sm leading-6 text-content-secondary">
+                    {model.features.map((x, i) => <li key={i} className="flex gap-2"><span className="text-accent" aria-hidden="true">•</span><span>{x}</span></li>)}
+                  </ul>
+                </section>
+              )}
 
-            {model.dimensions && (
-              <p className="mt-4 text-sm">
-                <b>Dimensions:</b> {model.dimensions}
-              </p>
-            )}
+              {model.customizationOptions?.length > 0 && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="font-semibold">Customization options</h2>
+                  <ul className="mt-3 space-y-2 text-sm leading-6 text-content-secondary">
+                    {model.customizationOptions.map((x, i) => <li key={i} className="flex gap-2"><span className="text-accent" aria-hidden="true">•</span><span>{x}</span></li>)}
+                  </ul>
+                </section>
+              )}
 
-            {model.estimatedBuildTime && (
-              <p className="mt-3 text-sm">
-                <b>Estimated preparation:</b> {model.estimatedBuildTime}
-              </p>
-            )}
-
-            {model.materials.length > 0 && (
-              <div className="mt-5">
-                <b>Materials</b>
-                <ul className="mt-2 list-disc pl-5 text-sm text-content-secondary">
-                  {model.materials.map((x, i) => (
-                    <li key={i}>{x}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {model.objectives.length > 0 && (
-              <div className="mt-5">
-                <b>Learning objectives</b>
-                <ul className="mt-2 list-disc pl-5 text-sm text-content-secondary">
-                  {model.objectives.map((x, i) => (
-                    <li key={i}>{x}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {model.features?.length > 0 && (
-              <div className="mt-5">
-                <b>Key features</b>
-                <ul className="mt-2 list-disc pl-5 text-sm text-content-secondary">
-                  {model.features.map((x, i) => (
-                    <li key={i}>{x}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {model.customizationOptions?.length > 0 && (
-              <div className="mt-5">
-                <b>Customization options</b>
-                <ul className="mt-2 list-disc pl-5 text-sm text-content-secondary">
-                  {model.customizationOptions.map((x, i) => (
-                    <li key={i}>{x}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {model.components?.some((part) => part.name.trim()) && (
-              <section className="mt-6">
-                <h2 className="font-semibold">Included parts</h2>
-                <div className="mt-3 space-y-2">
-                  {model.components
-                    .filter((part) => part.name.trim())
-                    .map((part, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-wrap items-start justify-between gap-2 rounded-lg border border-line px-3 py-2.5 text-sm"
-                      >
-                        <div>
-                          <p className="font-medium">
-                            {part.name}
-                            {part.optional && (
-                              <span className="ml-2 text-xs font-normal text-content-muted">
-                                Optional
-                              </span>
-                            )}
-                          </p>
-                          {part.notes && (
-                            <p className="mt-1 text-xs text-content-secondary">
-                              {part.notes}
-                            </p>
-                          )}
+              {model.components?.some((part) => part.name.trim()) && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="font-semibold">Included parts</h2>
+                  <div className="mt-3 space-y-2">
+                    {model.components.filter((part) => part.name.trim()).map((part, index) => (
+                      <div key={index} className="rounded-xl border border-line/80 p-3">
+                        <div className="flex flex-wrap items-start justify-between gap-2">
+                          <p className="text-sm font-medium">{part.name}{part.optional && <span className="ml-2 text-xs font-normal text-content-muted">Optional</span>}</p>
+                          <span className="text-xs text-content-secondary">{part.quantity}{part.category ? " · " + part.category : ""}</span>
                         </div>
-                        <span className="text-content-secondary">
-                          {part.quantity}
-                          {part.category ? " · " + part.category : ""}
-                        </span>
+                        {part.notes && <p className="mt-1.5 text-xs leading-5 text-content-secondary">{part.notes}</p>}
                       </div>
                     ))}
-                </div>
-              </section>
-            )}
+                  </div>
+                </section>
+              )}
 
-            {model.specifications?.some((spec) => spec.label.trim()) && (
-              <section className="mt-6">
-                <h2 className="font-semibold">Specifications</h2>
-                <dl className="mt-3 divide-y divide-line rounded-xl border border-line px-3">
-                  {model.specifications
-                    .filter((spec) => spec.label.trim())
-                    .map((spec, index) => (
-                      <div
-                        key={index}
-                        className="grid gap-1 py-3 text-sm sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)]"
-                      >
+              {model.specifications?.some((spec) => spec.label.trim()) && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="font-semibold">Specifications</h2>
+                  <dl className="mt-3 divide-y divide-line">
+                    {model.specifications.filter((spec) => spec.label.trim()).map((spec, index) => (
+                      <div key={index} className="grid gap-1 py-3 text-sm sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)]">
                         <dt className="font-medium">{spec.label}</dt>
-                        <dd className="text-content-secondary">
-                          {renderSchoolText(spec.value)}
-                        </dd>
+                        <dd className="min-w-0 break-words text-content-secondary">{renderSchoolText(spec.value)}</dd>
                       </div>
                     ))}
-                </dl>
-              </section>
-            )}
+                  </dl>
+                </section>
+              )}
 
-            {model.setupInstructions && (
-              <div className="mt-5">
-                <b>Setup & demonstration notes</b>
-                <div className="mt-2 space-y-2 text-sm leading-relaxed text-content-secondary">
-                  {renderSchoolText(model.setupInstructions)}
-                </div>
-              </div>
-            )}
-
-            {model.maintenanceNotes && (
-              <section className="mt-5">
-                <h2 className="font-semibold">Care & storage</h2>
-                <div className="mt-2 space-y-2 text-sm leading-relaxed text-content-secondary">
-                  {renderSchoolText(model.maintenanceNotes)}
-                </div>
-              </section>
-            )}
-
-            {model.safetyNotes && (
-              <section className="mt-5 rounded-xl border border-line bg-surface p-4">
-                <h2 className="font-semibold">Handling notes</h2>
-                <div className="mt-2 space-y-2 text-sm leading-relaxed text-content-secondary">
-                  {renderSchoolText(model.safetyNotes)}
-                </div>
-              </section>
-            )}
-
-            {model.tags?.length > 0 && (
-              <div className="mt-5 flex flex-wrap gap-2">
-                {model.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="rounded-full border border-line px-2.5 py-1 text-xs text-content-secondary"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {(model.videoUrl || model.documentationUrl) && (
-              <div className="mt-6 flex flex-wrap gap-3">
-                {model.videoUrl && (
-                  <a
-                    href={model.videoUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center rounded-lg border border-line px-3 py-2 text-sm font-medium hover:bg-surface-raised"
-                  >
-                    Watch demonstration ↗
-                  </a>
-                )}
-                {model.documentationUrl && (
-                  <a
-                    href={model.documentationUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center rounded-lg border border-line px-3 py-2 text-sm font-medium hover:bg-surface-raised"
-                  >
-                    Open lesson resource ↗
-                  </a>
-                )}
-              </div>
-            )}
-
-            <div className="mt-7 rounded-xl border border-line bg-surface p-4">
-              <p className="text-sm text-content-secondary">
-                Request a quote based on your quantity, size and requirements.
-                No fixed price is assumed.
-              </p>
-              <ButtonLink
-                to={
-                  "/request-school-model?slug=" + encodeURIComponent(model.slug)
-                }
-                className="mt-4"
-              >
-                Request a quote <ArrowRight size={16} />
-              </ButtonLink>
+              {model.tags?.length > 0 && (
+                <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+                  <h2 className="font-semibold">Topics & tags</h2>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {model.tags.map((tag, index) => <span key={index} className="rounded-full border border-line px-2.5 py-1 text-xs text-content-secondary">{tag}</span>)}
+                  </div>
+                </section>
+              )}
             </div>
           </div>
         </Container>
