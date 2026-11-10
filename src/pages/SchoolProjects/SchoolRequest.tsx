@@ -374,7 +374,7 @@ export default function SchoolRequest() {
           </div>
           <Link
             to="/request-project"
-            className="inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-lg border border-line px-4 py-2 text-sm font-medium text-content transition hover:bg-surface-raised sm:self-center"
+            className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-lg border border-orange-500 bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition duration-200 hover:-translate-y-0.5 hover:border-orange-600 hover:bg-orange-600 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 sm:self-center"
           >
             Need an electronics / mechanical project instead?{" "}
             <ArrowRight size={15} />
