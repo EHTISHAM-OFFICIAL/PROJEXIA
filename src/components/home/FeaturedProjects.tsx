@@ -14,7 +14,7 @@ export function FeaturedProjects() {
     <Section className="border-b border-line">
       <SectionHeading
         title="Selected work"
-        description="A few builds that show the range — from a single sensor loop to a connected system."
+        description="Explore the electronics and mechanical builds currently featured by ProjexiaHub."
       >
         <ButtonLink to="/projects" variant="primary" size="lg" className="w-full font-semibold shadow-md hover:shadow-lg sm:w-auto">
           View all electronics projects
