@@ -2,6 +2,7 @@ import { GripVertical, Plus, X } from 'lucide-react';
 import { useState } from 'react';
 import { TextInput } from './Inputs';
 import { RichTextEditor } from './RichTextEditor';
+import { splitEntries } from '../../utils/splitEntries';
 
 /** Edits a string[] field (objectives, features, challenges, tags, technologies). */
 export function ListEditor({
@@ -21,6 +22,14 @@ export function ListEditor({
   const update = (index: number, value: string) => {
     const next = [...rows];
     next[index] = value;
+    onChange(next);
+  };
+
+  const splitRow = (index: number, value: string) => {
+    const entries = splitEntries(value);
+    if (entries.length < 2) return;
+    const next = [...rows];
+    next.splice(index, 1, ...entries);
     onChange(next);
   };
 
@@ -55,6 +64,7 @@ export function ListEditor({
             placeholder={placeholder}
             aria-label={`${label} ${index + 1}`}
             onChange={(event) => update(index, event.target.value)}
+            onBlur={(event) => splitRow(index, event.target.value)}
           className="min-w-0 flex-1 border-0 bg-transparent shadow-none focus-visible:ring-1"
           />
           {rows.length > 1 && (
@@ -105,6 +115,15 @@ export function TableEditor<T extends object>({
       const nextValue = type === 'number' && typeof value === 'string' ? Number(value) || 0 : value;
       return { ...row, [key]: nextValue };
     });
+    onChange(next);
+  };
+
+  const splitFirstColumn = (index: number, key: Extract<keyof T, string>, value: string) => {
+    if (key !== columns[0]?.key) return;
+    const entries = splitEntries(value);
+    if (entries.length < 2) return;
+    const next = [...data];
+    next.splice(index, 1, ...entries.map((entry) => ({ ...emptyRow, [key]: entry } as T)));
     onChange(next);
   };
 
@@ -165,6 +184,7 @@ export function TableEditor<T extends object>({
                     value={String(row[column.key] ?? '')}
                     aria-label={`${label} ${index + 1} ${column.label}`}
                     onChange={(event) => update(index, column.key, event.target.value)}
+                    onBlur={(event) => splitFirstColumn(index, column.key, event.target.value)}
                   />
                 </>
               )}
