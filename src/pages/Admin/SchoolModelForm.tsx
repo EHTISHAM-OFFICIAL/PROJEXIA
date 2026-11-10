@@ -25,6 +25,7 @@ const EMPTY: SchoolModelDraft = {
   thumbnailUrl: '', heroImageUrl: '', galleryUrls: [], videoUrl: '', documentationUrl: '', featured: false, published: false, seoTitle: '', seoDescription: '', keywords: [],
 };
 const lines = (value: string) => [...new Set(value.split('\n').map((item) => item.trim()).filter(Boolean))];
+const richLines = (value: string) => lines(value).map((item) => item.replace(/^[-*•]\\s+/, '').trim()).filter(Boolean);
 // Keep empty editor rows in the UI; filter them only when saving the model.
 const editorLines = (value: string) => value.split('\n');
 const EMPTY_COMPONENT: SchoolModelComponent = { name: '', category: '', quantity: '1', notes: '', optional: false };
@@ -224,7 +225,7 @@ export default function SchoolModelForm() {
     if (draft.slug.trim() && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(draft.slug.trim())) { setError('The URL slug can use lowercase letters, numbers and hyphens only.'); document.getElementById('school-slug')?.focus(); return; }
     setSaving(true);
     try {
-      await schoolModelService.save({ ...draft, title: draft.title.trim(), slug: draft.slug.trim(), materials: lines(materials), objectives: lines(objectives), features: lines(features), customizationOptions: lines(customizationOptions), tags: lines(tags.replace(/,/g, '\n')), keywords: lines(keywords.replace(/,/g, '\n')), components: draft.components.filter((item) => item.name.trim()), specifications: draft.specifications.filter((item) => item.label.trim()), galleryUrls: lines(gallery), published: publish ?? draft.published }, id);
+      await schoolModelService.save({ ...draft, title: draft.title.trim(), slug: draft.slug.trim(), materials: richLines(materials), objectives: richLines(objectives), features: richLines(features), customizationOptions: richLines(customizationOptions), tags: lines(tags.replace(/,/g, '\n')), keywords: lines(keywords.replace(/,/g, '\n')), components: draft.components.filter((item) => item.name.trim()), specifications: draft.specifications.filter((item) => item.label.trim()), galleryUrls: lines(gallery), published: publish ?? draft.published }, id);
       notify({ title: publish ? 'School model published' : editing ? 'School model changes saved' : 'School model draft saved', message: 'Your school model has been saved successfully.', tone: 'success' });
       navigate('/admin/school-models', { replace: true, state: { notice: publish ? 'School model saved and published.' : editing ? 'School model updated.' : 'School model created.' } });
     } catch (caught) {
@@ -379,7 +380,7 @@ export default function SchoolModelForm() {
         <FieldSet legend="Learning objectives" hint="Add each outcome separately. Start with a clear action verb so teachers can see what students should be able to do after using this model.">
           <div className="flex flex-col gap-2">
             <div><p className="text-sm font-semibold">What will learners be able to do?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Use one outcome per row. Keep outcomes observable and specific.</p></div>
-            <ListEditor values={editorLines(objectives)} onChange={(next) => setObjectives(next.join('\n'))} label="Learning objective" placeholder="e.g. Identify and label the main parts"/>
+            <RichTextEditor id="school-objectives" rows={4} value={objectives} onChange={setObjectives} placeholder="Add one learning outcome per line. Use Ctrl/⌘+B for bold, Ctrl/⌘+I for italic, or Ctrl/⌘+Shift+8 for bullets."/>
             <p className="text-xs leading-relaxed text-content-muted"><span className="font-semibold text-content">Examples:</span> Identify key parts · Explain the process · Compare two concepts · Predict what happens when one variable changes.</p>
           </div>
         </FieldSet>
@@ -390,7 +391,7 @@ export default function SchoolModelForm() {
           <FieldSet legend="Materials / included supplies" hint="List the main materials supplied with the model, such as boards, labels, fasteners, adhesives or finishing items.">
             <div className="flex flex-col gap-2">
               <div><p className="text-sm font-semibold">What is included?</p><p className="mt-1 text-xs leading-relaxed text-content-muted">Add one material or supply per row. Use the parts list for exact quantities and individual notes.</p></div>
-              <ListEditor values={editorLines(materials)} onChange={(next) => setMaterials(next.join('\n'))} label="Included material" placeholder="e.g. Printed, laminated labels"/>
+              <RichTextEditor id="school-materials" rows={4} value={materials} onChange={setMaterials} placeholder="List the supplied materials. Use one item per line; keyboard shortcuts add bold, italic or bullet formatting."/>
               <p className="text-xs text-content-muted">{lines(materials).filter(Boolean).length} material item{lines(materials).filter(Boolean).length === 1 ? '' : 's'} listed</p>
             </div>
           </FieldSet>
@@ -418,10 +419,10 @@ export default function SchoolModelForm() {
       <Group id="school-model-features" title="5. Use & customization" subtitle="Add special features, setup, care and customization options">
         <div className="grid gap-5 sm:grid-cols-2">
           <FieldSet legend="Key features" hint="Add each public-facing feature separately. Drag rows to set the display order.">
-            <ListEditor values={editorLines(features)} onChange={(next) => setFeatures(next.join('\n'))} label="Feature" placeholder="e.g. Labeled key parts"/>
+            <RichTextEditor id="school-features" rows={4} value={features} onChange={setFeatures} placeholder="Add one feature per line. Use keyboard shortcuts for bold, italic or bullets."/>
           </FieldSet>
           <FieldSet legend="Customization options" hint="Add each available option separately, such as language, colors or size. Drag to reorder.">
-            <ListEditor values={editorLines(customizationOptions)} onChange={(next) => setCustomizationOptions(next.join('\n'))} label="Customization option" placeholder="e.g. Custom dimensions"/>
+            <RichTextEditor id="school-customization-options" rows={4} value={customizationOptions} onChange={setCustomizationOptions} placeholder="Add one option per line. Use keyboard shortcuts for bold, italic or bullets."/>
           </FieldSet>
         </div>
         <Field label="Assembly, setup & demonstration notes" htmlFor="school-setup-instructions" hint="Optional public-facing instructions or notes for teachers."><RichTextEditor id="school-setup-instructions" rows={4} value={draft.setupInstructions} onChange={(value) => update('setupInstructions', value)} placeholder="Explain any setup, handling or demonstration steps that are useful to know."/></Field>
