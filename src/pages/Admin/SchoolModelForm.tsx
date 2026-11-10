@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Eye, GraduationCap, GripVertical, ImagePlus, Save, Plus } from 'lucide-react';
+import { ArrowLeft, ArrowUp, ArrowDown, CheckCircle2, ChevronDown, Circle, Eye, GraduationCap, GripVertical, ImagePlus, Save, Plus } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Seo } from '../../components/ui/Seo';
 import { Button } from '../../components/ui/Button';
@@ -340,12 +340,18 @@ export default function SchoolModelForm() {
               }} className={`flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-surface p-2 sm:flex-row sm:items-center ${draggingGalleryIndex === index ? 'opacity-50' : ''}`}>
                 <button type="button" draggable onDragStart={(event) => { event.dataTransfer.setData('text/plain', String(index)); setDraggingGalleryIndex(index); }} onDragEnd={() => setDraggingGalleryIndex(null)} aria-label={`Drag to reorder gallery image ${index + 1}`} title="Drag to reorder" className="flex shrink-0 items-center justify-center self-start rounded-md p-1 text-content-muted hover:bg-surface-raised sm:self-center"><GripVertical size={16}/></button>
                 <div className="w-full min-w-0 shrink-0 sm:w-44">
-                  <ImageUploadField label={`Gallery image ${index + 1}`} value={url} disabled={uploading || saving}
+                  <ImageUploadField label={`Gallery image ${index + 1}`} value={url} previewFit="contain" disabled={uploading || saving}
                     onUpload={async (file) => { const uploaded = await imgbbService.upload(file); const next = lines(gallery).map((item, position) => position === index ? uploaded.url : item); setGallery(next.join('\n')); update('galleryUrls', next); setNotice(uploaded.missingProvider ? 'Gallery image uploaded, but its backup is incomplete. Retry the missing provider before finishing.' : 'Gallery image updated. Save the model to keep the change.'); return uploaded; }}
                     onClear={() => { const next = lines(gallery).filter((_, position) => position !== index); setGallery(next.join('\n')); update('galleryUrls', next); }}
                   />
                 </div>
-                <p className="min-w-0 flex-1 break-all text-xs text-content-muted sm:truncate" title={url}>Image {index + 1} · {url}</p>
+                <div className="flex min-w-0 flex-1 items-center gap-2">
+                  <p className="min-w-0 flex-1 break-all text-xs text-content-muted sm:truncate" title={url}>Image {index + 1} · {url}</p>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <button type="button" disabled={index === 0 || saving || uploading} onClick={() => { const next = lines(gallery); const [moved] = next.splice(index, 1); if (moved === undefined) return; next.splice(index - 1, 0, moved); setGallery(next.join('\n')); update('galleryUrls', next); }} aria-label={"Move gallery image " + (index + 1) + " up"} title="Move up" className="grid h-9 w-9 place-items-center rounded-lg border border-line text-content-secondary transition hover:border-accent hover:text-accent disabled:opacity-30"><ArrowUp size={15}/></button>
+                    <button type="button" disabled={index === lines(gallery).length - 1 || saving || uploading} onClick={() => { const next = lines(gallery); const [moved] = next.splice(index, 1); if (moved === undefined) return; next.splice(index + 1, 0, moved); setGallery(next.join('\n')); update('galleryUrls', next); }} aria-label={"Move gallery image " + (index + 1) + " down"} title="Move down" className="grid h-9 w-9 place-items-center rounded-lg border border-line text-content-secondary transition hover:border-accent hover:text-accent disabled:opacity-30"><ArrowDown size={15}/></button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
