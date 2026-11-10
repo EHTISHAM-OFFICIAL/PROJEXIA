@@ -4,6 +4,7 @@ import { TextInput } from './Inputs';
 import { projectLibraryService } from '../../services/projectLibraryService';
 import type { ProjectLibraryItem, ProjectLibraryKind } from '../../types/projectLibrary';
 import { PROJECT_LIBRARY_STARTER } from '../../constants/projectLibraryStarter';
+import { splitEntries } from '../../utils/splitEntries';
 
 const normalizeLibraryName = (value: string) => value
   .replace(/^\s{0,3}#{1,3}\s+/gm, '')
@@ -215,7 +216,16 @@ export function LibraryMultiSelect({
               <TextInput
                 value={value}
                 aria-label={`Edit ${label.toLocaleLowerCase()} ${index + 1}`}
-                onChange={(event) => onChange(values.map((item, itemIndex) => itemIndex === index ? event.target.value : item))}
+                onChange={(event) => {
+                  const entries = splitEntries(event.target.value);
+                  if (entries.length > 1) {
+                    const next = [...values];
+                    next.splice(index, 1, ...entries);
+                    onChange(next);
+                  } else {
+                    onChange(values.map((item, itemIndex) => itemIndex === index ? event.target.value : item));
+                  }
+                }}
                 placeholder={`Enter ${label.toLocaleLowerCase()}`}
                 className="h-9 min-w-0 border-0 bg-transparent px-1 shadow-none focus-visible:ring-1"
               />
