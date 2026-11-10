@@ -17,6 +17,30 @@ const normalizeLibraryName = (value: string) => value
   .toLocaleLowerCase()
   .replace(/\s+/g, ' ');
 
+
+function handleInlineShortcut(
+  event: React.KeyboardEvent<HTMLInputElement>,
+  value: string,
+  onChange: (next: string) => void,
+) {
+  if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+  const key = event.key.toLowerCase();
+  const marker = key === 'b' ? '**' : key === 'i' ? '*' : key === 'u' ? '++' : null;
+  if (!marker) return;
+
+  event.preventDefault();
+  const input = event.currentTarget;
+  const start = input.selectionStart ?? value.length;
+  const end = input.selectionEnd ?? value.length;
+  const selected = value.slice(start, end);
+  onChange(value.slice(0, start) + marker + selected + marker + value.slice(end));
+
+  requestAnimationFrame(() => {
+    input.focus();
+    input.setSelectionRange(start + marker.length, start + marker.length + selected.length);
+  });
+}
+
 export function LibraryMultiSelect({
   kind,
   values,
