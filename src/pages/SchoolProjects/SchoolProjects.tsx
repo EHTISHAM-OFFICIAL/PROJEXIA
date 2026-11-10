@@ -615,13 +615,13 @@ export default function SchoolProjects() {
                     {x.difficulty && <Badge>{x.difficulty}</Badge>}
                   </div>
 
-                  <h2 className="mt-3 line-clamp-2 text-base font-semibold leading-snug text-content sm:text-lg">{x.title}</h2>
-                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-content-secondary">
+                  <h2 className="mt-3 line-clamp-2 text-lg font-semibold leading-snug text-content sm:text-xl">{x.title}</h2>
+                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-content-secondary sm:text-base sm:leading-7">
                     {x.shortDescription}
                   </p>
 
                   {(x.subject || x.gradeRange || x.subcategory) && (
-                    <p className="mt-3 text-xs text-content-muted">
+                    <p className="mt-3 text-xs text-content-muted sm:text-sm">
                       {[x.subject, x.gradeRange, x.subcategory]
                         .filter(Boolean)
                         .join(" · ")}
