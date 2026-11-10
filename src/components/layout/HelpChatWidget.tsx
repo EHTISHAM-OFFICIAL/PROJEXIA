@@ -860,7 +860,7 @@ export function HelpChatWidget() {
 
             boxShadow: "0 12px 30px rgba(249,115,22,0.35)",
 
-            zIndex: 9998,
+            zIndex: 10000,
 
             touchAction: "manipulation",
 
