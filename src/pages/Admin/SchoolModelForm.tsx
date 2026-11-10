@@ -26,8 +26,6 @@ const EMPTY: SchoolModelDraft = {
 };
 const lines = (value: string) => [...new Set(value.split('\n').map((item) => item.trim()).filter(Boolean))];
 const richLines = (value: string) => lines(value).map((item) => item.replace(/^[-*•]\s+/, '').trim()).filter(Boolean);
-// Keep empty editor rows in the UI; filter them only when saving the model.
-const editorLines = (value: string) => value.split('\n');
 const EMPTY_COMPONENT: SchoolModelComponent = { name: '', category: '', quantity: '1', notes: '', optional: false };
 const EMPTY_SPECIFICATION: SchoolModelSpecification = { label: '', value: '' };
 type TaxonomyKey = 'categories' | 'subcategories' | 'modelTypes' | 'difficulties' | 'statuses' | 'subjects';
