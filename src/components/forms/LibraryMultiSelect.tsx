@@ -216,14 +216,13 @@ export function LibraryMultiSelect({
               <TextInput
                 value={value}
                 aria-label={`Edit ${label.toLocaleLowerCase()} ${index + 1}`}
-                onChange={(event) => {
+                onChange={(event) => onChange(values.map((item, itemIndex) => itemIndex === index ? event.target.value : item))}
+                onBlur={(event) => {
                   const entries = splitEntries(event.target.value);
                   if (entries.length > 1) {
                     const next = [...values];
                     next.splice(index, 1, ...entries);
                     onChange(next);
-                  } else {
-                    onChange(values.map((item, itemIndex) => itemIndex === index ? event.target.value : item));
                   }
                 }}
                 placeholder={`Enter ${label.toLocaleLowerCase()}`}
