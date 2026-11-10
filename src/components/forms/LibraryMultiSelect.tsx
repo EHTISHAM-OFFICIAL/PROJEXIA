@@ -320,9 +320,9 @@ export function LibraryMultiSelect({
           value={custom}
           maxLength={10000}
           onChange={(event) => setCustom(event.target.value)}
-          onKeyDown={(event) => handleInlineShortcut(event, custom, setCustom)}
           onFocus={() => setIsOpen(true)}
           onKeyDown={(event) => {
+            handleInlineShortcut(event, custom, setCustom);
             if (event.key === 'Enter') {
               event.preventDefault();
               void add(custom);
