@@ -217,6 +217,7 @@ export function LibraryMultiSelect({
                 value={value}
                 aria-label={`Edit ${label.toLocaleLowerCase()} ${index + 1}`}
                 onChange={(event) => onChange(values.map((item, itemIndex) => itemIndex === index ? event.target.value : item))}
+                onKeyDown={(event) => handleInlineShortcut(event, value, (next) => onChange(values.map((item, itemIndex) => itemIndex === index ? next : item)))}
                 onBlur={(event) => {
                   const entries = splitEntries(event.target.value);
                   if (entries.length > 1) {
@@ -295,6 +296,7 @@ export function LibraryMultiSelect({
           value={custom}
           maxLength={10000}
           onChange={(event) => setCustom(event.target.value)}
+          onKeyDown={(event) => handleInlineShortcut(event, custom, setCustom)}
           onFocus={() => setIsOpen(true)}
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
