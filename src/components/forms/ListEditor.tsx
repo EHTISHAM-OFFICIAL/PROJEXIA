@@ -4,17 +4,43 @@ import { TextInput } from './Inputs';
 import { RichTextEditor } from './RichTextEditor';
 import { splitEntries } from '../../utils/splitEntries';
 
+function applyInlineShortcut(
+  event: React.KeyboardEvent<HTMLInputElement>,
+  value: string,
+  onChange: (next: string) => void,
+) {
+  if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+  const key = event.key.toLowerCase();
+  const marker = key === 'b' ? '**' : key === 'i' ? '*' : key === 'u' ? '++' : null;
+  if (!marker) return;
+
+  event.preventDefault();
+  const input = event.currentTarget;
+  const start = input.selectionStart ?? value.length;
+  const end = input.selectionEnd ?? value.length;
+  const selected = value.slice(start, end);
+  onChange(value.slice(0, start) + marker + selected + marker + value.slice(end));
+
+  requestAnimationFrame(() => {
+    input.focus();
+    const selectionStart = start + marker.length;
+    input.setSelectionRange(selectionStart, selectionStart + selected.length);
+  });
+}
+
 /** Edits a string[] field (objectives, features, challenges, tags, technologies). */
 export function ListEditor({
   values,
   onChange,
   placeholder,
   label,
+  richTextShortcuts = false,
 }: {
   values: string[];
   onChange: (next: string[]) => void;
   placeholder?: string;
   label: string;
+  richTextShortcuts?: boolean;
 }) {
   const rows = values.length ? values : [''];
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
@@ -64,6 +90,7 @@ export function ListEditor({
             placeholder={placeholder}
             aria-label={`${label} ${index + 1}`}
             onChange={(event) => update(index, event.target.value)}
+            onKeyDown={richTextShortcuts ? (event) => applyInlineShortcut(event, value, (next) => update(index, next)) : undefined}
             onBlur={(event) => splitRow(index, event.target.value)}
           className="min-w-0 flex-1 border-0 bg-transparent shadow-none focus-visible:ring-1"
           />
@@ -87,6 +114,7 @@ export function ListEditor({
         <Plus size={15} aria-hidden="true" />
         Add
       </button>
+      {richTextShortcuts && <p className="text-xs leading-relaxed text-content-muted">Keyboard shortcuts: Ctrl/⌘ + B (bold), Ctrl/⌘ + I (italic), Ctrl/⌘ + U (underline). Paste multiple lines or sentences to split them into separate rows.</p>}
     </div>
   );
 }
