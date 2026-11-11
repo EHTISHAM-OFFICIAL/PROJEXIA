@@ -24,7 +24,7 @@ export function CollectionFilters({
   const hasFilters = Boolean(search.trim() || activeCategory);
 
   return (
-    <section className="rounded-2xl border border-line bg-surface/80 p-4 shadow-resting sm:p-5" aria-label="Filter collections">
+    <section className="rounded-2xl border border-line bg-surface/80 p-4 shadow-sm sm:p-5" aria-label="Filter collections">
       <label className="relative block">
         <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-content-muted" aria-hidden="true" />
         <input

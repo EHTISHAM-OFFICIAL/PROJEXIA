@@ -15,7 +15,7 @@ export function CollectionCard({ item, onOpen }: CollectionCardProps) {
       type="button"
       onClick={() => onOpen(item)}
       aria-label={"View " + item.title}
-      className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-surface text-left shadow-resting transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-1 hover:border-accent/50 hover:shadow-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-surface text-left shadow-sm transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-1 hover:border-accent/50 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-raised">
         {cover ? (
