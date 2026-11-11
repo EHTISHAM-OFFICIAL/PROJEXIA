@@ -21,6 +21,10 @@ export const PROJECT_DIFFICULTIES: Option<ProjectDifficulty>[] = [
 export const PROJECT_SORT_OPTIONS: Option<ProjectSortKey>[] = [
   { value: 'newest', label: 'Newest first' },
   { value: 'oldest', label: 'Oldest first' },
+  { value: 'updated', label: 'Recently updated' },
+  { value: 'release', label: 'Release date (newest)' },
+  { value: 'popular', label: 'Most popular' },
+  { value: 'views', label: 'Most viewed' },
   { value: 'title-asc', label: 'Title A–Z' },
   { value: 'title-desc', label: 'Title Z–A' },
 ];
