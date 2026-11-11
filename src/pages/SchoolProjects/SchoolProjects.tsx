@@ -1,12 +1,15 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowRight, Search, X, ChevronLeft, ChevronRight, Images, Expand } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Images, Expand } from "lucide-react";
 import { Container } from "../../components/ui/Container";
 import { PageIntro } from "../../components/ui/PageIntro";
 import { Seo } from "../../components/ui/Seo";
-import { ButtonLink } from "../../components/ui/Button";
+import { Button, ButtonLink } from "../../components/ui/Button";
 import { Image } from "../../components/ui/Image";
 import { Badge } from "../../components/ui/Badge";
+import { SchoolModelFilters, type SchoolModelFiltersState } from "../../components/schoolModels/SchoolModelFilters";
+import { useDebounce } from "../../hooks/useDebounce";
+import { PROJECTS_PER_PAGE } from "../../constants/projectOptions";
 import {
   schoolModelService,
   DEFAULT_SCHOOL_SETTINGS,
@@ -23,11 +26,88 @@ export default function SchoolProjects() {
   const [settings, setSettings] = useState<SchoolSettings>(
     DEFAULT_SCHOOL_SETTINGS,
   );
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
-  const [subcategory, setSubcategory] = useState("");
-  const [modelType, setModelType] = useState("");
-  const [sort, setSort] = useState("newest");
+  const [filters, setFilters] = useState<SchoolModelFiltersState>({
+    search: "",
+    category: "",
+    subcategory: "",
+    modelType: "",
+    difficulty: "",
+    status: "",
+    sort: "newest",
+  });
+  const [visibleCount, setVisibleCount] = useState(PROJECTS_PER_PAGE);
+  const debouncedSearch = useDebounce(filters.search, 250);
+  const effectiveFilters = useMemo(
+    () => ({ ...filters, search: debouncedSearch }),
+    [filters, debouncedSearch],
+  );
+  const filteredItems = useMemo(() => {
+    const term = effectiveFilters.search.trim().toLocaleLowerCase();
+    const matched = items.filter((item) => {
+      if (effectiveFilters.category && item.category !== effectiveFilters.category) return false;
+      if (effectiveFilters.subcategory && item.subcategory !== effectiveFilters.subcategory) return false;
+      if (effectiveFilters.modelType && item.modelType !== effectiveFilters.modelType) return false;
+      if (effectiveFilters.difficulty && item.difficulty !== effectiveFilters.difficulty) return false;
+      if (effectiveFilters.status && item.status !== effectiveFilters.status) return false;
+
+      if (!term) return true;
+      const searchableText = [
+        item.title,
+        item.shortDescription,
+        item.description,
+        item.category,
+        item.subcategory,
+        item.subject,
+        item.gradeRange,
+        item.modelType,
+        item.difficulty,
+        item.status,
+        item.workingPrinciple,
+        item.problemStatement,
+        ...item.tags,
+        ...item.materials,
+        ...item.features,
+        ...item.customizationOptions,
+        ...item.keywords,
+        ...item.objectives,
+      ].join(" ").toLocaleLowerCase();
+
+      return searchableText.includes(term);
+    });
+
+    const time = (value: SchoolModel["createdAt"] | SchoolModel["updatedAt"]) =>
+      value?.toMillis?.() ??
+      (value?.seconds ? value.seconds * 1000 : value ? new Date(value).getTime() : 0);
+
+    return [...matched].sort((a, b) => {
+      switch (effectiveFilters.sort) {
+        case "oldest":
+          return time(a.createdAt) - time(b.createdAt);
+        case "release":
+          return time(b.createdAt) - time(a.createdAt);
+        case "updated":
+          return time(b.updatedAt) - time(a.updatedAt);
+        case "popular":
+          return Number(b.featured) - Number(a.featured) || b.viewCount - a.viewCount;
+        case "views":
+          return b.viewCount - a.viewCount;
+        case "title-asc":
+          return a.title.localeCompare(b.title);
+        case "title-desc":
+          return b.title.localeCompare(a.title);
+        case "newest":
+        default:
+          return time(b.createdAt) - time(a.createdAt);
+      }
+    });
+  }, [items, effectiveFilters]);
+
+  const visibleItems = filteredItems.slice(0, visibleCount);
+  const hasMore = filteredItems.length > visibleCount;
+
+  useEffect(() => {
+    setVisibleCount(PROJECTS_PER_PAGE);
+  }, [effectiveFilters]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeGalleryIndex, setActiveGalleryIndex] = useState<number | null>(null);
@@ -475,55 +555,6 @@ export default function SchoolProjects() {
     );
   }
 
-  const shown = items.filter(
-    (x) =>
-      (!category || x.category === category) &&
-      (!subcategory || x.subcategory === subcategory) &&
-      (!modelType || x.modelType === modelType) &&
-      (
-        x.title +
-        " " +
-        x.category +
-        " " +
-        x.subject +
-        " " +
-        x.gradeRange +
-        " " +
-        x.subcategory +
-        " " +
-        x.modelType +
-        " " +
-        x.difficulty +
-        " " +
-        x.shortDescription +
-        " " +
-        (x.tags || []).join(" ") +
-        " " +
-        (x.materials || []).join(" ") +
-        " " +
-        (x.features || []).join(" ") +
-        " " +
-        (x.customizationOptions || []).join(" ") +
-        " " +
-        (x.keywords || []).join(" ")
-      )
-        .toLowerCase()
-        .includes(search.toLowerCase().trim()),
-  );
-  const time = (value: any) => value?.toMillis?.() ?? (value?.seconds ? value.seconds * 1000 : value ? new Date(value).getTime() : 0);
-  const sortedShown = [...shown].sort((a, b) => {
-    switch (sort) {
-      case 'oldest': return time(a.createdAt) - time(b.createdAt);
-      case 'release': return time(b.createdAt) - time(a.createdAt);
-      case 'updated': return time(b.updatedAt) - time(a.updatedAt);
-      case 'popular': return Number(b.featured) - Number(a.featured) || b.viewCount - a.viewCount;
-      case 'views': return b.viewCount - a.viewCount;
-      case 'title-asc': return a.title.localeCompare(b.title);
-      case 'title-desc': return b.title.localeCompare(a.title);
-      default: return time(b.createdAt) - time(a.createdAt);
-    }
-  });
-
   return (
     <>
       <Seo
@@ -538,87 +569,17 @@ export default function SchoolProjects() {
       />
 
       <Container className="py-8 sm:py-12">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_repeat(4,minmax(145px,1fr))]">
-          <label className="relative">
-            <Search
-              size={16}
-              className="absolute left-3 top-4 text-content-muted"
-            />
-            <input
-              aria-label="Search school models"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search charts, subjects or models"
-              className="h-12 w-full rounded-xl border border-line bg-surface pl-9 pr-3 text-sm"
-            />
-          </label>
-
-          <select
-            aria-label="Filter category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="h-12 rounded-xl border border-line bg-surface px-3 text-sm"
-          >
-            <option value="">All categories</option>
-            {settings.categories.map((x) => (
-              <option key={x}>{x}</option>
-            ))}
-          </select>
-
-          <select
-            aria-label="Filter subcategory"
-            value={subcategory}
-            onChange={(e) => setSubcategory(e.target.value)}
-            className="h-12 rounded-xl border border-line bg-surface px-3 text-sm"
-          >
-            <option value="">All subcategories</option>
-            {[
-              ...new Set([
-                ...settings.subcategories,
-                ...items.map((x) => x.subcategory).filter(Boolean),
-              ]),
-            ]
-              .sort()
-              .map((x) => (
-                <option key={x}>{x}</option>
-              ))}
-          </select>
-
-          <select
-            aria-label="Sort school projects"
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="h-12 rounded-xl border border-line bg-surface px-3 text-sm"
-          >
-            <option value="newest">Newest added</option>
-            <option value="oldest">Oldest added</option>
-            <option value="release">Release date</option>
-            <option value="updated">Recently updated</option>
-            <option value="popular">Most popular</option>
-            <option value="views">Most viewed</option>
-            <option value="title-asc">Title A–Z</option>
-            <option value="title-desc">Title Z–A</option>
-          </select>
-
-          <select
-            aria-label="Filter model format"
-            value={modelType}
-            onChange={(e) => setModelType(e.target.value)}
-            className="h-12 rounded-xl border border-line bg-surface px-3 text-sm"
-          >
-            <option value="">All formats</option>
-            {[
-              ...new Set([
-                ...settings.modelTypes,
-                ...items.map((x) => x.modelType).filter(Boolean),
-              ]),
-            ]
-              .sort()
-              .map((x) => (
-                <option key={x}>{x}</option>
-              ))}
-          </select>
-        </div>
+        <SchoolModelFilters
+          filters={filters}
+          onChange={setFilters}
+          items={items}
+          categories={settings.categories}
+          subcategories={[...new Set([...settings.subcategories, ...items.map((item) => item.subcategory).filter(Boolean)])].sort()}
+          modelTypes={[...new Set([...settings.modelTypes, ...items.map((item) => item.modelType).filter(Boolean)])].sort()}
+          difficulties={[...new Set([...settings.difficulties, ...items.map((item) => item.difficulty).filter(Boolean)])].sort()}
+          statuses={[...new Set([...settings.statuses, ...items.map((item) => item.status).filter(Boolean)])].sort()}
+          resultCount={filteredItems.length}
+        />
 
         {loading ? (
           <p className="py-12 text-center text-sm text-content-secondary">
@@ -628,9 +589,9 @@ export default function SchoolProjects() {
           <p role="alert" className="py-12 text-center text-state-danger">
             {error}
           </p>
-        ) : shown.length ? (
+        ) : filteredItems.length > 0 ? (
           <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {sortedShown.map((x) => (
+            {visibleItems.map((x) => (
               <Link
                 key={x.id}
                 to={"/school-projects/" + x.slug}
@@ -670,17 +631,53 @@ export default function SchoolProjects() {
           </div>
         ) : (
           <div className="mt-10 rounded-2xl border border-dashed border-line p-10 text-center">
-            <h2 className="text-lg font-semibold">No models published yet</h2>
+            <h2 className="text-lg font-semibold">
+              {items.length > 0 ? "Nothing matches those filters" : "No models published yet"}
+            </h2>
             <p className="mt-2 text-sm text-content-secondary">
-              New items will appear here once published by the admin.
+              {items.length > 0
+                ? "Try a different search or clear the filters to see all school models."
+                : "New items will appear here once published by the admin."}
             </p>
-            <ButtonLink
-              to="/request-school-model"
+            {items.length === 0 ? (
+              <ButtonLink
+                to="/request-school-model"
+                variant="secondary"
+                className="mt-5"
+              >
+                Request a custom school model
+              </ButtonLink>
+            ) : (
+              <Button
+                variant="secondary"
+                size="sm"
+                className="mt-5"
+                onClick={() =>
+                  setFilters({
+                    search: "",
+                    category: "",
+                    subcategory: "",
+                    modelType: "",
+                    difficulty: "",
+                    status: "",
+                    sort: "newest",
+                  })
+                }
+              >
+                Clear filters
+              </Button>
+            )}
+          </div>
+        )}
+        {hasMore && (
+          <div className="mt-8 flex justify-center sm:mt-12">
+            <Button
               variant="secondary"
-              className="mt-5"
+              className="w-full sm:w-auto"
+              onClick={() => setVisibleCount((count) => count + PROJECTS_PER_PAGE)}
             >
-              Request a custom school model
-            </ButtonLink>
+              Show more models
+            </Button>
           </div>
         )}
       </Container>
