@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowRight, ChevronLeft, ChevronRight, Images, Expand } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Images, Expand, X } from "lucide-react";
 import { Container } from "../../components/ui/Container";
 import { PageIntro } from "../../components/ui/PageIntro";
 import { Seo } from "../../components/ui/Seo";
