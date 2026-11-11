@@ -87,6 +87,14 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------
+    // Collections gallery: published items are public; drafts and all writes
+    // remain restricted to authenticated administrators.
+    match /collections/{itemId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
     // projectRequests
     // ---------------------------------------------------------------------
     match /projectRequests/{requestId} {
@@ -445,7 +453,7 @@ service cloud.firestore {
     match /settings/{docId} {
       // Only explicitly public settings may be read by visitors. In particular,
       // EmailJS and imgBB overrides must never be exposed through Firestore.
-      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity', 'siteProfile', 'schoolModels'];
+      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity', 'siteProfile', 'schoolModels', 'collections'];
       allow list: if false;
 
       allow write: if isAdmin();

@@ -20,6 +20,9 @@ import { RequireCustomerAuth } from './RequireCustomerAuth';
 // download them.
 const RequestProject = lazy(() => import('../pages/RequestProject/RequestProject'));
 const SchoolRequest = lazy(() => import('../pages/SchoolProjects/SchoolRequest'));
+const Collections = lazy(() => import('../pages/Collections/Collections'));
+const AdminCollections = lazy(() => import('../pages/Admin/Collections'));
+const AdminCollectionForm = lazy(() => import('../pages/Admin/CollectionForm'));
 const AdminSchoolModels = lazy(() => import('../pages/Admin/SchoolModels'));
 const AdminSchoolModelForm = lazy(() => import('../pages/Admin/SchoolModelForm'));
 const BookMeeting = lazy(() => import('../pages/BookMeeting/BookMeeting'));
@@ -70,6 +73,7 @@ export function AppRoutes() {
           <Route path="projects/:slug" element={<ProjectDetails />} />
           <Route path="school-projects" element={<SchoolProjects />} />
           <Route path="school-projects/:slug" element={<SchoolProjects />} />
+          <Route path="collections" element={<Collections />} />
           <Route path="request-school-model" element={<SchoolRequest />} />
           <Route path="blog" element={<BlogIndex />} />
           <Route path="blog/:slug" element={<BlogPostPage />} />
@@ -99,6 +103,9 @@ export function AppRoutes() {
             <Route path="school-models" element={<AdminSchoolModels />} />
             <Route path="school-models/new" element={<AdminSchoolModelForm />} />
             <Route path="school-models/:id/edit" element={<AdminSchoolModelForm />} />
+            <Route path="collections" element={<AdminCollections />} />
+            <Route path="collections/new" element={<AdminCollectionForm />} />
+            <Route path="collections/:id/edit" element={<AdminCollectionForm />} />
             <Route path="projects/new" element={<AdminProjectForm />} />
             <Route path="projects/:id/edit" element={<AdminProjectForm />} />
             <Route path="project-library" element={<AdminProjectLibrary />} />

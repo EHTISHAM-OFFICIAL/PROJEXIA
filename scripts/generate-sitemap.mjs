@@ -50,6 +50,7 @@ const staticUrls = [
   { path: '/', priority: '1.0' },
   { path: '/projects', priority: '0.9' },
   { path: '/school-projects', priority: '0.8' },
+  { path: '/collections', priority: '0.8' },
   { path: '/blog', priority: '0.8' },
   { path: '/about', priority: '0.7' },
   { path: '/contact', priority: '0.7' },
