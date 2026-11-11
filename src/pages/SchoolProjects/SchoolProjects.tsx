@@ -27,6 +27,7 @@ export default function SchoolProjects() {
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
   const [modelType, setModelType] = useState("");
+  const [sort, setSort] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeGalleryIndex, setActiveGalleryIndex] = useState<number | null>(null);
@@ -83,7 +84,10 @@ export default function SchoolProjects() {
     schoolModelService
       .getBySlug(slug)
       .then((x) => {
-        if (live) setModel(x);
+        if (live) {
+          setModel(x);
+          if (x) schoolModelService.incrementViewCount(x.id);
+        }
       })
       .catch(() => {
         if (live) setModel(null);
@@ -506,6 +510,19 @@ export default function SchoolProjects() {
         .toLowerCase()
         .includes(search.toLowerCase().trim()),
   );
+  const time = (value: any) => value?.toMillis?.() ?? (value?.seconds ? value.seconds * 1000 : value ? new Date(value).getTime() : 0);
+  const sortedShown = [...shown].sort((a, b) => {
+    switch (sort) {
+      case 'oldest': return time(a.createdAt) - time(b.createdAt);
+      case 'release': return time(b.createdAt) - time(a.createdAt);
+      case 'updated': return time(b.updatedAt) - time(a.updatedAt);
+      case 'popular': return Number(b.featured) - Number(a.featured) || b.viewCount - a.viewCount;
+      case 'views': return b.viewCount - a.viewCount;
+      case 'title-asc': return a.title.localeCompare(b.title);
+      case 'title-desc': return b.title.localeCompare(a.title);
+      default: return time(b.createdAt) - time(a.createdAt);
+    }
+  });
 
   return (
     <>
@@ -521,7 +538,7 @@ export default function SchoolProjects() {
       />
 
       <Container className="py-8 sm:py-12">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_190px_190px_190px]">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_repeat(4,minmax(145px,1fr))]">
           <label className="relative">
             <Search
               size={16}
@@ -568,6 +585,22 @@ export default function SchoolProjects() {
           </select>
 
           <select
+            aria-label="Sort school projects"
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="h-12 rounded-xl border border-line bg-surface px-3 text-sm"
+          >
+            <option value="newest">Newest added</option>
+            <option value="oldest">Oldest added</option>
+            <option value="release">Release date</option>
+            <option value="updated">Recently updated</option>
+            <option value="popular">Most popular</option>
+            <option value="views">Most viewed</option>
+            <option value="title-asc">Title A–Z</option>
+            <option value="title-desc">Title Z–A</option>
+          </select>
+
+          <select
             aria-label="Filter model format"
             value={modelType}
             onChange={(e) => setModelType(e.target.value)}
@@ -597,7 +630,7 @@ export default function SchoolProjects() {
           </p>
         ) : shown.length ? (
           <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {shown.map((x) => (
+            {sortedShown.map((x) => (
               <Link
                 key={x.id}
                 to={"/school-projects/" + x.slug}

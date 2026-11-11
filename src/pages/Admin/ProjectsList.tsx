@@ -29,6 +29,7 @@ export default function ProjectsList() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [visibility, setVisibility] = useState('');
+  const [sort, setSort] = useState('newest');
   const [pendingDelete, setPendingDelete] = useState<Project | null>(null);
   const [working, setWorking] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -36,14 +37,27 @@ export default function ProjectsList() {
   const filtered = useMemo(() => {
     if (!data) return [];
     const term = search.trim().toLowerCase();
-    return data.filter((project) => {
+    const matched = data.filter((project) => {
       if (category && project.category !== category) return false;
       if (visibility === 'published' && !project.published) return false;
       if (visibility === 'draft' && project.published) return false;
-      if (!term) return true;
-      return `${project.title} ${project.slug} ${project.category}`.toLowerCase().includes(term);
+      if (term && !`${project.title} ${project.slug} ${project.category}`.toLowerCase().includes(term)) return false;
+      return true;
     });
-  }, [data, search, category, visibility]);
+    const time = (value: Project['createdAt'] | Project['updatedAt'] | Project['completedAt']) => value?.toMillis?.() ?? (value?.seconds ? value.seconds * 1000 : 0);
+    return [...matched].sort((a, b) => {
+      switch (sort) {
+        case 'oldest': return time(a.createdAt) - time(b.createdAt);
+        case 'updated': return time(b.updatedAt) - time(a.updatedAt);
+        case 'release': return time(b.completedAt || b.createdAt) - time(a.completedAt || a.createdAt);
+        case 'popular': return Number(b.featured) - Number(a.featured) || b.viewCount - a.viewCount;
+        case 'views': return b.viewCount - a.viewCount;
+        case 'title-asc': return a.title.localeCompare(b.title);
+        case 'title-desc': return b.title.localeCompare(a.title);
+        default: return time(b.createdAt) - time(a.createdAt);
+      }
+    });
+  }, [data, search, category, visibility, sort]);
 
   const runAction = async (id: string, action: () => Promise<void>) => {
     setWorking(id);
@@ -89,7 +103,7 @@ export default function ProjectsList() {
         </div>
       )}
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+      <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_190px_170px_210px]">
         <TextInput
           type="search"
           value={search}
@@ -110,6 +124,21 @@ export default function ProjectsList() {
           value={visibility}
           aria-label="Filter by visibility"
           onChange={(event) => setVisibility(event.target.value)}
+        />
+        <Select
+          options={[
+            { value: 'newest', label: 'Newest added' },
+            { value: 'oldest', label: 'Oldest added' },
+            { value: 'updated', label: 'Recently updated' },
+            { value: 'release', label: 'Release date' },
+            { value: 'popular', label: 'Most popular' },
+            { value: 'views', label: 'Most viewed' },
+            { value: 'title-asc', label: 'Title A–Z' },
+            { value: 'title-desc', label: 'Title Z–A' },
+          ]}
+          value={sort}
+          aria-label="Sort projects"
+          onChange={(event) => setSort(event.target.value)}
         />
       </div>
 
