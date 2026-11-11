@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Layers, MessageCircle, Palette, Ruler, X } f
 import { Link } from "react-router-dom";
 import { Image } from "../ui/Image";
 import { whatsappLink } from "../../constants/site";
+import { useSiteSettings } from "../../contexts/SiteSettingsContext";
 import type { CollectionItem } from "../../types/collection";
 
 interface CollectionQuickViewProps {
@@ -12,6 +13,7 @@ interface CollectionQuickViewProps {
 
 export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps) {
   const [imageIndex, setImageIndex] = useState(0);
+  const { settings } = useSiteSettings();
 
   useEffect(() => {
     setImageIndex(0);
@@ -43,7 +45,7 @@ export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps)
 
   const activeImage = item.images[imageIndex];
   const message = "Hello PROJEXIAHUB, I would like to enquire about: " + item.title;
-  const enquiryUrl = whatsappLink(message);
+  const enquiryUrl = settings.showWhatsapp ? whatsappLink(message, settings.whatsapp) : null;
 
   return (
     <div

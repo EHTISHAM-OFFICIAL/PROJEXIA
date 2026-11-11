@@ -65,6 +65,7 @@ export default function Collections() {
         item.material,
         item.dimensions,
         item.color,
+        item.images.map((image) => image.alt).join(" "),
         details,
       ].join(" ").toLocaleLowerCase();
       return searchable.includes(term);
