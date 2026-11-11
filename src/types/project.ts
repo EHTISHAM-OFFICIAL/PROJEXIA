@@ -99,4 +99,4 @@ export interface ProjectFilters {
   sort: ProjectSortKey;
 }
 
-export type ProjectSortKey = 'newest' | 'oldest' | 'title-asc' | 'title-desc';
+export type ProjectSortKey = 'newest' | 'oldest' | 'updated' | 'release' | 'popular' | 'views' | 'title-asc' | 'title-desc';
