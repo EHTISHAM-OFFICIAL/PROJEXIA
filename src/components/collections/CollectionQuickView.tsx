@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Layers, MessageCircle, Palette, Ruler, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Image } from "../ui/Image";
-import { SITE, whatsappLink } from "../../constants/site";
+import { whatsappLink } from "../../constants/site";
 import type { CollectionItem } from "../../types/collection";
 
 interface CollectionQuickViewProps {

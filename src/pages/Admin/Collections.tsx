@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Eye, EyeOff, FolderOpen, Pencil, Plus, Search, Tag, Trash2, X, Check, Save } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Eye, EyeOff, FolderOpen, Pencil, Plus, Search, Tag, Trash2, X, Save } from "lucide-react";
 import { Seo } from "../../components/ui/Seo";
 import { Image } from "../../components/ui/Image";
 import { Button, ButtonLink } from "../../components/ui/Button";
@@ -96,6 +95,10 @@ export default function CollectionsAdmin() {
 
   const deleteCategory = async (name: string) => {
     const usedBy = items.filter((item) => item.category === name).length;
+    if (categories.length <= 1) {
+      notify({ title: "Keep at least one category", message: "A collection needs at least one category. Add another category before deleting this one.", tone: "error" });
+      return;
+    }
     if (usedBy > 0) {
       notify({ title: "Category is in use", message: "Move the " + usedBy + " item(s) to another category before deleting this one.", tone: "error" });
       return;

@@ -12,7 +12,7 @@ import { imgbbService } from "../../services/imgbbService";
 import { PROJECT_IMAGE_RULES } from "../../constants/requestOptions";
 import { validateProjectImage } from "../../utils/fileValidation";
 import { useToast } from "../../contexts/ToastContext";
-import type { CollectionItemDraft, CollectionSettings } from "../../types/collection";
+import type { CollectionItemDraft } from "../../types/collection";
 import { EMPTY_COLLECTION_DRAFT, DEFAULT_COLLECTION_CATEGORIES } from "../../types/collection";
 
 export default function CollectionForm() {

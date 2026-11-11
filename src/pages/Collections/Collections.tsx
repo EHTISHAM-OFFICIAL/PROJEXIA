@@ -72,7 +72,6 @@ export default function Collections() {
   }, [items, category, debouncedSearch]);
 
   const visible = filtered.slice(0, visibleCount);
-  const hasFilters = Boolean(search.trim() || category);
 
   useEffect(() => { setVisibleCount(ITEMS_PER_PAGE); }, [category, debouncedSearch]);
 
