@@ -50,9 +50,22 @@ export function useFilteredProjects(projects: Project[] | null, filters: Project
     });
 
     const sorted = [...matched];
+    const time = (value: Project['createdAt'] | Project['updatedAt'] | Project['completedAt']) => value?.toMillis?.() ?? (value?.seconds ? value.seconds * 1000 : 0);
     switch (filters.sort) {
       case 'oldest':
-        sorted.reverse();
+        sorted.sort((a, b) => time(a.createdAt) - time(b.createdAt));
+        break;
+      case 'updated':
+        sorted.sort((a, b) => time(b.updatedAt) - time(a.updatedAt));
+        break;
+      case 'release':
+        sorted.sort((a, b) => time(b.completedAt || b.createdAt) - time(a.completedAt || a.createdAt));
+        break;
+      case 'popular':
+        sorted.sort((a, b) => Number(b.featured) - Number(a.featured) || b.viewCount - a.viewCount);
+        break;
+      case 'views':
+        sorted.sort((a, b) => b.viewCount - a.viewCount);
         break;
       case 'title-asc':
         sorted.sort((a, b) => a.title.localeCompare(b.title));
@@ -60,8 +73,10 @@ export function useFilteredProjects(projects: Project[] | null, filters: Project
       case 'title-desc':
         sorted.sort((a, b) => b.title.localeCompare(a.title));
         break;
+      case 'newest':
       default:
-        break; // already newest-first from Firestore
+        sorted.sort((a, b) => time(b.createdAt) - time(a.createdAt));
+        break;
     }
     return sorted;
   }, [projects, filters]);
