@@ -12,4 +12,5 @@ export const COLLECTIONS = {
   admins: 'admins',
   settings: 'settings',
   projectLibrary: 'projectLibrary',
+  collections: 'collections',
 } as const;

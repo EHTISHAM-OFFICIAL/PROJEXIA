@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   FolderKanban,
   GraduationCap,
+  Images,
   Database,
   Inbox,
   CalendarDays,
@@ -33,6 +34,7 @@ const ADMIN_GROUPS = [
     links: [
       { to: '/admin/projects', label: 'Projects', icon: FolderKanban, end: false },
       { to: '/admin/school-models', label: 'School Models', icon: GraduationCap, end: false },
+      { to: '/admin/collections', label: 'Collections', icon: Images, end: false },
       { to: '/admin/project-library', label: 'Project Library', icon: Database, end: false },
       { to: '/admin/blog', label: 'Blog', icon: Newspaper, end: false },
       { to: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote, end: false },
