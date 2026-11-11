@@ -57,6 +57,7 @@ const CUSTOM_MODEL: SchoolModel = {
   documentationUrl: "",
   featured: false,
   published: false,
+  viewCount: 0,
   seoTitle: "",
   seoDescription: "",
   keywords: [],
