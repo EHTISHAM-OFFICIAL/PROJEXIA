@@ -72,7 +72,13 @@ export default function SchoolModelForm() {
       if (id) {
         const item = all.find((entry) => entry.id === id);
         if (!item) { setError('This school model could not be found.'); setLoading(false); return; }
-        const { id: _id, createdAt: _created, updatedAt: _updated, ...rest } = item;
+        const {
+          id: _id,
+          createdAt: _created,
+          updatedAt: _updated,
+          viewCount: _viewCount,
+          ...rest
+        } = item;
         setDraft(rest);
         setSlugTouched(true);
         setMaterials(rest.materials.join('\n'));
