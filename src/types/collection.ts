@@ -20,6 +20,7 @@ export interface CollectionItem {
   material: string;
   dimensions: string;
   color: string;
+  tags: string[];
   additionalDetails: CollectionDetail[];
   enquiryEnabled: boolean;
   published: boolean;
@@ -56,6 +57,7 @@ export const EMPTY_COLLECTION_DRAFT: CollectionItemDraft = {
   material: "",
   dimensions: "",
   color: "",
+  tags: [],
   additionalDetails: [],
   enquiryEnabled: false,
   published: false,
