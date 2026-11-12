@@ -69,6 +69,7 @@ export function InlineText({ text, allowLinks = true }: { text: string; allowLin
  * ## Heading 2
  * ### Heading 3
  * - Bullet item
+ * 1. Numbered item
  * **bold**, *italic*
  * [link text](/path)
  * > Callout
