@@ -1,11 +1,26 @@
-import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Layers, MessageCircle, Palette, Ruler, X } from "lucide-react";
+import { useEffect, useState, type CSSProperties } from "react";
+import { Check, ChevronLeft, ChevronRight, Layers, MessageCircle, Palette, Ruler, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Image } from "../ui/Image";
 import { whatsappLink } from "../../constants/site";
 import { useSiteSettings } from "../../contexts/SiteSettingsContext";
 import type { CollectionItem } from "../../types/collection";
 import { Prose } from "../projects/CaseStudySection";
+
+function getColourTokens(value: string): string[] {
+  return value.split(/[,;|/]/).map((part) => part.trim()).filter(Boolean).slice(0, 8);
+}
+
+function colourStyle(value: string): CSSProperties {
+  const token = value.trim();
+  if (/clear|transparent|translucent/i.test(token)) {
+    return { backgroundImage: "repeating-conic-gradient(#d1d5db 0% 25%, #ffffff 0% 50%)", backgroundSize: "8px 8px" };
+  }
+  const valid = /^#(?:[\\da-f]{3,4}|[\\da-f]{6}|[\\da-f]{8})$/i.test(token)
+    || /^(?:rgb|hsl)a?\\([\\d\\s.,%/+-]+\\)$/i.test(token)
+    || /^[a-zA-Z]+$/.test(token);
+  return { backgroundColor: valid ? token : "#9ca3af" };
+}
 
 interface CollectionQuickViewProps {
   item: CollectionItem | null;
@@ -45,6 +60,10 @@ export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps)
   if (!item) return null;
 
   const activeImage = item.images[imageIndex];
+  const colourOptions = getColourTokens(item.color);
+  const featureItems = (item.additionalDetails ?? [])
+    .map((detail) => [detail.label.trim(), detail.value.trim()].filter(Boolean).join(": "))
+    .filter(Boolean);
   const message = "Hello PROJEXIAHUB, I would like to enquire about: " + item.title;
   const enquiryUrl = settings.showWhatsapp ? whatsappLink(message, settings.whatsapp) : null;
 
@@ -120,25 +139,25 @@ export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps)
           {item.description && <div className="mt-5"><Prose text={item.description}/></div>}
           {(item.tags ?? []).length > 0 && <div className="mt-5 flex flex-wrap gap-2" aria-label="Item tags">{item.tags.map((tag) => <span key={tag} className="rounded-full border border-line bg-surface-raised px-3 py-1.5 text-xs font-medium text-content-secondary">{tag}</span>)}</div>}
 
-          {(item.material || item.dimensions || item.color) && (
+          {(item.material || item.dimensions || colourOptions.length > 0) && (
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {item.material && <div className="flex gap-2.5 rounded-xl border border-line bg-surface-raised/60 p-3"><Layers size={17} className="mt-0.5 shrink-0 text-accent"/><div><p className="text-[11px] font-semibold uppercase tracking-wide text-content-muted">Material</p><p className="mt-0.5 text-sm text-content">{item.material}</p></div></div>}
-              {item.dimensions && <div className="flex gap-2.5 rounded-xl border border-line bg-surface-raised/60 p-3"><Ruler size={17} className="mt-0.5 shrink-0 text-accent"/><div><p className="text-[11px] font-semibold uppercase tracking-wide text-content-muted">Dimensions</p><p className="mt-0.5 text-sm text-content">{item.dimensions}</p></div></div>}
-              {item.color && <div className="flex gap-2.5 rounded-xl border border-line bg-surface-raised/60 p-3"><Palette size={17} className="mt-0.5 shrink-0 text-accent"/><div><p className="text-[11px] font-semibold uppercase tracking-wide text-content-muted">Colour / finish</p><p className="mt-0.5 text-sm text-content">{item.color}</p></div></div>}
+              {item.material && <div className="flex gap-3 rounded-2xl border border-line bg-surface-raised/70 p-4"><Layers size={18} className="mt-0.5 shrink-0 text-accent"/><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-content-muted">Material</p><p className="mt-1 break-words text-sm font-medium text-content">{item.material}</p></div></div>}
+              {item.dimensions && <div className="flex gap-3 rounded-2xl border border-line bg-surface-raised/70 p-4"><Ruler size={18} className="mt-0.5 shrink-0 text-accent"/><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-content-muted">Dimensions</p><p className="mt-1 break-words text-sm font-medium text-content">{item.dimensions}</p></div></div>}
+              {colourOptions.length > 0 && <div className="sm:col-span-2 rounded-2xl border border-line bg-surface-raised/70 p-4"><div className="flex items-center gap-2"><Palette size={17} className="text-accent"/><p className="text-[10px] font-bold uppercase tracking-[.14em] text-content-muted">Colour / finish</p></div><div className="mt-3 flex flex-wrap gap-2">{colourOptions.map((colour, index) => <span key={colour + index} className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-content"><span className="h-4 w-4 rounded-full border border-black/15 shadow-inner" style={colourStyle(colour)}/>{colour}</span>)}</div></div>}
             </div>
           )}
 
-          {item.additionalDetails.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-sm font-semibold text-content">Additional details</h3>
-              <dl className="mt-2 divide-y divide-line rounded-xl border border-line px-3">
-                {item.additionalDetails.map((detail, index) => (
-                  <div key={detail.label + index} className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-3 py-2.5 text-sm">
-                    <dt className="text-content-muted">{detail.label}</dt>
-                    <dd className="break-words text-right text-content">{detail.value}</dd>
-                  </div>
+          {featureItems.length > 0 && (
+            <div className="mt-7">
+              <h3 className="text-sm font-bold text-content">Features</h3>
+              <ul className="mt-3 space-y-2.5">
+                {featureItems.map((feature, index) => (
+                  <li key={feature + index} className="flex items-start gap-3 rounded-xl bg-surface-raised/65 px-3.5 py-3 text-sm leading-relaxed text-content-secondary">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent"><Check size={12}/></span>
+                    <span className="break-words">{feature}</span>
+                  </li>
                 ))}
-              </dl>
+              </ul>
             </div>
           )}
 
