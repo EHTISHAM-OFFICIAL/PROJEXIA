@@ -48,7 +48,14 @@ export default function CollectionForm() {
           setError("This collection item could not be found.");
         } else if (item) {
           const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...rest } = item;
-          setDraft({\n            ...EMPTY_COLLECTION_DRAFT,\n            ...rest,\n            additionalDetails: (rest.additionalDetails ?? []).map((detail) => ({\n              label: "",\n              value: [detail.label?.trim(), detail.value?.trim()].filter(Boolean).join(": "),\n            })).filter((detail) => detail.value),\n          });
+          setDraft({
+            ...EMPTY_COLLECTION_DRAFT,
+            ...rest,
+            additionalDetails: (rest.additionalDetails ?? []).map((detail) => ({
+              label: "",
+              value: [detail.label?.trim(), detail.value?.trim()].filter(Boolean).join(": "),
+            })).filter((detail) => detail.value),
+          });
         } else {
           setDraft((current) => ({ ...current, category: settings.categories[0] || DEFAULT_COLLECTION_CATEGORIES[0] }));
         }
