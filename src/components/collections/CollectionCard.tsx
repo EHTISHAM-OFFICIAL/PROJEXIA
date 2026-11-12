@@ -8,7 +8,7 @@ interface CollectionCardProps {
 }
 
 function getColourTokens(value: string): string[] {
-  return value.split(/[,;|]/).map((part) => part.trim()).filter(Boolean).slice(0, 4);
+  return value.split(/[,;|\\/]/).map((part) => part.trim()).filter(Boolean).slice(0, 4);
 }
 
 function colourStyle(value: string): CSSProperties {
@@ -16,7 +16,7 @@ function colourStyle(value: string): CSSProperties {
   const isHex = /^#(?:[\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i.test(token);
   const isRgb = /^(?:rgb|hsl)a?\([\d\s.,%/+-]+\)$/i.test(token);
   const safeName = /^[a-zA-Z]+$/.test(token);
-  return { backgroundColor: isHex || isRgb || safeName ? token : "transparent" };
+  if (/clear|transparent|translucent/i.test(token)) {\n    return { backgroundImage: "repeating-conic-gradient(#d1d5db 0% 25%, #ffffff 0% 50%)", backgroundSize: "8px 8px" };\n  }\n  return { backgroundColor: isHex || isRgb || safeName ? token : "#9ca3af" };
 }
 
 export function CollectionCard({ item, onOpen }: CollectionCardProps) {
