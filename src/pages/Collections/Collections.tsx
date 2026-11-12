@@ -65,6 +65,7 @@ export default function Collections() {
         item.material,
         item.dimensions,
         item.color,
+        (item.tags ?? []).join(' '),
         item.images.map((image) => image.alt).join(" "),
         details,
       ].join(" ").toLocaleLowerCase();
