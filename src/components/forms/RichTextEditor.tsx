@@ -41,8 +41,13 @@ export function RichTextEditor({
     if (format === 'link') {
       const url = window.prompt('Enter the link URL (https://… or /internal-path):', 'https://');
       if (!url?.trim()) return;
+      const safeUrl = url.trim();
+      if (!/^(https?:\/\/|\/(?!\/)|mailto:)/i.test(safeUrl)) {
+        window.alert('Use a full http(s) URL, an internal path beginning with /, or a mailto: link.');
+        return;
+      }
       const label = selected || 'link text';
-      const replacement = '[' + label + '](' + url.trim() + ')';
+      const replacement = '[' + label + '](' + safeUrl + ')';
       onChange(value.slice(0, selectionStart) + replacement + value.slice(selectionEnd));
       window.requestAnimationFrame(() => {
         textarea.focus();
