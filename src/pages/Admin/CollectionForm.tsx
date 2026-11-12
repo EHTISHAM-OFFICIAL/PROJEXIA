@@ -146,10 +146,10 @@ export default function CollectionForm() {
   };
 
   const updateFeatures = (value: string) => {
-    const features = value
-      .split(".")
+    const parts = value.split(".");
+    const features = parts
       .map((feature) => feature.trim())
-      .filter(Boolean)
+      .filter((feature, index) => Boolean(feature) || (index === parts.length - 1 && /\\.\\s*$/.test(value)))
       .map((feature) => ({ label: "", value: feature }));
     setDraft((current) => ({ ...current, additionalDetails: features }));
   };
@@ -273,7 +273,7 @@ export default function CollectionForm() {
             <div className="mt-6">
               <div className="flex items-center justify-between gap-3">
                 <div><h3 className="text-sm font-semibold">Features</h3><p className="mt-1 text-xs text-content-muted">Separate each feature with a full stop. Each one appears as its own line in the item details.</p></div>
-                <Button type="button" variant="secondary" size="sm" onClick={() => updateFeatures([...draft.additionalDetails.map((feature) => feature.value), ""].join(". "))}><Plus size={14}/> Add feature</Button>
+                <Button type="button" variant="secondary" size="sm" onClick={() => update("additionalDetails", [...draft.additionalDetails, { label: "", value: "" }])}><Plus size={14}/> Add feature</Button>
               </div>
               <Field label="Item features" htmlFor="features">
                 <TextArea id="features" rows={4} value={draft.additionalDetails.map((feature) => feature.value).join(". ")} onChange={(event) => updateFeatures(event.target.value)} placeholder="e.g. Lightweight design. Smooth polished finish. Made for everyday use."/>
