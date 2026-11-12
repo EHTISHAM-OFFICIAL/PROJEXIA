@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { Check, Crop, Image as ImageIcon, RotateCcw, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 
-type CropRatio = 'original' | 'free' | '1:1' | '4:3' | '16:10' | '16:9' | '3:2';
+type CropRatio = 'original' | '1:1' | '4:3' | '16:10' | '16:9' | '3:2';
 type Handle = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'move';
 interface CropRect { x: number; y: number; w: number; h: number }
 interface DragState { handle: Handle; startX: number; startY: number; rect: CropRect }
@@ -111,7 +111,7 @@ export function ImageProcessingDialog({ file, onUse, onCancel, title = 'Prepare 
     };
   }, [drag, normalizedRatio]);
 
-  const beginDrag = (event: React.PointerEvent, handle: Handle) => {
+  const beginDrag = (event: ReactPointerEvent, handle: Handle) => {
     event.preventDefault();
     event.stopPropagation();
     setDrag({ handle, startX: event.clientX, startY: event.clientY, rect: { ...rect } });
@@ -211,7 +211,7 @@ export function ImageProcessingDialog({ file, onUse, onCancel, title = 'Prepare 
               <button type="button" onClick={() => setMode('crop')} className={'rounded-xl border p-3 text-left transition ' + (mode === 'crop' ? 'border-accent bg-accent/10' : 'border-line hover:bg-surface-raised')}><Crop size={17} className="mb-2"/><span className="block text-sm font-semibold">Crop image</span><span className="mt-1 block text-xs text-content-muted">Drag to frame</span></button>
             </div>
             {mode === 'crop' && <>
-              <label className="flex flex-col gap-2 text-sm font-medium">Crop shape<select value={ratio} onChange={(event) => setRatio(event.target.value as CropRatio)} className="w-full rounded-lg border border-line bg-bg px-3 py-2.5 text-sm text-content"><option value="original">Original proportions</option><option value="free">Free crop</option><option value="1:1">Square (1:1)</option><option value="4:3">Landscape (4:3)</option><option value="16:10">Project card (16:10)</option><option value="16:9">Wide (16:9)</option><option value="3:2">Photo (3:2)</option></select></label>
+              <label className="flex flex-col gap-2 text-sm font-medium">Crop shape<select value={ratio} onChange={(event) => setRatio(event.target.value as CropRatio)} className="w-full rounded-lg border border-line bg-bg px-3 py-2.5 text-sm text-content"><option value="original">Original proportions</option><option value="1:1">Square (1:1)</option><option value="4:3">Landscape (4:3)</option><option value="16:10">Project card (16:10)</option><option value="16:9">Wide (16:9)</option><option value="3:2">Photo (3:2)</option></select></label>
               <div className="rounded-lg bg-surface-raised p-3 text-xs leading-relaxed text-content-secondary"><strong className="text-content">Crop controls</strong><p className="mt-1">Drag inside the frame to reposition. Use the eight white handles to resize the crop area. Preset ratios stay proportional.</p></div>
               <button type="button" onClick={resetCrop} className="inline-flex items-center gap-2 self-start text-xs text-content-secondary hover:text-content"><RotateCcw size={13}/> Reset crop</button>
             </>}
