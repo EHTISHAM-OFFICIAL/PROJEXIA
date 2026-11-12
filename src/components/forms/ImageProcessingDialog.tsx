@@ -16,7 +16,7 @@ interface ImageProcessingDialogProps {
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const ratioValue = (ratio: CropRatio, width: number, height: number) => {
-  if (ratio === 'original' || ratio === 'free') return width / Math.max(1, height);
+  if (ratio === 'original') return width / Math.max(1, height);
   const [w, h] = ratio.split(':').map(Number);
   return w / h;
 };
@@ -80,22 +80,36 @@ export function ImageProcessingDialog({ file, onUse, onCancel, title = 'Prepare 
         const right = handle.includes('e');
         const top = handle.includes('n');
         const bottom = handle.includes('s');
+        const centerX = x + w / 2;
+        const centerY = y + h / 2;
+        const anchorX = left ? x + w : right ? x : centerX;
+        const anchorY = top ? y + h : bottom ? y : centerY;
         let nextW = w;
         let nextH = h;
-        if (left || right) nextW = clamp(w + (right ? dx : -dx), minSize, 100);
-        if (top || bottom) nextH = clamp(h + (bottom ? dy : -dy), minSize, 100);
         if ((left || right) && (top || bottom)) {
-          if (Math.abs(dx) >= Math.abs(dy)) nextH = nextW / normalizedRatio;
-          else nextW = nextH * normalizedRatio;
-        } else if (left || right) nextH = nextW / normalizedRatio;
-        else nextW = nextH * normalizedRatio;
-        const maxW = Math.min(100, (left ? x + w : 100 - x) * (left || right ? 1 : 1));
-        const maxH = Math.min(100, (top ? y + h : 100 - y) * (top || bottom ? 1 : 1));
+          const widthCandidate = Math.max(minSize, w + (right ? dx : -dx));
+          const heightCandidate = Math.max(minSize, h + (bottom ? dy : -dy));
+          if (Math.abs(widthCandidate - w) >= Math.abs(heightCandidate - h) * normalizedRatio) {
+            nextW = widthCandidate;
+            nextH = nextW / normalizedRatio;
+          } else {
+            nextH = heightCandidate;
+            nextW = nextH * normalizedRatio;
+          }
+        } else if (left || right) {
+          nextW = Math.max(minSize, w + (right ? dx : -dx));
+          nextH = nextW / normalizedRatio;
+        } else {
+          nextH = Math.max(minSize, h + (bottom ? dy : -dy));
+          nextW = nextH * normalizedRatio;
+        }
+        const maxW = left || right ? (left ? anchorX : 100 - anchorX) : 2 * Math.min(anchorX, 100 - anchorX);
+        const maxH = top || bottom ? (top ? anchorY : 100 - anchorY) : 2 * Math.min(anchorY, 100 - anchorY);
         const scale = Math.min(1, maxW / Math.max(nextW, 1), maxH / Math.max(nextH, 1));
         nextW = Math.max(minSize, nextW * scale);
         nextH = Math.max(minSize, nextH * scale);
-        const nextX = left ? x + w - nextW : right ? x : x + (w - nextW) / 2;
-        const nextY = top ? y + h - nextH : bottom ? y : y + (h - nextH) / 2;
+        const nextX = left ? anchorX - nextW : right ? anchorX : anchorX - nextW / 2;
+        const nextY = top ? anchorY - nextH : bottom ? anchorY : anchorY - nextH / 2;
         next = { x: clamp(nextX, 0, 100 - nextW), y: clamp(nextY, 0, 100 - nextH), w: nextW, h: nextH };
       }
       setRect(next);
@@ -197,7 +211,7 @@ export function ImageProcessingDialog({ file, onUse, onCancel, title = 'Prepare 
                       <span className="border-r border-white/70"/><span className="border-r border-white/70"/><span/>
                     </div>
                     {handlePositions.map(({ key, className }) => (
-                      <button key={key} type="button" aria-label={'Resize crop ' + key} onPointerDown={(event) => beginDrag(event, key)} className={'absolute z-10 h-4 w-4 rounded-sm border-2 border-accent bg-white shadow-md ' + className}/>
+                      <button key={key} type="button" aria-label={'Resize crop ' + key} onPointerDown={(event) => beginDrag(event, key)} className={'absolute z-10 h-5 w-5 rounded-sm border-2 border-accent bg-white shadow-md ' + className}/>
                     ))}
                   </div>
                 </div>
