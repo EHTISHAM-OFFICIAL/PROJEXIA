@@ -91,7 +91,7 @@ export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps)
         role="dialog"
         aria-modal="true"
         aria-labelledby="collection-quick-view-title"
-        className="relative flex max-h-[94dvh] w-full max-w-5xl flex-col overflow-y-auto overscroll-contain [webkit-overflow-scrolling:touch] rounded-t-2xl border border-line bg-surface shadow-2xl sm:rounded-2xl sm:max-h-[88dvh] lg:grid lg:h-[min(88dvh,850px)] lg:max-h-[88dvh] lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:overflow-hidden"
+        className="relative flex max-h-[94dvh] w-full max-w-5xl flex-col overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] rounded-t-2xl border border-line bg-surface shadow-2xl sm:rounded-2xl sm:max-h-[88dvh] lg:grid lg:h-[min(88dvh,850px)] lg:max-h-[88dvh] lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:overflow-hidden"
       >
         <button
           type="button"
@@ -144,7 +144,7 @@ export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps)
           )}
         </div>
 
-        <div className="min-w-0 shrink-0 overflow-visible p-5 sm:p-7 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:p-8 lg:[webkit-overflow-scrolling:touch]">
+        <div className="min-w-0 shrink-0 overflow-visible p-5 sm:p-7 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:p-8 lg:[-webkit-overflow-scrolling:touch]">
           <p className="pr-12 text-xs font-semibold uppercase tracking-[0.15em] text-accent">{item.category}</p>
           <h2 id="collection-quick-view-title" className="mt-2 text-2xl font-semibold leading-tight text-content sm:text-3xl">{item.title}</h2>
           {item.shortDescription && <p className="mt-3 text-base leading-relaxed text-content-secondary">{item.shortDescription}</p>}
