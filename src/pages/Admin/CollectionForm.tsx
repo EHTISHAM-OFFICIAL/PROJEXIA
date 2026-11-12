@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
-import { ArrowLeft, ImagePlus, Loader2, Plus, Save, Trash2, Upload, X } from "lucide-react";
+import { ArrowLeft, ImagePlus, Loader2, Pencil, Plus, Save, Trash2, Upload, X } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Seo } from "../../components/ui/Seo";
 import { Button } from "../../components/ui/Button";
 import { Alert } from "../../components/ui/Alert";
 import { Image } from "../../components/ui/Image";
 import { Field } from "../../components/forms/Field";
-import { TextArea, TextInput, Select } from "../../components/forms/Inputs";
+import { TextInput, Select } from "../../components/forms/Inputs";
+import { RichTextEditor } from "../../components/forms/RichTextEditor";
+import { ListEditor } from "../../components/forms/ListEditor";
+import { ImageProcessingDialog } from "../../components/forms/ImageProcessingDialog";
 import { collectionService } from "../../services/collectionService";
 import { imgbbService } from "../../services/imgbbService";
 import { PROJECT_IMAGE_RULES } from "../../constants/requestOptions";
@@ -27,6 +30,8 @@ export default function CollectionForm() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
+  const [pendingImages, setPendingImages] = useState<File[]>([]);
+  const [editingImageIndex, setEditingImageIndex] = useState<number | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -61,7 +66,7 @@ export default function CollectionForm() {
     setDraft((current) => ({ ...current, [key]: value }));
   };
 
-  const uploadImages = async (event: ChangeEvent<HTMLInputElement>) => {
+  const uploadImages = (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
     if (!files.length) return;
     if (draft.images.length + files.length > 10) {
@@ -69,28 +74,63 @@ export default function CollectionForm() {
       event.target.value = "";
       return;
     }
+    const invalid = files.map((file) => ({ file, result: validateProjectImage(file) })).find((entry) => !entry.result.valid);
+    if (invalid) {
+      setError(invalid.result.error || invalid.file.name + " cannot be uploaded.");
+      event.target.value = "";
+      return;
+    }
     setError("");
+    setEditingImageIndex(null);
+    setPendingImages(files);
+    event.target.value = "";
+  };
+
+  const uploadPreparedImage = async (file: File) => {
     setUploading(true);
-    let completed = 0;
+    setError("");
+    setUploadProgress("Uploading image to the existing image hosts...");
     try {
-      for (const file of files) {
-        const validation = validateProjectImage(file);
-        if (!validation.valid) throw new Error(validation.error || "This image cannot be uploaded.");
-        setUploadProgress("Uploading " + (completed + 1) + " of " + files.length + "...");
-        const uploaded = await imgbbService.upload(file);
-        const alt = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
+      const uploaded = await imgbbService.upload(file);
+      const alt = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").replace(/-cropped$/i, "").trim();
+      if (editingImageIndex !== null) {
+        setDraft((current) => ({
+          ...current,
+          images: current.images.map((image, index) => index === editingImageIndex ? { ...image, url: uploaded.url } : image),
+        }));
+        setEditingImageIndex(null);
+      } else {
         setDraft((current) => ({ ...current, images: [...current.images, { url: uploaded.url, alt }] }));
-        completed += 1;
       }
-      notify({ title: "Images uploaded", message: completed + " image(s) added to this item.", tone: "success" });
+      setPendingImages((current) => current.slice(1));
+      notify({ title: "Image prepared", message: "The edited image has been uploaded successfully.", tone: "success" });
     } catch (caught) {
-      const message = caught instanceof Error ? caught.message : "One or more images could not be uploaded.";
-      setError(completed ? message + " The images uploaded before the error have been kept." : message);
-      notify({ title: "Image upload incomplete", message, tone: "error" });
+      const message = caught instanceof Error ? caught.message : "The image could not be uploaded.";
+      setError(message);
+      throw caught;
     } finally {
       setUploading(false);
       setUploadProgress("");
-      if (inputRef.current) inputRef.current.value = "";
+    }
+  };
+
+  const editExistingImage = async (index: number) => {
+    const current = draft.images[index];
+    if (!current) return;
+    setError("");
+    try {
+      const response = await fetch(current.url);
+      if (!response.ok) throw new Error("Could not retrieve this image for editing.");
+      const blob = await response.blob();
+      const type = blob.type || "image/png";
+      const extension = type === "image/jpeg" ? ".jpg" : type === "image/webp" ? ".webp" : ".png";
+      const file = new File([blob], (current.alt || draft.title || "collection-image") + extension, { type });
+      const validation = validateProjectImage(file);
+      if (!validation.valid) throw new Error(validation.error || "This image cannot be edited.");
+      setEditingImageIndex(index);
+      setPendingImages([file]);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Could not open this image for editing.");
     }
   };
 
@@ -171,8 +211,16 @@ export default function CollectionForm() {
             </div>
             <div className="mt-5">
               <Field label="Full description" htmlFor="description">
-                <TextArea id="description" rows={5} value={draft.description} onChange={(event) => update("description", event.target.value)} placeholder="Add a little more context about this item..."/>
+                <RichTextEditor id="description" rows={8} value={draft.description} onChange={(value) => update("description", value)} placeholder="Describe the item, its purpose and any useful details..." showToolbar/>
               </Field>
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-line bg-surface p-4 sm:p-6">
+            <h2 className="font-semibold">Tags and search terms</h2>
+            <p className="mt-1 text-xs text-content-muted">Add short keywords that describe this item. Press comma or paste comma-separated values to create separate entries.</p>
+            <div className="mt-4">
+              <ListEditor label="Tag" placeholder="e.g. Acrylic, Custom-made, Educational" values={draft.tags ?? []} onChange={(tags) => update("tags", tags)} splitOnComma/>
             </div>
           </section>
 
@@ -181,7 +229,8 @@ export default function CollectionForm() {
               <div><h2 className="font-semibold">Item images</h2><p className="mt-1 text-xs text-content-muted">Upload up to 10 images. The first image is used as the gallery cover.</p></div>
               <Button type="button" variant="secondary" size="sm" onClick={() => inputRef.current?.click()} disabled={uploading}><ImagePlus size={15}/> Add images</Button>
             </div>
-            <input ref={inputRef} type="file" accept={PROJECT_IMAGE_RULES.allowedExtensions.join(",")} multiple onChange={(event) => void uploadImages(event)} className="sr-only"/>
+            <input ref={inputRef} type="file" accept={PROJECT_IMAGE_RULES.allowedExtensions.join(",")} multiple onChange={uploadImages} className="sr-only"/>
+            {pendingImages[0] && <ImageProcessingDialog key={pendingImages[0].name + pendingImages[0].lastModified} file={pendingImages[0]} title={editingImageIndex !== null ? "Edit collection image" : "Prepare collection image"} onCancel={() => { setPendingImages([]); setEditingImageIndex(null); }} onUse={uploadPreparedImage}/>} 
             {uploading && <div className="mt-4 flex items-center gap-2 rounded-lg border border-accent/25 bg-accent/5 px-3 py-2 text-sm text-content-secondary"><Loader2 size={16} className="animate-spin text-accent"/>{uploadProgress}</div>}
             {draft.images.length === 0 ? (
               <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} className="mt-4 flex min-h-40 w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-line bg-surface-raised/50 px-4 py-8 text-center text-content-secondary transition-colors hover:border-accent hover:text-accent">
@@ -199,7 +248,10 @@ export default function CollectionForm() {
                     <div className="p-3">
                       <label className="text-xs font-medium text-content-secondary" htmlFor={"image-alt-" + index}>Image description (alt text)</label>
                       <TextInput id={"image-alt-" + index} value={image.alt} onChange={(event) => updateImageAlt(index, event.target.value)} className="mt-1 text-sm"/>
-                      {index > 0 && <button type="button" onClick={() => setDraft((current) => ({ ...current, images: [current.images[index], ...current.images.filter((_, imageIndex) => imageIndex !== index)] }))} className="mt-2 text-xs font-medium text-accent hover:underline">Make cover image</button>}
+                      <div className="mt-2 flex flex-wrap items-center gap-3">
+                        <button type="button" onClick={() => void editExistingImage(index)} disabled={uploading || pendingImages.length > 0} className="inline-flex items-center gap-1 text-xs font-medium text-content-secondary hover:text-accent disabled:opacity-50"><Pencil size={12}/> Edit / crop</button>
+                        {index > 0 && <button type="button" onClick={() => setDraft((current) => ({ ...current, images: [current.images[index], ...current.images.filter((_, imageIndex) => imageIndex !== index)] }))} className="text-xs font-medium text-accent hover:underline">Make cover image</button>}
+                      </div>
                     </div>
                   </div>
                 ))}
