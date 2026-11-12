@@ -91,7 +91,7 @@ export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps)
         role="dialog"
         aria-modal="true"
         aria-labelledby="collection-quick-view-title"
-        className="relative flex max-h-[94dvh] w-full max-w-5xl flex-col overflow-hidden rounded-t-2xl border border-line bg-surface shadow-2xl sm:max-h-[88vh] sm:rounded-2xl lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]"
+        className="relative flex max-h-[94dvh] w-full max-w-5xl flex-col overflow-y-auto overscroll-contain [webkit-overflow-scrolling:touch] rounded-t-2xl border border-line bg-surface shadow-2xl sm:rounded-2xl sm:max-h-[88dvh] lg:grid lg:h-[min(88dvh,850px)] lg:max-h-[88dvh] lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:overflow-hidden"
       >
         <button
           type="button"
@@ -103,14 +103,14 @@ export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps)
           <X size={19} aria-hidden="true" />
         </button>
 
-        <div className="flex min-h-0 flex-col bg-surface-raised p-3 sm:p-5 lg:min-h-[520px]">
-          <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-bg/40">
+        <div className="flex shrink-0 flex-col bg-surface-raised p-3 sm:p-5 lg:min-h-0 lg:shrink lg:overflow-hidden">
+          <div className="relative flex h-[30dvh] min-h-[210px] max-h-[340px] w-full flex-none items-center justify-center overflow-hidden rounded-xl bg-bg/40 lg:h-auto lg:max-h-none lg:min-h-0 lg:flex-1">
             {activeImage ? (
               <Image
                 src={activeImage.url}
                 alt={activeImage.alt || item.title}
                 eager
-                className="max-h-[42vh] w-full object-contain sm:max-h-[52vh] lg:max-h-[64vh]"
+                className="max-h-full w-full object-contain lg:max-h-[64vh]"
               />
             ) : (
               <div className="flex aspect-[4/3] w-full items-center justify-center text-content-muted">Image unavailable</div>
@@ -144,7 +144,7 @@ export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps)
           )}
         </div>
 
-        <div className="min-h-0 overflow-y-auto p-5 sm:p-7 lg:p-8">
+        <div className="min-w-0 shrink-0 overflow-visible p-5 sm:p-7 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:p-8 lg:[webkit-overflow-scrolling:touch]">
           <p className="pr-12 text-xs font-semibold uppercase tracking-[0.15em] text-accent">{item.category}</p>
           <h2 id="collection-quick-view-title" className="mt-2 text-2xl font-semibold leading-tight text-content sm:text-3xl">{item.title}</h2>
           {item.shortDescription && <p className="mt-3 text-base leading-relaxed text-content-secondary">{item.shortDescription}</p>}
