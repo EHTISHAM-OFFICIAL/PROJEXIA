@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
-import { ArrowLeft, ImagePlus, Loader2, Pencil, Plus, Save, Trash2, Upload, X } from "lucide-react";
+import { ArrowLeft, ImagePlus, Loader2, Pencil, Plus, Save, Upload, X } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Seo } from "../../components/ui/Seo";
 import { Button } from "../../components/ui/Button";
 import { Alert } from "../../components/ui/Alert";
 import { Image } from "../../components/ui/Image";
 import { Field } from "../../components/forms/Field";
-import { TextInput, Select } from "../../components/forms/Inputs";
+import { TextInput, TextArea, Select } from "../../components/forms/Inputs";
 import { RichTextEditor } from "../../components/forms/RichTextEditor";
 import { ListEditor } from "../../components/forms/ListEditor";
 import { ImageProcessingDialog } from "../../components/forms/ImageProcessingDialog";
@@ -48,7 +48,7 @@ export default function CollectionForm() {
           setError("This collection item could not be found.");
         } else if (item) {
           const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...rest } = item;
-          setDraft({ ...EMPTY_COLLECTION_DRAFT, ...rest });
+          setDraft({\n            ...EMPTY_COLLECTION_DRAFT,\n            ...rest,\n            additionalDetails: (rest.additionalDetails ?? []).map((detail) => ({\n              label: "",\n              value: [detail.label?.trim(), detail.value?.trim()].filter(Boolean).join(": "),\n            })).filter((detail) => detail.value),\n          });
         } else {
           setDraft((current) => ({ ...current, category: settings.categories[0] || DEFAULT_COLLECTION_CATEGORIES[0] }));
         }
@@ -145,11 +145,13 @@ export default function CollectionForm() {
     setDraft((current) => ({ ...current, images: current.images.filter((_, imageIndex) => imageIndex !== index) }));
   };
 
-  const updateDetail = (index: number, key: "label" | "value", value: string) => {
-    setDraft((current) => ({
-      ...current,
-      additionalDetails: current.additionalDetails.map((detail, detailIndex) => detailIndex === index ? { ...detail, [key]: value } : detail),
-    }));
+  const updateFeatures = (value: string) => {
+    const features = value
+      .split(".")
+      .map((feature) => feature.trim())
+      .filter(Boolean)
+      .map((feature) => ({ label: "", value: feature }));
+    setDraft((current) => ({ ...current, additionalDetails: features }));
   };
 
   const save = async (published: boolean) => {
@@ -269,16 +271,14 @@ export default function CollectionForm() {
               <Field label="Colour / finish" htmlFor="color"><TextInput id="color" value={draft.color} onChange={(event) => update("color", event.target.value)} placeholder="e.g. Clear / transparent"/></Field>
             </div>
             <div className="mt-6">
-              <div className="flex items-center justify-between gap-3"><h3 className="text-sm font-semibold">Custom details</h3><Button type="button" variant="secondary" size="sm" onClick={() => update("additionalDetails", [...draft.additionalDetails, { label: "", value: "" }])}><Plus size={14}/> Add detail</Button></div>
-              {draft.additionalDetails.length === 0 ? <p className="mt-2 text-xs text-content-muted">No additional details added.</p> : <div className="mt-3 space-y-2">
-                {draft.additionalDetails.map((detail, index) => (
-                  <div key={index} className="grid gap-2 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_auto]">
-                    <TextInput aria-label="Detail label" value={detail.label} onChange={(event) => updateDetail(index, "label", event.target.value)} placeholder="Label"/>
-                    <TextInput aria-label="Detail value" value={detail.value} onChange={(event) => updateDetail(index, "value", event.target.value)} placeholder="Value"/>
-                    <Button type="button" variant="danger" size="sm" onClick={() => update("additionalDetails", draft.additionalDetails.filter((_, detailIndex) => detailIndex !== index))}><Trash2 size={14}/></Button>
-                  </div>
-                ))}
-              </div>}
+              <div className="flex items-center justify-between gap-3">
+                <div><h3 className="text-sm font-semibold">Features</h3><p className="mt-1 text-xs text-content-muted">Separate each feature with a full stop. Each one appears as its own line in the item details.</p></div>
+                <Button type="button" variant="secondary" size="sm" onClick={() => updateFeatures([...draft.additionalDetails.map((feature) => feature.value), ""].join(". "))}><Plus size={14}/> Add feature</Button>
+              </div>
+              <Field label="Item features" htmlFor="features">
+                <TextArea id="features" rows={4} value={draft.additionalDetails.map((feature) => feature.value).join(". ")} onChange={(event) => updateFeatures(event.target.value)} placeholder="e.g. Lightweight design. Smooth polished finish. Made for everyday use."/>
+              </Field>
+              <p className="mt-2 text-xs text-content-muted">{draft.additionalDetails.filter((feature) => feature.value.trim()).length} feature(s) detected</p>
             </div>
           </section>
         </div>
