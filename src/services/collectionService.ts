@@ -97,7 +97,7 @@ function normalizeDraft(value: CollectionItemDraft): CollectionItemDraft {
     tags: Array.from(new Set((value.tags ?? []).map((tag) => tag.trim()).filter(Boolean))),
     additionalDetails: value.additionalDetails
       .map((detail) => ({ label: detail.label.trim(), value: detail.value.trim() }))
-      .filter((detail) => detail.label && detail.value),
+      .filter((detail) => detail.value),
     displayOrder: Number.isFinite(value.displayOrder) ? value.displayOrder : 0,
   };
 }
