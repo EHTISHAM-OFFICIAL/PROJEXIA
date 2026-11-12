@@ -5,3 +5,40 @@ compatibility_date = "2026-10-29"
 [vars]
 FIREBASE_PROJECT_ID = "mectec-shop"
 ALLOWED_ORIGINS = "https://projexiahub.web.app,https://projexia.web.app,http://localhost:5173"
+
+# Throttles for uploads and username sign-in (Workers Rate Limiting binding).
+# Each limit applies per key, per Cloudflare location, and is eventually
+# consistent: it slows abuse down, it is not an exact quota. period must be 10
+# or 60. namespace_id values only need to be unique within your account.
+[[ratelimits]]
+name = "UPLOAD_LIMITER_USER"
+namespace_id = "1101"
+  [ratelimits.simple]
+  limit = 20
+  period = 60
+
+[[ratelimits]]
+name = "UPLOAD_LIMITER_IP"
+namespace_id = "1102"
+  [ratelimits.simple]
+  limit = 40
+  period = 60
+
+[[ratelimits]]
+name = "LOGIN_LIMITER_USER"
+namespace_id = "1103"
+  [ratelimits.simple]
+  limit = 10
+  period = 60
+
+[[ratelimits]]
+name = "LOGIN_LIMITER_IP"
+namespace_id = "1104"
+  [ratelimits.simple]
+  limit = 20
+  period = 60
+
+# Secrets (set with `wrangler secret put <NAME>`, never in this file):
+#   IMGBB_API_KEY, FREEIMAGE_API_KEY            image hosts
+#   FIREBASE_WEB_API_KEY                        the web API key from your Firebase config
+#   RESOLVER_EMAIL, RESOLVER_PASSWORD           the Firebase account listed in resolvers/{uid}

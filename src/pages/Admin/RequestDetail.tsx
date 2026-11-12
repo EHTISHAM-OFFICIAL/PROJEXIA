@@ -12,6 +12,7 @@ import { Field } from "../../components/forms/Field";
 import { Select, TextArea, TextInput } from "../../components/forms/Inputs";
 import { useProjectRequest } from "../../hooks/useProjectRequests";
 import { requestService } from "../../services/requestService";
+import { safeHttpUrl } from "../../utils/safeUrl";
 import { requestSettingsService } from "../../services/requestSettingsService";
 import {
   REQUEST_PRIORITIES,
@@ -336,18 +337,28 @@ export default function RequestDetail() {
             <Block title="References">
               {references.links.length > 0 && (
                 <ul className="flex flex-col gap-1.5">
-                  {references.links.map((link) => (
-                    <li key={link}>
-                      <a
-                        href={link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="break-all text-sm text-accent transition-colors hover:text-accent-hover"
-                      >
-                        {link}
-                      </a>
-                    </li>
-                  ))}
+                  {references.links.map((link) => {
+                    // Customer-supplied: only ever make http(s) URLs clickable.
+                    const safeLink = safeHttpUrl(link);
+                    return (
+                      <li key={link}>
+                        {safeLink ? (
+                          <a
+                            href={safeLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="break-all text-sm text-accent transition-colors hover:text-accent-hover"
+                          >
+                            {link}
+                          </a>
+                        ) : (
+                          <span className="break-all text-sm text-content-muted">
+                            {link} (not a web link, so it is not clickable)
+                          </span>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
               {references.description && (
@@ -359,10 +370,21 @@ export default function RequestDetail() {
           {request.attachments.length > 0 && (
             <Block title="Attachments">
               <ul className="flex flex-col gap-2">
-                {request.attachments.map((attachment) => (
+                {request.attachments.map((attachment) => {
+                  const safeAttachmentUrl = safeHttpUrl(attachment.url, { httpsOnly: true });
+                  if (!safeAttachmentUrl) {
+                    return (
+                      <li key={attachment.storagePath}>
+                        <span className="block rounded-lg border border-line bg-surface-raised px-3 py-2.5 text-sm text-content-muted">
+                          {attachment.name} (invalid attachment link, not clickable)
+                        </span>
+                      </li>
+                    );
+                  }
+                  return (
                   <li key={attachment.storagePath}>
                     <a
-                      href={attachment.url}
+                      href={safeAttachmentUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center justify-between gap-3 rounded-lg border border-line bg-surface-raised px-3 py-2.5 transition-colors hover:border-line-strong"
@@ -380,7 +402,8 @@ export default function RequestDetail() {
                       />
                     </a>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             </Block>
           )}

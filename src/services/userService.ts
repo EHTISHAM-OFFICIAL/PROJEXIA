@@ -11,18 +11,17 @@ import {
 import { auth } from '../firebase/auth';
 import { db } from '../firebase/firestore';
 import type { UserProfile } from '../types/user';
+import { getGatewayUrl } from './imgbbService';
 
 const USERS_COLLECTION = 'users';
 const USERNAME_LOOKUP_COLLECTION = 'usernameLookup';
 const INTERNAL_EMAIL_DOMAIN = 'users.mectec.local';
 const usernamePattern = /^[a-z0-9_-]{3,30}$/;
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const INVALID_LOGIN = 'Invalid username or password.';
 
 export function normalizeUsername(value: string): string {
   return value.trim().toLowerCase();
-}
-
-function authEmailForLegacyUsername(username: string): string {
-  return `${normalizeUsername(username)}@${INTERNAL_EMAIL_DOMAIN}`;
 }
 
 function usernameLookupRef(username: string) {
@@ -93,20 +92,76 @@ export async function registerUser(
   }
 }
 
-export async function signInWithUsername(usernameInput: string, password: string): Promise<User> {
-  const username = normalizeUsername(usernameInput);
-  if (validateUsername(username)) {
-    throw new Error('Invalid username or password.');
+/**
+ * Asks the Worker to resolve a username to its sign-in email. The Worker checks
+ * the password first and only then returns the email, so usernames cannot be
+ * turned into email addresses by anyone who does not hold the password. The
+ * username -> email mapping is no longer readable from the browser.
+ */
+async function resolveUsernameSignIn(
+  username: string,
+  password: string,
+): Promise<{ email: string; lookupMissing: boolean }> {
+  const workerUrl = await getGatewayUrl();
+  if (!workerUrl) {
+    throw new Error('Username sign-in is unavailable right now. Sign in with your email address instead.');
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(`${workerUrl}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+  } catch {
+    throw new Error('Could not reach the sign-in service. Sign in with your email address instead.');
+  }
+
+  const payload = (await response.json().catch(() => null)) as {
+    ok?: boolean;
+    email?: unknown;
+    lookupMissing?: unknown;
+    error?: unknown;
+  } | null;
+
+  if (response.ok && payload?.ok && typeof payload.email === 'string') {
+    return { email: payload.email, lookupMissing: payload.lookupMissing === true };
+  }
+  if (response.status === 401) throw new Error(INVALID_LOGIN);
+
+  throw new Error(
+    typeof payload?.error === 'string' && payload.error
+      ? payload.error
+      : 'Sign-in is temporarily unavailable. Try again, or sign in with your email address.',
+  );
+}
+
+/**
+ * Signs a customer in with a username or an email address.
+ *
+ * An email goes straight to Firebase. A username goes through the Worker (see
+ * resolveUsernameSignIn). Firebase's own failure messages are collapsed into one
+ * generic error so the form never reveals which half of a login was wrong.
+ */
+export async function signInWithUsername(identifierInput: string, password: string): Promise<User> {
+  const identifier = identifierInput.trim();
+  if (!identifier || !password) throw new Error(INVALID_LOGIN);
+
+  let authEmail: string;
+  let username: string | null = null;
+  let lookupMissing = false;
+
+  if (identifier.includes('@')) {
+    if (!emailPattern.test(identifier)) throw new Error(INVALID_LOGIN);
+    authEmail = identifier.toLowerCase();
+  } else {
+    username = normalizeUsername(identifier);
+    if (validateUsername(username)) throw new Error(INVALID_LOGIN);
+    ({ email: authEmail, lookupMissing } = await resolveUsernameSignIn(username, password));
   }
 
   try {
-    const lookupSnapshot = await getDoc(usernameLookupRef(username));
-    const authEmail = lookupSnapshot.exists()
-      ? (lookupSnapshot.data().authEmail as string | undefined)
-      : authEmailForLegacyUsername(username);
-
-    if (!authEmail) throw new Error('Invalid username or password.');
-
     const credential = await signInWithEmailAndPassword(auth, authEmail, password);
     const profile = await getUserProfile(credential.user.uid);
 
@@ -125,7 +180,9 @@ export async function signInWithUsername(usernameInput: string, password: string
       }
     }
 
-    if (!lookupSnapshot.exists() && credential.user.email) {
+    // The Worker reports when this username has no lookup record yet. Create it
+    // (the owner may write their own) so the record reflects the final email.
+    if (username && lookupMissing && credential.user.email) {
       try {
         await setDoc(usernameLookupRef(username), {
           uid: credential.user.uid,
@@ -139,7 +196,7 @@ export async function signInWithUsername(usernameInput: string, password: string
 
     return credential.user;
   } catch {
-    throw new Error('Invalid username or password.');
+    throw new Error(INVALID_LOGIN);
   }
 }
 

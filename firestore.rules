@@ -39,6 +39,26 @@ service cloud.firestore {
       return isSignedIn() && data.ownerUid == request.auth.uid;
     }
 
+    // The username -> sign-in email mapping is not public. Only the dedicated
+    // "resolver" account used by the image-upload/auth Worker may read it.
+    // That account is registered by creating a document at resolvers/{uid} in
+    // the Firebase Console (same pattern as admins/{uid}); it is never
+    // writable from a client.
+    function isResolver() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/resolvers/$(request.auth.uid));
+    }
+
+    // A public status record may only be created for a request the caller owns,
+    // under that request's own number. getAfter() sees the request whether it
+    // was written earlier or in the same batch.
+    function ownsLookupTarget(requestNumber) {
+      let requestPath = /databases/$(database)/documents/projectRequests/$(request.resource.data.requestId);
+      return existsAfter(requestPath)
+        && getAfter(requestPath).data.ownerUid == request.auth.uid
+        && getAfter(requestPath).data.requestNumber == requestNumber;
+    }
+
     function customerEditWindowOpen() {
       let settingsPath = /databases/$(database)/documents/settings/requestSecurity;
       let hours = exists(settingsPath)
@@ -101,6 +121,10 @@ service cloud.firestore {
 
       // Full requests are private. Admins can manage all requests; customers
       // can only read their own authenticated requests.
+      //
+      // Because the owner can read this whole document, it must never contain
+      // anything the customer should not see. Internal notes, the quoted price
+      // and the assignee live in requestPrivate/{requestId} instead.
       allow read: if isAdmin() || isOwner(resource.data);
 
       // Every new customer request must belong to the authenticated account
@@ -121,7 +145,6 @@ service cloud.firestore {
           && request.resource.data.requestNumber == resource.data.requestNumber
           && request.resource.data.status == resource.data.status
           && request.resource.data.priority == resource.data.priority
-          && request.resource.data.admin == resource.data.admin
           && request.resource.data.customerUpdate == resource.data.customerUpdate
           && request.resource.data.customerUpdateAt == resource.data.customerUpdateAt
           && request.resource.data.createdAt == resource.data.createdAt
@@ -151,7 +174,6 @@ service cloud.firestore {
           && request.resource.data.requestNumber == resource.data.requestNumber
           && request.resource.data.status == resource.data.status
           && request.resource.data.priority == resource.data.priority
-          && request.resource.data.admin == resource.data.admin
           && request.resource.data.customerUpdate == resource.data.customerUpdate
           && request.resource.data.customerUpdateAt == resource.data.customerUpdateAt
           && request.resource.data.createdAt == resource.data.createdAt
@@ -176,52 +198,198 @@ service cloud.firestore {
         && resource.data.deletedBy == 'customer'
       );
 
+      // Every key a legitimate client writes is listed here, for the document
+      // and for each nested map, so a request cannot be used to store arbitrary
+      // extra data. If a form gains a field, add it here too.
       function isValidNewRequest() {
         let incoming = request.resource.data;
         return
+          request.auth != null
+          && incoming.keys().hasOnly([
+            'requestNumber', 'projectToken', 'ownerUid', 'status', 'priority',
+            'serviceType', 'schoolModel', 'contact', 'project', 'technical',
+            'software', 'scale', 'budget', 'timeline', 'references',
+            'attachments', 'additionalRequirements', 'consent',
+            'customerUpdate', 'customerUpdateAt', 'metadata',
+            'createdAt', 'updatedAt'
+          ])
+          && incoming.keys().hasAll([
+            'requestNumber', 'ownerUid', 'status', 'priority', 'contact',
+            'project', 'consent', 'attachments', 'createdAt', 'updatedAt'
+          ])
+          && incoming.ownerUid == request.auth.uid
+
           // The workflow always begins at 'new'. A spammer cannot inject a
           // request that already looks reviewed or accepted.
-          request.auth != null
-          && incoming.ownerUid == request.auth.uid
           && incoming.status == 'new'
           && incoming.priority in ['low', 'normal', 'high', 'urgent']
+          && incoming.get('serviceType', 'electronics') in ['electronics', 'school-model']
 
           // Consent is a legal requirement, not a UI nicety, so it is enforced here.
+          && incoming.consent.keys().hasOnly(['agreeToTerms', 'allowContact'])
           && incoming.consent.agreeToTerms == true
           && incoming.consent.allowContact == true
 
-          // The admin block must be empty on create. Otherwise anyone could
-          // submit a request with a quoted amount or internal notes pre-filled.
-          && incoming.admin.notes == null
-          && incoming.admin.quotedAmount == null
-          && incoming.admin.assignedTo == null
+          // The customer-facing update is written by admins only. There is no
+          // admin block on this document at all: see requestPrivate below.
+          && incoming.get('customerUpdate', null) == null
+          && incoming.get('customerUpdateAt', null) == null
 
           // Timestamps must come from the server, never from the client clock.
           && incoming.createdAt == request.time
           && incoming.updatedAt == request.time
 
-          // Required fields, with length caps so one submission cannot be used
-          // to write megabytes into the database.
           && isString(incoming.requestNumber, 40)
-          // Project tokens are generated by the current client, but this is
-          // intentionally optional in the rule so older clients/builds can
-          // still submit requests. Admin trash authorization handles missing
-          // tokens by generating one when needed.
           && isOptionalString(incoming.get('projectToken', null), 40)
           && isString(incoming.ownerUid, 128)
+
+          && incoming.contact.keys().hasOnly([
+            'fullName', 'email', 'phone', 'whatsapp', 'country', 'city',
+            'preferredContactMethod'
+          ])
           && isString(incoming.contact.fullName, 100)
           && isString(incoming.contact.email, 200)
           && incoming.contact.email.matches('.+@.+[.].+')
-          && isOptionalString(incoming.contact.phone, 30)
-          && isOptionalString(incoming.contact.whatsapp, 30)
+          && isOptionalString(incoming.contact.get('phone', null), 30)
+          && isOptionalString(incoming.contact.get('whatsapp', null), 30)
+          && isOptionalString(incoming.contact.get('country', null), 200)
+          && isOptionalString(incoming.contact.get('city', null), 200)
+          && isOptionalString(incoming.contact.get('preferredContactMethod', null), 500)
+
+          && incoming.project.keys().hasOnly([
+            'title', 'category', 'type', 'purpose', 'description'
+          ])
           && isString(incoming.project.title, 120)
           && isString(incoming.project.description, 10000)
           && isString(incoming.project.category, 60)
+          && isOptionalString(incoming.project.get('type', null), 500)
+          && isOptionalString(incoming.project.get('purpose', null), 10000)
 
-          // Attachments are metadata only; the files themselves live in
-          // Storage and are size-checked by storage.rules.
+          && (!('schoolModel' in incoming)
+            || incoming.schoolModel.keys().hasOnly([
+              'itemId', 'slug', 'category', 'modelFormat', 'interaction'
+            ]))
+
+          && (!('technical' in incoming)
+            || (
+              incoming.technical.keys().hasOnly([
+                'preferredPlatforms', 'connectivity', 'sensors', 'outputs',
+                'powerSource', 'powerRequirements'
+              ])
+              && incoming.technical.get('preferredPlatforms', []).size() <= 50
+              && incoming.technical.get('connectivity', []).size() <= 50
+              && incoming.technical.get('sensors', []).size() <= 50
+              && incoming.technical.get('outputs', []).size() <= 50
+              && isOptionalString(incoming.technical.get('powerSource', null), 500)
+              && isOptionalString(incoming.technical.get('powerRequirements', null), 10000)
+            ))
+
+          && (!('software' in incoming)
+            || (
+              incoming.software.keys().hasOnly([
+                'requiresMobileApp', 'requiresWebDashboard',
+                'requiresCloudDatabase', 'requiresNotifications',
+                'requiresRemoteControl', 'notes', 'languages'
+              ])
+              && incoming.software.get('languages', []).size() <= 50
+              && isOptionalString(incoming.software.get('notes', null), 10000)
+            ))
+
+          && (!('scale' in incoming)
+            || (
+              incoming.scale.keys().hasOnly([
+                'complexity', 'prototypeQuantity', 'estimatedQuantity',
+                'deploymentEnvironment'
+              ])
+              && isOptionalString(incoming.scale.get('complexity', null), 500)
+              && isOptionalString(incoming.scale.get('deploymentEnvironment', null), 10000)
+            ))
+
+          && (!('budget' in incoming)
+            || (
+              incoming.budget.keys().hasOnly(['range', 'notes'])
+              && isOptionalString(incoming.budget.get('range', null), 500)
+              && isOptionalString(incoming.budget.get('notes', null), 10000)
+            ))
+
+          && (!('timeline' in incoming)
+            || (
+              incoming.timeline.keys().hasOnly([
+                'desiredStartDate', 'desiredDeadline', 'flexibility', 'urgency'
+              ])
+              && isOptionalString(incoming.timeline.get('flexibility', null), 500)
+              && isOptionalString(incoming.timeline.get('urgency', null), 500)
+            ))
+
+          && (!('references' in incoming)
+            || (
+              incoming.references.keys().hasOnly(['links', 'description'])
+              && incoming.references.get('links', []).size() <= 20
+              && isOptionalString(incoming.references.get('description', null), 10000)
+            ))
+
+          && (!('additionalRequirements' in incoming)
+            || (
+              incoming.additionalRequirements.keys().hasOnly([
+                'specialRequirements', 'additionalNotes', 'consultationRequired',
+                'hasExistingHardware', 'existingHardwareDescription',
+                'hasExistingCode', 'existingCodeDescription'
+              ])
+              && isOptionalString(incoming.additionalRequirements.get('specialRequirements', null), 10000)
+              && isOptionalString(incoming.additionalRequirements.get('additionalNotes', null), 10000)
+              && isOptionalString(incoming.additionalRequirements.get('existingHardwareDescription', null), 10000)
+              && isOptionalString(incoming.additionalRequirements.get('existingCodeDescription', null), 10000)
+            ))
+
+          && (!('metadata' in incoming)
+            || (
+              incoming.metadata.keys().hasOnly(['source', 'userAgent', 'createdFrom'])
+              && isOptionalString(incoming.metadata.get('source', null), 100)
+              && isOptionalString(incoming.metadata.get('userAgent', null), 400)
+              && isOptionalString(incoming.metadata.get('createdFrom', null), 100)
+            ))
+
+          // Attachments are metadata only; the files themselves are hosted by
+          // the image-upload Worker (ImgBB). Rules cannot inspect list items,
+          // so the client refuses to render anything but http(s) URLs.
+          && incoming.attachments is list
           && incoming.attachments.size() <= 5;
       }
+    }
+
+    // ---------------------------------------------------------------------
+    // requestPrivate — admin-only data for a request: internal notes, quoted
+    // price, assignee. Keyed by the request's document id.
+    //
+    // This is deliberately NOT a field on projectRequests: the customer who
+    // owns a request may read that whole document, including the network
+    // response, whatever the UI chooses to render.
+    // ---------------------------------------------------------------------
+    match /requestPrivate/{requestId} {
+      allow read: if isAdmin();
+
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'notes', 'quotedAmount', 'currency', 'assignedTo', 'updatedAt'
+        ])
+        && isOptionalString(request.resource.data.get('notes', null), 20000)
+        && (request.resource.data.get('quotedAmount', null) == null
+          || request.resource.data.quotedAmount is number)
+        && isOptionalString(request.resource.data.get('currency', null), 10)
+        && isOptionalString(request.resource.data.get('assignedTo', null), 200);
+
+      // Admins may delete freely. A customer may remove this record only in
+      // the same batch that permanently deletes their own, already-trashed
+      // request, so erasing a request does not leave internal notes behind.
+      // They still cannot read it.
+      allow delete: if isAdmin()
+        || (
+          isSignedIn()
+          && exists(/databases/$(database)/documents/projectRequests/$(requestId))
+          && get(/databases/$(database)/documents/projectRequests/$(requestId)).data.ownerUid == request.auth.uid
+          && get(/databases/$(database)/documents/projectRequests/$(requestId)).data.get('deletedBy', null) == 'customer'
+          && !existsAfter(/databases/$(database)/documents/projectRequests/$(requestId))
+        );
     }
 
     // ---------------------------------------------------------------------
@@ -315,27 +483,36 @@ service cloud.firestore {
     // browser, even via the network tab.
     // ---------------------------------------------------------------------
     match /requestStatusLookup/{requestNumber} {
-      // Doc id = requestNumber (~27 billion possible values), so a `get`
-      // here already requires knowing that unguessable value. There is no
-      // `list`, so the collection can never be enumerated.
+      // Doc id = requestNumber (10 random characters, ~8e14 values), so a
+      // `get` here already requires knowing that unguessable value. There is
+      // no `list`, so the collection can never be enumerated.
       allow get: if true;
       allow list: if false;
 
-      // Written once, automatically, by requestService.createRequest at the
-      // same moment the real request is submitted — mirrors the validation
-      // on the main create above, minus fields this collection doesn't have.
+      // Written once, right after the real request, by the signed-in customer
+      // who owns that request (see ownsLookupTarget). The public record holds
+      // a hash of the email, never the address itself.
       allow create: if isAdmin()
-        || (request.resource.data.requestNumber == requestNumber
-        && request.resource.data.requestId is string
-        && request.resource.data.status == 'new'
-        && isString(request.resource.data.projectTitle, 120)
-        && (
-          (request.resource.data.emailHash is string
-            && request.resource.data.emailHash.size() == 64)
-          || isString(request.resource.data.email, 200)
-        )
-        && request.resource.data.createdAt == request.time
-        && request.resource.data.updatedAt == request.time);
+        || (
+          isSignedIn()
+          && request.resource.data.keys().hasOnly([
+            'requestNumber', 'requestId', 'status', 'projectTitle',
+            'emailHash', 'createdAt', 'updatedAt', 'customerUpdate',
+            'customerUpdateAt', 'deletedAt'
+          ])
+          && request.resource.data.requestNumber == requestNumber
+          && request.resource.data.requestId is string
+          && request.resource.data.status == 'new'
+          && isString(request.resource.data.projectTitle, 120)
+          && request.resource.data.emailHash is string
+          && request.resource.data.emailHash.size() == 64
+          && request.resource.data.get('customerUpdate', null) == null
+          && request.resource.data.get('customerUpdateAt', null) == null
+          && request.resource.data.get('deletedAt', null) == null
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time
+          && ownsLookupTarget(requestNumber)
+        );
 
       // Admins can maintain status/trash state. A customer may only mark
       // their own request as trashed; the rule resolves the real request by
@@ -358,8 +535,17 @@ service cloud.firestore {
     match /contactMessages/{messageId} {
       allow read, update, delete: if isAdmin();
 
+      // Anonymous by design (the contact form needs no account), so this is the
+      // easiest write to spam. The field allowlist and length caps bound the
+      // damage; enable Firebase App Check to bound the volume (see README).
       allow create: if
-        request.resource.data.read == false
+        request.resource.data.keys().hasOnly([
+          'name', 'email', 'subject', 'message', 'read', 'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'name', 'email', 'subject', 'message', 'read', 'createdAt'
+        ])
+        && request.resource.data.read == false
         && request.resource.data.createdAt == request.time
         && isString(request.resource.data.name, 100)
         && isString(request.resource.data.email, 200)
@@ -386,11 +572,15 @@ service cloud.firestore {
 
     // ---------------------------------------------------------------------
     // usernameLookup — exact username -> Firebase Auth email mapping.
-    // The document can be fetched only by its exact username; collection
-    // listing is disabled. It contains no password or request data.
+    //
+    // The sign-in email is personal data, so this document is NOT public.
+    // Username sign-in goes through the Worker's /auth/login route, which reads
+    // it with the resolver account and only reveals the email after the
+    // password has been verified. Customers can still create and refresh their
+    // own record; nobody else can read it.
     // ---------------------------------------------------------------------
     match /usernameLookup/{username} {
-      allow get: if true;
+      allow get: if isResolver();
       allow list: if false;
       allow create: if isSignedIn()
         && request.resource.data.uid == request.auth.uid
@@ -403,6 +593,14 @@ service cloud.firestore {
         && request.resource.data.authEmail == request.auth.token.email
         && request.resource.data.keys().hasOnly(['uid', 'authEmail', 'createdAt']);
       allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------------
+    // resolvers — marks the Firebase Auth account the Worker signs in as to
+    // read usernameLookup. Managed in the Firebase Console only.
+    // ---------------------------------------------------------------------
+    match /resolvers/{uid} {
+      allow read, write: if false;
     }
 
     // ---------------------------------------------------------------------
@@ -453,7 +651,7 @@ service cloud.firestore {
     match /settings/{docId} {
       // Only explicitly public settings may be read by visitors. In particular,
       // EmailJS and imgBB overrides must never be exposed through Firestore.
-      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity', 'siteProfile', 'schoolModels', 'collections'];
+      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity', 'siteProfile', 'schoolModels', 'collections', 'requestStatusMessages'];
       allow list: if false;
 
       allow write: if isAdmin();

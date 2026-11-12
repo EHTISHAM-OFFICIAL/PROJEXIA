@@ -47,3 +47,13 @@ firebase deploy --only firestore:rules
 ```
 
 Merge/deploy the website only after the Worker is deployed and its URL is saved in Admin Settings. Until then, image uploads intentionally show a setup message rather than exposing keys in the browser.
+
+## Username sign-in and throttling (added in the security hardening release)
+
+The Worker also serves `POST /auth/login`, which resolves a username to its
+sign-in email and returns it only after Firebase confirms the password. It needs
+three more secrets: `FIREBASE_WEB_API_KEY`, `RESOLVER_EMAIL` and
+`RESOLVER_PASSWORD` (a dedicated Firebase account registered in Firestore as
+`resolvers/{uid}`). `wrangler.toml` now also defines four rate-limit bindings.
+`GET /health` shows whether each is active. Full steps and ordering are in
+`SECURITY-MIGRATION.md` at the repository root.

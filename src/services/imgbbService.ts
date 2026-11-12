@@ -74,6 +74,26 @@ async function readConfig(): Promise<HostingConfig> {
   };
 }
 
+/**
+ * The Worker's public URL, or null when it has not been configured. Unlike
+ * readConfig this never throws, so sign-in can degrade gracefully (settings/
+ * imageHosting is world-readable, so it works before anyone is signed in).
+ */
+export async function getGatewayUrl(): Promise<string | null> {
+  try {
+    const snapshot = await getDoc(configRef);
+    const value = snapshot.exists() ? snapshot.data().workerUrl : null;
+    if (typeof value !== "string" || !value.trim()) return null;
+    const workerUrl = normalizeWorkerUrl(value);
+    const parsed = new URL(workerUrl);
+    return parsed.protocol === "https:" || parsed.hostname === "localhost"
+      ? workerUrl
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 async function currentToken(): Promise<string> {
   const user = auth.currentUser;
   if (!user) throw new Error("Sign in before uploading an image.");

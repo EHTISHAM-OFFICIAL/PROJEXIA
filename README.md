@@ -244,3 +244,9 @@ Component  →  Hook  →  Service  →  Firebase
 ```
 
 No component imports `firebase/firestore` directly. If you need new data, add a service function, wrap it in a hook, then use the hook. That one rule is what keeps the codebase navigable as it grows.
+
+## Security notes
+
+- Deploying the security hardening release requires a specific order and a data
+  migration: see [SECURITY-MIGRATION.md](SECURITY-MIGRATION.md).
+- Firestore rules are covered by emulator tests: `npm run test:rules` (needs Java).

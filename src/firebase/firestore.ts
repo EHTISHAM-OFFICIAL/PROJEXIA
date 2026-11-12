@@ -7,6 +7,7 @@ export const db = getFirestore(app);
 export const COLLECTIONS = {
   projects: 'projects',
   projectRequests: 'projectRequests',
+  requestPrivate: 'requestPrivate',
   contactMessages: 'contactMessages',
   meetingRequests: 'meetingRequests',
   admins: 'admins',

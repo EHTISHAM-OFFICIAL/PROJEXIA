@@ -1,4 +1,5 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
 const REQUIRED_KEYS = [
   'VITE_FIREBASE_API_KEY',
@@ -26,3 +27,26 @@ export const app: FirebaseApp = initializeApp({
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 });
+
+/**
+ * Firebase App Check (optional). It proves requests come from this site rather
+ * than a script, which is the control that limits abuse of the endpoints that
+ * must stay open to anonymous visitors (the contact form, project view
+ * counts). Firestore rules cannot rate-limit; App Check can.
+ *
+ * Set VITE_RECAPTCHA_SITE_KEY to turn it on, then enforce it for Cloud
+ * Firestore in the Firebase Console once the site reports healthy traffic
+ * (see SECURITY-MIGRATION.md). Without the key nothing changes.
+ */
+const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
+if (recaptchaSiteKey) {
+  if (import.meta.env.DEV) {
+    // Prints a debug token to register in the console for local development.
+    (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN?: boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  }
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider(recaptchaSiteKey),
+    isTokenAutoRefreshEnabled: true,
+  });
+}

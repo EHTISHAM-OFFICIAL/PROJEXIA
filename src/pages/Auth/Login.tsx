@@ -88,7 +88,7 @@ export default function Login() {
               {error && <Alert tone="danger" className="mb-6">{error}</Alert>}
 
               <form onSubmit={submit} className="space-y-5">
-                <Field label="Username" htmlFor="username" required>
+                <Field label="Username or email" htmlFor="username" required>
                   <TextInput
                     id="username"
                     autoComplete="username"
@@ -146,7 +146,7 @@ export default function Login() {
               <form onSubmit={submitReset} className="mt-5 rounded-lg border border-line bg-surface-raised p-4">
                 <h2 className="text-sm font-semibold">Reset your password</h2>
                 <p className="mt-1 text-xs leading-relaxed text-content-secondary">
-                  Enter the account email you used when registering. You will still sign in with your username after resetting the password.
+                  Enter the account email you used when registering. After resetting the password you can sign in with your username or this email.
                 </p>
                 {resetError && <Alert tone="danger" className="mt-4">{resetError}</Alert>}
                 {resetSent ? (
@@ -181,7 +181,7 @@ export default function Login() {
             </div>
 
             <p className="mt-5 text-center text-xs leading-relaxed text-content-muted">
-              Your username and password are used to sign in. Your account email is used for password recovery.
+              You can sign in with your username or your email, plus your password. Your account email is used for password recovery.
             </p>
           </div>
         </Container>

@@ -1,8 +1,25 @@
+/** Cloudflare Workers rate-limiting binding (see wrangler.toml [[ratelimits]]). */
+export interface RateLimiter {
+  limit(options: { key: string }): Promise<{ success: boolean }>;
+}
+
 export interface Env {
   FIREBASE_PROJECT_ID: string;
   ALLOWED_ORIGINS: string;
   IMGBB_API_KEY: string;
   FREEIMAGE_API_KEY: string;
+
+  // Username sign-in (/auth/login). All three are Worker secrets.
+  FIREBASE_WEB_API_KEY?: string;
+  RESOLVER_EMAIL?: string;
+  RESOLVER_PASSWORD?: string;
+
+  // Throttles. Optional so an older deployment keeps working; /health reports
+  // whether each one is bound.
+  UPLOAD_LIMITER_USER?: RateLimiter;
+  UPLOAD_LIMITER_IP?: RateLimiter;
+  LOGIN_LIMITER_USER?: RateLimiter;
+  LOGIN_LIMITER_IP?: RateLimiter;
 }
 
 type Provider = "imgbb" | "freeimage";
@@ -393,6 +410,223 @@ async function uploadProvider(
     : uploadToFreeimage(file, env);
 }
 
+const USERNAME_PATTERN = /^[a-z0-9_-]{3,30}$/;
+/** Accounts created before email became mandatory used this internal domain. */
+const LEGACY_EMAIL_DOMAIN = "users.mectec.local";
+
+/** Errors Identity Toolkit returns for a plain wrong username/password. */
+const BAD_CREDENTIAL_ERRORS = new Set([
+  "INVALID_PASSWORD",
+  "EMAIL_NOT_FOUND",
+  "INVALID_LOGIN_CREDENTIALS",
+  "INVALID_EMAIL",
+  "USER_DISABLED",
+  "MISSING_PASSWORD",
+  "MISSING_EMAIL",
+]);
+
+let cachedResolverToken: { token: string; expiresAt: number } | null = null;
+
+function clientIp(request: Request): string {
+  return request.headers.get("cf-connecting-ip") || "unknown";
+}
+
+/**
+ * Returns true when ANY of the given limiters rejects the key. A limiter that is
+ * not bound, or that errors, never blocks: these are speed bumps against abuse,
+ * and a Cloudflare hiccup must not lock real customers out.
+ *
+ * The binding is per Cloudflare location and eventually consistent, so it slows
+ * a flood down rather than enforcing an exact quota.
+ */
+async function isThrottled(
+  checks: Array<[RateLimiter | undefined, string]>,
+): Promise<boolean> {
+  for (const [limiter, key] of checks) {
+    if (!limiter) continue;
+    try {
+      const { success } = await limiter.limit({ key });
+      if (!success) return true;
+    } catch {
+      // Fail open.
+    }
+  }
+  return false;
+}
+
+function tooManyRequests(message: string, cors: HeadersInit): Response {
+  return json({ ok: false, error: message }, 429, { ...cors, "retry-after": "60" });
+}
+
+function invalidCredentials(cors: HeadersInit): Response {
+  return json({ ok: false, error: "Invalid username or password." }, 401, cors);
+}
+
+function googleApiHeaders(env: Env): HeadersInit {
+  // Browser API keys are often restricted by HTTP referrer. Server-side calls
+  // carry no referrer, so present the site's own origin.
+  const referer = allowedOrigins(env).find((origin) => origin.startsWith("https://"));
+  return {
+    "content-type": "application/json",
+    ...(referer ? { referer: referer + "/" } : {}),
+  };
+}
+
+function identityToolkitSignInUrl(env: Env): string {
+  return (
+    "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" +
+    encodeURIComponent(env.FIREBASE_WEB_API_KEY || "")
+  );
+}
+
+/**
+ * Signs in as the dedicated resolver account. Its only privilege (granted by
+ * firestore.rules via resolvers/{uid}) is reading usernameLookup documents, so
+ * leaking these credentials exposes nothing the old public rule did not.
+ */
+async function getResolverToken(env: Env): Promise<string> {
+  if (cachedResolverToken && cachedResolverToken.expiresAt > Date.now() + 60_000) {
+    return cachedResolverToken.token;
+  }
+  if (!env.FIREBASE_WEB_API_KEY || !env.RESOLVER_EMAIL || !env.RESOLVER_PASSWORD) {
+    throw new Error("Username sign-in is not configured on the Worker.");
+  }
+  const response = await fetch(identityToolkitSignInUrl(env), {
+    method: "POST",
+    headers: googleApiHeaders(env),
+    body: JSON.stringify({
+      email: env.RESOLVER_EMAIL,
+      password: env.RESOLVER_PASSWORD,
+      returnSecureToken: true,
+    }),
+  });
+  if (!response.ok) throw new Error("The resolver account could not sign in.");
+  const payload = (await response.json()) as { idToken?: string; expiresIn?: string };
+  if (!payload.idToken) throw new Error("The resolver account returned no token.");
+  cachedResolverToken = {
+    token: payload.idToken,
+    expiresAt: Date.now() + Number(payload.expiresIn || 3600) * 1000,
+  };
+  return payload.idToken;
+}
+
+async function lookupAuthEmail(
+  username: string,
+  env: Env,
+): Promise<{ email: string | null; lookupMissing: boolean }> {
+  const token = await getResolverToken(env);
+  const url =
+    "https://firestore.googleapis.com/v1/projects/" +
+    encodeURIComponent(env.FIREBASE_PROJECT_ID) +
+    "/databases/(default)/documents/usernameLookup/" +
+    encodeURIComponent(username);
+  const response = await fetch(url, { headers: { authorization: "Bearer " + token } });
+
+  // No lookup record: an account created before lookups existed, whose sign-in
+  // email is derived from the username.
+  if (response.status === 404) {
+    return { email: `${username}@${LEGACY_EMAIL_DOMAIN}`, lookupMissing: true };
+  }
+  if (response.status === 401 || response.status === 403) {
+    cachedResolverToken = null;
+    throw new Error("The resolver account is not allowed to read usernameLookup.");
+  }
+  if (!response.ok) throw new Error("Could not read the username record.");
+
+  const payload = (await response.json()) as {
+    fields?: { authEmail?: { stringValue?: string } };
+  };
+  return { email: payload.fields?.authEmail?.stringValue || null, lookupMissing: false };
+}
+
+async function verifyPassword(
+  email: string,
+  password: string,
+  env: Env,
+): Promise<"ok" | "invalid" | "throttled"> {
+  const response = await fetch(identityToolkitSignInUrl(env), {
+    method: "POST",
+    headers: googleApiHeaders(env),
+    body: JSON.stringify({ email, password, returnSecureToken: false }),
+  });
+  if (response.ok) return "ok";
+
+  const payload = (await response.json().catch(() => null)) as {
+    error?: { message?: string };
+  } | null;
+  const code = String(payload?.error?.message || "").split(" ")[0];
+  if (code.startsWith("TOO_MANY_ATTEMPTS")) return "throttled";
+  if (BAD_CREDENTIAL_ERRORS.has(code)) return "invalid";
+
+  // Anything else (bad API key, referrer blocked, project misconfigured, 5xx)
+  // is a setup problem, not a wrong password. Surface it as unavailable.
+  throw new Error("Identity service rejected the request: " + (code || response.status));
+}
+
+/**
+ * Username sign-in without a public username -> email mapping.
+ *
+ * The browser sends username + password. The Worker resolves the username with
+ * the resolver account, checks the password against Firebase, and only then
+ * returns the sign-in email, so someone who merely knows a username learns
+ * nothing. Unknown user and wrong password are indistinguishable. The browser
+ * then signs in normally with the email, so Firebase still issues the session.
+ */
+async function handleLogin(
+  request: Request,
+  env: Env,
+  cors: HeadersInit,
+): Promise<Response> {
+  let body: { username?: unknown; password?: unknown };
+  try {
+    body = (await request.json()) as typeof body;
+  } catch {
+    return json({ ok: false, error: "Invalid request." }, 400, cors);
+  }
+
+  const username =
+    typeof body.username === "string" ? body.username.trim().toLowerCase() : "";
+  const password = typeof body.password === "string" ? body.password : "";
+  if (!USERNAME_PATTERN.test(username) || !password || password.length > 4096) {
+    return invalidCredentials(cors);
+  }
+
+  if (
+    await isThrottled([
+      [env.LOGIN_LIMITER_IP, "ip:" + clientIp(request)],
+      [env.LOGIN_LIMITER_USER, "user:" + username],
+    ])
+  ) {
+    return tooManyRequests("Too many sign-in attempts. Wait a minute and try again.", cors);
+  }
+
+  try {
+    const { email, lookupMissing } = await lookupAuthEmail(username, env);
+    if (!email) return invalidCredentials(cors);
+
+    const result = await verifyPassword(email, password, env);
+    if (result === "throttled") {
+      return tooManyRequests("Too many sign-in attempts. Wait a minute and try again.", cors);
+    }
+    if (result !== "ok") return invalidCredentials(cors);
+
+    return json({ ok: true, email, lookupMissing }, 200, cors);
+  } catch (error) {
+    // Log the reason for the operator (never the password); tell the browser
+    // only that the service is unavailable.
+    console.error("auth/login failed:", error instanceof Error ? error.message : error);
+    return json(
+      {
+        ok: false,
+        error:
+          "Username sign-in is temporarily unavailable. You can sign in with your email address instead.",
+      },
+      503,
+      cors,
+    );
+  }
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = (request.headers.get("origin") || "").replace(/\/$/, "");
@@ -424,10 +658,20 @@ export default {
             imgbb: Boolean(env.IMGBB_API_KEY),
             freeimage: Boolean(env.FREEIMAGE_API_KEY),
           },
+          usernameSignIn: Boolean(
+            env.FIREBASE_WEB_API_KEY && env.RESOLVER_EMAIL && env.RESOLVER_PASSWORD,
+          ),
+          rateLimiting: {
+            upload: Boolean(env.UPLOAD_LIMITER_USER && env.UPLOAD_LIMITER_IP),
+            login: Boolean(env.LOGIN_LIMITER_USER && env.LOGIN_LIMITER_IP),
+          },
         },
         200,
         cors,
       );
+    }
+    if (request.method === "POST" && url.pathname.endsWith("/auth/login")) {
+      return handleLogin(request, env, cors);
     }
     if (request.method !== "POST" || !url.pathname.endsWith("/upload")) {
       return json({ ok: false, error: "Not found." }, 404, cors);
@@ -436,7 +680,17 @@ export default {
     try {
       const token = readBearer(request);
       // Authenticate and read the configured limit before parsing the multipart body.
-      await verifyFirebaseToken(token, env.FIREBASE_PROJECT_ID);
+      const claims = await verifyFirebaseToken(token, env.FIREBASE_PROJECT_ID);
+      // Throttle before doing any Firestore or provider work. Registration is
+      // open, so a valid token alone is not proof of a legitimate customer.
+      if (
+        await isThrottled([
+          [env.UPLOAD_LIMITER_USER, "uid:" + String(claims.sub)],
+          [env.UPLOAD_LIMITER_IP, "ip:" + clientIp(request)],
+        ])
+      ) {
+        return tooManyRequests("Too many uploads. Wait a minute and try again.", cors);
+      }
       const maxFileSizeMb = await getMaxFileSizeMb(token, env);
       const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024;
       const contentLength = Number(request.headers.get("content-length") || 0);

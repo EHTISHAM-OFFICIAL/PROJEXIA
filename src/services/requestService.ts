@@ -11,7 +11,9 @@ import {
   Timestamp,
   updateDoc,
   where,
+  writeBatch,
   type DocumentData,
+  type DocumentSnapshot,
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { COLLECTIONS, db } from "../firebase/firestore";
@@ -19,7 +21,9 @@ import { auth } from "../firebase/auth";
 import { imgbbService, type UploadedImage } from "./imgbbService";
 import { emailNotificationService } from "./emailNotificationService";
 import type {
+  AdminProjectRequest,
   ProjectRequest,
+  RequestAdmin,
   RequestAttachment,
   RequestPriority,
   RequestStatus,
@@ -27,8 +31,30 @@ import type {
 import type { ProjectRequestFormOutput } from "../utils/validation";
 import { nullable, nullableNumber } from "../utils/validation";
 import { requestSettingsService } from "./requestSettingsService";
+import { hashEmail } from "../utils/emailHash";
+import {
+  generateProjectToken,
+  generateRequestNumber,
+  normalizeRequestNumber,
+} from "../utils/requestNumber";
 
 const requestsRef = collection(db, COLLECTIONS.projectRequests);
+
+/**
+ * Admin-only data for each request (notes, quote, assignee), keyed by the
+ * request id. Kept out of `projectRequests` because the customer who owns a
+ * request may read that whole document. See RequestAdmin.
+ */
+const privateRef = collection(db, COLLECTIONS.requestPrivate);
+const privateDocRef = (requestId: string) =>
+  doc(db, COLLECTIONS.requestPrivate, requestId);
+
+const DEFAULT_ADMIN: RequestAdmin = {
+  notes: null,
+  quotedAmount: null,
+  currency: "PKR",
+  assignedTo: null,
+};
 
 /**
  * A separate, deliberately narrow collection for the public "track my
@@ -40,46 +66,6 @@ const requestsRef = collection(db, COLLECTIONS.projectRequests);
  */
 const statusLookupRef = (requestNumber: string) =>
   doc(db, "requestStatusLookup", requestNumber);
-
-/**
- * Human-readable reference, e.g. PROJEXIA-2026-K4T9RQ.
- *
- * Deliberately random rather than sequential. A truly sequential counter needs a
- * shared document that the public can write to, which is an abuse target, or a
- * Cloud Function. Six random base-32 characters give ~1 billion combinations per
- * year — collisions are not a practical concern, and the value is unguessable,
- * which is a small privacy win. See README for the Cloud Function upgrade path.
- */
-function generateProjectToken(): string {
-  const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  const random = crypto.getRandomValues(new Uint8Array(6));
-  const suffix = Array.from(
-    random,
-    (byte) => alphabet[byte % alphabet.length],
-  ).join("");
-  return `PROJEXIA-${new Date().getFullYear()}-${suffix}`;
-}
-
-function generateRequestNumber(): string {
-  const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no look-alike characters
-  const random = crypto.getRandomValues(new Uint8Array(6));
-  const suffix = Array.from(
-    random,
-    (byte) => alphabet[byte % alphabet.length],
-  ).join("");
-  return `PROJEXIA-${new Date().getFullYear()}-${suffix}`;
-}
-
-/** SHA-256 hex of the normalised email, so the public lookup record never holds the address itself. */
-async function hashEmail(email: string): Promise<string> {
-  const digest = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(email.trim().toLowerCase()),
-  );
-  return Array.from(new Uint8Array(digest), (b) =>
-    b.toString(16).padStart(2, "0"),
-  ).join("");
-}
 
 function dateToTimestamp(value: string | undefined): Timestamp | null {
   if (!value) return null;
@@ -121,12 +107,6 @@ function toRequest(
     attachments: data.attachments ?? [],
     additionalRequirements: data.additionalRequirements ?? {},
     consent: data.consent ?? { agreeToTerms: false, allowContact: false },
-    admin: data.admin ?? {
-      notes: null,
-      quotedAmount: null,
-      currency: "PKR",
-      assignedTo: null,
-    },
     customerUpdate: data.customerUpdate ?? null,
     customerUpdateAt: data.customerUpdateAt ?? null,
     metadata: data.metadata ?? {
@@ -138,6 +118,23 @@ function toRequest(
     updatedAt: data.updatedAt ?? null,
     deletedAt: data.deletedAt ?? null,
     deletedBy: data.deletedBy ?? null,
+  };
+}
+
+function toRequestAdmin(
+  snapshot: DocumentSnapshot<DocumentData> | undefined,
+): RequestAdmin {
+  const data = snapshot?.exists() ? snapshot.data() : undefined;
+  if (!data) return { ...DEFAULT_ADMIN };
+  return {
+    notes: typeof data.notes === "string" ? data.notes : null,
+    quotedAmount:
+      typeof data.quotedAmount === "number" ? data.quotedAmount : null,
+    currency:
+      typeof data.currency === "string" && data.currency
+        ? data.currency
+        : DEFAULT_ADMIN.currency,
+    assignedTo: typeof data.assignedTo === "string" ? data.assignedTo : null,
   };
 }
 
@@ -156,6 +153,23 @@ export interface PublicRequestStatus {
   updatedAt: Timestamp | null;
   customerUpdate: string | null;
   customerUpdateAt: Timestamp | null;
+}
+
+type AdminDataById = Map<string, RequestAdmin>;
+
+/** One query for every admin-only record, instead of one read per request. */
+async function getAdminDataById(): Promise<AdminDataById> {
+  const snapshot = await getDocs(privateRef);
+  return new Map(
+    snapshot.docs.map((document) => [document.id, toRequestAdmin(document)]),
+  );
+}
+
+function withAdmin(
+  request: ProjectRequest,
+  adminData: AdminDataById,
+): AdminProjectRequest {
+  return { ...request, admin: adminData.get(request.id) ?? { ...DEFAULT_ADMIN } };
 }
 
 export const requestService = {
@@ -274,13 +288,7 @@ export const requestService = {
         allowContact: values.allowContact,
       },
 
-      // Written empty on create; security rules block the public from setting these.
-      admin: {
-        notes: null,
-        quotedAmount: null,
-        currency: "PKR",
-        assignedTo: null,
-      },
+      // Admin-only data lives in requestPrivate/{id}; it is never written here.
       customerUpdate: null,
       customerUpdateAt: null,
 
@@ -367,12 +375,17 @@ export const requestService = {
   },
 
   /** Admin only — security rules reject unauthenticated reads. */
-  async getRequests(status?: RequestStatus): Promise<ProjectRequest[]> {
+  async getRequests(status?: RequestStatus): Promise<AdminProjectRequest[]> {
     const constraints = status
       ? [where("status", "==", status), orderBy("createdAt", "desc")]
       : [orderBy("createdAt", "desc")];
-    const snapshot = await getDocs(query(requestsRef, ...constraints));
-    return snapshot.docs.map(toRequest).filter((request) => !request.deletedAt);
+    const [snapshot, adminData] = await Promise.all([
+      getDocs(query(requestsRef, ...constraints)),
+      getAdminDataById(),
+    ]);
+    return snapshot.docs
+      .map((document) => withAdmin(toRequest(document), adminData))
+      .filter((request) => !request.deletedAt);
   },
 
   async getMyRequests(uid: string): Promise<ProjectRequest[]> {
@@ -576,12 +589,13 @@ export const requestService = {
     return projectToken;
   },
 
-  async getTrashedRequests(): Promise<ProjectRequest[]> {
-    const snapshot = await getDocs(
-      query(requestsRef, orderBy("createdAt", "desc")),
-    );
+  async getTrashedRequests(): Promise<AdminProjectRequest[]> {
+    const [snapshot, adminData] = await Promise.all([
+      getDocs(query(requestsRef, orderBy("createdAt", "desc"))),
+      getAdminDataById(),
+    ]);
     return snapshot.docs
-      .map(toRequest)
+      .map((document) => withAdmin(toRequest(document), adminData))
       .filter((request) => Boolean(request.deletedAt));
   },
 
@@ -638,7 +652,12 @@ export const requestService = {
       throw new Error("This request is not in your trash.");
     }
 
-    await deleteDoc(requestRef);
+    // One batch: the rules only let a customer remove the admin-only record
+    // together with the request it belongs to.
+    const batch = writeBatch(db);
+    batch.delete(requestRef);
+    batch.delete(privateDocRef(id));
+    await batch.commit();
 
     const requestNumber = current.requestNumber as string | undefined;
     if (requestNumber) {
@@ -662,7 +681,10 @@ export const requestService = {
       throw new Error("Only requests already in the trash can be permanently deleted.");
     }
 
-    await deleteDoc(requestRef);
+    const batch = writeBatch(db);
+    batch.delete(requestRef);
+    batch.delete(privateDocRef(id));
+    await batch.commit();
 
     const requestNumber = current.requestNumber as string | undefined;
     if (requestNumber) {
@@ -701,15 +723,22 @@ export const requestService = {
     }
   },
 
-  async getRecentRequests(limitCount = 5): Promise<ProjectRequest[]> {
+  async getRecentRequests(limitCount = 5): Promise<AdminProjectRequest[]> {
     const all = await requestService.getRequests();
     return all.slice(0, limitCount);
   },
 
-  async getRequestById(id: string): Promise<ProjectRequest | null> {
-    const snapshot = await getDoc(doc(db, COLLECTIONS.projectRequests, id));
+  /** Admin only. */
+  async getRequestById(id: string): Promise<AdminProjectRequest | null> {
+    const [snapshot, adminSnapshot] = await Promise.all([
+      getDoc(doc(db, COLLECTIONS.projectRequests, id)),
+      getDoc(privateDocRef(id)),
+    ]);
     if (!snapshot.exists()) return null;
-    return toRequest(snapshot as QueryDocumentSnapshot<DocumentData>);
+    return {
+      ...toRequest(snapshot as QueryDocumentSnapshot<DocumentData>),
+      admin: toRequestAdmin(adminSnapshot),
+    };
   },
 
   async updateRequestStatus(id: string, status: RequestStatus): Promise<void> {
@@ -782,6 +811,10 @@ export const requestService = {
     );
   },
 
+  /**
+   * Writes the admin-only fields to requestPrivate/{id} and bumps the request's
+   * updatedAt in the same batch, so the two can never disagree.
+   */
   async updateAdminFields(
     id: string,
     fields: {
@@ -791,12 +824,18 @@ export const requestService = {
     },
   ): Promise<void> {
     const updates: Record<string, unknown> = { updatedAt: serverTimestamp() };
-    if (fields.notes !== undefined) updates["admin.notes"] = fields.notes;
+    if (fields.notes !== undefined) updates.notes = fields.notes;
     if (fields.quotedAmount !== undefined)
-      updates["admin.quotedAmount"] = fields.quotedAmount;
+      updates.quotedAmount = fields.quotedAmount;
     if (fields.assignedTo !== undefined)
-      updates["admin.assignedTo"] = fields.assignedTo;
-    await updateDoc(doc(db, COLLECTIONS.projectRequests, id), updates);
+      updates.assignedTo = fields.assignedTo;
+
+    const batch = writeBatch(db);
+    batch.set(privateDocRef(id), updates, { merge: true });
+    batch.update(doc(db, COLLECTIONS.projectRequests, id), {
+      updatedAt: serverTimestamp(),
+    });
+    await batch.commit();
   },
 
   /**
@@ -808,21 +847,22 @@ export const requestService = {
    * The email check happens here, client-side, after the fetch: Firestore
    * `get` rules can't validate a second client-supplied value against the
    * document's own field, so the real access control is the requestNumber
-   * itself (effectively an unguessable bearer token — ~27 billion
-   * combinations). The email match is a privacy courtesy on top of that, not
-   * an additional security boundary.
+   * itself, an unguessable bearer token (10 random characters, ~8e14
+   * combinations; see utils/requestNumber.ts). The email match is a privacy
+   * courtesy on top of that, not an additional security boundary.
    */
   async lookupStatus(
     requestNumber: string,
     email: string,
   ): Promise<PublicRequestStatus | null> {
-    const normalizedNumber = requestNumber.trim().toUpperCase();
+    const normalizedNumber = normalizeRequestNumber(requestNumber);
     const snapshot = await getDoc(statusLookupRef(normalizedNumber));
     if (!snapshot.exists()) return null;
 
     const data = snapshot.data();
     if (data.deletedAt) return null;
-    // New records store a hash; older ones still hold the plain email.
+    // Records store a hash. The plain-email branch only serves records created
+    // before scripts/migrate-request-privacy.mjs has been run; remove it after.
     const matches =
       typeof data.emailHash === "string"
         ? data.emailHash === (await hashEmail(email))

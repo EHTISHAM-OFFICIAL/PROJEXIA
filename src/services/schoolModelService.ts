@@ -16,6 +16,11 @@ import {
 } from "firebase/firestore";
 import { auth } from "../firebase/auth";
 import { db } from "../firebase/firestore";
+import { hashEmail } from "../utils/emailHash";
+import {
+  generateProjectToken,
+  generateRequestNumber,
+} from "../utils/requestNumber";
 import { slugify } from "../utils/slug";
 import { emailNotificationService } from "./emailNotificationService";
 import { imgbbService } from "./imgbbService";
@@ -206,17 +211,6 @@ function toTimestamp(value?: string) {
   return Number.isNaN(parsed.getTime()) ? null : Timestamp.fromDate(parsed);
 }
 
-function newNumber() {
-  const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  const randomBytes = crypto.getRandomValues(new Uint8Array(6));
-  const suffix = Array.from(
-    randomBytes,
-    (byte) => alphabet[byte % alphabet.length],
-  ).join("");
-
-  return `PROJEXIA-${new Date().getFullYear()}-${suffix}`;
-}
-
 export const schoolModelService = {
   async getSettings(): Promise<SchoolSettings> {
     const snapshot = await getDoc(settings);
@@ -403,8 +397,8 @@ export const schoolModelService = {
       size: value.files![index].size,
     }));
 
-    const requestNumber = newNumber();
-    const projectToken = newNumber();
+    const requestNumber = generateRequestNumber();
+    const projectToken = generateProjectToken();
     const requestRef = doc(requests);
 
     const description = [
@@ -534,12 +528,6 @@ export const schoolModelService = {
         agreeToTerms: true,
         allowContact: true,
       },
-      admin: {
-        notes: null,
-        quotedAmount: null,
-        currency: "PKR",
-        assignedTo: null,
-      },
       customerUpdate: null,
       customerUpdateAt: null,
       metadata: {
@@ -557,7 +545,7 @@ export const schoolModelService = {
         requestId: requestRef.id,
         status: "new",
         projectTitle: value.model.title,
-        email: value.email.toLowerCase(),
+        emailHash: await hashEmail(value.email),
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         customerUpdate: null,

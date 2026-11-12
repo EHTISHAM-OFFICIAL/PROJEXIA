@@ -30,6 +30,7 @@ import {
 } from "../../utils/validation";
 import { toUserMessage } from "../../utils/errors";
 import { useAuth } from "../../hooks/useAuth";
+import { safeHttpUrl } from "../../utils/safeUrl";
 
 function dateValue(timestamp: ProjectRequest["timeline"]["desiredStartDate"]) {
   return timestamp ? timestamp.toDate().toISOString().slice(0, 10) : "";
@@ -250,18 +251,28 @@ export default function EditRequest() {
                   {request?.attachments?.length ? (
                     <div className="space-y-2">
                       <p className="text-xs text-content-muted">Existing attachments</p>
-                      {request.attachments.map((attachment: RequestAttachment) => (
-                        <a
-                          key={attachment.url}
-                          href={attachment.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-2 rounded-lg border border-line bg-surface-raised px-3 py-2.5 text-sm text-content hover:border-line-strong"
-                        >
-                          <Paperclip size={15} aria-hidden="true" />
-                          <span className="min-w-0 truncate">{attachment.name}</span>
-                        </a>
-                      ))}
+                      {request.attachments.map((attachment: RequestAttachment) => {
+                        const safeAttachmentUrl = safeHttpUrl(attachment.url, { httpsOnly: true });
+                        const rowClass =
+                          "flex items-center gap-2 rounded-lg border border-line bg-surface-raised px-3 py-2.5 text-sm text-content";
+                        return safeAttachmentUrl ? (
+                          <a
+                            key={attachment.url}
+                            href={safeAttachmentUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={`${rowClass} hover:border-line-strong`}
+                          >
+                            <Paperclip size={15} aria-hidden="true" />
+                            <span className="min-w-0 truncate">{attachment.name}</span>
+                          </a>
+                        ) : (
+                          <div key={attachment.url} className={rowClass}>
+                            <Paperclip size={15} aria-hidden="true" />
+                            <span className="min-w-0 truncate">{attachment.name}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   ) : null}
                   <FileUpload

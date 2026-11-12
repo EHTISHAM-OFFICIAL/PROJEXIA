@@ -96,7 +96,14 @@ export interface RequestConsent {
   allowContact: boolean;
 }
 
-/** Admin-only block. Security rules block public reads of the whole document. */
+/**
+ * Internal, admin-only data (notes, quoted price, assignee).
+ *
+ * This is stored in its own document, `requestPrivate/{requestId}`, and NOT on
+ * the request itself. The request owner is allowed to read their own request
+ * document, so anything stored on it is visible to the customer through the
+ * network tab regardless of what the UI renders.
+ */
 export interface RequestAdmin {
   notes: string | null;
   quotedAmount: number | null;
@@ -131,7 +138,6 @@ export interface ProjectRequest {
   attachments: RequestAttachment[];
   additionalRequirements: RequestAdditional;
   consent: RequestConsent;
-  admin: RequestAdmin;
   /** Latest customer-facing update, separate from internal admin notes. */
   customerUpdate: string | null;
   customerUpdateAt: Timestamp | null;
@@ -141,3 +147,6 @@ export interface ProjectRequest {
   deletedAt?: Timestamp | null;
   deletedBy?: 'customer' | 'admin' | null;
 }
+
+/** A request together with its admin-only data. Only admin screens may use this. */
+export type AdminProjectRequest = ProjectRequest & { admin: RequestAdmin };
