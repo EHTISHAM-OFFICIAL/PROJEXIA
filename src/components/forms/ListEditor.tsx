@@ -1,5 +1,5 @@
 import { GripVertical, Plus, X } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { TextInput } from './Inputs';
 import { RichTextEditor } from './RichTextEditor';
 import { splitEntries } from '../../utils/splitEntries';
@@ -35,15 +35,18 @@ export function ListEditor({
   placeholder,
   label,
   richTextShortcuts = false,
+  splitOnComma = false,
 }: {
   values: string[];
   onChange: (next: string[]) => void;
   placeholder?: string;
   label: string;
   richTextShortcuts?: boolean;
+  splitOnComma?: boolean;
 }) {
   const rows = values.length ? values : [''];
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const update = (index: number, value: string) => {
     const next = [...rows];
@@ -52,7 +55,7 @@ export function ListEditor({
   };
 
   const splitRow = (index: number, value: string) => {
-    const entries = splitEntries(value);
+    const entries = splitEntries(value).flatMap((entry) => splitOnComma ? entry.split(',').map((part) => part.trim()).filter(Boolean) : [entry]);
     if (entries.length < 2) return;
     const next = [...rows];
     next.splice(index, 1, ...entries);
@@ -86,11 +89,22 @@ export function ListEditor({
             <GripVertical size={15} />
           </button>
           <TextInput
+            ref={(element) => { inputRefs.current[index] = element; }}
             value={value}
             placeholder={placeholder}
             aria-label={`${label} ${index + 1}`}
             onChange={(event) => update(index, event.target.value)}
-            onKeyDown={richTextShortcuts ? (event) => applyInlineShortcut(event, value, (next) => update(index, next)) : undefined}
+            onKeyDown={(event) => {
+              if (splitOnComma && event.key === ',') {
+                event.preventDefault();
+                const next = [...rows];
+                next.splice(index, 1, value.trim(), '');
+                onChange(next);
+                requestAnimationFrame(() => inputRefs.current[index + 1]?.focus());
+                return;
+              }
+              if (richTextShortcuts) applyInlineShortcut(event, value, (next) => update(index, next));
+            }}
             onBlur={(event) => splitRow(index, event.target.value)}
           className="min-w-0 flex-1 border-0 bg-transparent shadow-none focus-visible:ring-1"
           />
@@ -114,7 +128,7 @@ export function ListEditor({
         <Plus size={15} aria-hidden="true" />
         Add
       </button>
-      {richTextShortcuts && <p className="text-xs leading-relaxed text-content-muted">Keyboard shortcuts: Ctrl/⌘ + B (bold), Ctrl/⌘ + I (italic), Ctrl/⌘ + U (underline). Paste multiple lines or sentences to split them into separate rows.</p>}
+      {(richTextShortcuts || splitOnComma) && <p className="text-xs leading-relaxed text-content-muted">{richTextShortcuts ? 'Keyboard shortcuts: Ctrl/⌘ + B (bold), Ctrl/⌘ + I (italic), Ctrl/⌘ + U (underline). ' : ''}{splitOnComma ? 'Press comma to finish an entry, or paste comma-separated values; each becomes its own draggable row.' : 'Paste multiple lines or sentences to split them into separate rows.'}</p>}
     </div>
   );
 }

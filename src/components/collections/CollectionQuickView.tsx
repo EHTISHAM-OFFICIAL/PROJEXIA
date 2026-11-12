@@ -5,6 +5,7 @@ import { Image } from "../ui/Image";
 import { whatsappLink } from "../../constants/site";
 import { useSiteSettings } from "../../contexts/SiteSettingsContext";
 import type { CollectionItem } from "../../types/collection";
+import { Prose } from "../projects/CaseStudySection";
 
 interface CollectionQuickViewProps {
   item: CollectionItem | null;
@@ -116,7 +117,8 @@ export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps)
           <p className="pr-12 text-xs font-semibold uppercase tracking-[0.15em] text-accent">{item.category}</p>
           <h2 id="collection-quick-view-title" className="mt-2 text-2xl font-semibold leading-tight text-content sm:text-3xl">{item.title}</h2>
           {item.shortDescription && <p className="mt-3 text-base leading-relaxed text-content-secondary">{item.shortDescription}</p>}
-          {item.description && <p className="mt-5 whitespace-pre-line text-sm leading-7 text-content-secondary">{item.description}</p>}
+          {item.description && <div className="mt-5"><Prose text={item.description}/></div>}
+          {(item.tags ?? []).length > 0 && <div className="mt-5 flex flex-wrap gap-2" aria-label="Item tags">{item.tags.map((tag) => <span key={tag} className="rounded-full border border-line bg-surface-raised px-3 py-1.5 text-xs font-medium text-content-secondary">{tag}</span>)}</div>}
 
           {(item.material || item.dimensions || item.color) && (
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
