@@ -149,7 +149,7 @@ export default function CollectionForm() {
     const parts = value.split(".");
     const features = parts
       .map((feature) => feature.trim())
-      .filter((feature, index) => Boolean(feature) || (index === parts.length - 1 && /\\.\\s*$/.test(value)))
+      .filter((feature, index) => Boolean(feature) || (index === parts.length - 1 && /\.\s*$/.test(value)))
       .map((feature) => ({ label: "", value: feature }));
     setDraft((current) => ({ ...current, additionalDetails: features }));
   };
