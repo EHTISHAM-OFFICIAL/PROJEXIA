@@ -8,7 +8,7 @@ import type { CollectionItem } from "../../types/collection";
 import { Prose } from "../projects/CaseStudySection";
 
 function getColourTokens(value: string): string[] {
-  return value.split(/[,;|\\/]/).map((part) => part.trim()).filter(Boolean).slice(0, 8);
+  return value.split(/[,;|]/).flatMap((part) => part.split("/")).map((part) => part.trim()).filter(Boolean).slice(0, 8);
 }
 
 function colourStyle(value: string): CSSProperties {
@@ -16,8 +16,8 @@ function colourStyle(value: string): CSSProperties {
   if (/clear|transparent|translucent/i.test(token)) {
     return { backgroundImage: "repeating-conic-gradient(#d1d5db 0% 25%, #ffffff 0% 50%)", backgroundSize: "8px 8px" };
   }
-  const valid = /^#(?:[\\da-f]{3,4}|[\\da-f]{6}|[\\da-f]{8})$/i.test(token)
-    || /^(?:rgb|hsl)a?\\([\\d\\s.,%/+-]+\\)$/i.test(token)
+  const valid = /^#[0-9a-f]{3,8}$/i.test(token)
+    || /^(?:rgb|hsl)a?/i.test(token)
     || /^[a-zA-Z]+$/.test(token);
   return { backgroundColor: valid ? token : "#9ca3af" };
 }
