@@ -1,4 +1,4 @@
-import { ArrowUpRight, Images, Sparkles } from "lucide-react";
+import { ArrowUpRight, Images, Sparkles } from "lucide-react";\nimport type { CSSProperties } from "react";
 import { Image } from "../ui/Image";
 import type { CollectionItem } from "../../types/collection";
 
@@ -11,7 +11,7 @@ function getColourTokens(value: string): string[] {
   return value.split(/[,;|]/).map((part) => part.trim()).filter(Boolean).slice(0, 4);
 }
 
-function colourStyle(value: string): React.CSSProperties {
+function colourStyle(value: string): CSSProperties {
   const token = value.trim();
   const isHex = /^#(?:[\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i.test(token);
   const isRgb = /^(?:rgb|hsl)a?\([\d\s.,%/+-]+\)$/i.test(token);
