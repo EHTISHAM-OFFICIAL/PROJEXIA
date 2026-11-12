@@ -66,6 +66,7 @@ function normalizeItem(snapshot: { id: string; data: () => Record<string, unknow
     material: typeof data.material === "string" ? data.material : "",
     dimensions: typeof data.dimensions === "string" ? data.dimensions : "",
     color: typeof data.color === "string" ? data.color : "",
+    tags: Array.isArray(data.tags) ? data.tags.filter((tag): tag is string => typeof tag === "string").map((tag) => tag.trim()).filter(Boolean) : [],
     additionalDetails,
     enquiryEnabled: data.enquiryEnabled === true,
     published: data.published === true,
@@ -93,6 +94,7 @@ function normalizeDraft(value: CollectionItemDraft): CollectionItemDraft {
     material: value.material.trim(),
     dimensions: value.dimensions.trim(),
     color: value.color.trim(),
+    tags: Array.from(new Set((value.tags ?? []).map((tag) => tag.trim()).filter(Boolean))),
     additionalDetails: value.additionalDetails
       .map((detail) => ({ label: detail.label.trim(), value: detail.value.trim() }))
       .filter((detail) => detail.label && detail.value),
