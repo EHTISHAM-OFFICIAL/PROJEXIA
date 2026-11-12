@@ -154,6 +154,7 @@ export default function CollectionForm() {
 
   const save = async (published: boolean) => {
     setError("");
+    if (pendingImages.length > 0 || uploading) { setError("Finish preparing and uploading the selected images before saving."); return; }
     if (!draft.title.trim()) { setError("Enter an item name."); return; }
     if (!draft.category.trim()) { setError("Choose a category."); return; }
     if (!draft.images.length) { setError("Upload at least one image."); return; }
@@ -291,9 +292,9 @@ export default function CollectionForm() {
             </label>
             <p className="mt-4 text-xs leading-relaxed text-content-muted">Drafts are visible only to administrators. Publishing makes this item available in the public Collections gallery.</p>
             <div className="mt-5 flex flex-col gap-2">
-              <Button type="button" onClick={() => void save(false)} loading={saving} disabled={uploading}><Save size={15}/> Save as draft</Button>
-              <Button type="button" variant="secondary" onClick={() => void save(true)} loading={saving} disabled={uploading}><Plus size={15}/> Save and publish</Button>
-              <Button type="button" variant="ghost" onClick={() => navigate("/admin/collections")} disabled={saving || uploading}>Cancel</Button>
+              <Button type="button" onClick={() => void save(false)} loading={saving} disabled={uploading || pendingImages.length > 0}><Save size={15}/> Save as draft</Button>
+              <Button type="button" variant="secondary" onClick={() => void save(true)} loading={saving} disabled={uploading || pendingImages.length > 0}><Plus size={15}/> Save and publish</Button>
+              <Button type="button" variant="ghost" onClick={() => navigate("/admin/collections")} disabled={saving || uploading || pendingImages.length > 0}>Cancel</Button>
             </div>
           </section>
           <section className="rounded-xl border border-line bg-surface p-4">
