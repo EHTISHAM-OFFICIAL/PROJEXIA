@@ -112,7 +112,7 @@ export default function Collections() {
 
         <div className="mt-7 sm:mt-9">
           {loading && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 8 }).map((_, index) => (
                 <div key={index} className="overflow-hidden rounded-2xl border border-line bg-surface">
                   <div className="aspect-[5/4] animate-pulse bg-surface-raised" />
