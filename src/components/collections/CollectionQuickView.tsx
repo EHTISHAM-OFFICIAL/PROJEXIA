@@ -8,7 +8,7 @@ import type { CollectionItem } from "../../types/collection";
 import { Prose } from "../projects/CaseStudySection";
 
 function getColourTokens(value: string): string[] {
-  return value.split(/[,;|/]/).map((part) => part.trim()).filter(Boolean).slice(0, 8);
+  return value.split(/[,;|\\/]/).map((part) => part.trim()).filter(Boolean).slice(0, 8);
 }
 
 function colourStyle(value: string): CSSProperties {
