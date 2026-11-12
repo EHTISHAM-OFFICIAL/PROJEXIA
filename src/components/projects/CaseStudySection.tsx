@@ -78,80 +78,58 @@ export function Prose({ text }: { text: string }) {
   const lines = text.replace(/\r\n/g, '\n').split('\n');
   const blocks: ReactNode[] = [];
   let bullets: string[] = [];
+  let numbered: string[] = [];
 
   const flushBullets = () => {
     if (!bullets.length) return;
-    blocks.push(
-      <ul key={blocks.length} className="my-6 flex flex-col gap-3 pl-5 text-base leading-relaxed text-content-secondary sm:text-[1.0625rem]">
-        {bullets.map((item, index) => (
-          <li key={index} className="list-disc pl-1">
-            <InlineText text={item} />
-          </li>
-        ))}
-      </ul>,
-    );
+    blocks.push(<ul key={'ul-' + blocks.length} className="my-4 flex flex-col gap-2 pl-5 text-sm leading-relaxed text-content-secondary sm:text-base">
+      {bullets.map((item, index) => <li key={index} className="list-disc pl-1"><InlineText text={item}/></li>)}
+    </ul>);
     bullets = [];
   };
+  const flushNumbered = () => {
+    if (!numbered.length) return;
+    blocks.push(<ol key={'ol-' + blocks.length} className="my-4 flex flex-col gap-2 pl-5 text-sm leading-relaxed text-content-secondary sm:text-base">
+      {numbered.map((item, index) => <li key={index} className="list-decimal pl-1"><InlineText text={item}/></li>)}
+    </ol>);
+    numbered = [];
+  };
+  const flushLists = () => { flushBullets(); flushNumbered(); };
 
   lines.forEach((raw, index) => {
     const line = raw.trim();
-    if (!line) {
-      flushBullets();
-      return;
-    }
-
-    if (line.startsWith('- ')) {
+    if (!line) { flushLists(); return; }
+    if (line.startsWith('- ') || line.startsWith('* ')) {
+      flushNumbered();
       bullets.push(line.slice(2).trim());
       return;
     }
-
-    flushBullets();
-
+    const ordered = line.match(/^\d+[.)]\s+(.+)$/);
+    if (ordered) {
+      flushBullets();
+      numbered.push(ordered[1]);
+      return;
+    }
+    flushLists();
     if (line.startsWith('### ')) {
-      blocks.push(
-        <h3 key={index} className="mt-9 text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
-          <InlineText text={line.slice(4).trim()} />
-        </h3>,
-      );
+      blocks.push(<h3 key={index} className="mt-7 text-lg font-semibold leading-tight tracking-tight sm:text-xl"><InlineText text={line.slice(4).trim()}/></h3>);
       return;
     }
-
     if (line.startsWith('## ')) {
-      blocks.push(
-        <h2 key={index} className="mt-11 text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
-          <InlineText text={line.slice(3).trim()} />
-        </h2>,
-      );
+      blocks.push(<h2 key={index} className="mt-8 text-xl font-semibold leading-tight tracking-tight sm:text-2xl"><InlineText text={line.slice(3).trim()}/></h2>);
       return;
     }
-
     if (line.startsWith('# ')) {
-      blocks.push(
-        <h2 key={index} className="mt-12 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-          <InlineText text={line.slice(2).trim()} />
-        </h2>,
-      );
+      blocks.push(<h2 key={index} className="mt-9 text-2xl font-semibold leading-tight tracking-tight sm:text-3xl"><InlineText text={line.slice(2).trim()}/></h2>);
       return;
     }
-
     if (line.startsWith('> ')) {
-      blocks.push(
-        <blockquote key={index} className="my-7 border-l-2 border-accent pl-5 text-base leading-relaxed text-content-secondary sm:text-lg">
-          <InlineText text={line.slice(2).trim()} />
-        </blockquote>,
-      );
+      blocks.push(<blockquote key={index} className="my-5 rounded-r-xl border-l-2 border-accent bg-accent/5 py-3 pl-4 pr-3 text-sm leading-relaxed text-content-secondary sm:text-base"><InlineText text={line.slice(2).trim()}/></blockquote>);
       return;
     }
-
-    blocks.push(
-      <p key={index} className="text-base leading-8 text-content-secondary sm:text-[1.0625rem]">
-        <InlineText text={line} />
-      </p>,
-    );
+    blocks.push(<p key={index} className="text-sm leading-7 text-content-secondary sm:text-base sm:leading-8"><InlineText text={line}/></p>);
   });
-
-  flushBullets();
-
+  flushLists();
   return <div className="prose-content flex max-w-prose flex-col gap-2">{blocks}</div>;
 }
 
