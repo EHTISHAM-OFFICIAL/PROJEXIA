@@ -12,14 +12,26 @@ function getColourTokens(value: string): string[] {
 }
 
 function colourStyle(value: string): CSSProperties {
-  const token = value.trim();
-  if (/clear|transparent|translucent/i.test(token)) {
-    return { backgroundImage: "repeating-conic-gradient(#d1d5db 0% 25%, #ffffff 0% 50%)", backgroundSize: "8px 8px" };
-  }
-  const valid = /^#[0-9a-f]{3,8}$/i.test(token)
-    || /^(?:rgb|hsl)a?/i.test(token)
-    || /^[a-zA-Z]+$/.test(token);
-  return { backgroundColor: valid ? token : "#9ca3af" };
+  const token = value.trim().toLowerCase();
+  const named: Record<string, string> = {
+    "rose gold": "linear-gradient(135deg, #b76e79, #f3c6bd)",
+    gold: "#d4af37",
+    silver: "#c0c0c0",
+    bronze: "#cd7f32",
+    copper: "#b87333",
+    wood: "linear-gradient(135deg, #8b5a2b, #d2a679)",
+    "natural wood": "linear-gradient(135deg, #8b5a2b, #d2a679)",
+    clear: "linear-gradient(135deg, #ffffff, #dbeafe)",
+    transparent: "linear-gradient(135deg, #ffffff, #dbeafe)",
+    translucent: "linear-gradient(135deg, #ffffff, #dbeafe)",
+    multicolour: "linear-gradient(135deg, #ef4444, #facc15, #22c55e, #3b82f6, #a855f7)",
+    "multi color": "linear-gradient(135deg, #ef4444, #facc15, #22c55e, #3b82f6, #a855f7)",
+  };
+  if (named[token]) return { background: named[token] };
+  const valid = /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value.trim())
+    || /^(?:rgb|hsl)a?\([\d\s.,%/+-]+\)$/i.test(value.trim())
+    || /^[a-zA-Z]+$/.test(value.trim());
+  return { backgroundColor: valid ? value.trim() : "#a1a1aa" };
 }
 
 interface CollectionQuickViewProps {
@@ -143,7 +155,7 @@ export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps)
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {item.material && <div className="flex gap-3 rounded-2xl border border-line bg-surface-raised/70 p-4"><Layers size={18} className="mt-0.5 shrink-0 text-accent"/><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-content-muted">Material</p><p className="mt-1 break-words text-sm font-medium text-content">{item.material}</p></div></div>}
               {item.dimensions && <div className="flex gap-3 rounded-2xl border border-line bg-surface-raised/70 p-4"><Ruler size={18} className="mt-0.5 shrink-0 text-accent"/><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-content-muted">Dimensions</p><p className="mt-1 break-words text-sm font-medium text-content">{item.dimensions}</p></div></div>}
-              {colourOptions.length > 0 && <div className="sm:col-span-2 rounded-2xl border border-line bg-surface-raised/70 p-4"><div className="flex items-center gap-2"><Palette size={17} className="text-accent"/><p className="text-[10px] font-bold uppercase tracking-[.14em] text-content-muted">Colour / finish</p></div><div className="mt-3 flex flex-wrap gap-2">{colourOptions.map((colour, index) => <span key={colour + index} className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-content"><span className="h-4 w-4 rounded-full border border-black/15 shadow-inner" style={colourStyle(colour)}/>{colour}</span>)}</div></div>}
+              {colourOptions.length > 0 && <div className="sm:col-span-2 rounded-2xl border border-line bg-surface-raised/70 p-4"><div className="flex items-center gap-2"><Palette size={17} className="text-accent"/><p className="text-[10px] font-bold uppercase tracking-[.14em] text-content-muted">Colour / finish</p></div><div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-4 sm:grid-cols-3">{colourOptions.map((colour, index) => <div key={colour + index} className="flex min-w-0 items-center gap-2.5"><span className="h-7 w-7 shrink-0 rounded-full border border-black/10 shadow-sm" style={colourStyle(colour)}/><span className="break-words text-sm font-medium text-content">{colour}</span></div>)}</div></div>}
             </div>
           )}
 
