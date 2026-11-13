@@ -152,11 +152,63 @@ export function CollectionQuickView({ item, onClose }: CollectionQuickViewProps)
           {(item.tags ?? []).length > 0 && <div className="mt-5 flex flex-wrap gap-2" aria-label="Item tags">{item.tags.map((tag) => <span key={tag} className="rounded-full border border-line bg-surface-raised px-3 py-1.5 text-xs font-medium text-content-secondary">{tag}</span>)}</div>}
 
           {(item.material || item.dimensions || colourOptions.length > 0) && (
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {item.material && <div className="flex gap-3 rounded-2xl border border-line bg-surface-raised/70 p-4"><Layers size={18} className="mt-0.5 shrink-0 text-accent"/><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-content-muted">Material</p><p className="mt-1 break-words text-sm font-medium text-content">{item.material}</p></div></div>}
-              {item.dimensions && <div className="flex gap-3 rounded-2xl border border-line bg-surface-raised/70 p-4"><Ruler size={18} className="mt-0.5 shrink-0 text-accent"/><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-content-muted">Dimensions</p><p className="mt-1 break-words text-sm font-medium text-content">{item.dimensions}</p></div></div>}
-              {colourOptions.length > 0 && <div className="sm:col-span-2 rounded-2xl border border-line bg-surface-raised/70 p-4"><div className="flex items-center gap-2"><Palette size={17} className="text-accent"/><p className="text-[10px] font-bold uppercase tracking-[.14em] text-content-muted">Colour / finish</p></div><div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-4 sm:grid-cols-3">{colourOptions.map((colour, index) => <div key={colour + index} className="flex min-w-0 items-center gap-2.5"><span className="h-7 w-7 shrink-0 rounded-full border border-black/10 shadow-sm" style={colourStyle(colour)}/><span className="break-words text-sm font-medium text-content">{colour}</span></div>)}</div></div>}
-            </div>
+            <section className="mt-7 border-y border-line py-5" aria-label="Item specifications">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-accent">Details</p>
+                  <h3 className="mt-1 text-lg font-semibold tracking-tight text-content">Specifications</h3>
+                </div>
+                <span className="text-xs text-content-muted">Item overview</span>
+              </div>
+
+              {(item.material || item.dimensions) && (
+                <dl className="grid gap-x-6 sm:grid-cols-2">
+                  {item.material && (
+                    <div className="flex min-w-0 items-start gap-3 border-b border-line/70 py-3 sm:border-b-0">
+                      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
+                        <Layers size={18} aria-hidden="true" />
+                      </span>
+                      <div className="min-w-0">
+                        <dt className="text-xs font-medium text-content-muted">Material</dt>
+                        <dd className="mt-1 break-words text-sm font-semibold leading-relaxed text-content">{item.material}</dd>
+                      </div>
+                    </div>
+                  )}
+                  {item.dimensions && (
+                    <div className="flex min-w-0 items-start gap-3 py-3">
+                      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
+                        <Ruler size={18} aria-hidden="true" />
+                      </span>
+                      <div className="min-w-0">
+                        <dt className="text-xs font-medium text-content-muted">Dimensions</dt>
+                        <dd className="mt-1 break-words text-sm font-semibold leading-relaxed text-content">{item.dimensions}</dd>
+                      </div>
+                    </div>
+                  )}
+                </dl>
+              )}
+
+              {colourOptions.length > 0 && (
+                <div className={(item.material || item.dimensions) ? "mt-4 border-t border-line/70 pt-4" : ""}>
+                  <div className="mb-3 flex items-center gap-2">
+                    <Palette size={16} className="text-accent" aria-hidden="true" />
+                    <h4 className="text-xs font-semibold text-content">Available colours & finishes</h4>
+                  </div>
+                  <ul className="flex flex-wrap gap-2.5">
+                    {colourOptions.map((colour, index) => (
+                      <li key={colour + index} className="inline-flex max-w-full items-center gap-2.5 rounded-full border border-line bg-surface px-3 py-2 shadow-sm">
+                        <span
+                          className="h-6 w-6 shrink-0 rounded-full border border-black/10 shadow-inner"
+                          style={colourStyle(colour)}
+                          aria-hidden="true"
+                        />
+                        <span className="break-words text-sm font-medium text-content">{colour}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </section>
           )}
 
           {featureItems.length > 0 && (
