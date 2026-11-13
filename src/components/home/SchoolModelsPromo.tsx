@@ -32,8 +32,8 @@ export function SchoolModelsPromo() {
       <Container>
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
-            <p className="eyebrow mb-3">For schools & young makers</p>
-            <h2 className="text-2xl font-semibold sm:text-3xl">School charts & educational models</h2>
+            <p className="mb-3 text-sm font-medium text-accent">For schools and young makers</p>
+            <h2 className="text-[clamp(1.75rem,4.2vw,2.75rem)] font-semibold leading-[1.1] tracking-tight">School charts and educational models</h2>
             <p className="mt-3 leading-relaxed text-content-secondary">
               Explore science charts, classroom models and creative school exhibition projects. Request a tailored quote.
             </p>

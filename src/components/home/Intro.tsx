@@ -4,13 +4,13 @@ import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 export function Intro() {
   const { settings } = useSiteSettings();
   return (
-    <section className="border-b border-line py-16 sm:py-20">
+    <section className="border-b border-line py-16 sm:py-24">
       <Container>
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
-          <h2 className="text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-20">
+          <h2 className="text-[clamp(1.9rem,4.6vw,3.1rem)] font-semibold leading-[1.08] tracking-tight">
             An electronics studio, not a parts shop.
           </h2>
-          <div className="flex flex-col gap-4 text-base leading-relaxed text-content-secondary">
+          <div className="flex flex-col gap-5 border-l border-accent/40 pl-6 text-base leading-relaxed text-content-secondary sm:text-lg sm:leading-relaxed">
             <p>
               {settings.name} is a custom electronics design and development studio in Pakistan. The work
               covers circuit design, embedded firmware, IoT connectivity, automation, robotics,

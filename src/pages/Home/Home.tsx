@@ -25,12 +25,12 @@ export default function Home() {
       />
       <Hero />
       <Intro />
+      <Services />
       {catalogSettings.electronicsEnabled && catalogSettings.showElectronicsOnHome && <FeaturedProjects />}
       <SchoolModelsPromo />
-      <Services />
       <Process />
-      <Technologies />
       <WhyMectec />
+      <Technologies />
       <Testimonials />
       <RequestCta />
     </>

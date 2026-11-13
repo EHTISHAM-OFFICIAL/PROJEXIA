@@ -1,4 +1,5 @@
-import { Section, SectionHeading } from '../ui/Section';
+import { Section } from '../ui/Section';
+import { HomeHeading } from './HomeHeading';
 import { useSiteSettings } from '../../contexts/SiteSettingsContext';
 
 const REASONS = [
@@ -28,12 +29,15 @@ export function WhyMectec() {
   const { settings } = useSiteSettings();
   return (
     <Section className="border-b border-line">
-      <SectionHeading title={`How ${settings.name} works`} />
-      <dl className="mt-12 grid gap-x-12 gap-y-10 sm:grid-cols-2">
+      <HomeHeading title={`How ${settings.name} works`} />
+      <dl className="mt-12 grid gap-x-14 sm:grid-cols-2">
         {REASONS.map((reason) => (
-          <div key={reason.title}>
-            <dt className="text-base font-semibold tracking-tight">{reason.title}</dt>
-            <dd className="mt-2 max-w-prose text-sm leading-relaxed text-content-secondary">
+          <div key={reason.title} className="border-t border-line pb-10 pt-6">
+            <dt className="flex items-center gap-3 font-display text-lg font-semibold tracking-tight">
+              <span className="h-2 w-2 shrink-0 rounded-[2px] bg-accent" aria-hidden="true" />
+              {reason.title}
+            </dt>
+            <dd className="mt-3 max-w-prose pl-5 text-sm leading-relaxed text-content-secondary">
               {reason.description}
             </dd>
           </div>

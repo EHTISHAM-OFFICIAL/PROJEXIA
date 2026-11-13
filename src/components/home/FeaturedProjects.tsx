@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react';
-import { Section, SectionHeading } from '../ui/Section';
+import { Section } from '../ui/Section';
+import { HomeHeading } from './HomeHeading';
 import { ButtonLink } from '../ui/Button';
 import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
@@ -12,7 +13,7 @@ export function FeaturedProjects() {
 
   return (
     <Section className="border-b border-line">
-      <SectionHeading
+      <HomeHeading
         title="Selected work"
         description="Explore the electronics and mechanical builds currently featured by ProjexiaHub."
       >
@@ -20,7 +21,7 @@ export function FeaturedProjects() {
           View all electronics projects
           <ArrowRight size={15} aria-hidden="true" />
         </ButtonLink>
-      </SectionHeading>
+      </HomeHeading>
 
       <div className="mt-12">
         {loading && <ProjectGridSkeleton count={3} />}
