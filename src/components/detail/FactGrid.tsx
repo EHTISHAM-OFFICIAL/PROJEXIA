@@ -13,12 +13,9 @@ export function FactGrid({ facts }: { facts: Fact[] }) {
   if (shown.length === 0) return null;
 
   return (
-    <dl className="grid grid-cols-2 overflow-hidden rounded-2xl border border-line bg-surface/70 sm:grid-cols-3 lg:grid-cols-4">
-      {shown.map((fact, index) => (
-        <div
-          key={fact.label}
-          className={`min-w-0 px-4 py-3.5 sm:px-5 sm:py-4 ${index % 2 !== 0 ? 'border-l border-line' : ''} ${index >= 2 ? 'border-t border-line sm:border-t-0' : ''} ${index >= 3 ? 'sm:border-l sm:border-t-0' : ''} ${index >= 3 ? 'lg:border-t-0' : ''}`}
-        >
+    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3 lg:grid-cols-4">
+      {shown.map((fact) => (
+        <div key={fact.label} className="min-w-0 bg-surface px-4 py-3.5 sm:px-5 sm:py-4">
           <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-content-muted">{fact.label}</dt>
           <dd className="mt-1.5 text-[15px] font-semibold leading-snug text-content [overflow-wrap:anywhere] sm:text-base">
             {fact.value}
