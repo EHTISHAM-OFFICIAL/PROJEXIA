@@ -132,6 +132,7 @@ describe('SchoolModelDetail', () => {
         model={makeModel({
           safetyNotes: 'Unplug before refilling.',
           howToUse: '- Fill\n- Switch on',
+          heroImageUrl: 'https://example.com/model-preview.jpg',
           galleryUrls: ['https://example.com/1.jpg', 'https://example.com/1.jpg', 'https://example.com/2.jpg'],
           specifications: [{ label: 'Weight', value: '2 kg' }],
         })}
