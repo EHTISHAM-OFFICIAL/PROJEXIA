@@ -48,7 +48,7 @@ export function DetailHeader({
   return (
     <header className="relative border-b border-line">
       <div className="absolute inset-0 grid-backdrop opacity-60" aria-hidden="true" />
-      <Container className="relative pb-8 pt-4 sm:pb-12 sm:pt-6 lg:pb-14">
+      <Container className="relative pb-7 pt-3 sm:pb-12 sm:pt-6 lg:pb-14">
         <Link
           to={backTo}
           className="-ml-2 inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm text-content-secondary transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
@@ -59,7 +59,7 @@ export function DetailHeader({
 
         <div
           className={cn(
-            'mt-3 grid gap-x-10 gap-y-7 sm:mt-5 sm:gap-y-8 lg:gap-x-12',
+            'mt-3 grid min-w-0 gap-x-10 gap-y-6 sm:mt-5 sm:gap-y-8 lg:gap-x-12',
             hasImage && 'lg:grid-cols-[1.05fr_1fr] lg:content-center lg:items-start',
           )}
         >
@@ -77,13 +77,13 @@ export function DetailHeader({
 
           {hasImage && image && (
             <figure className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-              <div className="group relative overflow-hidden rounded-2xl border border-line bg-surface-raised shadow-[0_18px_50px_-28px_rgba(0,0,0,0.35)] sm:rounded-[1.4rem]">
+              <div className="group relative overflow-hidden rounded-[1.25rem] border border-line bg-surface-raised shadow-[0_16px_42px_-28px_rgba(0,0,0,0.32)] sm:rounded-[1.4rem]">
                 <Image
                   src={image.src}
                   alt={image.alt}
                   eager
                   className={cn(
-                    'aspect-[5/4] w-full sm:aspect-[16/10] lg:aspect-[5/4]',
+                    'aspect-[4/3] w-full sm:aspect-[16/10] lg:aspect-[5/4]',
                     image.fit === 'contain' ? 'bg-surface-raised object-contain p-2 sm:p-4' : 'object-cover',
                   )}
                 />
@@ -115,7 +115,7 @@ export function DetailHeader({
           )}
         </div>
 
-        {children && <div className="mt-8 sm:mt-10">{children}</div>}
+        {children && <div className="mt-6 sm:mt-10">{children}</div>}
       </Container>
     </header>
   );
