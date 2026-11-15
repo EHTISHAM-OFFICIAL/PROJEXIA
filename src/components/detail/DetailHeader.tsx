@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Images } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { Image } from '../ui/Image';
 import { cn } from '../../utils/cn';
@@ -11,6 +11,7 @@ export interface DetailImage {
   /** `contain` keeps product-style images (white backgrounds) uncropped. */
   fit?: 'cover' | 'contain';
   note?: ReactNode;
+  galleryHref?: string;
 }
 
 interface DetailHeaderProps {
@@ -76,19 +77,28 @@ export function DetailHeader({
 
           {hasImage && image && (
             <figure className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-              <div className="-mx-4 overflow-hidden max-[380px]:-mx-3.5 border-y border-line bg-surface-raised shadow-sm sm:mx-0 sm:rounded-card sm:border">
+              <div className="group relative overflow-hidden rounded-2xl border border-line bg-surface-raised shadow-[0_18px_50px_-28px_rgba(0,0,0,0.35)] sm:rounded-[1.4rem]">
                 <Image
                   src={image.src}
                   alt={image.alt}
                   eager
                   className={cn(
-                    'aspect-[4/3] w-full',
+                    'aspect-[5/4] w-full sm:aspect-[16/10] lg:aspect-[5/4]',
                     image.fit === 'contain' ? 'bg-surface-raised object-contain p-2 sm:p-4' : 'object-cover',
                   )}
                 />
+                {image.galleryHref && (
+                  <a
+                    href={image.galleryHref}
+                    className="absolute bottom-3 right-3 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-accent sm:bottom-4 sm:right-4 sm:px-5"
+                  >
+                    <Images size={17} aria-hidden="true" />
+                    View gallery
+                  </a>
+                )}
               </div>
               {image.note && (
-                <figcaption className="mt-3 text-sm leading-relaxed text-content-muted">{image.note}</figcaption>
+                <figcaption className="mt-3 max-w-prose text-sm leading-relaxed text-content-muted">{image.note}</figcaption>
               )}
             </figure>
           )}
