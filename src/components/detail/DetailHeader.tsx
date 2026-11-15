@@ -59,7 +59,7 @@ export function DetailHeader({
 
         <div
           className={cn(
-            'mt-2 grid gap-x-12 gap-y-6 sm:mt-4',
+            'mt-3 grid gap-x-10 gap-y-7 sm:mt-5 sm:gap-y-8 lg:gap-x-12',
             hasImage && 'lg:grid-cols-[1.05fr_1fr] lg:content-center lg:items-start',
           )}
         >
