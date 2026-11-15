@@ -91,7 +91,7 @@ export function DetailHeader({
               {(image.note || image.galleryHref) && (
                 <figcaption className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3">
                   {image.note && (
-                    <span className="min-w-0 flex-1 text-sm leading-relaxed text-content-muted">
+                    <span className="min-w-0 text-sm leading-relaxed text-content-muted">
                       {image.note}
                     </span>
                   )}
