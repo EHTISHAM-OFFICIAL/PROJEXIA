@@ -98,6 +98,7 @@ export function ProjectDetailView({ project, related }: { project: Project; rela
         image={{
           src: heroImage,
           alt: `${project.title}, illustrative project image`,
+          galleryHref: hasGallery ? '#project-gallery' : undefined,
           note: hasGallery ? (
             <>
               Illustrative image: it may be AI-generated and can differ from the actual build.{' '}
