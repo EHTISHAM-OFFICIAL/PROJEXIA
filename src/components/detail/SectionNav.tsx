@@ -76,7 +76,7 @@ export function SectionChips({ groups }: { groups: NavGroup[] }) {
   if (groups.length < 2) return null;
 
   return (
-    <div className="sticky top-[65px] z-20 border-b border-line bg-bg sm:top-[69px] lg:hidden">
+    <div className="sticky top-[65px] z-30 border-b border-line/80 bg-bg/95 shadow-sm backdrop-blur-xl sm:top-[69px] lg:hidden">
       <Container>
         <nav aria-label="On this page">
           <div
@@ -93,8 +93,8 @@ export function SectionChips({ groups }: { groups: NavGroup[] }) {
                   className={cn(
                     'inline-flex h-11 shrink-0 items-center rounded-full border px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent',
                     current
-                      ? 'border-accent/60 bg-accent/10 text-accent'
-                      : 'border-line text-content-secondary hover:text-content',
+                      ? 'border-accent bg-accent text-white shadow-sm shadow-accent/20'
+                      : 'border-line bg-surface/70 text-content-secondary hover:border-accent/50 hover:text-accent',
                   )}
                 >
                   {group.label}
@@ -126,7 +126,7 @@ export function SectionList({ groups }: { groups: NavGroup[] }) {
                 className={cn(
                   '-ml-px block border-l py-1.5 pl-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent',
                   current
-                    ? 'border-accent font-medium text-content'
+                    ? 'border-accent font-semibold text-accent'
                     : 'border-transparent text-content-secondary hover:text-content',
                 )}
               >
