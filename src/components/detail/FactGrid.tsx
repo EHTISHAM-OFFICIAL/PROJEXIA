@@ -13,11 +13,11 @@ export function FactGrid({ facts }: { facts: Fact[] }) {
   if (shown.length === 0) return null;
 
   return (
-    <dl className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3 lg:grid-cols-4">
+    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3 lg:grid-cols-4">
       {shown.map((fact) => (
-        <div key={fact.label} className="min-w-0 border-t border-line pt-3">
-          <dt className="text-sm text-content-muted">{fact.label}</dt>
-          <dd className="mt-1 text-base font-medium leading-snug text-content [overflow-wrap:anywhere]">
+        <div key={fact.label} className="min-w-0 bg-surface px-4 py-3.5 sm:px-5 sm:py-4">
+          <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-content-muted">{fact.label}</dt>
+          <dd className="mt-1.5 text-[15px] font-semibold leading-snug text-content [overflow-wrap:anywhere] sm:text-base">
             {fact.value}
           </dd>
         </div>

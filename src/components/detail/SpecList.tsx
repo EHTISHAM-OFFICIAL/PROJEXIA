@@ -12,16 +12,16 @@ export interface SpecItem {
 export function SpecList({ items }: { items: SpecItem[] }) {
   if (items.length === 0) return null;
   return (
-    <dl className="divide-y divide-line overflow-hidden rounded-card border border-line bg-surface">
+    <dl className="divide-y divide-line border-y border-line">
       {items.map((item, index) => (
         <div
           key={`${item.label}-${index}`}
-          className="grid min-w-0 gap-1 px-4 py-3.5 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] sm:gap-6 sm:px-5"
+          className="grid min-w-0 gap-1.5 py-4 sm:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] sm:gap-8 sm:py-5"
         >
-          <dt className="text-sm font-medium text-content-muted sm:text-base sm:text-content-secondary">
+          <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-content-muted sm:pt-0.5 sm:text-sm sm:tracking-normal">
             {item.label}
           </dt>
-          <dd className="min-w-0 text-base leading-[1.6] text-content [overflow-wrap:anywhere]">{item.value}</dd>
+          <dd className="min-w-0 text-[15px] leading-[1.75] text-content [overflow-wrap:anywhere] sm:text-base">{item.value}</dd>
         </div>
       ))}
     </dl>
