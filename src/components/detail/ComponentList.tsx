@@ -9,9 +9,9 @@ import type { ProjectComponent } from '../../types/project';
 export function ComponentList({ components }: { components: ProjectComponent[] }) {
   return (
     <>
-      <ul className="divide-y divide-line overflow-hidden rounded-card border border-line bg-surface md:hidden">
+      <ul className="divide-y divide-line border-y border-line md:hidden">
         {components.map((component, index) => (
-          <li key={index} className="p-4">
+          <li key={index} className="py-4 sm:py-5">
             <div className="flex items-start justify-between gap-3">
               <p className="min-w-0 text-base font-medium leading-snug text-content [overflow-wrap:anywhere]">
                 <InlineText text={component.name} allowLinks={false} />
@@ -21,7 +21,7 @@ export function ComponentList({ components }: { components: ProjectComponent[] }
                   </Badge>
                 )}
               </p>
-              <span className="shrink-0 rounded-md border border-line px-2 py-0.5 font-mono text-sm text-content-secondary">
+              <span className="shrink-0 rounded-full bg-surface-raised px-3 py-1 font-mono text-xs font-medium text-content-secondary">
                 Qty {component.quantity}
               </span>
             </div>
@@ -39,10 +39,10 @@ export function ComponentList({ components }: { components: ProjectComponent[] }
         ))}
       </ul>
 
-      <div className="hidden overflow-hidden rounded-card border border-line bg-surface md:block">
+      <div className="hidden overflow-hidden rounded-2xl border border-line bg-surface md:block">
         <table className="w-full table-fixed border-separate border-spacing-0 text-[15px]">
           <thead>
-            <tr className="bg-surface-raised text-left">
+            <tr className="bg-surface-raised/80 text-left">
               <th scope="col" className="w-[27%] border-b border-r border-line px-4 py-3 text-sm font-semibold text-content-secondary">Component</th>
               <th scope="col" className="w-[22%] border-b border-r border-line px-4 py-3 text-sm font-semibold text-content-secondary">Type</th>
               <th scope="col" className="w-[9%] border-b border-r border-line px-4 py-3 text-sm font-semibold text-content-secondary">Qty</th>
