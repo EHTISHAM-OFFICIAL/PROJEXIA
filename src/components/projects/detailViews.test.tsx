@@ -93,7 +93,7 @@ describe('ProjectDetailView', () => {
     expect(html).not.toContain('Watch the demo');
   });
 
-  it('shows the real-photos note only when there is a gallery', () => {
+  it('uses the gallery button without a duplicate real-photos text link', () => {
     const gallery = [{ url: 'https://example.com/a.jpg', alt: 'a', caption: null, order: 0 }];
     const withGallery = render(
       <ProjectDetailView
@@ -101,7 +101,9 @@ describe('ProjectDetailView', () => {
         related={[]}
       />,
     );
-    expect(withGallery).toContain('See the real photos');
+    expect(withGallery).toContain('View gallery');
+    expect(withGallery).toContain('The gallery contains photographs of the project build.');
+    expect(withGallery).not.toContain('See the real photos');
     const without = render(
       <ProjectDetailView
         project={makeProject({ media: { thumbnailUrl: 'https://example.com/h.jpg', heroImageUrl: 'https://example.com/h.jpg', gallery: [], videoUrl: null } })}
@@ -109,6 +111,7 @@ describe('ProjectDetailView', () => {
       />,
     );
     expect(without).not.toContain('See the real photos');
+    expect(without).not.toContain('View gallery');
   });
 });
 

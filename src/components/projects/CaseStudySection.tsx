@@ -16,12 +16,12 @@ export function CaseStudySection({
   if (empty) return null;
 
   return (
-    <section id={id} className="scroll-mt-[8.5rem] border-t border-line pt-8 sm:scroll-mt-36 sm:pt-11">
+    <section id={id} className="scroll-mt-[8.75rem] border-t border-line pt-7 sm:scroll-mt-36 sm:pt-11">
       <div className="flex items-center gap-3">
-        <span className="h-7 w-1 shrink-0 rounded-full bg-accent shadow-[0_0_14px_rgba(249,115,22,0.22)]" aria-hidden="true" />
-        <h2 className="text-[1.4rem] font-semibold leading-tight tracking-tight sm:text-[1.65rem]">{title}</h2>
+        <span className="h-6 w-1 shrink-0 rounded-full sm:h-7 bg-accent shadow-[0_0_14px_rgba(249,115,22,0.22)]" aria-hidden="true" />
+        <h2 className="text-[1.3rem] font-semibold leading-[1.2] tracking-tight sm:text-[1.65rem]">{title}</h2>
       </div>
-      <div className="mt-5 min-w-0 sm:mt-7">{children}</div>
+      <div className="mt-4 min-w-0 sm:mt-7">{children}</div>
     </section>
   );
 }

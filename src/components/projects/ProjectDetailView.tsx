@@ -99,14 +99,9 @@ export function ProjectDetailView({ project, related }: { project: Project; rela
           src: heroImage,
           alt: `${project.title}, illustrative project image`,
           galleryHref: hasGallery ? '#project-gallery' : undefined,
-          note: hasGallery ? (
-            <>
-              Illustrative image: it may be AI-generated and can differ from the actual build.{' '}
-              <a href="#project-gallery" className="font-medium text-accent underline underline-offset-2">
-                See the real photos
-              </a>
-            </>
-          ) : undefined,
+          note: hasGallery
+            ? 'This preview image may be illustrative. The gallery contains photographs of the project build.'
+            : undefined,
         }}
         actions={
           <>
