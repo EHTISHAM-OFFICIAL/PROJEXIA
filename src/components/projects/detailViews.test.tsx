@@ -11,6 +11,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
 import { ProjectDetailView } from './ProjectDetailView';
 import { SchoolModelDetail } from '../schoolModels/SchoolModelDetail';
+import { FactGrid } from '../detail/FactGrid';
 import type { Project } from '../../types/project';
 import type { SchoolModel } from '../../services/schoolModelService';
 
@@ -103,6 +104,7 @@ describe('ProjectDetailView', () => {
     );
     expect(withGallery).toContain('View gallery');
     expect(withGallery).toContain('The gallery contains photographs of the project build.');
+    expect(withGallery.indexOf('The gallery contains photographs of the project build.')).toBeLessThan(withGallery.indexOf('View gallery'));
     expect(withGallery).not.toContain('See the real photos');
     const without = render(
       <ProjectDetailView
@@ -130,6 +132,7 @@ describe('SchoolModelDetail', () => {
         model={makeModel({
           safetyNotes: 'Unplug before refilling.',
           howToUse: '- Fill\n- Switch on',
+          heroImageUrl: 'https://example.com/model-preview.jpg',
           galleryUrls: ['https://example.com/1.jpg', 'https://example.com/1.jpg', 'https://example.com/2.jpg'],
           specifications: [{ label: 'Weight', value: '2 kg' }],
         })}
@@ -140,6 +143,8 @@ describe('SchoolModelDetail', () => {
     expect(html).toContain('Unplug before refilling.');
     expect(html).toContain('href="#about"');
     expect(html).toContain('href="#photos"');
+    expect(html).toContain('This preview may be illustrative. The gallery shows photographs of the model.');
+    expect(html).toContain('View gallery');
     expect(html).toContain('href="#use"');
     expect(html).toContain('href="#details"');
     expect(html).not.toContain('href="#parts"');
@@ -152,5 +157,23 @@ describe('SchoolModelDetail', () => {
     expect(html).not.toContain('javascript:');
     expect(html).not.toContain('Watch demo');
     expect(html).toContain('Resources');
+  });
+});
+
+
+describe('FactGrid', () => {
+  it('fits three available facts into three desktop columns without a placeholder tile', () => {
+    const html = render(<FactGrid facts={[
+      { label: 'Status', value: 'Completed' },
+      { label: 'Difficulty', value: 'Intermediate' },
+      { label: 'Completed', value: '2 Oct 2025' },
+      { label: 'Approx. cost', value: null },
+    ]} />);
+    expect(html).toContain('lg:grid-cols-3');
+    expect(html).not.toContain('lg:grid-cols-4');
+    expect(html).toContain('Completed');
+    expect(html).toContain('Intermediate');
+    expect(html).toContain('2 Oct 2025');
+    expect(html).not.toContain('Approx. cost');
   });
 });

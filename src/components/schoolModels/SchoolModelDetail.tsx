@@ -73,6 +73,9 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
           src: model.heroImageUrl || model.thumbnailUrl,
           alt: model.title,
           fit: 'contain',
+          note: galleryImages.length > 0
+            ? 'This preview may be illustrative. The gallery shows photographs of the model.'
+            : undefined,
           galleryHref: galleryImages.length > 0 ? '#photos' : undefined,
         }}
         actions={
