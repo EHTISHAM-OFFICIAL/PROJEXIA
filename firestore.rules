@@ -592,7 +592,10 @@ service cloud.firestore {
         && request.resource.data.uid == resource.data.uid
         && request.resource.data.authEmail == request.auth.token.email
         && request.resource.data.keys().hasOnly(['uid', 'authEmail', 'createdAt']);
-      allow delete: if false;
+      // Customers can remove only their own username mapping.
+      allow delete: if isSignedIn()
+        && (!exists(/databases/$(database)/documents/usernameLookup/$(username))
+          || resource.data.uid == request.auth.uid);
     }
 
     // ---------------------------------------------------------------------
@@ -609,24 +612,139 @@ service cloud.firestore {
     match /users/{uid} {
       allow get: if isSignedIn() && request.auth.uid == uid;
       allow list: if false;
+
       allow create: if isSignedIn()
         && request.auth.uid == uid
         && request.resource.data.uid == uid
         && request.resource.data.username is string
+        && request.resource.data.username.matches('^[a-z0-9_-]{3,30}$')
         && request.resource.data.recoveryEmail is string
         && request.resource.data.recoveryEmail.matches('.+@.+[.].+')
+        && existsAfter(/databases/$(database)/documents/usernameChangeLimits/$(uid))
+        && existsAfter(/databases/$(database)/documents/usernameLookup/$(request.resource.data.username))
+        && getAfter(/databases/$(database)/documents/usernameLookup/$(request.resource.data.username)).data.uid == uid
         && request.resource.data.keys().hasOnly([
-          'uid',
-          'username',
-          'recoveryEmail',
-          'createdAt',
-          'updatedAt'
+          'uid', 'username', 'recoveryEmail', 'createdAt', 'updatedAt'
         ]);
+
       allow update: if isSignedIn()
         && request.auth.uid == uid
         && request.resource.data.uid == resource.data.uid
-        && request.resource.data.username == resource.data.username
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['recoveryEmail', 'updatedAt']);
+        && (
+          (
+            request.resource.data.username == resource.data.username
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['recoveryEmail', 'updatedAt'])
+          )
+          || (
+            request.resource.data.username != resource.data.username
+            && request.resource.data.username is string
+            && request.resource.data.username.matches('^[a-z0-9_-]{3,30}$')
+            && request.resource.data.updatedAt == request.time
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['username', 'updatedAt'])
+            && existsAfter(/databases/$(database)/documents/usernameChangeLimits/$(uid))
+            && (
+              getAfter(/databases/$(database)/documents/usernameChangeLimits/$(uid)).data.change1At == request.time
+              || getAfter(/databases/$(database)/documents/usernameChangeLimits/$(uid)).data.change2At == request.time
+            )
+            && existsAfter(/databases/$(database)/documents/usernameLookup/$(request.resource.data.username))
+            && getAfter(/databases/$(database)/documents/usernameLookup/$(request.resource.data.username)).data.uid == uid
+            && getAfter(/databases/$(database)/documents/usernameLookup/$(request.resource.data.username)).data.authEmail == request.auth.token.email
+            && !existsAfter(/databases/$(database)/documents/usernameLookup/$(resource.data.username))
+          )
+        );
+
+      // A minimal quota record survives profile deletion to prevent limit resets.
+      allow delete: if isSignedIn()
+        && request.auth.uid == uid
+        && resource.data.username is string
+        && existsAfter(/databases/$(database)/documents/usernameChangeLimits/$(uid))
+        && !existsAfter(/databases/$(database)/documents/usernameLookup/$(resource.data.username));
+    }
+
+    // Private, non-enumerable anti-abuse metadata. This record contains only
+    // the account uid and username-change timestamps; it is never client-deleted.
+    match /usernameChangeLimits/{uid} {
+      allow get: if isSignedIn() && request.auth.uid == uid;
+      allow list: if false;
+
+      function profilePath() {
+        return /databases/$(database)/documents/users/$(uid);
+      }
+
+      function profileLookupExistsAfter() {
+        let profile = getAfter(profilePath());
+        let lookupPath = /databases/$(database)/documents/usernameLookup/$(profile.data.username);
+        return existsAfter(lookupPath) && getAfter(lookupPath).data.uid == uid;
+      }
+
+      function profileLookupRemovedAfter() {
+        let profile = get(profilePath());
+        let lookupPath = /databases/$(database)/documents/usernameLookup/$(profile.data.username);
+        return !existsAfter(lookupPath);
+      }
+
+      function validQuotaProgression() {
+        let oldFirst = resource.data.get('change1At', null);
+        let oldSecond = resource.data.get('change2At', null);
+        let newFirst = request.resource.data.get('change1At', null);
+        let newSecond = request.resource.data.get('change2At', null);
+        let cutoff = request.time - duration.value(30, 'd');
+        let firstExpired = oldFirst == null || (oldFirst is timestamp && oldFirst <= cutoff);
+        let secondActive = oldSecond is timestamp && oldSecond > cutoff;
+        return (
+          (firstExpired && !secondActive
+            && newFirst == request.time
+            && newSecond == null)
+          || (firstExpired && secondActive
+            && newFirst == oldSecond
+            && newSecond == request.time)
+          || (!firstExpired && oldSecond == null
+            && newFirst == oldFirst
+            && newSecond == request.time)
+        )
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'change1At', 'change2At', 'updatedAt'
+        ])
+        && exists(profilePath())
+        && existsAfter(profilePath())
+        && get(profilePath()).data.username != getAfter(profilePath()).data.username;
+      }
+
+      allow create: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.keys().hasOnly([
+          'uid', 'change1At', 'change2At', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && (
+          // Registration: create empty quota metadata with the new profile + lookup.
+          (request.resource.data.change1At == null
+            && request.resource.data.change2At == null
+            && existsAfter(profilePath())
+            && !exists(profilePath())
+            && profileLookupExistsAfter())
+          // Legacy account's first rename consumes the first change atomically.
+          || (request.resource.data.change1At == request.time
+            && request.resource.data.change2At == null
+            && exists(profilePath())
+            && existsAfter(profilePath())
+            && get(profilePath()).data.username != getAfter(profilePath()).data.username
+            && profileLookupExistsAfter())
+          // Legacy account deletion: preserve an empty quota record as profile is removed.
+          || (request.resource.data.change1At == null
+            && request.resource.data.change2At == null
+            && exists(profilePath())
+            && !existsAfter(profilePath())
+            && profileLookupRemovedAfter())
+        );
+
+      allow update: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == resource.data.uid
+        && validQuotaProgression();
       allow delete: if false;
     }
 
