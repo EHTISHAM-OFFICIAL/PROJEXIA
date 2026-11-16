@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -45,6 +45,10 @@ export default function Account() {
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deletingAccount, setDeletingAccount] = useState(false);
+
+  useEffect(() => {
+    setUsernameInput(profile?.username ?? '');
+  }, [profile?.username]);
 
   if (!user) return null;
 
@@ -300,6 +304,9 @@ export default function Account() {
               <p className="text-sm font-semibold text-content">Your project requests will be kept</p>
               <p className="mt-1 text-xs leading-relaxed text-content-secondary">
                 All submitted project requests and their history will remain available to PROJEXIAHUB administrators. They will not be erased when your account is deleted.
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-content-muted">
+                A minimal security record containing your account ID and username-change timestamps may be retained to prevent the change limit from being reset. It does not contain your username or email.
               </p>
             </div>
 
