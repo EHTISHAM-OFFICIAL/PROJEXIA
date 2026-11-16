@@ -2,6 +2,8 @@ import { doc, getDoc, serverTimestamp, setDoc, writeBatch } from 'firebase/fires
 import {
   createUserWithEmailAndPassword,
   deleteUser,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   updateEmail,
@@ -16,6 +18,7 @@ import { getGatewayUrl } from './imgbbService';
 const USERS_COLLECTION = 'users';
 const USERNAME_LOOKUP_COLLECTION = 'usernameLookup';
 const INTERNAL_EMAIL_DOMAIN = 'users.mectec.local';
+const USERNAME_CHANGE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 const usernamePattern = /^[a-z0-9_-]{3,30}$/;
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const INVALID_LOGIN = 'Invalid username or password.';
@@ -38,6 +41,165 @@ export function validateUsername(value: string): string | null {
   return null;
 }
 
+function timestampDate(value: UserProfile['usernameChange1At']): Date | null {
+  if (!value || typeof value.toDate !== 'function') return null;
+  return value.toDate();
+}
+
+/** The UI status is advisory; Firestore rules enforce the same rolling 30-day quota. */
+export function getUsernameChangeStatus(
+  profile: Pick<UserProfile, 'usernameChange1At' | 'usernameChange2At'> | null,
+  now = Date.now(),
+): { used: number; remaining: number; availableAt: Date | null } {
+  if (!profile) return { used: 0, remaining: 2, availableAt: null };
+  const cutoff = now - USERNAME_CHANGE_WINDOW_MS;
+  const activeChanges = [
+    timestampDate(profile.usernameChange1At),
+    timestampDate(profile.usernameChange2At),
+  ]
+    .filter((value): value is Date => Boolean(value && value.getTime() > cutoff))
+    .sort((a, b) => a.getTime() - b.getTime());
+
+  return {
+    used: activeChanges.length,
+    remaining: Math.max(0, 2 - activeChanges.length),
+    availableAt:
+      activeChanges.length >= 2
+        ? new Date(activeChanges[0].getTime() + USERNAME_CHANGE_WINDOW_MS)
+        : null,
+  };
+}
+
+export async function changeUsername(user: User, usernameInput: string): Promise<void> {
+  const username = normalizeUsername(usernameInput);
+  const usernameError = validateUsername(username);
+  if (usernameError) throw new Error(usernameError);
+
+  const profileRef = doc(db, USERS_COLLECTION, user.uid);
+  const profileSnapshot = await getDoc(profileRef);
+  if (!profileSnapshot.exists()) {
+    throw new Error('Your account profile could not be found. Refresh your account details and try again.');
+  }
+
+  const data = profileSnapshot.data();
+  const currentUsername = typeof data.username === 'string' ? data.username : '';
+  if (!currentUsername) throw new Error('Your current username is missing. Please contact support before changing it.');
+  if (username === currentUsername.toLowerCase()) throw new Error('That is already your current username.');
+
+  const profileForQuota: Pick<UserProfile, 'usernameChange1At' | 'usernameChange2At'> = {
+    usernameChange1At: data.usernameChange1At ?? null,
+    usernameChange2At: data.usernameChange2At ?? null,
+  };
+  const status = getUsernameChangeStatus(profileForQuota);
+  if (status.remaining <= 0) {
+    throw new Error(
+      status.availableAt
+        ? 'You can change your username only twice in a 30-day period. Your next change is available on ' +
+            status.availableAt.toLocaleDateString() +
+            '.'
+        : 'You can change your username only twice in a 30-day period.',
+    );
+  }
+
+  const firstDate = timestampDate(profileForQuota.usernameChange1At);
+  const secondDate = timestampDate(profileForQuota.usernameChange2At);
+  const cutoff = Date.now() - USERNAME_CHANGE_WINDOW_MS;
+  const firstIsActive = Boolean(firstDate && firstDate.getTime() > cutoff);
+  const secondIsActive = Boolean(secondDate && secondDate.getTime() > cutoff);
+
+  let nextFirst: unknown;
+  let nextSecond: unknown;
+  if (!firstIsActive) {
+    if (secondIsActive && profileForQuota.usernameChange2At) {
+      nextFirst = profileForQuota.usernameChange2At;
+      nextSecond = serverTimestamp();
+    } else {
+      nextFirst = serverTimestamp();
+      nextSecond = null;
+    }
+  } else {
+    nextFirst = profileForQuota.usernameChange1At;
+    nextSecond = serverTimestamp();
+  }
+
+  const batch = writeBatch(db);
+  batch.delete(usernameLookupRef(currentUsername));
+  batch.set(usernameLookupRef(username), {
+    uid: user.uid,
+    authEmail: user.email,
+    createdAt: serverTimestamp(),
+  });
+  batch.update(profileRef, {
+    username,
+    usernameChange1At: nextFirst,
+    usernameChange2At: nextSecond,
+    updatedAt: serverTimestamp(),
+  });
+
+  try {
+    await batch.commit();
+  } catch (error) {
+    const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
+    if (code.includes('permission-denied')) {
+      throw new Error('This username is unavailable, or your account has reached its 30-day change limit. Check the username and try again.');
+    }
+    throw new Error('Your username could not be changed. It may already be in use, or your account details may have changed. Please try again.');
+  }
+}
+
+export async function deleteCustomerAccount(user: User, password: string): Promise<void> {
+  if (!user.email) throw new Error('This account has no sign-in email. Please contact support to complete account deletion.');
+
+  // Firebase requires a recent sign-in for permanent account deletion.
+  const credential = EmailAuthProvider.credential(user.email, password);
+  try {
+    await reauthenticateWithCredential(user, credential);
+  } catch {
+    throw new Error('Your password could not be verified. Check it and try again.');
+  }
+
+  const profileRef = doc(db, USERS_COLLECTION, user.uid);
+  const profileSnapshot = await getDoc(profileRef);
+  if (!profileSnapshot.exists()) {
+    throw new Error('Your account profile could not be found. Please contact support so the account can be removed safely.');
+  }
+
+  const profileData = profileSnapshot.data();
+  const username = typeof profileData.username === 'string' ? profileData.username : '';
+  if (!username) throw new Error('Your username record is missing. Please contact support so the account can be removed safely.');
+
+  // Remove only the private profile and sign-in lookup. projectRequests and
+  // requestStatusLookup are intentionally untouched for administrator history.
+  const cleanup = writeBatch(db);
+  cleanup.delete(profileRef);
+  cleanup.delete(usernameLookupRef(username));
+  await cleanup.commit();
+
+  try {
+    await deleteUser(user);
+  } catch (error) {
+    // If Firebase Auth deletion fails, restore the profile and lookup so the
+    // customer is not left with a working login but no username/profile.
+    try {
+      const restore = writeBatch(db);
+      restore.set(profileRef, profileData);
+      restore.set(usernameLookupRef(username), {
+        uid: user.uid,
+        authEmail: user.email,
+        createdAt: serverTimestamp(),
+      });
+      await restore.commit();
+    } catch {
+      throw new Error('Firebase could not finish deleting the sign-in account, and the profile could not be restored automatically. Please contact PROJEXIAHUB support.');
+    }
+    const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
+    if (code.includes('requires-recent-login')) {
+      throw new Error('For security, sign in again and repeat the account deletion.');
+    }
+    throw new Error('Your account could not be deleted right now. Your profile has been restored; please try again.');
+  }
+}
+
 export async function registerUser(
   usernameInput: string,
   password: string,
@@ -48,7 +210,7 @@ export async function registerUser(
   if (usernameError) throw new Error(usernameError);
 
   const accountEmail = accountEmailInput.trim().toLowerCase();
-  if (!accountEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(accountEmail)) {
+  if (!accountEmail || !emailPattern.test(accountEmail)) {
     throw new Error('Enter a valid email address.');
   }
 
@@ -69,6 +231,8 @@ export async function registerUser(
       recoveryEmail: accountEmail,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
+      usernameChange1At: null,
+      usernameChange2At: null,
     });
     batch.set(usernameLookupRef(username), {
       uid: credential.user.uid,
@@ -109,7 +273,7 @@ async function resolveUsernameSignIn(
 
   let response: Response;
   try {
-    response = await fetch(`${workerUrl}/auth/login`, {
+    response = await fetch(\`\${workerUrl}/auth/login\`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -165,11 +329,8 @@ export async function signInWithUsername(identifierInput: string, password: stri
     const credential = await signInWithEmailAndPassword(auth, authEmail, password);
     const profile = await getUserProfile(credential.user.uid);
 
-    // Accounts created before email became mandatory used an internal Firebase
-    // email. On a successful login, migrate that account to its real recovery
-    // email so Firebase can provide native password-reset emails.
     if (
-      credential.user.email?.endsWith(`@${INTERNAL_EMAIL_DOMAIN}`) &&
+      credential.user.email?.endsWith(\`@\${INTERNAL_EMAIL_DOMAIN}\`) &&
       profile?.recoveryEmail &&
       credential.user.email !== profile.recoveryEmail
     ) {
@@ -180,8 +341,6 @@ export async function signInWithUsername(identifierInput: string, password: stri
       }
     }
 
-    // The Worker reports when this username has no lookup record yet. Create it
-    // (the owner may write their own) so the record reflects the final email.
     if (username && lookupMissing && credential.user.email) {
       try {
         await setDoc(usernameLookupRef(username), {
@@ -202,7 +361,7 @@ export async function signInWithUsername(identifierInput: string, password: stri
 
 export async function sendCustomerPasswordReset(accountEmailInput: string): Promise<void> {
   const accountEmail = accountEmailInput.trim().toLowerCase();
-  if (!accountEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(accountEmail)) {
+  if (!accountEmail || !emailPattern.test(accountEmail)) {
     throw new Error('Enter a valid email address.');
   }
 
@@ -221,6 +380,8 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     recoveryEmail: typeof data.recoveryEmail === 'string' ? data.recoveryEmail : null,
     createdAt: data.createdAt ?? null,
     updatedAt: data.updatedAt ?? null,
+    usernameChange1At: data.usernameChange1At ?? null,
+    usernameChange2At: data.usernameChange2At ?? null,
   };
 }
 

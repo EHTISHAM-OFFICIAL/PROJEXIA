@@ -6,4 +6,6 @@ export interface UserProfile {
   recoveryEmail: string | null;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
+  usernameChange1At: Timestamp | null;
+  usernameChange2At: Timestamp | null;
 }
