@@ -725,14 +725,14 @@ service cloud.firestore {
             && request.resource.data.change2At == null
             && existsAfter(profilePath())
             && !exists(profilePath())
-            && profileLookupExistsAfter()
+            && profileLookupExistsAfter())
           // Legacy account's first rename consumes the first change atomically.
           || (request.resource.data.change1At == request.time
             && request.resource.data.change2At == null
             && exists(profilePath())
             && existsAfter(profilePath())
             && get(profilePath()).data.username != getAfter(profilePath()).data.username
-            && profileLookupExistsAfter()
+            && profileLookupExistsAfter())
           // Legacy account deletion: preserve an empty quota record as profile is removed.
           || (request.resource.data.change1At == null
             && request.resource.data.change2At == null
