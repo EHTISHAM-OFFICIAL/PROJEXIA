@@ -1332,7 +1332,7 @@ service cloud.firestore {
             && request.resource.data.change2At == null
             && exists(profilePath())
             && !existsAfter(profilePath())
-            && !existsAfter(/databases/$(database)/documents/usernameLookup/$(resource.data.username)))
+            && !existsAfter(/databases/$(database)/documents/usernameLookup/$(get(profilePath()).data.username)))
         );
 
       allow update: if isSignedIn()
