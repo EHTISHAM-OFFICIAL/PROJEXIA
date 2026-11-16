@@ -27,7 +27,7 @@ vi.mock('../firebase/auth', () => ({ auth: {} }));
 vi.mock('../firebase/firestore', () => ({ db: {} }));
 vi.mock('./imgbbService', () => ({ getGatewayUrl: mocks.getGatewayUrl }));
 
-import { signInWithUsername } from './userService';
+import { getUsernameChangeStatus, signInWithUsername } from './userService';
 
 const user = { uid: 'u1', email: 'sam@example.com' };
 
@@ -131,5 +131,39 @@ describe('signInWithUsername', () => {
   it('collapses Firebase sign-in failures into the generic message', async () => {
     mocks.signInWithEmailAndPassword.mockRejectedValue(Object.assign(new Error('x'), { code: 'auth/wrong-password' }));
     await expect(signInWithUsername('sam@example.com', 'pw')).rejects.toThrow('Invalid username or password.');
+  });
+});
+
+describe('getUsernameChangeStatus', () => {
+  const now = new Date('2026-11-17T12:00:00.000Z').getTime();
+  const timestamp = (date: Date) => ({ toDate: () => date }) as never;
+
+  it('allows two changes when no recent changes are recorded', () => {
+    expect(getUsernameChangeStatus({
+      usernameChange1At: null,
+      usernameChange2At: null,
+    }, now)).toEqual({ used: 0, remaining: 2, availableAt: null });
+  });
+
+  it('counts only changes inside the rolling 30-day window', () => {
+    const result = getUsernameChangeStatus({
+      usernameChange1At: timestamp(new Date(now - 10 * 24 * 60 * 60 * 1000)),
+      usernameChange2At: timestamp(new Date(now - 40 * 24 * 60 * 60 * 1000)),
+    }, now);
+    expect(result.used).toBe(1);
+    expect(result.remaining).toBe(1);
+    expect(result.availableAt).toBeNull();
+  });
+
+  it('shows the next available date after both changes have been used', () => {
+    const first = new Date(now - 20 * 24 * 60 * 60 * 1000);
+    const second = new Date(now - 5 * 24 * 60 * 60 * 1000);
+    const result = getUsernameChangeStatus({
+      usernameChange1At: timestamp(first),
+      usernameChange2At: timestamp(second),
+    }, now);
+    expect(result.used).toBe(2);
+    expect(result.remaining).toBe(0);
+    expect(result.availableAt?.getTime()).toBe(first.getTime() + 30 * 24 * 60 * 60 * 1000);
   });
 });
