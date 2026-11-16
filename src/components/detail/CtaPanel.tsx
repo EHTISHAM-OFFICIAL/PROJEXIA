@@ -14,7 +14,7 @@ export function CtaPanel({ title, description, primary, secondary }: CtaPanelPro
   return (
     <section className="relative overflow-hidden rounded-card border border-accent/25 bg-accent/5 p-6 sm:p-10">
       <div className="max-w-xl">
-        <h2 className="text-[1.5rem] font-semibold leading-tight tracking-tight sm:text-3xl">{title}</h2>
+        <h2 className="text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.02em] [text-wrap:balance] sm:text-[2.25rem]">{title}</h2>
         <p className="mt-3 text-base leading-[1.7] text-content-secondary sm:text-[1.0625rem]">{description}</p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <ButtonLink to={primary.to} size="lg" className="w-full sm:w-auto">

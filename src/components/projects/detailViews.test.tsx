@@ -177,3 +177,31 @@ describe('FactGrid', () => {
     expect(html).not.toContain('Approx. cost');
   });
 });
+
+describe('section numbering on the pages', () => {
+  it('numbers the project sections consecutively, skipping missing ones', () => {
+    const html = render(
+      <ProjectDetailView
+        project={makeProject({ description: 'About.', problemStatement: '', solutionOverview: 'Fix.', results: 'Done.' })}
+        related={[]}
+      />,
+    );
+    // overview, solution, results are shown; problem is not.
+    expect(html).toContain('>01<');
+    expect(html).toContain('>02<');
+    expect(html).toContain('>03<');
+    expect(html).not.toContain('>04<');
+  });
+
+  it('numbers the school model chapters', () => {
+    const html = render(
+      <SchoolModelDetail
+        model={makeModel({ safetyNotes: 'Careful.', specifications: [{ label: 'Weight', value: '2 kg' }] })}
+        related={[]}
+      />,
+    );
+    expect(html).toContain('>01<');
+    expect(html).toContain('>02<');
+    expect(html).toContain('>03<');
+  });
+});

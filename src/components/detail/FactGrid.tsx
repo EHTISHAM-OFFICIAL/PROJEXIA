@@ -25,7 +25,7 @@ export function FactGrid({ facts }: { facts: Fact[] }) {
     <dl className={`grid ${mobileColumns} gap-2 ${tabletColumns} ${desktopColumns}`}>
       {shown.map((fact) => (
         <div key={fact.label} className="min-w-0 rounded-xl border border-line bg-surface px-3.5 py-3 sm:rounded-2xl sm:px-5 sm:py-4">
-          <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-content-muted sm:text-xs sm:tracking-[0.1em]">{fact.label}</dt>
+          <dt className="text-xs font-semibold uppercase tracking-[0.08em] text-content-muted sm:tracking-[0.1em]">{fact.label}</dt>
           <dd className="mt-1 text-[15px] font-semibold leading-snug text-content [overflow-wrap:anywhere] sm:text-base">
             {fact.value}
           </dd>

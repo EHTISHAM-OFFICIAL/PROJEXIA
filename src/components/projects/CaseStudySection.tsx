@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Check } from 'lucide-react';
+import { SectionHeading, SubHeading } from '../detail/SectionHeading';
 
 /** Renders nothing when there is no content, which is how optional fields disappear. */
 export function CaseStudySection({
@@ -7,13 +8,25 @@ export function CaseStudySection({
   children,
   empty = false,
   id,
+  number,
 }: {
   title: string;
   children: ReactNode;
   empty?: boolean;
   id?: string;
+  /** When given, the section opens with the numbered circuit-trace header. */
+  number?: string;
 }) {
   if (empty) return null;
+
+  if (number) {
+    return (
+      <section id={id} className="scroll-mt-[8.75rem] sm:scroll-mt-36">
+        <SectionHeading number={number}>{title}</SectionHeading>
+        <div className="mt-5 min-w-0 sm:mt-7">{children}</div>
+      </section>
+    );
+  }
 
   return (
     <section id={id} className="scroll-mt-[8.75rem] border-t border-line pt-7 sm:scroll-mt-36 sm:pt-11">
@@ -151,11 +164,9 @@ export function Prose({ text, size = 'compact' }: { text: string; size?: ProseSi
       const level = line.match(/^#+/)![0].length;
       const heading = line.replace(/^#+\s+/, '').trim();
       blocks.push(
-        level === 3 ? (
-          <h4 key={index} className="mt-3 text-base font-semibold leading-snug text-content sm:text-lg"><InlineText text={heading}/></h4>
-        ) : (
-          <h3 key={index} className="mt-5 text-lg font-semibold leading-snug tracking-tight text-content sm:text-xl"><InlineText text={heading}/></h3>
-        ),
+        <SubHeading key={index} level={level === 3 ? 4 : 3} className={level === 3 ? 'mt-3' : 'mt-6'}>
+          <InlineText text={heading}/>
+        </SubHeading>,
       );
       return;
     }
@@ -178,7 +189,9 @@ export function Prose({ text, size = 'compact' }: { text: string; size?: ProseSi
     blocks.push(<p key={index} className={PARAGRAPH[size]}><InlineText text={line}/></p>);
   });
   flushLists();
-  return <div className={`prose-content flex max-w-prose flex-col ${size === 'reading' ? 'gap-4' : 'gap-2'}`}>{blocks}</div>;
+  // The reading size sets its own heading scale, so it opts out of the generic
+  // `.prose-content` heading overrides in mobile.css (which pin h3 to 19px).
+  return <div className={`${size === 'reading' ? 'gap-4' : 'prose-content gap-2'} flex max-w-prose flex-col`}>{blocks}</div>;
 }
 
 export function BulletList({

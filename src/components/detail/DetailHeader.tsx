@@ -46,8 +46,13 @@ export function DetailHeader({
   const hasImage = Boolean(image?.src);
 
   return (
-    <header className="relative border-b border-line">
+    <header className="relative isolate overflow-hidden border-b border-line">
       <div className="absolute inset-0 grid-backdrop opacity-60" aria-hidden="true" />
+      {/* Static copper glow: atmosphere with no animation cost. */}
+      <div
+        className="hero-glow pointer-events-none absolute -right-28 top-10 -z-10 h-[26rem] w-[26rem] opacity-80 lg:-right-16 lg:top-1/2 lg:h-[36rem] lg:w-[36rem] lg:-translate-y-1/2"
+        aria-hidden="true"
+      />
       <Container className="relative pb-7 pt-3 sm:pb-12 sm:pt-6 lg:pb-14">
         <Link
           to={backTo}
@@ -65,11 +70,11 @@ export function DetailHeader({
         >
           <div className={cn('min-w-0', hasImage && 'lg:col-start-1 lg:row-start-1')}>
             {badges && <div className="flex flex-wrap gap-2">{badges}</div>}
-            <h1 className="mt-4 text-[1.875rem] font-semibold leading-[1.12] tracking-tight [overflow-wrap:anywhere] sm:text-4xl lg:text-[2.75rem]">
+            <h1 className="mt-4 text-[2.05rem] font-semibold leading-[1.08] tracking-[-0.025em] [overflow-wrap:anywhere] [text-wrap:balance] sm:text-[2.6rem] lg:text-[3.1rem]">
               {title}
             </h1>
             {summary && (
-              <p className="mt-4 max-w-prose text-[1.0625rem] leading-[1.7] text-content-secondary sm:mt-5 sm:text-lg">
+              <p className="mt-4 max-w-prose text-[1.0625rem] leading-[1.7] text-content-secondary sm:mt-5 sm:text-[1.1875rem] sm:leading-[1.65]">
                 {summary}
               </p>
             )}

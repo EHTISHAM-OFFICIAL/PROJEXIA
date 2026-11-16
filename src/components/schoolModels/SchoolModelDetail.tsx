@@ -9,7 +9,8 @@ import { SectionChips, SectionList } from '../detail/SectionNav';
 import { CtaPanel } from '../detail/CtaPanel';
 import { SpecList } from '../detail/SpecList';
 import { ComponentList } from '../detail/ComponentList';
-import { buildNavGroups } from '../detail/sections';
+import { buildNavGroups, numberSections } from '../detail/sections';
+import { SectionHeading, SubHeading } from '../detail/SectionHeading';
 import { ProjectGallery } from '../projects/ProjectGallery';
 import { BulletList, CaseStudySection, InlineText, Prose } from '../projects/CaseStudySection';
 import { SchoolModelCard } from './SchoolModelCard';
@@ -19,8 +20,8 @@ import type { SchoolModel } from '../../services/schoolModelService';
 function Subsection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="min-w-0">
-      <h3 className="text-lg font-semibold leading-snug tracking-tight sm:text-xl">{title}</h3>
-      <div className="mt-3">{children}</div>
+      <SubHeading>{title}</SubHeading>
+      <div className="mt-3.5">{children}</div>
     </div>
   );
 }
@@ -41,6 +42,14 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
   const hasUse = Boolean(model.workingPrinciple || model.howToUse || model.setupInstructions || model.safetyNotes);
   const hasParts = parts.length > 0 || model.materials.length > 0 || features.length > 0 || customization.length > 0;
   const hasDetails = specs.length > 0 || Boolean(model.maintenanceNotes) || tags.length > 0;
+
+  const numbers = numberSections([
+    { id: 'about', present: hasAbout },
+    { id: 'photos', present: galleryImages.length > 0 },
+    { id: 'use', present: hasUse },
+    { id: 'parts', present: hasParts },
+    { id: 'details', present: hasDetails },
+  ]);
 
   const groups = buildNavGroups([
     { label: 'About', sections: [{ id: 'about', present: hasAbout }] },
@@ -115,8 +124,8 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
 
       <Container className="pt-4 sm:pt-6">
         <div className="grid min-w-0 gap-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-14">
-          <div className="flex min-w-0 flex-col gap-8 sm:gap-10">
-            <CaseStudySection id="about" title="About this model" empty={!hasAbout}>
+          <div className="flex min-w-0 flex-col gap-14 sm:gap-20">
+            <CaseStudySection id="about" number={numbers['about']} title="About this model" empty={!hasAbout}>
               <div className="flex flex-col gap-9">
                 {model.description && <Prose text={model.description} size="reading" />}
                 {model.problemStatement && (
@@ -132,7 +141,7 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
               </div>
             </CaseStudySection>
 
-            <CaseStudySection id="photos" title="Photos" empty={galleryImages.length === 0}>
+            <CaseStudySection id="photos" number={numbers['photos']} title="Photos" empty={galleryImages.length === 0}>
               <ProjectGallery
                 images={galleryImages.map((url, index) => ({
                   url,
@@ -143,7 +152,7 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
               />
             </CaseStudySection>
 
-            <CaseStudySection id="use" title="How it works and how to use it" empty={!hasUse}>
+            <CaseStudySection id="use" number={numbers['use']} title="How it works and how to use it" empty={!hasUse}>
               <div className="flex flex-col gap-9">
                 {model.workingPrinciple && (
                   <Subsection title="How it works">
@@ -174,7 +183,7 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
               </div>
             </CaseStudySection>
 
-            <CaseStudySection id="parts" title="What's included" empty={!hasParts}>
+            <CaseStudySection id="parts" number={numbers['parts']} title="What's included" empty={!hasParts}>
               <div className="flex flex-col gap-9">
                 {parts.length > 0 && (
                   <Subsection title="Included parts">
@@ -199,7 +208,7 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
               </div>
             </CaseStudySection>
 
-            <CaseStudySection id="details" title="Specifications and care" empty={!hasDetails}>
+            <CaseStudySection id="details" number={numbers['details']} title="Specifications and care" empty={!hasDetails}>
               <div className="flex flex-col gap-9">
                 {specs.length > 0 && (
                   <SpecList
@@ -257,7 +266,7 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
 
         {related.length > 0 && (
           <section className="mt-16 border-t border-line pt-10 sm:mt-20 sm:pt-14">
-            <h2 className="text-[1.5rem] font-semibold tracking-tight sm:text-3xl">More school models</h2>
+            <SectionHeading>More school models</SectionHeading>
             <div className="mt-6 grid gap-5 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((item) => (
                 <SchoolModelCard key={item.id} model={item} />

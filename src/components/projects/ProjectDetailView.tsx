@@ -8,7 +8,8 @@ import { SectionChips, SectionList } from '../detail/SectionNav';
 import { CtaPanel } from '../detail/CtaPanel';
 import { SpecList } from '../detail/SpecList';
 import { ComponentList } from '../detail/ComponentList';
-import { buildNavGroups } from '../detail/sections';
+import { buildNavGroups, numberSections } from '../detail/sections';
+import { SectionHeading } from '../detail/SectionHeading';
 import { ProjectGallery } from './ProjectGallery';
 import { ProjectGrid } from './ProjectGrid';
 import { BulletList, CaseStudySection, InlineText, Prose } from './CaseStudySection';
@@ -37,6 +38,22 @@ export function ProjectDetailView({ project, related }: { project: Project; rela
   const video = safeHttpUrl(media.videoUrl);
   const hasGallery = media.gallery.length > 0;
   const hasSpecs = project.specifications.some((spec) => spec.label.trim() && spec.value.trim());
+
+  // Numbers follow the sections that are actually shown, in page order.
+  const numbers = numberSections([
+    { id: 'overview', present: Boolean(project.description) },
+    { id: 'problem', present: Boolean(project.problemStatement) },
+    { id: 'objectives', present: project.objectives.length > 0 },
+    { id: 'solution', present: Boolean(project.solutionOverview) },
+    { id: 'how-it-works', present: Boolean(project.howItWorks) },
+    { id: 'features', present: project.features.length > 0 },
+    { id: 'components', present: project.components.length > 0 },
+    { id: 'challenges', present: project.challenges.length > 0 },
+    { id: 'results', present: Boolean(project.results) },
+    { id: 'project-gallery', present: hasGallery },
+    { id: 'demo-video', present: Boolean(video) },
+    { id: 'specifications', present: hasSpecs },
+  ]);
 
   const groups = buildNavGroups([
     {
@@ -148,55 +165,55 @@ export function ProjectDetailView({ project, related }: { project: Project; rela
 
       <Container className="pt-4 sm:pt-6">
         <div className="grid min-w-0 gap-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-14">
-          <div className="flex min-w-0 flex-col gap-8 sm:gap-10">
-            <CaseStudySection id="overview" title="Overview" empty={!project.description}>
+          <div className="flex min-w-0 flex-col gap-14 sm:gap-20">
+            <CaseStudySection id="overview" number={numbers['overview']} title="Overview" empty={!project.description}>
               <Prose text={project.description} size="reading" />
             </CaseStudySection>
 
-            <CaseStudySection id="problem" title="The problem" empty={!project.problemStatement}>
+            <CaseStudySection id="problem" number={numbers['problem']} title="The problem" empty={!project.problemStatement}>
               <Prose text={project.problemStatement} size="reading" />
             </CaseStudySection>
 
-            <CaseStudySection id="objectives" title="Objectives" empty={project.objectives.length === 0}>
+            <CaseStudySection id="objectives" number={numbers['objectives']} title="Objectives" empty={project.objectives.length === 0}>
               <BulletList items={project.objectives} variant="check" />
             </CaseStudySection>
 
-            <CaseStudySection id="solution" title="The solution" empty={!project.solutionOverview}>
+            <CaseStudySection id="solution" number={numbers['solution']} title="The solution" empty={!project.solutionOverview}>
               <Prose text={project.solutionOverview} size="reading" />
             </CaseStudySection>
 
-            <CaseStudySection id="how-it-works" title="How it works" empty={!project.howItWorks}>
+            <CaseStudySection id="how-it-works" number={numbers['how-it-works']} title="How it works" empty={!project.howItWorks}>
               <Prose text={project.howItWorks} size="reading" />
             </CaseStudySection>
 
-            <CaseStudySection id="features" title="Features" empty={project.features.length === 0}>
+            <CaseStudySection id="features" number={numbers['features']} title="Features" empty={project.features.length === 0}>
               <BulletList items={project.features} />
             </CaseStudySection>
 
-            <CaseStudySection id="components" title="Components used" empty={project.components.length === 0}>
+            <CaseStudySection id="components" number={numbers['components']} title="Components used" empty={project.components.length === 0}>
               <ComponentList components={project.components} />
             </CaseStudySection>
 
-            <CaseStudySection id="challenges" title="Challenges" empty={project.challenges.length === 0}>
+            <CaseStudySection id="challenges" number={numbers['challenges']} title="Challenges" empty={project.challenges.length === 0}>
               <BulletList items={project.challenges} />
             </CaseStudySection>
 
-            <CaseStudySection id="results" title="Results" empty={!project.results}>
+            <CaseStudySection id="results" number={numbers['results']} title="Results" empty={!project.results}>
               <Prose text={project.results} size="reading" />
             </CaseStudySection>
 
-            <CaseStudySection id="project-gallery" title="Project gallery" empty={!hasGallery}>
+            <CaseStudySection id="project-gallery" number={numbers['project-gallery']} title="Project gallery" empty={!hasGallery}>
               <ProjectGallery images={media.gallery} />
             </CaseStudySection>
 
-            <CaseStudySection id="demo-video" title="Demo video" empty={!video}>
+            <CaseStudySection id="demo-video" number={numbers['demo-video']} title="Demo video" empty={!video}>
               <ButtonLink to={video ?? '#'} external variant="secondary" size="lg" className="w-full sm:w-auto">
                 <PlayCircle size={18} aria-hidden="true" />
                 Watch the demo
               </ButtonLink>
             </CaseStudySection>
 
-            <CaseStudySection id="specifications" title="Specifications" empty={!hasSpecs}>
+            <CaseStudySection id="specifications" number={numbers['specifications']} title="Specifications" empty={!hasSpecs}>
               <SpecList
                 items={project.specifications
                   .filter((spec) => spec.label.trim() && spec.value.trim())
@@ -252,7 +269,7 @@ export function ProjectDetailView({ project, related }: { project: Project; rela
 
         {related.length > 0 && (
           <section className="mt-16 border-t border-line pt-10 sm:mt-20 sm:pt-14">
-            <h2 className="text-[1.5rem] font-semibold tracking-tight sm:text-3xl">Related projects</h2>
+            <SectionHeading>Related projects</SectionHeading>
             <div className="mt-6 sm:mt-8">
               <ProjectGrid projects={related} />
             </div>
