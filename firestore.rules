@@ -919,3 +919,725 @@ service cloud.firestore {
     // Anything not matched above is denied. No catch-all rule by design.
   }
 }
+)
+        && request.resource.data.recoveryEmail is string
+        && request.resource.data.recoveryEmail.matches('.+@.+[.].+')
+        && existsAfter(/databases/$(database)/documents/usernameChangeLimits/$(uid))
+        && existsAfter(/databases/$(database)/documents/usernameLookup/$(request.resource.data.username))
+        && getAfter(/databases/$(database)/documents/usernameLookup/$(request.resource.data.username)).data.uid == uid
+        && request.resource.data.keys().hasOnly([
+          'uid', 'username', 'recoveryEmail', 'createdAt', 'updatedAt'
+        ]);
+
+      allow update: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == resource.data.uid
+        && (
+          (
+            request.resource.data.username == resource.data.username
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['recoveryEmail', 'updatedAt'])
+          )
+          || (
+            request.resource.data.username != resource.data.username
+            && request.resource.data.username is string
+            && request.resource.data.username.matches('^[a-z0-9_-]{3,30}
+
+    // ---------------------------------------------------------------------
+    // imageHostingAssets — public fallback URLs only; no provider keys or delete URLs.
+    match /imageHostingAssets/{assetId} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // settings/imageHosting contains only the public Worker URL and provider preference.
+    match /settings/imageHosting {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // settings — site-wide config, e.g. settings/banner
+    // ---------------------------------------------------------------------
+    match /settings/{docId} {
+      // Only explicitly public settings may be read by visitors. In particular,
+      // EmailJS and imgBB overrides must never be exposed through Firestore.
+      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity', 'siteProfile', 'schoolModels', 'collections', 'requestStatusMessages'];
+      allow list: if false;
+
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // posts — blog / build-log entries
+    // ---------------------------------------------------------------------
+    match /posts/{postId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // testimonials
+    // ---------------------------------------------------------------------
+    match /testimonials/{testimonialId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // projectLibrary — reusable admin-managed project form options
+    // ---------------------------------------------------------------------
+    match /projectLibrary/{itemId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'name', 'kind', 'category', 'description', 'unit', 'defaultValue',
+          'active', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.kind in [
+          'component', 'specification', 'tag', 'feature', 'technology', 'tool',
+          'objective', 'challenge', 'category', 'subcategory', 'protocol', 'application', 'difficulty', 'status'
+        ]
+        // Project library entries can include detailed formatted text.
+        // Keep a generous per-entry ceiling while respecting Firestore's
+        // overall 1 MiB document-size limit.
+        && request.resource.data.name.size() <= 10000
+        && request.resource.data.category is string
+        && request.resource.data.description is string
+        && request.resource.data.unit is string
+        && request.resource.data.defaultValue is string
+        && request.resource.data.active is bool;
+      allow delete: if isAdmin();
+    }
+
+    // Anything not matched above is denied. No catch-all rule by design.
+  }
+}
+)
+        && request.resource.data.recoveryEmail is string
+        && request.resource.data.recoveryEmail.matches('.+@.+[.].+')
+        && request.resource.data.get('usernameChange1At', null) == null
+        && request.resource.data.get('usernameChange2At', null) == null
+        && request.resource.data.keys().hasOnly([
+          'uid',
+          'username',
+          'recoveryEmail',
+          'createdAt',
+          'updatedAt',
+          'usernameChange1At',
+          'usernameChange2At'
+        ]);
+
+      function validUsernameChange() {
+        let oldFirst = resource.data.get('usernameChange1At', null);
+        let oldSecond = resource.data.get('usernameChange2At', null);
+        let newFirst = request.resource.data.get('usernameChange1At', null);
+        let newSecond = request.resource.data.get('usernameChange2At', null);
+        let cutoff = request.time - duration.value(30, 'd');
+        let firstExpired = oldFirst == null || (oldFirst is timestamp && oldFirst <= cutoff);
+        let secondActive = oldSecond is timestamp && oldSecond > cutoff;
+        let newLookup = /databases/$(database)/documents/usernameLookup/$(request.resource.data.username);
+        let oldLookup = /databases/$(database)/documents/usernameLookup/$(resource.data.username);
+
+        return request.resource.data.username is string
+          && request.resource.data.username.matches('^[a-z0-9_-]{3,30}
+
+    // ---------------------------------------------------------------------
+    // imageHostingAssets — public fallback URLs only; no provider keys or delete URLs.
+    match /imageHostingAssets/{assetId} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // settings/imageHosting contains only the public Worker URL and provider preference.
+    match /settings/imageHosting {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // settings — site-wide config, e.g. settings/banner
+    // ---------------------------------------------------------------------
+    match /settings/{docId} {
+      // Only explicitly public settings may be read by visitors. In particular,
+      // EmailJS and imgBB overrides must never be exposed through Firestore.
+      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity', 'siteProfile', 'schoolModels', 'collections', 'requestStatusMessages'];
+      allow list: if false;
+
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // posts — blog / build-log entries
+    // ---------------------------------------------------------------------
+    match /posts/{postId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // testimonials
+    // ---------------------------------------------------------------------
+    match /testimonials/{testimonialId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // projectLibrary — reusable admin-managed project form options
+    // ---------------------------------------------------------------------
+    match /projectLibrary/{itemId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'name', 'kind', 'category', 'description', 'unit', 'defaultValue',
+          'active', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.kind in [
+          'component', 'specification', 'tag', 'feature', 'technology', 'tool',
+          'objective', 'challenge', 'category', 'subcategory', 'protocol', 'application', 'difficulty', 'status'
+        ]
+        // Project library entries can include detailed formatted text.
+        // Keep a generous per-entry ceiling while respecting Firestore's
+        // overall 1 MiB document-size limit.
+        && request.resource.data.name.size() <= 10000
+        && request.resource.data.category is string
+        && request.resource.data.description is string
+        && request.resource.data.unit is string
+        && request.resource.data.defaultValue is string
+        && request.resource.data.active is bool;
+      allow delete: if isAdmin();
+    }
+
+    // Anything not matched above is denied. No catch-all rule by design.
+  }
+}
+)
+          && request.resource.data.updatedAt == request.time
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'username', 'updatedAt', 'usernameChange1At', 'usernameChange2At'
+          ])
+          && (
+            // First change, or both older changes have aged out.
+            (firstExpired && !secondActive
+              && newFirst == request.time
+              && newSecond == null)
+            // The oldest change has expired; keep the still-active one.
+            || (firstExpired && secondActive
+              && newFirst == oldSecond
+              && newSecond == request.time)
+            // One active change remains in the window.
+            || (!firstExpired && oldSecond == null
+              && newFirst == oldFirst
+              && newSecond == request.time)
+          )
+          && existsAfter(newLookup)
+          && getAfter(newLookup).data.uid == request.auth.uid
+          && getAfter(newLookup).data.authEmail == request.auth.token.email
+          && !existsAfter(oldLookup);
+      }
+
+      allow update: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == resource.data.uid
+        && (
+          (
+            request.resource.data.username == resource.data.username
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['recoveryEmail', 'updatedAt'])
+          )
+          || (
+            request.resource.data.username != resource.data.username
+            && validUsernameChange()
+          )
+        );
+
+      // Account deletion removes the private profile and its username mapping
+      // in the same atomic batch. Submitted project requests are separate and
+      // intentionally remain untouched for administrator history.
+      allow delete: if isSignedIn()
+        && request.auth.uid == uid
+        && resource.data.username is string
+        && !existsAfter(/databases/$(database)/documents/usernameLookup/$(resource.data.username));
+    }
+
+    // ---------------------------------------------------------------------
+    // imageHostingAssets — public fallback URLs only; no provider keys or delete URLs.
+    match /imageHostingAssets/{assetId} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // settings/imageHosting contains only the public Worker URL and provider preference.
+    match /settings/imageHosting {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // settings — site-wide config, e.g. settings/banner
+    // ---------------------------------------------------------------------
+    match /settings/{docId} {
+      // Only explicitly public settings may be read by visitors. In particular,
+      // EmailJS and imgBB overrides must never be exposed through Firestore.
+      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity', 'siteProfile', 'schoolModels', 'collections', 'requestStatusMessages'];
+      allow list: if false;
+
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // posts — blog / build-log entries
+    // ---------------------------------------------------------------------
+    match /posts/{postId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // testimonials
+    // ---------------------------------------------------------------------
+    match /testimonials/{testimonialId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // projectLibrary — reusable admin-managed project form options
+    // ---------------------------------------------------------------------
+    match /projectLibrary/{itemId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'name', 'kind', 'category', 'description', 'unit', 'defaultValue',
+          'active', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.kind in [
+          'component', 'specification', 'tag', 'feature', 'technology', 'tool',
+          'objective', 'challenge', 'category', 'subcategory', 'protocol', 'application', 'difficulty', 'status'
+        ]
+        // Project library entries can include detailed formatted text.
+        // Keep a generous per-entry ceiling while respecting Firestore's
+        // overall 1 MiB document-size limit.
+        && request.resource.data.name.size() <= 10000
+        && request.resource.data.category is string
+        && request.resource.data.description is string
+        && request.resource.data.unit is string
+        && request.resource.data.defaultValue is string
+        && request.resource.data.active is bool;
+      allow delete: if isAdmin();
+    }
+
+    // Anything not matched above is denied. No catch-all rule by design.
+  }
+}
+)
+            && request.resource.data.updatedAt == request.time
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['username', 'updatedAt'])
+            && existsAfter(/databases/$(database)/documents/usernameChangeLimits/$(uid))
+            && (
+              getAfter(/databases/$(database)/documents/usernameChangeLimits/$(uid)).data.change1At == request.time
+              || getAfter(/databases/$(database)/documents/usernameChangeLimits/$(uid)).data.change2At == request.time
+            )
+            && existsAfter(/databases/$(database)/documents/usernameLookup/$(request.resource.data.username))
+            && getAfter(/databases/$(database)/documents/usernameLookup/$(request.resource.data.username)).data.uid == uid
+            && getAfter(/databases/$(database)/documents/usernameLookup/$(request.resource.data.username)).data.authEmail == request.auth.token.email
+            && !existsAfter(/databases/$(database)/documents/usernameLookup/$(resource.data.username))
+          )
+        );
+
+      // A minimal quota record is retained after account deletion so it cannot
+      // be reset by deleting/recreating a profile. It contains only uid/timestamps.
+      allow delete: if isSignedIn()
+        && request.auth.uid == uid
+        && resource.data.username is string
+        && existsAfter(/databases/$(database)/documents/usernameChangeLimits/$(uid))
+        && !existsAfter(/databases/$(database)/documents/usernameLookup/$(resource.data.username));
+    }
+
+    // Username-change quota metadata is private and non-enumerable. It is
+    // intentionally not deleted with the profile, preventing quota resets.
+    match /usernameChangeLimits/{uid} {
+      allow get: if isSignedIn() && request.auth.uid == uid;
+      allow list: if false;
+
+      function profilePath() {
+        return /databases/$(database)/documents/users/$(uid);
+      }
+
+      function validQuotaProgression() {
+        let oldFirst = resource.data.get('change1At', null);
+        let oldSecond = resource.data.get('change2At', null);
+        let newFirst = request.resource.data.get('change1At', null);
+        let newSecond = request.resource.data.get('change2At', null);
+        let cutoff = request.time - duration.value(30, 'd');
+        let firstExpired = oldFirst == null || (oldFirst is timestamp && oldFirst <= cutoff);
+        let secondActive = oldSecond is timestamp && oldSecond > cutoff;
+        return (
+          (firstExpired && !secondActive
+            && newFirst == request.time
+            && newSecond == null)
+          || (firstExpired && secondActive
+            && newFirst == oldSecond
+            && newSecond == request.time)
+          || (!firstExpired && oldSecond == null
+            && newFirst == oldFirst
+            && newSecond == request.time)
+        )
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'change1At', 'change2At', 'updatedAt'
+        ])
+        && exists(profilePath())
+        && existsAfter(profilePath())
+        && get(profilePath()).data.username != getAfter(profilePath()).data.username;
+      }
+
+      allow create: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.keys().hasOnly([
+          'uid', 'change1At', 'change2At', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && (
+          // New registration creates an empty quota record alongside profile + lookup.
+          (request.resource.data.change1At == null
+            && request.resource.data.change2At == null
+            && existsAfter(profilePath())
+            && !exists(profilePath())
+            && existsAfter(/databases/$(database)/documents/usernameLookup/$(getAfter(profilePath()).data.username))
+            && getAfter(/databases/$(database)/documents/usernameLookup/$(getAfter(profilePath()).data.username)).data.uid == uid)
+          // Legacy account's first rename creates its quota record and consumes change one.
+          || (request.resource.data.change1At == request.time
+            && request.resource.data.change2At == null
+            && exists(profilePath())
+            && existsAfter(profilePath())
+            && get(profilePath()).data.username != getAfter(profilePath()).data.username
+            && existsAfter(/databases/$(database)/documents/usernameLookup/$(getAfter(profilePath()).data.username))
+            && getAfter(/databases/$(database)/documents/usernameLookup/$(getAfter(profilePath()).data.username)).data.uid == uid)
+          // Legacy account deletion creates an empty, non-resettable quota record.
+          || (request.resource.data.change1At == null
+            && request.resource.data.change2At == null
+            && exists(profilePath())
+            && !existsAfter(profilePath())
+            && !existsAfter(/databases/$(database)/documents/usernameLookup/$(resource.data.username)))
+        );
+
+      allow update: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == resource.data.uid
+        && validQuotaProgression();
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------------
+    // imageHostingAssets — public fallback URLs only; no provider keys or delete URLs.
+    match /imageHostingAssets/{assetId} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // settings/imageHosting contains only the public Worker URL and provider preference.
+    match /settings/imageHosting {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // settings — site-wide config, e.g. settings/banner
+    // ---------------------------------------------------------------------
+    match /settings/{docId} {
+      // Only explicitly public settings may be read by visitors. In particular,
+      // EmailJS and imgBB overrides must never be exposed through Firestore.
+      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity', 'siteProfile', 'schoolModels', 'collections', 'requestStatusMessages'];
+      allow list: if false;
+
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // posts — blog / build-log entries
+    // ---------------------------------------------------------------------
+    match /posts/{postId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // testimonials
+    // ---------------------------------------------------------------------
+    match /testimonials/{testimonialId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // projectLibrary — reusable admin-managed project form options
+    // ---------------------------------------------------------------------
+    match /projectLibrary/{itemId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'name', 'kind', 'category', 'description', 'unit', 'defaultValue',
+          'active', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.kind in [
+          'component', 'specification', 'tag', 'feature', 'technology', 'tool',
+          'objective', 'challenge', 'category', 'subcategory', 'protocol', 'application', 'difficulty', 'status'
+        ]
+        // Project library entries can include detailed formatted text.
+        // Keep a generous per-entry ceiling while respecting Firestore's
+        // overall 1 MiB document-size limit.
+        && request.resource.data.name.size() <= 10000
+        && request.resource.data.category is string
+        && request.resource.data.description is string
+        && request.resource.data.unit is string
+        && request.resource.data.defaultValue is string
+        && request.resource.data.active is bool;
+      allow delete: if isAdmin();
+    }
+
+    // Anything not matched above is denied. No catch-all rule by design.
+  }
+}
+)
+        && request.resource.data.recoveryEmail is string
+        && request.resource.data.recoveryEmail.matches('.+@.+[.].+')
+        && request.resource.data.get('usernameChange1At', null) == null
+        && request.resource.data.get('usernameChange2At', null) == null
+        && request.resource.data.keys().hasOnly([
+          'uid',
+          'username',
+          'recoveryEmail',
+          'createdAt',
+          'updatedAt',
+          'usernameChange1At',
+          'usernameChange2At'
+        ]);
+
+      function validUsernameChange() {
+        let oldFirst = resource.data.get('usernameChange1At', null);
+        let oldSecond = resource.data.get('usernameChange2At', null);
+        let newFirst = request.resource.data.get('usernameChange1At', null);
+        let newSecond = request.resource.data.get('usernameChange2At', null);
+        let cutoff = request.time - duration.value(30, 'd');
+        let firstExpired = oldFirst == null || (oldFirst is timestamp && oldFirst <= cutoff);
+        let secondActive = oldSecond is timestamp && oldSecond > cutoff;
+        let newLookup = /databases/$(database)/documents/usernameLookup/$(request.resource.data.username);
+        let oldLookup = /databases/$(database)/documents/usernameLookup/$(resource.data.username);
+
+        return request.resource.data.username is string
+          && request.resource.data.username.matches('^[a-z0-9_-]{3,30}
+
+    // ---------------------------------------------------------------------
+    // imageHostingAssets — public fallback URLs only; no provider keys or delete URLs.
+    match /imageHostingAssets/{assetId} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // settings/imageHosting contains only the public Worker URL and provider preference.
+    match /settings/imageHosting {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // settings — site-wide config, e.g. settings/banner
+    // ---------------------------------------------------------------------
+    match /settings/{docId} {
+      // Only explicitly public settings may be read by visitors. In particular,
+      // EmailJS and imgBB overrides must never be exposed through Firestore.
+      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity', 'siteProfile', 'schoolModels', 'collections', 'requestStatusMessages'];
+      allow list: if false;
+
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // posts — blog / build-log entries
+    // ---------------------------------------------------------------------
+    match /posts/{postId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // testimonials
+    // ---------------------------------------------------------------------
+    match /testimonials/{testimonialId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // projectLibrary — reusable admin-managed project form options
+    // ---------------------------------------------------------------------
+    match /projectLibrary/{itemId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'name', 'kind', 'category', 'description', 'unit', 'defaultValue',
+          'active', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.kind in [
+          'component', 'specification', 'tag', 'feature', 'technology', 'tool',
+          'objective', 'challenge', 'category', 'subcategory', 'protocol', 'application', 'difficulty', 'status'
+        ]
+        // Project library entries can include detailed formatted text.
+        // Keep a generous per-entry ceiling while respecting Firestore's
+        // overall 1 MiB document-size limit.
+        && request.resource.data.name.size() <= 10000
+        && request.resource.data.category is string
+        && request.resource.data.description is string
+        && request.resource.data.unit is string
+        && request.resource.data.defaultValue is string
+        && request.resource.data.active is bool;
+      allow delete: if isAdmin();
+    }
+
+    // Anything not matched above is denied. No catch-all rule by design.
+  }
+}
+)
+          && request.resource.data.updatedAt == request.time
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'username', 'updatedAt', 'usernameChange1At', 'usernameChange2At'
+          ])
+          && (
+            // First change, or both older changes have aged out.
+            (firstExpired && !secondActive
+              && newFirst == request.time
+              && newSecond == null)
+            // The oldest change has expired; keep the still-active one.
+            || (firstExpired && secondActive
+              && newFirst == oldSecond
+              && newSecond == request.time)
+            // One active change remains in the window.
+            || (!firstExpired && oldSecond == null
+              && newFirst == oldFirst
+              && newSecond == request.time)
+          )
+          && existsAfter(newLookup)
+          && getAfter(newLookup).data.uid == request.auth.uid
+          && getAfter(newLookup).data.authEmail == request.auth.token.email
+          && !existsAfter(oldLookup);
+      }
+
+      allow update: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == resource.data.uid
+        && (
+          (
+            request.resource.data.username == resource.data.username
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['recoveryEmail', 'updatedAt'])
+          )
+          || (
+            request.resource.data.username != resource.data.username
+            && validUsernameChange()
+          )
+        );
+
+      // Account deletion removes the private profile and its username mapping
+      // in the same atomic batch. Submitted project requests are separate and
+      // intentionally remain untouched for administrator history.
+      allow delete: if isSignedIn()
+        && request.auth.uid == uid
+        && resource.data.username is string
+        && !existsAfter(/databases/$(database)/documents/usernameLookup/$(resource.data.username));
+    }
+
+    // ---------------------------------------------------------------------
+    // imageHostingAssets — public fallback URLs only; no provider keys or delete URLs.
+    match /imageHostingAssets/{assetId} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // settings/imageHosting contains only the public Worker URL and provider preference.
+    match /settings/imageHosting {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // settings — site-wide config, e.g. settings/banner
+    // ---------------------------------------------------------------------
+    match /settings/{docId} {
+      // Only explicitly public settings may be read by visitors. In particular,
+      // EmailJS and imgBB overrides must never be exposed through Firestore.
+      allow get: if isAdmin() || docId in ['banner', 'theme', 'requestSecurity', 'siteProfile', 'schoolModels', 'collections', 'requestStatusMessages'];
+      allow list: if false;
+
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // posts — blog / build-log entries
+    // ---------------------------------------------------------------------
+    match /posts/{postId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // testimonials
+    // ---------------------------------------------------------------------
+    match /testimonials/{testimonialId} {
+      allow get, list: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // projectLibrary — reusable admin-managed project form options
+    // ---------------------------------------------------------------------
+    match /projectLibrary/{itemId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'name', 'kind', 'category', 'description', 'unit', 'defaultValue',
+          'active', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.kind in [
+          'component', 'specification', 'tag', 'feature', 'technology', 'tool',
+          'objective', 'challenge', 'category', 'subcategory', 'protocol', 'application', 'difficulty', 'status'
+        ]
+        // Project library entries can include detailed formatted text.
+        // Keep a generous per-entry ceiling while respecting Firestore's
+        // overall 1 MiB document-size limit.
+        && request.resource.data.name.size() <= 10000
+        && request.resource.data.category is string
+        && request.resource.data.description is string
+        && request.resource.data.unit is string
+        && request.resource.data.defaultValue is string
+        && request.resource.data.active is bool;
+      allow delete: if isAdmin();
+    }
+
+    // Anything not matched above is denied. No catch-all rule by design.
+  }
+}
