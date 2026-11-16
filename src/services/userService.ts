@@ -76,6 +76,7 @@ export async function changeUsername(user: User, usernameInput: string): Promise
   if (usernameError) throw new Error(usernameError);
 
   const profileRef = doc(db, USERS_COLLECTION, user.uid);
+  const quotaRef = doc(db, 'usernameChangeLimits', user.uid);
   const profileSnapshot = await getDoc(profileRef);
   if (!profileSnapshot.exists()) {
     throw new Error('Your account profile could not be found. Refresh your account details and try again.');
@@ -86,11 +87,13 @@ export async function changeUsername(user: User, usernameInput: string): Promise
   if (!currentUsername) throw new Error('Your current username is missing. Please contact support before changing it.');
   if (username === currentUsername.toLowerCase()) throw new Error('That is already your current username.');
 
-  const profileForQuota: Pick<UserProfile, 'usernameChange1At' | 'usernameChange2At'> = {
-    usernameChange1At: data.usernameChange1At ?? null,
-    usernameChange2At: data.usernameChange2At ?? null,
+  const quotaSnapshot = await getDoc(quotaRef);
+  const quota = quotaSnapshot.exists() ? quotaSnapshot.data() : null;
+  const history = {
+    usernameChange1At: quota?.change1At ?? null,
+    usernameChange2At: quota?.change2At ?? null,
   };
-  const status = getUsernameChangeStatus(profileForQuota);
+  const status = getUsernameChangeStatus(history);
   if (status.remaining <= 0) {
     throw new Error(
       status.availableAt
@@ -101,26 +104,11 @@ export async function changeUsername(user: User, usernameInput: string): Promise
     );
   }
 
-  const firstDate = timestampDate(profileForQuota.usernameChange1At);
-  const secondDate = timestampDate(profileForQuota.usernameChange2At);
+  const firstDate = timestampDate(history.usernameChange1At);
+  const secondDate = timestampDate(history.usernameChange2At);
   const cutoff = Date.now() - USERNAME_CHANGE_WINDOW_MS;
   const firstIsActive = Boolean(firstDate && firstDate.getTime() > cutoff);
   const secondIsActive = Boolean(secondDate && secondDate.getTime() > cutoff);
-
-  let nextFirst: unknown;
-  let nextSecond: unknown;
-  if (!firstIsActive) {
-    if (secondIsActive && profileForQuota.usernameChange2At) {
-      nextFirst = profileForQuota.usernameChange2At;
-      nextSecond = serverTimestamp();
-    } else {
-      nextFirst = serverTimestamp();
-      nextSecond = null;
-    }
-  } else {
-    nextFirst = profileForQuota.usernameChange1At;
-    nextSecond = serverTimestamp();
-  }
 
   const batch = writeBatch(db);
   batch.delete(usernameLookupRef(currentUsername));
@@ -129,12 +117,40 @@ export async function changeUsername(user: User, usernameInput: string): Promise
     authEmail: user.email,
     createdAt: serverTimestamp(),
   });
-  batch.update(profileRef, {
-    username,
-    usernameChange1At: nextFirst,
-    usernameChange2At: nextSecond,
-    updatedAt: serverTimestamp(),
-  });
+
+  if (!quotaSnapshot.exists()) {
+    // Legacy accounts get their first quota record atomically with their first
+    // username change. The security rules require this to accompany a real rename.
+    batch.set(quotaRef, {
+      uid: user.uid,
+      change1At: serverTimestamp(),
+      change2At: null,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+  } else {
+    let nextFirst: unknown;
+    let nextSecond: unknown;
+    if (!firstIsActive) {
+      if (secondIsActive && history.usernameChange2At) {
+        nextFirst = history.usernameChange2At;
+        nextSecond = serverTimestamp();
+      } else {
+        nextFirst = serverTimestamp();
+        nextSecond = null;
+      }
+    } else {
+      nextFirst = history.usernameChange1At;
+      nextSecond = serverTimestamp();
+    }
+    batch.update(quotaRef, {
+      change1At: nextFirst,
+      change2At: nextSecond,
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  batch.update(profileRef, { username, updatedAt: serverTimestamp() });
 
   try {
     await batch.commit();
@@ -159,6 +175,7 @@ export async function deleteCustomerAccount(user: User, password: string): Promi
   }
 
   const profileRef = doc(db, USERS_COLLECTION, user.uid);
+  const quotaRef = doc(db, 'usernameChangeLimits', user.uid);
   const profileSnapshot = await getDoc(profileRef);
   if (!profileSnapshot.exists()) {
     throw new Error('Your account profile could not be found. Please contact support so the account can be removed safely.');
@@ -168,11 +185,23 @@ export async function deleteCustomerAccount(user: User, password: string): Promi
   const username = typeof profileData.username === 'string' ? profileData.username : '';
   if (!username) throw new Error('Your username record is missing. Please contact support so the account can be removed safely.');
 
-  // Remove only the private profile and sign-in lookup. projectRequests and
-  // requestStatusLookup are intentionally untouched for administrator history.
+  // Keep only the minimal uid + timestamps quota record so deleting/recreating
+  // a profile cannot reset the 30-day username-change limit. It contains no
+  // username or email. Project requests and status history are left untouched.
+  const quotaSnapshot = await getDoc(quotaRef);
   const cleanup = writeBatch(db);
   cleanup.delete(profileRef);
   cleanup.delete(usernameLookupRef(username));
+  if (!quotaSnapshot.exists()) {
+    // Legacy accounts receive an empty quota record in the same batch as deletion.
+    cleanup.set(quotaRef, {
+      uid: user.uid,
+      change1At: null,
+      change2At: null,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+  }
   await cleanup.commit();
 
   try {
@@ -231,8 +260,13 @@ export async function registerUser(
       recoveryEmail: accountEmail,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      usernameChange1At: null,
-      usernameChange2At: null,
+    });
+    batch.set(doc(db, 'usernameChangeLimits', credential.user.uid), {
+      uid: credential.user.uid,
+      change1At: null,
+      change2At: null,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
     });
     batch.set(usernameLookupRef(username), {
       uid: credential.user.uid,
@@ -273,7 +307,7 @@ async function resolveUsernameSignIn(
 
   let response: Response;
   try {
-    response = await fetch(\`\${workerUrl}/auth/login\`, {
+    response = await fetch(`${workerUrl}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -330,7 +364,7 @@ export async function signInWithUsername(identifierInput: string, password: stri
     const profile = await getUserProfile(credential.user.uid);
 
     if (
-      credential.user.email?.endsWith(\`@\${INTERNAL_EMAIL_DOMAIN}\`) &&
+      credential.user.email?.endsWith(`@${INTERNAL_EMAIL_DOMAIN}`) &&
       profile?.recoveryEmail &&
       credential.user.email !== profile.recoveryEmail
     ) {
@@ -369,10 +403,14 @@ export async function sendCustomerPasswordReset(accountEmailInput: string): Prom
 }
 
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
-  const snapshot = await getDoc(doc(db, USERS_COLLECTION, uid));
+  const [snapshot, quotaSnapshot] = await Promise.all([
+    getDoc(doc(db, USERS_COLLECTION, uid)),
+    getDoc(doc(db, 'usernameChangeLimits', uid)),
+  ]);
   if (!snapshot.exists()) return null;
 
   const data = snapshot.data();
+  const quota = quotaSnapshot.exists() ? quotaSnapshot.data() : {};
 
   return {
     uid,
@@ -380,8 +418,8 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     recoveryEmail: typeof data.recoveryEmail === 'string' ? data.recoveryEmail : null,
     createdAt: data.createdAt ?? null,
     updatedAt: data.updatedAt ?? null,
-    usernameChange1At: data.usernameChange1At ?? null,
-    usernameChange2At: data.usernameChange2At ?? null,
+    usernameChange1At: quota.change1At ?? null,
+    usernameChange2At: quota.change2At ?? null,
   };
 }
 
