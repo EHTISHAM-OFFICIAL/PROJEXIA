@@ -671,6 +671,18 @@ service cloud.firestore {
         return /databases/$(database)/documents/users/$(uid);
       }
 
+      function profileLookupExistsAfter() {
+        let profile = getAfter(profilePath());
+        let lookupPath = /databases/$(database)/documents/usernameLookup/$(profile.data.username);
+        return existsAfter(lookupPath) && getAfter(lookupPath).data.uid == uid;
+      }
+
+      function profileLookupRemovedAfter() {
+        let profile = get(profilePath());
+        let lookupPath = /databases/$(database)/documents/usernameLookup/$(profile.data.username);
+        return !existsAfter(lookupPath);
+      }
+
       function validQuotaProgression() {
         let oldFirst = resource.data.get('change1At', null);
         let oldSecond = resource.data.get('change2At', null);
@@ -713,22 +725,20 @@ service cloud.firestore {
             && request.resource.data.change2At == null
             && existsAfter(profilePath())
             && !exists(profilePath())
-            && existsAfter(/databases/$(database)/documents/usernameLookup/$(getAfter(profilePath()).data.username))
-            && getAfter(/databases/$(database)/documents/usernameLookup/$(getAfter(profilePath()).data.username)).data.uid == uid)
+            && profileLookupExistsAfter()
           // Legacy account's first rename consumes the first change atomically.
           || (request.resource.data.change1At == request.time
             && request.resource.data.change2At == null
             && exists(profilePath())
             && existsAfter(profilePath())
             && get(profilePath()).data.username != getAfter(profilePath()).data.username
-            && existsAfter(/databases/$(database)/documents/usernameLookup/$(getAfter(profilePath()).data.username))
-            && getAfter(/databases/$(database)/documents/usernameLookup/$(getAfter(profilePath()).data.username)).data.uid == uid)
+            && profileLookupExistsAfter()
           // Legacy account deletion: preserve an empty quota record as profile is removed.
           || (request.resource.data.change1At == null
             && request.resource.data.change2At == null
             && exists(profilePath())
             && !existsAfter(profilePath())
-            && !existsAfter(/databases/$(database)/documents/usernameLookup/$(get(profilePath()).data.username)))
+            && profileLookupRemovedAfter())
         );
 
       allow update: if isSignedIn()
