@@ -410,7 +410,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   if (!snapshot.exists()) return null;
 
   const data = snapshot.data();
-  const quota = quotaSnapshot.exists() ? quotaSnapshot.data() : {};
+  const quota = quotaSnapshot.exists() ? quotaSnapshot.data() : null;
 
   return {
     uid,
@@ -418,8 +418,8 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     recoveryEmail: typeof data.recoveryEmail === 'string' ? data.recoveryEmail : null,
     createdAt: data.createdAt ?? null,
     updatedAt: data.updatedAt ?? null,
-    usernameChange1At: quota.change1At ?? null,
-    usernameChange2At: quota.change2At ?? null,
+    usernameChange1At: quota?.change1At ?? null,
+    usernameChange2At: quota?.change2At ?? null,
   };
 }
 
