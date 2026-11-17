@@ -14,6 +14,7 @@ import { SectionHeading, SubHeading } from '../detail/SectionHeading';
 import { ProjectGallery } from '../projects/ProjectGallery';
 import { BulletList, CaseStudySection, InlineText, Prose } from '../projects/CaseStudySection';
 import { SchoolModelCard } from './SchoolModelCard';
+import { SchoolModelReviewsSection } from './SchoolModelReviewsSection';
 import { safeHttpUrl } from '../../utils/safeUrl';
 import type { SchoolModel } from '../../services/schoolModelService';
 
@@ -263,6 +264,11 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
             secondary={{ to: '/contact', label: 'Ask a question first' }}
           />
         </div>
+
+        <section className="mt-16 border-t border-line pt-10 sm:mt-20 sm:pt-14" aria-labelledby="school-model-reviews-heading">
+          <SectionHeading>Customer reviews</SectionHeading>
+          <div className="mt-6"><SchoolModelReviewsSection model={model} /></div>
+        </section>
 
         {related.length > 0 && (
           <section className="mt-16 border-t border-line pt-10 sm:mt-20 sm:pt-14">
