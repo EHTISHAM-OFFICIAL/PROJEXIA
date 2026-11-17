@@ -49,7 +49,7 @@ export default function SchoolModelReviews() {
   const [drafts, setDrafts] = useState<Record<string, { rating: string; comment: string; note: string }>>({});
 
   const schoolModelNames = useMemo(
-    () => new Map((schoolModels.data ?? []).map((school model) => [school model.id, school model.title])),
+    () => new Map((schoolModels.data ?? []).map((model) => [model.id, model.title])),
     [schoolModels.data],
   );
   const filtered = (reviews.data ?? []).filter((review) => {
@@ -138,7 +138,7 @@ export default function SchoolModelReviews() {
 
         {!reviews.loading && filtered.map((review) => {
           const values = valuesFor(review);
-          const schoolModelName = schoolModelNames.get(review.school modelId) ?? 'SchoolModel no longer available';
+          const schoolModelName = schoolModelNames.get(review.schoolModelId) ?? 'School model no longer available';
           const verified = review.verificationStatus === 'verified';
           return (
             <article key={review.id} className="overflow-hidden rounded-2xl border border-line bg-surface">
