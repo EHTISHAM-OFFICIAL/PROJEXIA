@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   GoogleAuthProvider: vi.fn(),
   signInWithPopup: vi.fn(),
+  signInWithRedirect: vi.fn(),
 }));
 
 vi.mock('firebase/auth', () => ({
@@ -11,6 +12,7 @@ vi.mock('firebase/auth', () => ({
   sendPasswordResetEmail: vi.fn(),
   signInWithEmailAndPassword: vi.fn(),
   signInWithPopup: mocks.signInWithPopup,
+  signInWithRedirect: mocks.signInWithRedirect,
   signOut: vi.fn(),
 }));
 vi.mock('firebase/firestore', () => ({ doc: vi.fn(), getDoc: vi.fn() }));
@@ -24,6 +26,7 @@ describe('authService.signInWithGoogle', () => {
     vi.clearAllMocks();
     mocks.GoogleAuthProvider.mockImplementation(() => ({ setCustomParameters: vi.fn() }));
     mocks.signInWithPopup.mockResolvedValue({ user: { uid: 'google-user' } });
+    mocks.signInWithRedirect.mockResolvedValue(undefined);
   });
 
   it('opens Firebase Google sign-in with an explicit account chooser', async () => {
@@ -34,7 +37,18 @@ describe('authService.signInWithGoogle', () => {
     expect(mocks.signInWithPopup).toHaveBeenCalledWith({ current: true }, provider);
   });
 
-  it('propagates Firebase popup errors so the UI can explain them', async () => {
+  it('falls back to redirect when the browser blocks popups', async () => {
+    mocks.signInWithPopup.mockRejectedValue(Object.assign(new Error('blocked'), { code: 'auth/popup-blocked' }));
+
+    await authService.signInWithGoogle();
+
+    expect(mocks.signInWithRedirect).toHaveBeenCalledWith(
+      { current: true },
+      mocks.GoogleAuthProvider.mock.results[0].value,
+    );
+  });
+
+  it('propagates other Firebase popup errors so the UI can explain them', async () => {
     mocks.signInWithPopup.mockRejectedValue(Object.assign(new Error('blocked'), { code: 'auth/popup-blocked' }));
     await expect(authService.signInWithGoogle()).rejects.toMatchObject({ code: 'auth/popup-blocked' });
   });
