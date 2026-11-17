@@ -122,7 +122,7 @@ export function ImageUploadField({
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex w-full min-w-0 flex-col gap-2">
       <input
         ref={inputRef}
         id={inputId}
@@ -133,49 +133,58 @@ export function ImageUploadField({
         className="sr-only"
       />
       {value ? (
-        <div className="w-full max-w-sm overflow-hidden rounded-xl border border-line bg-surface">
-          <div className="relative">
-            <Image src={value} alt={`${label} preview`} className={`aspect-[16/10] w-full bg-surface-raised object-${previewFit}`} />
-            <span className="absolute left-2 top-2 rounded-md bg-bg/85 px-2 py-1 text-xs font-medium text-content shadow-sm">Uploaded</span>
+        <div className="w-full min-w-0 max-w-sm overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+          <div className="relative isolate overflow-hidden bg-surface-raised">
+            <Image
+              src={value}
+              alt={`${label} preview`}
+              className={`block aspect-[16/10] w-full object-${previewFit}`}
+            />
+            <span className="absolute left-3 top-3 inline-flex items-center rounded-full border border-white/20 bg-black/65 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm">
+              Uploaded
+            </span>
           </div>
-          <div className="flex items-center gap-2 border-t border-line p-2">
+          <div className="flex flex-wrap items-center gap-2 border-t border-line bg-surface p-2.5">
             <button
               type="button"
               onClick={() => void editImage()}
               disabled={disabled || busy}
-              className="inline-flex min-h-9 flex-1 items-center justify-center gap-2 rounded-lg border border-line bg-surface-raised px-3 text-sm font-medium text-content transition-colors hover:border-accent hover:text-accent disabled:opacity-50"
+              className="inline-flex min-h-10 min-w-[116px] flex-1 items-center justify-center gap-2 rounded-xl border border-line bg-surface-raised px-3 py-2 text-sm font-semibold text-content transition-colors hover:border-accent hover:bg-accent/5 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {busy ? <Loader2 size={15} className="animate-spin" /> : <Pencil size={15} />}
-              Edit image
+              {busy ? <Loader2 size={15} className="shrink-0 animate-spin" /> : <Pencil size={15} className="shrink-0" />}
+              <span>Edit image</span>
             </button>
             <button
               type="button"
               onClick={onClear}
               disabled={disabled || busy}
-              className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-line px-3 text-sm text-content-muted transition-colors hover:border-state-danger hover:text-state-danger disabled:opacity-50"
+              className="inline-flex min-h-10 min-w-[96px] flex-1 items-center justify-center gap-2 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-medium text-content-secondary transition-colors hover:border-state-danger/60 hover:bg-state-danger/5 hover:text-state-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-state-danger/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <X size={15} />
-              Remove
+              <X size={15} className="shrink-0" />
+              <span>Remove</span>
             </button>
           </div>
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-line bg-surface-raised px-4 py-6 text-center">
+        <div className="flex min-h-40 w-full max-w-sm flex-col items-center justify-center rounded-2xl border-2 border-dashed border-line bg-surface-raised/60 px-4 py-6 text-center transition-colors hover:border-accent/50 hover:bg-surface-raised">
+          <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl border border-line bg-surface text-content-secondary shadow-sm">
+            {busy ? <Loader2 size={20} className="animate-spin" aria-hidden="true" /> : <ImagePlus size={20} aria-hidden="true" />}
+          </span>
           <label
             htmlFor={inputId}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm text-content transition-colors hover:border-line-strong"
+            className="inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 py-2 text-sm font-semibold text-content shadow-sm transition-colors hover:border-accent hover:text-accent"
           >
-            {busy ? <Loader2 size={15} className="animate-spin" aria-hidden="true" /> : <ImagePlus size={15} aria-hidden="true" />}
+            <ImagePlus size={15} aria-hidden="true" />
             {busy ? 'Uploading…' : `Upload ${label.toLowerCase()}`}
           </label>
-          <p className="mt-2.5 text-xs text-content-muted">
-            JPG, PNG, WebP or GIF up to {maxFileSizeMb} MB
+          <p className="mt-2.5 text-xs leading-relaxed text-content-muted">
+            JPG, PNG, WebP or GIF · Up to {maxFileSizeMb} MB
           </p>
         </div>
       )}
       {pendingFile && <ImageProcessingDialog file={pendingFile} title={value ? `Edit ${label.toLowerCase()}` : `Prepare ${label.toLowerCase()}`} onCancel={() => { setPendingFile(null); if (inputRef.current) inputRef.current.value = ''; }} onUse={uploadPreparedFile} />}
       {uploadSummary && (
-        <div className="rounded-lg border border-line bg-surface-raised p-3 text-xs leading-relaxed text-content-secondary" role="status">
+        <div className="rounded-xl border border-line bg-surface-raised p-3 text-xs leading-relaxed text-content-secondary" role="status">
           {uploadSummary.missingProvider ? (
             <>
               <p>
