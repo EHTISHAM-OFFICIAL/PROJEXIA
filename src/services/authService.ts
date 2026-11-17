@@ -4,6 +4,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   signOut,
   type User,
 } from 'firebase/auth';
@@ -17,7 +18,16 @@ export const authService = {
   signInWithGoogle: async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
-    return signInWithPopup(auth, provider);
+    try {
+      return await signInWithPopup(auth, provider);
+    } catch (error) {
+      const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
+      if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+        // Redirect is the supported fallback when a browser cannot open a popup.
+        return signInWithRedirect(auth, provider);
+      }
+      throw error;
+    }
   },
 
   sendPasswordReset: (email: string) => sendPasswordResetEmail(auth, email),
