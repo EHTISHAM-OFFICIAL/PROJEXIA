@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Eye, Star } from 'lucide-react';
 import { Image } from '../ui/Image';
 import { Badge } from '../ui/Badge';
 import type { SchoolModel } from '../../services/schoolModelService';
@@ -29,6 +29,15 @@ export function SchoolModelCard({ model }: { model: SchoolModel }) {
         <p className="mt-2 line-clamp-3 text-base leading-[1.65] text-content-secondary">{model.shortDescription}</p>
 
         {meta && <p className="mt-3 text-sm text-content-muted">{meta}</p>}
+
+        {(model.reviewStats?.averageRating !== null && model.reviewStats?.averageRating !== undefined || model.reviewStats?.reviewCount > 0 || model.viewCount > 0) && (
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-content-muted sm:text-sm">
+            {model.reviewStats?.averageRating !== null && model.reviewStats?.averageRating !== undefined && (
+              <span className="inline-flex items-center gap-1.5"><Star size={14} className="fill-current text-accent" aria-hidden="true" /><span className="font-semibold tabular-nums text-content">{model.reviewStats.averageRating.toFixed(1)}/5</span><span>({model.reviewStats.reviewCount.toLocaleString()} {model.reviewStats.reviewCount === 1 ? 'review' : 'reviews'})</span></span>
+            )}
+            {model.viewCount > 0 && <span className="inline-flex items-center gap-1"><Eye size={13} aria-hidden="true" />{model.viewCount.toLocaleString()} views</span>}
+          </div>
+        )}
 
         <span className="mt-auto inline-flex items-center gap-2 pt-5 text-base font-semibold text-accent transition-colors group-hover:text-accent-hover">
           View details <ArrowRight size={16} aria-hidden="true" />
