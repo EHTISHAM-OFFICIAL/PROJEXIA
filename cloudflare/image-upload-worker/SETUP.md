@@ -21,9 +21,9 @@ Do not put provider keys in chat, GitHub, `.env`, Vite variables, Firestore, or 
 ## 2. Configure the website
 
 1. Sign in to the PROJEXIAHUB admin panel.
-2. Open **Admin → Settings → Image hosting**.
-3. Paste the deployed Worker HTTPS URL and choose the preferred primary host.
-4. Save, then use **Check Worker**. This confirms the Worker is reachable and reports whether the two secrets are present; it does not prove the keys are valid. A real upload is the definitive provider test.
+2. Open **Admin → Settings → Image uploads** and paste the deployed Worker HTTPS URL. Choose the preferred primary host, save, then use **Check Worker**.
+3. Open **Admin → Settings → Username sign-in** and save the same deployed Worker URL in the dedicated authentication field. The authentication URL is stored independently in `settings/usernameSignIn`; the legacy image-hosting URL is used only as a backwards-compatible fallback until this dedicated setting is saved.
+4. The Worker check confirms reachability and reports whether the image-provider secrets are present; it does not prove the keys are valid. A real upload is the definitive provider test.
 
 The Worker URL is not a secret. API keys remain exclusively in Cloudflare secrets.
 
