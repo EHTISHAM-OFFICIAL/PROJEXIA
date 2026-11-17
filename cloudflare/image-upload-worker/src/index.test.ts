@@ -283,7 +283,7 @@ describe('POST /upload throttling', () => {
     form.set('purpose', 'request');
     form.set('file', new File([new Uint8Array([0xff, 0xd8, 0xff])], 'a.jpg', { type: 'image/jpeg' }));
 
-    const response = await worker.fetch(
+    const response = await freshWorker.fetch(
       new Request('https://worker.example/upload', {
         method: 'POST',
         headers: { origin: ORIGIN, authorization: `Bearer ${token}` },
@@ -298,6 +298,8 @@ describe('POST /upload throttling', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
   it('uploads admin images to ImageKit using the private key only inside the Worker', async () => {
+    vi.resetModules();
+    const { default: freshWorker } = await import('./index');
     const { token, jwk } = await signedToken('admin-1');
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
