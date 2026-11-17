@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowUpRight, Eye } from "lucide-react";
+import { ArrowUpRight, Eye, Star } from "lucide-react";
 import { Badge } from "../ui/Badge";
 import { InlineText } from "./CaseStudySection";
 import { Image } from "../ui/Image";
@@ -24,6 +24,14 @@ export function ProjectCard({ project }: { project: Project }) {
   const showDate = settings.showProjectCardDate;
   const showPrice = settings.showProjectCardPrice;
   const showViews = settings.showProjectCardViews && project.viewCount > 0;
+  const actualRating = project.reviewStats?.averageRating ?? null;
+  const displayedRating = project.ratingOverrideEnabled && project.ratingOverride !== null
+    ? project.ratingOverride : actualRating;
+  const actualReviewCount = project.reviewStats?.reviewCount ?? 0;
+  const displayedReviewCount = project.reviewCountOverrideEnabled && project.reviewCountOverride !== null
+    ? project.reviewCountOverride : actualReviewCount;
+  const showReviewMetrics = displayedRating !== null || displayedReviewCount > 0;
+  const showSoldCount = project.showSoldCount && project.soldCount !== null;
 
   return (
     <article className="card group relative flex h-full min-w-0 flex-col overflow-hidden transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[var(--shadow-elevated)] motion-reduce:transform-none motion-reduce:transition-none">
@@ -103,6 +111,23 @@ export function ProjectCard({ project }: { project: Project }) {
                 </li>
               )}
             </ul>
+          )}
+
+          {(showReviewMetrics || showSoldCount) && (
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-content-muted sm:text-sm">
+              {showReviewMetrics && displayedRating !== null && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Star size={14} className="fill-current text-accent" aria-hidden="true" />
+                  <span className="font-semibold tabular-nums text-content">{displayedRating.toFixed(1)}/5</span>
+                  {displayedReviewCount > 0 && <span>({displayedReviewCount.toLocaleString()} {displayedReviewCount === 1 ? 'review' : 'reviews'})</span>}
+                </span>
+              )}
+              {showSoldCount && (
+                <span className="font-medium text-content-secondary">
+                  {project.soldCount!.toLocaleString()} {project.soldCount === 1 ? 'sold' : 'sold'}
+                </span>
+              )}
+            </div>
           )}
 
           {(showDate || showViews) && (

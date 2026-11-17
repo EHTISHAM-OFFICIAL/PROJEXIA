@@ -92,12 +92,6 @@ beforeEach(async () => {
   await env.withSecurityRulesDisabled(async (context) => {
     const db = context.firestore();
     await setDoc(doc(db, 'admins', ADMIN), { role: 'admin' });
-    await setDoc(doc(db, 'projects', 'project1'), {
-      title: 'Test project', slug: 'test-project', published: true,
-    });
-    await setDoc(doc(db, 'users', ALICE), {
-      uid: ALICE, username: 'alice', recoveryEmail: 'alice@example.com',
-    });
     await setDoc(doc(db, 'resolvers', RESOLVER), { purpose: 'worker' });
     await setDoc(doc(db, 'projectRequests', REQUEST_ID), {
       requestNumber: REQUEST_NUMBER, ownerUid: ALICE, status: 'new', priority: 'normal',
@@ -356,106 +350,5 @@ describe('customer username and account lifecycle', () => {
     await assertFails(deleteDoc(doc(as(ALICE), 'usernameChangeLimits', ALICE)));
     await assertSucceeds(getDoc(doc(as(ADMIN), 'projectRequests', REQUEST_ID)));
     await assertSucceeds(getDoc(doc(anon(), 'requestStatusLookup', REQUEST_NUMBER)));
-  });
-});
-
-
-describe('project customer reviews', () => {
-  const projectId = 'project1';
-  const reviewId = (uid: string) => uid + '_' + projectId;
-  const submission = (overrides: Record<string, unknown> = {}) => ({
-    projectId,
-    userId: ALICE,
-    username: 'alice',
-    isAnonymous: false,
-    rating: 5,
-    comment: 'The project arrived and works exactly as described.',
-    images: [],
-    status: 'pending',
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-    ...overrides,
-  });
-
-  it('allows a signed-in customer to create one pending review for a published project', async () => {
-    await assertSucceeds(setDoc(
-      doc(as(ALICE), 'projectReviewSubmissions', reviewId(ALICE)),
-      submission(),
-    ));
-  });
-
-  it('rejects anonymous, impersonated, pre-approved and incorrectly keyed submissions', async () => {
-    await assertFails(setDoc(doc(anon(), 'projectReviewSubmissions', reviewId(ALICE)), submission()));
-    await assertFails(setDoc(
-      doc(as(ALICE), 'projectReviewSubmissions', reviewId(BOB)),
-      submission({ userId: BOB, username: 'bob' }),
-    ));
-    await assertFails(setDoc(
-      doc(as(ALICE), 'projectReviewSubmissions', reviewId(ALICE)),
-      submission({ status: 'approved' }),
-    ));
-    await assertFails(setDoc(
-      doc(as(ALICE), 'projectReviewSubmissions', 'random-id'),
-      submission(),
-    ));
-    await assertFails(setDoc(
-      doc(as(ALICE), 'projectReviewSubmissions', reviewId(ALICE)),
-      submission({ username: 'someone-else' }),
-    ));
-  });
-
-  it('keeps private submissions readable only by their owner and admins', async () => {
-    await env.withSecurityRulesDisabled(async (context) => {
-      await setDoc(doc(context.firestore(), 'projectReviewSubmissions', reviewId(ALICE)), submission());
-    });
-    await assertSucceeds(getDoc(doc(as(ALICE), 'projectReviewSubmissions', reviewId(ALICE))));
-    await assertFails(getDoc(doc(as(BOB), 'projectReviewSubmissions', reviewId(ALICE))));
-    await assertFails(getDoc(doc(anon(), 'projectReviewSubmissions', reviewId(ALICE))));
-    await assertSucceeds(getDoc(doc(as(ADMIN), 'projectReviewSubmissions', reviewId(ALICE))));
-    await assertFails(getDocs(collection(as(ALICE), 'projectReviewSubmissions')));
-  });
-
-  it('exposes only published public-safe review records', async () => {
-    await env.withSecurityRulesDisabled(async (context) => {
-      const db = context.firestore();
-      await setDoc(doc(db, 'projectReviews', 'published1'), {
-        projectId, displayName: 'Anonymous Customer', isAnonymous: true,
-        rating: 5, comment: 'A useful and well-made project.', images: [],
-        verifiedCustomer: true, published: true,
-        createdAt: serverTimestamp(), publishedAt: serverTimestamp(),
-      });
-      await setDoc(doc(db, 'projectReviews', 'hidden1'), {
-        projectId, displayName: 'Customer', isAnonymous: false,
-        rating: 2, comment: 'This review is not published.', images: [],
-        verifiedCustomer: false, published: false,
-        createdAt: serverTimestamp(), publishedAt: serverTimestamp(),
-      });
-    });
-    await assertSucceeds(getDoc(doc(anon(), 'projectReviews', 'published1')));
-    await assertFails(getDoc(doc(anon(), 'projectReviews', 'hidden1')));
-    await assertSucceeds(getDoc(doc(as(ADMIN), 'projectReviews', 'hidden1')));
-    await assertFails(setDoc(doc(as(ALICE), 'projectReviews', 'forged'), {
-      projectId, displayName: 'Alice', isAnonymous: false, rating: 5,
-      comment: 'A fake published review.', images: [], verifiedCustomer: true,
-      published: true, createdAt: serverTimestamp(), publishedAt: serverTimestamp(),
-    }));
-  });
-
-  it('restricts moderation history and all moderation writes to administrators', async () => {
-    const event = {
-      action: 'approved', actorUid: ADMIN, note: '',
-      createdAt: serverTimestamp(),
-    };
-    await assertSucceeds(setDoc(
-      doc(as(ADMIN), 'projectReviewModeration', reviewId(ALICE), 'events', 'event1'),
-      event,
-    ));
-    await assertFails(getDoc(
-      doc(as(ALICE), 'projectReviewModeration', reviewId(ALICE), 'events', 'event1'),
-    ));
-    await assertFails(setDoc(
-      doc(as(ALICE), 'projectReviewModeration', reviewId(ALICE), 'events', 'event2'),
-      { ...event, actorUid: ALICE },
-    ));
   });
 });

@@ -17,6 +17,7 @@ import {
   ClipboardList,
   X,
   ShieldCheck,
+  Star,
 } from 'lucide-react';
 import { Wordmark } from './Wordmark';
 import { useAuth } from '../../hooks/useAuth';
@@ -47,6 +48,7 @@ const ADMIN_GROUPS = [
       { to: '/admin/requests', label: 'Requests', icon: Inbox, end: false },
       { to: '/admin/request-status', label: 'Request Status', icon: ClipboardList, end: false },
       { to: '/admin/meetings', label: 'Meetings', icon: CalendarDays, end: false },
+      { to: '/admin/reviews', label: 'Project Reviews', icon: Star, end: false },
     ],
   },
 ];

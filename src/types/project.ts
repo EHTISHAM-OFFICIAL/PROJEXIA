@@ -51,12 +51,6 @@ export interface ProjectEstimatedCost {
   label?: string | null;
 }
 
-export interface ProjectReviewStats {
-  averageRating: number | null;
-  reviewCount: number;
-  distribution: { 1: number; 2: number; 3: number; 4: number; 5: number };
-}
-
 /** A project document as stored in Firestore, plus its document id. */
 export interface Project {
   id: string;
@@ -88,13 +82,6 @@ export interface Project {
   featured: boolean;
   published: boolean;
   viewCount: number;
-  reviewStats: ProjectReviewStats;
-  soldCount: number | null;
-  showSoldCount: boolean;
-  ratingOverrideEnabled: boolean;
-  ratingOverride: number | null;
-  reviewCountOverrideEnabled: boolean;
-  reviewCountOverride: number | null;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
   completedAt: Timestamp | null;
