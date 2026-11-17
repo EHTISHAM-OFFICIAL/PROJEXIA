@@ -242,7 +242,7 @@ describe('GET /health', () => {
 });
 
 describe('POST /upload throttling', () => {
-  async function signedToken() {
+  async function signedToken(uid = 'customer-1') {
     const pair = await crypto.subtle.generateKey(
       { name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' },
       true,
@@ -258,7 +258,7 @@ describe('POST /upload throttling', () => {
       b64({
         aud: PROJECT,
         iss: `https://securetoken.google.com/${PROJECT}`,
-        sub: 'customer-1',
+        sub: uid,
         exp: now + 3600,
         iat: now,
         auth_time: now,
@@ -297,4 +297,49 @@ describe('POST /upload throttling', () => {
     // Only the JWKS lookup happened: no Firestore settings read, no image host call.
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+  it('uploads admin images to ImageKit using the private key only inside the Worker', async () => {
+    const { token, jwk } = await signedToken('admin-1');
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes('securetoken@system.gserviceaccount.com')) return jsonResponse({ keys: [jwk] });
+      if (url.includes('/documents/settings/imageHosting')) return new Response('{}', { status: 404 });
+      if (url.includes('/documents/admins/admin-1')) return new Response('{}', { status: 200 });
+      if (url.includes('api.imgbb.com/1/upload')) {
+        return jsonResponse({ success: true, data: { url: 'https://i.ibb.co/demo/sample.jpg', id: 'imgbb-id' } });
+      }
+      if (url === 'https://upload.imagekit.io/api/v1/files/upload') {
+        expect(new Headers(init?.headers).get('authorization')).toBe('Basic ' + btoa('private_test_key:'));
+        const uploadForm = init?.body as FormData;
+        expect(uploadForm.get('fileName')).toBe('sample.jpg');
+        expect(uploadForm.get('useUniqueFileName')).toBe('true');
+        return jsonResponse({ url: 'https://ik.imagekit.io/demo/sample.jpg', fileId: 'imagekit-id' });
+      }
+      throw new Error('Unexpected fetch: ' + url);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const form = new FormData();
+    form.set('purpose', 'admin');
+    form.set('preferredProvider', 'imagekit');
+    form.set('file', new File([new Uint8Array([0xff, 0xd8, 0xff])], 'sample.jpg', { type: 'image/jpeg' }));
+    const response = await worker.fetch(
+      new Request('https://worker.example/upload', {
+        method: 'POST',
+        headers: { origin: ORIGIN, authorization: `Bearer ${token}` },
+        body: form,
+      }),
+      baseEnv,
+    );
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.primary).toMatchObject({ provider: 'imagekit', url: 'https://ik.imagekit.io/demo/sample.jpg', id: 'imagekit-id' });
+    expect(body.backup).toMatchObject({ provider: 'imgbb', url: 'https://i.ibb.co/demo/sample.jpg' });
+    expect(JSON.stringify(body)).not.toContain('private_test_key');
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://upload.imagekit.io/api/v1/files/upload',
+      expect.objectContaining({ method: 'POST' }),
+    );
+  });
+
 });
