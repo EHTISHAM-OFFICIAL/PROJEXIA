@@ -71,10 +71,8 @@ export function SchoolModelReviewsSection({ model }: { model: SchoolModel }) {
     reviewCount: 0,
     distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
   };
-  const displayedRating = model.ratingOverrideEnabled && model.ratingOverride !== null
-    ? model.ratingOverride : actualStats.averageRating;
-  const displayedCount = model.reviewCountOverrideEnabled && model.reviewCountOverride !== null
-    ? model.reviewCountOverride : actualStats.reviewCount;
+  const displayedRating = actualStats.averageRating;
+  const displayedCount = actualStats.reviewCount;
   const signInUrl = `/login?next=${encodeURIComponent(location.pathname)}`;
   const ownMessage = ownReview.data ? submissionMessage(ownReview.data) : null;
 
