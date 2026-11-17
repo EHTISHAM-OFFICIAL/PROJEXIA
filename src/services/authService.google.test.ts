@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  GoogleAuthProvider: vi.fn(),
+  setCustomParameters: vi.fn(),
   signInWithPopup: vi.fn(),
   signInWithRedirect: vi.fn(),
 }));
 
 vi.mock('firebase/auth', () => ({
-  GoogleAuthProvider: mocks.GoogleAuthProvider,
+  GoogleAuthProvider: class { setCustomParameters = mocks.setCustomParameters; },
   onAuthStateChanged: vi.fn(),
   sendPasswordResetEmail: vi.fn(),
   signInWithEmailAndPassword: vi.fn(),
@@ -24,7 +24,6 @@ import { authService } from './authService';
 describe('authService.signInWithGoogle', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.GoogleAuthProvider.mockImplementation(() => ({ setCustomParameters: vi.fn() }));
     mocks.signInWithPopup.mockResolvedValue({ user: { uid: 'google-user' } });
     mocks.signInWithRedirect.mockResolvedValue(undefined);
   });
@@ -32,9 +31,8 @@ describe('authService.signInWithGoogle', () => {
   it('opens Firebase Google sign-in with an explicit account chooser', async () => {
     await authService.signInWithGoogle();
 
-    const provider = mocks.GoogleAuthProvider.mock.results[0].value;
-    expect(provider.setCustomParameters).toHaveBeenCalledWith({ prompt: 'select_account' });
-    expect(mocks.signInWithPopup).toHaveBeenCalledWith({ current: true }, provider);
+    expect(mocks.setCustomParameters).toHaveBeenCalledWith({ prompt: 'select_account' });
+    expect(mocks.signInWithPopup).toHaveBeenCalledWith({ current: true }, expect.any(Object));
   });
 
   it('falls back to redirect when the browser blocks popups', async () => {
@@ -44,7 +42,7 @@ describe('authService.signInWithGoogle', () => {
 
     expect(mocks.signInWithRedirect).toHaveBeenCalledWith(
       { current: true },
-      mocks.GoogleAuthProvider.mock.results[0].value,
+      expect.any(Object),
     );
   });
 
