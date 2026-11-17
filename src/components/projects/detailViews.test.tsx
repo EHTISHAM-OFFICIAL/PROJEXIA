@@ -8,6 +8,7 @@ vi.mock('../../services/imgbbService', () => ({
 }));
 // Project review UI has its own Firebase-backed hooks; detail-layout tests mock it.
 vi.mock('./ProjectReviewsSection', () => ({ ProjectReviewsSection: () => null }));
+vi.mock('../schoolModels/SchoolModelReviewsSection', () => ({ SchoolModelReviewsSection: () => null }));
 
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
@@ -127,6 +128,9 @@ describe('SchoolModelDetail', () => {
     expect(html).toContain('/request-school-model?slug=heart-model');
     expect(html).not.toContain('Handling and safety');
     expect(html).not.toContain('More school models');
+    expect(html).toContain('Customer reviews');
+    expect(html).toContain('href="#customer-reviews"');
+    expect(html).toContain('>Reviews</a>');
   });
 
   it('shows safety notes as their own callout and builds chapters from content', () => {
