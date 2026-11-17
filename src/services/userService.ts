@@ -13,7 +13,7 @@ import {
 import { auth } from '../firebase/auth';
 import { db } from '../firebase/firestore';
 import type { UserProfile } from '../types/user';
-import { getGatewayUrl } from './imgbbService';
+import { getUsernameAuthGatewayUrl } from './usernameAuthService';
 
 const USERS_COLLECTION = 'users';
 const USERNAME_LOOKUP_COLLECTION = 'usernameLookup';
@@ -300,7 +300,7 @@ async function resolveUsernameSignIn(
   username: string,
   password: string,
 ): Promise<{ email: string; lookupMissing: boolean }> {
-  const workerUrl = await getGatewayUrl();
+  const workerUrl = await getUsernameAuthGatewayUrl();
   if (!workerUrl) {
     throw new Error('Username sign-in is unavailable right now. Sign in with your email address instead.');
   }
