@@ -182,6 +182,10 @@ export const projectReviewService = {
     if (submission.status === 'rejected') {
       throw new Error('Rejected reviews cannot be republished. Delete the submission if a fresh review is required.');
     }
+    const projectSnapshot = await getDoc(doc(db, COLLECTIONS.projects, submission.projectId));
+    if (!projectSnapshot.exists() || projectSnapshot.data().published !== true) {
+      throw new Error('This project is not currently published. Publish the project before approving its review.');
+    }
     const current = (await getCurrentPublished(submission.projectId)).filter((review) => review.id !== id);
     const publishedAt = serverTimestamp();
     const publicData = {

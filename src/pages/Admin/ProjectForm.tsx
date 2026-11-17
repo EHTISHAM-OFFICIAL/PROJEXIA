@@ -59,7 +59,6 @@ const EMPTY_DRAFT: ProjectDraft = {
   specifications: [],
   estimatedCost: { amount: null, currency: 'PKR', label: null },
   showPriceOnCard: true,
-  reviewStats: { averageRating: null, reviewCount: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } },
   soldCount: null,
   showSoldCount: false,
   ratingOverrideEnabled: false,
@@ -188,7 +187,7 @@ export default function ProjectForm() {
       return;
     }
     if (!existing.data) return;
-    const { id: _ignored, viewCount: _viewCount, createdAt: _c, updatedAt: _u, ...rest } = existing.data;
+    const { id: _ignored, viewCount: _viewCount, createdAt: _c, updatedAt: _u, reviewStats: _reviewStats, ...rest } = existing.data;
     const storedAmount = Number(rest.estimatedCost?.amount);
     const restoredDraft: ProjectDraft = {
       ...rest,
@@ -200,7 +199,6 @@ export default function ProjectForm() {
         label: typeof rest.estimatedCost?.label === 'string' ? rest.estimatedCost.label : null,
       },
       showPriceOnCard: rest.showPriceOnCard !== false,
-      reviewStats: rest.reviewStats ?? EMPTY_DRAFT.reviewStats,
       soldCount: Number.isInteger(rest.soldCount) && Number(rest.soldCount) >= 0 ? Number(rest.soldCount) : null,
       showSoldCount: rest.showSoldCount === true,
       ratingOverrideEnabled: rest.ratingOverrideEnabled === true,

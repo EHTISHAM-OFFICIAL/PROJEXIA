@@ -317,7 +317,7 @@ export function ProjectReviewsSection({ project }: { project: Project }) {
               </div>
             )}
             <p className="mt-2 text-xs leading-relaxed text-content-muted">
-              JPG, PNG, WebP, GIF or BMP; up to 10 MB each. Photos appear on the website only if your review is approved.
+              JPG, PNG, WebP, GIF or BMP; up to 10 MB each. Photos appear on PROJEXIAHUB only if approved. The image host may still allow anyone with a direct image URL to view it.
             </p>
           </div>
 

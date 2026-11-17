@@ -184,6 +184,7 @@ export const projectService = {
       ...draft,
       slug,
       viewCount: 0,
+      reviewStats: { averageRating: null, reviewCount: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } },
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });

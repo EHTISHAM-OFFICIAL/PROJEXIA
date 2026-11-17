@@ -101,7 +101,7 @@ export interface Project {
 }
 
 /** Shape used by the admin editor before it is written to Firestore. */
-export type ProjectDraft = Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'viewCount'>;
+export type ProjectDraft = Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'viewCount' | 'reviewStats'>;
 
 export interface ProjectFilters {
   search: string;
