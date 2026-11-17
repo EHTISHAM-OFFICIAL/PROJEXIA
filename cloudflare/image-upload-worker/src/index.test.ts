@@ -283,7 +283,7 @@ describe('POST /upload throttling', () => {
     form.set('purpose', 'request');
     form.set('file', new File([new Uint8Array([0xff, 0xd8, 0xff])], 'a.jpg', { type: 'image/jpeg' }));
 
-    const response = await freshWorker.fetch(
+    const response = await worker.fetch(
       new Request('https://worker.example/upload', {
         method: 'POST',
         headers: { origin: ORIGIN, authorization: `Bearer ${token}` },
