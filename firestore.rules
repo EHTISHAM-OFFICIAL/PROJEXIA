@@ -756,6 +756,14 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // Username sign-in has its own public, non-secret Worker URL setting.
+    // It is separate from imageHosting so image configuration changes cannot break login.
+    match /settings/usernameSignIn {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+    }
+
     // settings/imageHosting contains only the public Worker URL and provider preference.
     match /settings/imageHosting {
       allow get: if true;
