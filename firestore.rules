@@ -884,6 +884,90 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // School model reviews are deliberately split into private submissions and
+    // public-safe published records. Firestore rules cannot hide individual
+    // fields inside a readable document, so private account identity and
+    // moderation notes never live in the public collection.
+    match /schoolModelReviewSubmissions/{submissionId} {
+      // Customers can fetch only their deterministic own-review document.
+      // Listing all submissions is an administrator-only operation.
+      // The UID prefix also lets an owner check whether a submission exists.
+      allow get: if isAdmin()
+        || (isSignedIn() && submissionId.matches('^' + request.auth.uid + '_.*'));
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && submissionId == request.auth.uid + '_' + request.resource.data.schoolModelId
+        && request.resource.data.keys().hasOnly([
+          'schoolModelId', 'userId', 'username', 'isAnonymous', 'rating',
+          'comment', 'images', 'status', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.schoolModelId is string
+        && request.resource.data.schoolModelId.size() > 0
+        && exists(/databases/$(database)/documents/schoolModels/$(request.resource.data.schoolModelId))
+        && get(/databases/$(database)/documents/schoolModels/$(request.resource.data.schoolModelId)).data.published == true
+        && request.resource.data.userId == request.auth.uid
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && request.resource.data.username == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username
+        && request.resource.data.username is string
+        && request.resource.data.username.matches('^[a-z0-9_-]{3,30}$')
+        && request.resource.data.isAnonymous is bool
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.comment is string
+        && request.resource.data.comment.size() >= 10
+        && request.resource.data.comment.size() <= 2000
+        && request.resource.data.images is list
+        && request.resource.data.images.size() <= 4
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      // Submission records are immutable to customers after creation.
+      // Admin moderation is the only update/delete path.
+      allow update, delete: if isAdmin();
+    }
+
+    match /schoolModelReviews/{reviewId} {
+      // Every public query must constrain published == true; private fields
+      // are never stored in this collection.
+      allow get, list: if resource.data.published == true || isAdmin();
+
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'schoolModelId', 'displayName', 'isAnonymous', 'rating', 'comment',
+          'images', 'verifiedCustomer', 'published', 'createdAt', 'publishedAt'
+        ])
+        && request.resource.data.schoolModelId is string
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() > 0
+        && request.resource.data.displayName.size() <= 60
+        && request.resource.data.isAnonymous is bool
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.comment is string
+        && request.resource.data.comment.size() >= 10
+        && request.resource.data.comment.size() <= 2000
+        && request.resource.data.images is list
+        && request.resource.data.images.size() <= 4
+        && request.resource.data.verifiedCustomer is bool
+        && request.resource.data.published == true;
+
+      allow delete: if isAdmin();
+    }
+
+    match /schoolModelReviewModeration/{reviewId}/events/{eventId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['action', 'actorUid', 'note', 'createdAt'])
+        && request.resource.data.action is string
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
     // ---------------------------------------------------------------------
     // projectLibrary — reusable admin-managed project form options
     // ---------------------------------------------------------------------
