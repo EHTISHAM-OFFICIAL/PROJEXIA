@@ -47,7 +47,7 @@ describe('authService.signInWithGoogle', () => {
   });
 
   it('propagates other Firebase popup errors so the UI can explain them', async () => {
-    mocks.signInWithPopup.mockRejectedValue(Object.assign(new Error('blocked'), { code: 'auth/popup-blocked' }));
-    await expect(authService.signInWithGoogle()).rejects.toMatchObject({ code: 'auth/popup-blocked' });
+    mocks.signInWithPopup.mockRejectedValue(Object.assign(new Error('network'), { code: 'auth/network-request-failed' }));
+    await expect(authService.signInWithGoogle()).rejects.toMatchObject({ code: 'auth/network-request-failed' });
   });
 });
