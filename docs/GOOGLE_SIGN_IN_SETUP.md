@@ -14,6 +14,7 @@ The application uses Firebase Authentication's built-in Google provider. No Fire
 ## What the application does
 
 - Existing Google-linked Firebase accounts sign in normally.
+- The sign-in flow uses a popup where supported and falls back to Firebase redirect authentication when the browser blocks or does not support popups.
 - First-time Google users receive a standard PROJEXIAHUB customer profile, username lookup, and username-change quota record in one Firestore batch.
 - Their initial username is generated from their Firebase UID. They can change it using the existing account username editor and its existing two-changes-per-30-days limit.
 - Existing customer profiles are never overwritten by Google sign-in.
