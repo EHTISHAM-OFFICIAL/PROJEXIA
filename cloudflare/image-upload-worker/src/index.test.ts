@@ -190,7 +190,7 @@ describe('POST /auth/login', () => {
     vi.resetModules();
     const { default: freshWorker } = await import('./index');
     mockGoogle({});
-    const response = await worker.fetch(
+    const response = await freshWorker.fetch(
       new Request('https://worker.example/auth/login', {
         method: 'POST',
         headers: { origin: ORIGIN, 'content-type': 'application/json' },
