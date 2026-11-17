@@ -229,6 +229,46 @@ export async function deleteCustomerAccount(user: User, password: string): Promi
   }
 }
 
+/**
+ * Creates the standard customer records for a first-time Google sign-in.
+ * The initial username is derived from the Firebase UID, making collisions
+ * exceptionally unlikely while keeping the normal username-change flow intact.
+ */
+export async function ensureGoogleUserProfile(user: User): Promise<void> {
+  const profileRef = doc(db, USERS_COLLECTION, user.uid);
+  const existing = await getDoc(profileRef);
+  if (existing.exists()) return;
+
+  const recoveryEmail = user.email?.trim().toLowerCase();
+  if (!recoveryEmail || !emailPattern.test(recoveryEmail)) {
+    throw new Error('Google did not provide a usable email address. Check your Google account settings and try again.');
+  }
+
+  const uidPart = user.uid.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 23);
+  const username = `google_${uidPart}`;
+  const batch = writeBatch(db);
+  batch.set(profileRef, {
+    uid: user.uid,
+    username,
+    recoveryEmail,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  batch.set(doc(db, 'usernameChangeLimits', user.uid), {
+    uid: user.uid,
+    change1At: null,
+    change2At: null,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  batch.set(usernameLookupRef(username), {
+    uid: user.uid,
+    authEmail: recoveryEmail,
+    createdAt: serverTimestamp(),
+  });
+  await batch.commit();
+}
+
 export async function registerUser(
   usernameInput: string,
   password: string,
