@@ -54,7 +54,7 @@ describe('ensureGoogleUserProfile', () => {
     );
     expect(mocks.set).toHaveBeenCalledWith(
       { path: 'usernameLookup/google_abcdef12345678901234567' },
-      expect.objectContaining({ uid: 'AbCdEf123456789012345678', authEmail: 'person@example.com' }),
+      expect.objectContaining({ uid: 'AbCdEf123456789012345678', authEmail: 'Person@Example.com' }),
     );
     expect(mocks.set).toHaveBeenCalledWith(
       { path: 'usernameChangeLimits/AbCdEf123456789012345678' },
