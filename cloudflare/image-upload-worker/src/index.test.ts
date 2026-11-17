@@ -190,7 +190,7 @@ describe('POST /auth/login', () => {
     vi.resetModules();
     const { default: freshWorker } = await import('./index');
     mockGoogle({});
-    const response = await freshWorker.fetch(
+    const response = await worker.fetch(
       new Request('https://worker.example/auth/login', {
         method: 'POST',
         headers: { origin: ORIGIN, 'content-type': 'application/json' },
@@ -324,7 +324,7 @@ describe('POST /upload throttling', () => {
     form.set('purpose', 'admin');
     form.set('preferredProvider', 'imagekit');
     form.set('file', new File([new Uint8Array([0xff, 0xd8, 0xff])], 'sample.jpg', { type: 'image/jpeg' }));
-    const response = await worker.fetch(
+    const response = await freshWorker.fetch(
       new Request('https://worker.example/upload', {
         method: 'POST',
         headers: { origin: ORIGIN, authorization: `Bearer ${token}` },
