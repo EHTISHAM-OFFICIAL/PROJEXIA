@@ -1,6 +1,5 @@
 import {
   collection,
-  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -20,7 +19,6 @@ import type {
   ProjectReviewStatus,
   ProjectReviewSubmission,
   PublicProjectReview,
-  ReviewVerificationStatus,
 } from '../types/projectReview';
 import { calculateProjectReviewStats } from '../utils/projectReviewStats';
 

@@ -95,9 +95,6 @@ beforeEach(async () => {
     await setDoc(doc(db, 'projects', 'project1'), {
       title: 'Test project', slug: 'test-project', published: true,
     });
-    await setDoc(doc(db, 'users', ALICE), {
-      uid: ALICE, username: 'alice', recoveryEmail: 'alice@example.com',
-    });
     await setDoc(doc(db, 'resolvers', RESOLVER), { purpose: 'worker' });
     await setDoc(doc(db, 'projectRequests', REQUEST_ID), {
       requestNumber: REQUEST_NUMBER, ownerUid: ALICE, status: 'new', priority: 'normal',
@@ -361,6 +358,14 @@ describe('customer username and account lifecycle', () => {
 
 
 describe('project customer reviews', () => {
+  async function seedAliceReviewProfile() {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), 'users', ALICE), {
+        uid: ALICE, username: 'alice', recoveryEmail: 'alice@example.com',
+      });
+    });
+  }
+
   const projectId = 'project1';
   const reviewId = (uid: string) => uid + '_' + projectId;
   const submission = (overrides: Record<string, unknown> = {}) => ({
@@ -378,6 +383,7 @@ describe('project customer reviews', () => {
   });
 
   it('allows the owner to check their deterministic review document before and after submission', async () => {
+    await seedAliceReviewProfile();
     await assertSucceeds(getDoc(doc(as(ALICE), 'projectReviewSubmissions', reviewId(ALICE))));
     await assertSucceeds(setDoc(
       doc(as(ALICE), 'projectReviewSubmissions', reviewId(ALICE)),
@@ -387,6 +393,7 @@ describe('project customer reviews', () => {
   });
 
   it('allows a signed-in customer to create one pending review for a published project', async () => {
+    await seedAliceReviewProfile();
     await assertSucceeds(setDoc(
       doc(as(ALICE), 'projectReviewSubmissions', reviewId(ALICE)),
       submission(),
@@ -394,6 +401,7 @@ describe('project customer reviews', () => {
   });
 
   it('rejects anonymous, impersonated, pre-approved and incorrectly keyed submissions', async () => {
+    await seedAliceReviewProfile();
     await assertFails(setDoc(doc(anon(), 'projectReviewSubmissions', reviewId(ALICE)), submission()));
     await assertFails(setDoc(
       doc(as(ALICE), 'projectReviewSubmissions', reviewId(BOB)),

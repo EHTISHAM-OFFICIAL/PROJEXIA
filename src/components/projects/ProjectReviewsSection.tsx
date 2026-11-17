@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { CheckCircle2, ImagePlus, LockKeyhole, Star, X } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Badge } from '../ui/Badge';
 import { Button, ButtonLink } from '../ui/Button';
 import { Image } from '../ui/Image';
