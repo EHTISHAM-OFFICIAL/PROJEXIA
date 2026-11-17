@@ -24,6 +24,7 @@ import {
 import { slugify } from "../utils/slug";
 import { emailNotificationService } from "./emailNotificationService";
 import { imgbbService } from "./imgbbService";
+import type { SchoolModelReviewStats } from "../types/schoolModelReview";
 
 export type SchoolModelComponent = {
   name: string;
@@ -74,6 +75,7 @@ export type SchoolModel = {
   featured: boolean;
   published: boolean;
   viewCount: number;
+  reviewStats: SchoolModelReviewStats;
   seoTitle: string;
   seoDescription: string;
   keywords: string[];
@@ -196,6 +198,11 @@ function normalize(snapshot: any): SchoolModel {
     featured: data.featured === true,
     published: data.published === true,
     viewCount: Number(data.viewCount) || 0,
+    reviewStats: {
+      averageRating: typeof data.reviewStats?.averageRating === 'number' && Number.isFinite(data.reviewStats.averageRating) ? data.reviewStats.averageRating : null,
+      reviewCount: Number.isInteger(data.reviewStats?.reviewCount) && data.reviewStats.reviewCount >= 0 ? data.reviewStats.reviewCount : 0,
+      distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, ...(data.reviewStats?.distribution ?? {}) },
+    },
     seoTitle: data.seoTitle ?? "",
     seoDescription: data.seoDescription ?? "",
     keywords: Array.isArray(data.keywords) ? data.keywords : [],
