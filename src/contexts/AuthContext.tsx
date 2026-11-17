@@ -1,7 +1,7 @@
 import { createContext, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { User } from 'firebase/auth';
 import { authService } from '../services/authService';
-import { getUserProfile, signInWithUsername } from '../services/userService';
+import { ensureGoogleUserProfile, getUserProfile, signInWithUsername } from '../services/userService';
 import type { UserProfile } from '../types/user';
 
 export interface AuthContextValue {
@@ -13,6 +13,7 @@ export interface AuthContextValue {
   accountError: string | null;
   refreshAccount: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signInWithUsername: (username: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -46,6 +47,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setLoading(true);
       try {
+        if (nextUser.providerData.some((provider) => provider.providerId === 'google.com')) {
+          await ensureGoogleUserProfile(nextUser);
+        }
         const [admin, nextProfile] = await Promise.all([
           authService.isAdmin(nextUser.uid),
           getUserProfile(nextUser.uid),
@@ -108,6 +112,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(true);
         try {
           await authService.signIn(email, password);
+        } catch (error) {
+          setLoading(false);
+          throw error;
+        }
+      },
+      signInWithGoogle: async () => {
+        setLoading(true);
+        try {
+          await authService.signInWithGoogle();
         } catch (error) {
           setLoading(false);
           throw error;
