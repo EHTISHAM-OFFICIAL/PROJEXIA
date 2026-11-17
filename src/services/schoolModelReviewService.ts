@@ -116,7 +116,7 @@ export const schoolModelReviewService = {
     return snapshot.exists() ? toSubmission(snapshot.id, snapshot.data()) : null;
   },
 
-  async getPublishedForProject(schoolModelId: string): Promise<PublicSchoolModelReview[]> {
+  async getPublishedForSchoolModel(schoolModelId: string): Promise<PublicSchoolModelReview[]> {
     const snapshot = await getDocs(query(
       publicReviewsRef,
       where('schoolModelId', '==', schoolModelId),
@@ -182,7 +182,7 @@ export const schoolModelReviewService = {
     if (submission.status === 'rejected') {
       throw new Error('Rejected reviews cannot be republished. Delete the submission if a fresh review is required.');
     }
-    const modelSnapshot = await getDoc(doc(db, COLLECTIONS.projects, submission.schoolModelId));
+    const modelSnapshot = await getDoc(doc(db, 'schoolModels', submission.schoolModelId));
     if (!modelSnapshot.exists() || modelSnapshot.data().published !== true) {
       throw new Error('This school model is not currently published. Publish the model before approving its review.');
     }
