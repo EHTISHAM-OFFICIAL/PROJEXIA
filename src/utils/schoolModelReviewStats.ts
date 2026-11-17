@@ -1,4 +1,4 @@
-import type { SchoolModelReviewStats } from '../types/project';
+import type { SchoolModelReviewStats } from '../types/schoolModelReview';
 
 export function calculateSchoolModelReviewStats(
   reviews: Array<{ rating: number }>,
