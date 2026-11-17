@@ -5,7 +5,7 @@ const mocks = vi.hoisted(() => ({
   updateEmail: vi.fn(),
   getDoc: vi.fn(),
   setDoc: vi.fn(),
-  getGatewayUrl: vi.fn(),
+  getUsernameAuthGatewayUrl: vi.fn(),
 }));
 
 vi.mock('firebase/auth', () => ({
@@ -25,7 +25,7 @@ vi.mock('firebase/firestore', () => ({
 }));
 vi.mock('../firebase/auth', () => ({ auth: {} }));
 vi.mock('../firebase/firestore', () => ({ db: {} }));
-vi.mock('./imgbbService', () => ({ getGatewayUrl: mocks.getGatewayUrl }));
+vi.mock('./usernameAuthService', () => ({ getUsernameAuthGatewayUrl: mocks.getUsernameAuthGatewayUrl }));
 
 import { getUsernameChangeStatus, signInWithUsername } from './userService';
 
@@ -42,7 +42,7 @@ function workerReplies(status: number, body: unknown) {
 beforeEach(() => {
   vi.unstubAllGlobals();
   Object.values(mocks).forEach((mock) => mock.mockReset());
-  mocks.getGatewayUrl.mockResolvedValue('https://gateway.example');
+  mocks.getUsernameAuthGatewayUrl.mockResolvedValue('https://gateway.example');
   mocks.signInWithEmailAndPassword.mockResolvedValue({ user });
   mocks.getDoc.mockResolvedValue({ exists: () => false });
 });
@@ -114,7 +114,7 @@ describe('signInWithUsername', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('network')));
     await expect(signInWithUsername('sam', 'pw')).rejects.toThrow(/email address/);
 
-    mocks.getGatewayUrl.mockResolvedValue(null);
+    mocks.getUsernameAuthGatewayUrl.mockResolvedValue(null);
     await expect(signInWithUsername('sam', 'pw')).rejects.toThrow(/email address/);
   });
 
