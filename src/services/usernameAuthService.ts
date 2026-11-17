@@ -6,7 +6,7 @@ const LEGACY_CONFIG_ID = "imageHosting";
 
 function normalizeWorkerUrl(value: unknown): string {
   if (typeof value !== "string") return "";
-  const normalized = value.trim().replace(/\\/+$/, "");
+  const normalized = value.trim().replace(/\/+$/, "");
   if (!normalized) return "";
   try {
     const parsed = new URL(normalized);
