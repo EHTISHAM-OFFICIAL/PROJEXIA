@@ -7,13 +7,14 @@ import { Alert } from '../../components/ui/Alert';
 import { Field } from '../../components/forms/Field';
 import { TextInput } from '../../components/forms/Inputs';
 import { Wordmark } from '../../components/layout/Wordmark';
+import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton';
 import { Seo } from '../../components/ui/Seo';
 import { useAuth } from '../../hooks/useAuth';
 import { registerUser, validateUsername } from '../../services/userService';
 import { toUserMessage } from '../../utils/errors';
 
 export default function Register() {
-  const { user } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [username, setUsername] = useState('');
@@ -24,10 +25,24 @@ export default function Register() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
 
   const from = new URLSearchParams(location.search).get('next') || '/account';
 
   if (user) return <Navigate to="/account" replace />;
+
+  const submitGoogle = async () => {
+    setError(null);
+    setGoogleSubmitting(true);
+    try {
+      await signInWithGoogle();
+      navigate(from.startsWith('/') ? from : '/account', { replace: true });
+    } catch (caught) {
+      setError(toUserMessage(caught, 'Could not create your account with Google.'));
+    } finally {
+      setGoogleSubmitting(false);
+    }
+  };
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -89,6 +104,13 @@ export default function Register() {
 
             <div className="rounded-card border border-line bg-surface p-6 sm:p-8">
               {error && <Alert tone="danger" className="mb-6">{error}</Alert>}
+
+              <GoogleSignInButton onClick={() => void submitGoogle()} loading={googleSubmitting} disabled={submitting} />
+              <div className="my-5 flex items-center gap-3 text-xs font-medium uppercase tracking-wider text-content-muted">
+                <span className="h-px flex-1 bg-line" />
+                or create an account with email
+                <span className="h-px flex-1 bg-line" />
+              </div>
 
               <form onSubmit={submit} className="space-y-5">
                 <Field label="Username" htmlFor="username" required hint="3–30 characters: letters, numbers, hyphens or underscores.">
@@ -158,7 +180,7 @@ export default function Register() {
                     </button>
                   </div>
                 </Field>
-                <Button type="submit" size="lg" loading={submitting} className="w-full">
+                <Button type="submit" size="lg" loading={submitting} disabled={googleSubmitting} className="w-full">
                   <span className="flex items-center justify-center gap-2">
                     <UserPlus size={17} aria-hidden="true" />
                     {submitting ? 'Creating account…' : 'Create account'}
