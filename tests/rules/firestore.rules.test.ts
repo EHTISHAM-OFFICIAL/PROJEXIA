@@ -377,6 +377,15 @@ describe('project customer reviews', () => {
     ...overrides,
   });
 
+  it('allows the owner to check their deterministic review document before and after submission', async () => {
+    await assertSucceeds(getDoc(doc(as(ALICE), 'projectReviewSubmissions', reviewId(ALICE))));
+    await assertSucceeds(setDoc(
+      doc(as(ALICE), 'projectReviewSubmissions', reviewId(ALICE)),
+      submission(),
+    ));
+    await assertSucceeds(getDoc(doc(as(ALICE), 'projectReviewSubmissions', reviewId(ALICE))));
+  });
+
   it('allows a signed-in customer to create one pending review for a published project', async () => {
     await assertSucceeds(setDoc(
       doc(as(ALICE), 'projectReviewSubmissions', reviewId(ALICE)),
