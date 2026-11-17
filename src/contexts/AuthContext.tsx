@@ -80,6 +80,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRefreshingAccount(true);
     setAccountError(null);
     try {
+      if (currentUser.providerData.some((provider) => provider.providerId === 'google.com')) {
+        await ensureGoogleUserProfile(currentUser);
+      }
       const [admin, nextProfile] = await Promise.all([
         authService.isAdmin(currentUser.uid),
         getUserProfile(currentUser.uid),
