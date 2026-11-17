@@ -187,7 +187,7 @@ export default function SchoolModelForm() {
       update('galleryUrls', next);
       setGalleryQueue((current) => current.slice(1));
       setGalleryPartialBackup(uploaded.missingProvider ? { file, upload: uploaded } : null);
-      setNotice(uploaded.missingProvider ? `Gallery image uploaded to ${uploaded.primaryProvider === 'imgbb' ? 'ImgBB' : 'Freeimage.host'}, but the backup failed. Retry the missing host below.` : uploaded.fallbackSaved === false ? 'Both hosts received the image, but fallback metadata could not be saved. Check Firestore rules.' : 'Gallery image uploaded to both image hosts. Save the model to keep your changes.');
+      setNotice(uploaded.missingProvider ? `Gallery image uploaded to ${uploaded.primaryProvider === 'imgbb' ? 'ImgBB' : 'ImageKit'}, but the backup failed. Retry the missing host below.` : uploaded.fallbackSaved === false ? 'Both hosts received the image, but fallback metadata could not be saved. Check Firestore rules.' : 'Gallery image uploaded to both image hosts. Save the model to keep your changes.');
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Image upload failed. You can paste image URLs instead.');
       throw caught;
@@ -316,7 +316,7 @@ export default function SchoolModelForm() {
 
       <Group id="school-model-media" title="2. Images & media" subtitle="Help visitors understand what the model looks like">
         <FieldSet legend="Thumbnail" hint="The primary catalog image. A landscape image with a clear subject works best.">
-          <ImageUploadField label="Thumbnail" value={draft.thumbnailUrl||null} disabled={uploading||saving} onUpload={async(file)=>{const uploaded=await imgbbService.upload(file);update('thumbnailUrl',uploaded.url);setNotice(uploaded.missingProvider ? `Thumbnail uploaded to ${uploaded.primaryProvider === 'imgbb' ? 'ImgBB' : 'Freeimage.host'}, but the backup failed. Save the model and retry the backup from the upload field.` : 'Thumbnail uploaded to both image hosts. Save the model to keep the change.');return uploaded;}} onClear={()=>update('thumbnailUrl','')}/>
+          <ImageUploadField label="Thumbnail" value={draft.thumbnailUrl||null} disabled={uploading||saving} onUpload={async(file)=>{const uploaded=await imgbbService.upload(file);update('thumbnailUrl',uploaded.url);setNotice(uploaded.missingProvider ? `Thumbnail uploaded to ${uploaded.primaryProvider === 'imgbb' ? 'ImgBB' : 'ImageKit'}, but the backup failed. Save the model and retry the backup from the upload field.` : 'Thumbnail uploaded to both image hosts. Save the model to keep the change.');return uploaded;}} onClear={()=>update('thumbnailUrl','')}/>
           <Field label="Or paste a thumbnail URL" htmlFor="school-thumbnail-url"><TextInput id="school-thumbnail-url" type="url" value={draft.thumbnailUrl} onChange={(event)=>update('thumbnailUrl',event.target.value)} placeholder="https://…"/></Field>
         </FieldSet>
         <FieldSet legend="Hero image" hint="A larger image for the top of the public detail page. Optional; it can differ from the catalog thumbnail.">

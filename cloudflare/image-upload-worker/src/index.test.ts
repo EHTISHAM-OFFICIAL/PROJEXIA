@@ -8,7 +8,7 @@ const baseEnv: Env = {
   FIREBASE_PROJECT_ID: PROJECT,
   ALLOWED_ORIGINS: `${ORIGIN},http://localhost:5173`,
   IMGBB_API_KEY: 'imgbb',
-  FREEIMAGE_API_KEY: 'freeimage',
+  IMAGEKIT_PRIVATE_KEY: 'private_test_key',
   FIREBASE_WEB_API_KEY: 'web-key',
   RESOLVER_EMAIL: 'resolver@example.com',
   RESOLVER_PASSWORD: 'resolver-pass',
@@ -236,6 +236,7 @@ describe('GET /health', () => {
     );
     const body = await response.json();
     expect(body.usernameSignIn).toBe(true);
+    expect(body.providers).toEqual({ imgbb: true, imagekit: true });
     expect(body.rateLimiting).toEqual({ upload: true, login: false });
   });
 });

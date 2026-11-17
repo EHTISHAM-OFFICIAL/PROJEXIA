@@ -282,7 +282,7 @@ export function SiteIdentitySettings() {
         {partialBackup?.upload.missingProvider && (
           <div className="mt-4 rounded-xl border border-line bg-surface p-4">
             <p className="text-sm text-content-secondary">
-              The image was uploaded to {partialBackup.upload.primaryProvider === "imgbb" ? "ImgBB" : "Freeimage.host"}, but {partialBackup.upload.missingProvider === "imgbb" ? "ImgBB" : "Freeimage.host"} did not finish. You can retry only the missing backup without uploading to the working host again.
+              The image was uploaded to {partialBackup.upload.primaryProvider === "imgbb" ? "ImgBB" : "ImageKit"}, but {partialBackup.upload.missingProvider === "imgbb" ? "ImgBB" : "ImageKit"} did not finish. You can retry only the missing backup without uploading to the working host again.
             </p>
             <div className="mt-3">
               <Button variant="secondary" onClick={() => void retryLogoBackup()} loading={retryingBackup} disabled={retryingBackup}>

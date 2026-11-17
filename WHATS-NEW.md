@@ -9,7 +9,7 @@ don't just drop files in, since dozens changed across 8 features.
    real Firebase credentials for your current PROJEXIAHUB Firebase project aren't touched. Copy your old
    `.env` file into this new folder before doing anything else.
 
-2. **Configure secure image hosting** — do not put provider keys in `.env`, GitHub, or the browser bundle. Use the Cloudflare Worker setup guide in `cloudflare/image-upload-worker/SETUP.md`; add `IMGBB_API_KEY` and `FREEIMAGE_API_KEY` as encrypted Worker secrets.
+2. **Configure secure image hosting** — do not put provider keys in `.env`, GitHub, or the browser bundle. Use the Cloudflare Worker setup guide in `cloudflare/image-upload-worker/SETUP.md`; add `IMGBB_API_KEY` and `IMAGEKIT_PRIVATE_KEY` as encrypted Worker secrets.
 
 3. **Redeploy Firestore rules and indexes** — several new collections
    (`posts`, `testimonials`) and the `settings` collection need rules:
@@ -40,7 +40,7 @@ reference links and description fields still cover that.
 ### 1. Secure dual image hosting through Cloudflare
 
 Admin uploads for project thumbnails, hero images, school models, blog covers,
-website logos, and favicon images are sent to both ImgBB and Freeimage.host
+website logos, and favicon images are sent to both ImgBB and ImageKit
 through a Cloudflare Worker. The preferred provider is the primary URL; the
 second URL is recorded in `imageHostingAssets` and used only if the primary
 image fails to load. Existing single-host image URLs continue to work.

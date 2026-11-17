@@ -10,7 +10,7 @@ import { useToast } from "../../contexts/ToastContext";
 
 type WorkerStatus = {
   ok: boolean;
-  providers: { imgbb: boolean; freeimage: boolean };
+  providers: { imgbb: boolean; imagekit: boolean };
   firebaseProjectConfigured: boolean;
 };
 
@@ -67,7 +67,7 @@ export function ImageHostingSettings() {
     try {
       const result = await imgbbService.checkWorker(workerUrl);
       setStatus(result);
-      if (!result.ok || !result.firebaseProjectConfigured || !result.providers.imgbb || !result.providers.freeimage) {
+      if (!result.ok || !result.firebaseProjectConfigured || !result.providers.imgbb || !result.providers.imagekit) {
         setError("The Worker responded, but one or more required settings/secrets are missing. Check the Cloudflare Worker variables and encrypted secrets.");
       }
     } catch (caught) {
@@ -82,7 +82,7 @@ export function ImageHostingSettings() {
       <div className="flex items-center gap-2.5">
         <Cloud size={18} className="text-content-muted" aria-hidden="true" />
         <div>
-          <h2 className="text-lg font-semibold tracking-tight">Image hosting — ImgBB + Freeimage.host</h2>
+          <h2 className="text-lg font-semibold tracking-tight">Image hosting — ImgBB + ImageKit</h2>
           <p className="mt-1 text-sm text-content-secondary">Secure dual uploads with automatic image fallback.</p>
         </div>
       </div>
@@ -106,12 +106,12 @@ export function ImageHostingSettings() {
 
       {status && (
         <div className="mt-4 space-y-2">
-          <Alert tone={status.ok && status.firebaseProjectConfigured && status.providers.imgbb && status.providers.freeimage ? "success" : "info"}>
+          <Alert tone={status.ok && status.firebaseProjectConfigured && status.providers.imgbb && status.providers.imagekit ? "success" : "info"}>
             <div className="space-y-1">
               <p className="flex items-center gap-2 font-medium"><CheckCircle2 size={15} /> Worker is reachable.</p>
               <p>Firebase project ID: {status.firebaseProjectConfigured ? "configured" : "missing"}</p>
               <p>ImgBB secret: {status.providers.imgbb ? "present" : "missing"}</p>
-              <p>Freeimage.host secret: {status.providers.freeimage ? "present" : "missing"}</p>
+              <p>ImageKit secret: {status.providers.imagekit ? "present" : "missing"}</p>
               <p className="mt-1 text-xs">This checks configuration only; a real upload verifies that the API keys are valid.</p>
             </div>
           </Alert>
@@ -139,7 +139,7 @@ export function ImageHostingSettings() {
             className="min-h-11 w-full rounded-lg border border-line bg-surface-raised px-3 py-2.5 text-sm text-content outline-none transition-colors focus:border-accent focus:ring-1 focus:ring-accent"
           >
             <option value="imgbb">ImgBB</option>
-            <option value="freeimage">Freeimage.host</option>
+            <option value="imagekit">ImageKit</option>
           </select>
         </Field>
 
@@ -180,7 +180,7 @@ export function ImageHostingSettings() {
       <div className="mt-6 border-t border-line pt-5">
         <h3 className="text-sm font-semibold">How the setup behaves</h3>
         <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-content-secondary">
-          <li>Admin uploads are sent to ImgBB and Freeimage.host independently, subject to the configured per-file size limit.</li>
+          <li>Admin uploads are sent to ImgBB and ImageKit independently, subject to the configured per-file size limit.</li>
           <li>If both succeed, the preferred host is primary and the second URL is saved for fallback.</li>
           <li>If one provider fails, the image can still be saved and the editor offers a retry for the missing backup.</li>
           <li>Existing ImgBB-only images remain compatible; fallback metadata is checked only if the primary image fails to load.</li>

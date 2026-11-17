@@ -31,7 +31,7 @@ The site will load, but the projects page will be empty until Firestore has data
 
 ## Firebase setup
 
-You need a Firebase project with Firestore and Authentication enabled. Firebase Storage is **not** used: images are uploaded through the Cloudflare Worker in `cloudflare/image-upload-worker` (ImgBB / Freeimage.host), so the free Spark plan is enough.
+You need a Firebase project with Firestore and Authentication enabled. Firebase Storage is **not** used: images are uploaded through the Cloudflare Worker in `cloudflare/image-upload-worker` (ImgBB / ImageKit), so the free Spark plan is enough.
 
 ### 1. Environment variables
 
@@ -172,7 +172,7 @@ A user can read only their own document. Not listable, not writable from the cli
 
 ## Image uploads
 
-There is no Firebase Storage. The browser sends images to a Cloudflare Worker (`cloudflare/image-upload-worker`), which verifies the Firebase sign-in token, checks type/size/file signature, and uploads to ImgBB (and Freeimage.host as a backup for admin uploads). Provider API keys live only in encrypted Worker secrets (`wrangler secret put IMGBB_API_KEY`, `FREEIMAGE_API_KEY`), never in this repo. The Worker URL and size limit are set in Admin → Settings → Image hosting; keep `ALLOWED_ORIGINS` in `wrangler.toml` limited to your real site origins.
+There is no Firebase Storage. The browser sends images to a Cloudflare Worker (`cloudflare/image-upload-worker`), which verifies the Firebase sign-in token, checks type/size/file signature, and uploads to ImgBB (and ImageKit as a backup for admin uploads). Provider API keys live only in encrypted Worker secrets (`wrangler secret put IMGBB_API_KEY`, `IMAGEKIT_PRIVATE_KEY`), never in this repo. The Worker URL and size limit are set in Admin → Settings → Image hosting; keep `ALLOWED_ORIGINS` in `wrangler.toml` limited to your real site origins.
 
 ---
 
