@@ -8,8 +8,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { useOwnSchoolModelReview, usePublishedSchoolModelReviews } from '../../hooks/useSchoolModelReviews';
 import { schoolModelReviewService } from '../../services/schoolModelReviewService';
 import { imgbbService } from '../../services/imgbbService';
-import type { SchoolModel } from '../../types/model';
-import type { SchoolModelReviewSubmission } from '../../types/modelReview';
+import type { SchoolModel } from '../../services/schoolModelService';
+import type { SchoolModelReviewSubmission } from '../../types/schoolModelReview';
 
 const IMAGE_LIMIT = 4;
 const CLIENT_IMAGE_LIMIT = 10 * 1024 * 1024;
@@ -257,7 +257,7 @@ export function SchoolModelReviewsSection({ model }: { model: SchoolModel }) {
               maxLength={2000}
               value={comment}
               onChange={(event) => setComment(event.target.value)}
-              placeholder="Tell others about the model you received, its quality and your experience..."
+              placeholder="Tell others about the school model you received, its quality and your experience..."
               className="w-full resize-y rounded-xl border border-line bg-bg px-4 py-3 text-sm leading-relaxed text-content outline-none transition-colors placeholder:text-content-muted focus:border-accent focus:ring-2 focus:ring-accent/15"
               required
             />
@@ -289,7 +289,7 @@ export function SchoolModelReviewsSection({ model }: { model: SchoolModel }) {
               className="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-line-strong bg-bg px-4 py-5 text-sm text-content-secondary transition-colors hover:border-accent hover:text-accent"
             >
               <ImagePlus size={18} aria-hidden="true" />
-              Choose model photos
+              Choose school model photos
             </label>
             <input
               id={`review-images-${model.id}`}
