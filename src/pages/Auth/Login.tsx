@@ -7,13 +7,14 @@ import { Alert } from '../../components/ui/Alert';
 import { Field } from '../../components/forms/Field';
 import { TextInput } from '../../components/forms/Inputs';
 import { Wordmark } from '../../components/layout/Wordmark';
+import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton';
 import { Seo } from '../../components/ui/Seo';
 import { useAuth } from '../../hooks/useAuth';
 import { sendCustomerPasswordReset } from '../../services/userService';
 import { toUserMessage } from '../../utils/errors';
 
 export default function Login() {
-  const { user, signInWithUsername } = useAuth();
+  const { user, signInWithUsername, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [username, setUsername] = useState('');
@@ -21,6 +22,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetError, setResetError] = useState<string | null>(null);
@@ -43,6 +45,19 @@ export default function Login() {
       setError(toUserMessage(caught, 'Invalid username or password.'));
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const submitGoogle = async () => {
+    setError(null);
+    setGoogleSubmitting(true);
+    try {
+      await signInWithGoogle();
+      navigate(from.startsWith('/') ? from : '/account', { replace: true });
+    } catch (caught) {
+      setError(toUserMessage(caught, 'Could not sign in with Google.'));
+    } finally {
+      setGoogleSubmitting(false);
     }
   };
 
@@ -87,6 +102,13 @@ export default function Login() {
             <div className="rounded-card border border-line bg-surface p-6 sm:p-8">
               {error && <Alert tone="danger" className="mb-6">{error}</Alert>}
 
+              <GoogleSignInButton onClick={() => void submitGoogle()} loading={googleSubmitting} disabled={submitting} />
+              <div className="my-5 flex items-center gap-3 text-xs font-medium uppercase tracking-wider text-content-muted">
+                <span className="h-px flex-1 bg-line" />
+                or continue with username/email
+                <span className="h-px flex-1 bg-line" />
+              </div>
+
               <form onSubmit={submit} className="space-y-5">
                 <Field label="Username or email" htmlFor="username" required>
                   <TextInput
@@ -119,7 +141,7 @@ export default function Login() {
                   </div>
                 </Field>
 
-                <Button type="submit" size="lg" loading={submitting} className="w-full">
+                <Button type="submit" size="lg" loading={submitting} disabled={googleSubmitting} className="w-full">
                   <span className="flex items-center justify-center gap-2">
                     <LogIn size={17} aria-hidden="true" />
                     {submitting ? 'Signing in…' : 'Log in'}
