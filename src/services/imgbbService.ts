@@ -2,7 +2,7 @@ import { deleteDoc, doc, getDoc, serverTimestamp, setDoc } from "firebase/firest
 import { auth } from "../firebase/auth";
 import { db } from "../firebase/firestore";
 
-export type ImageProvider = "imgbb" | "freeimage";
+export type ImageProvider = "imgbb" | "imagekit";
 export type UploadPurpose = "admin" | "request";
 
 export interface UploadedImage {
@@ -69,7 +69,7 @@ async function readConfig(): Promise<HostingConfig> {
   }
   return {
     workerUrl,
-    preferredProvider: data.preferredProvider === "freeimage" ? "freeimage" : "imgbb",
+    preferredProvider: data.preferredProvider === "imagekit" ? "imagekit" : "imgbb",
     maxFileSizeMb: normalizeMaxFileSizeMb(data.maxFileSizeMb),
   };
 }
@@ -269,14 +269,14 @@ export const imgbbService = {
     const data = snapshot.exists() ? snapshot.data() : {};
     return {
       workerUrl: typeof data.workerUrl === "string" ? data.workerUrl : "",
-      preferredProvider: data.preferredProvider === "freeimage" ? "freeimage" : "imgbb",
+      preferredProvider: data.preferredProvider === "imagekit" ? "imagekit" : "imgbb",
       maxFileSizeMb: normalizeMaxFileSizeMb(data.maxFileSizeMb),
     };
   },
 
   async checkWorker(workerUrl: string): Promise<{
     ok: boolean;
-    providers: { imgbb: boolean; freeimage: boolean };
+    providers: { imgbb: boolean; imagekit: boolean };
     firebaseProjectConfigured: boolean;
   }> {
     const normalized = normalizeWorkerUrl(workerUrl);
@@ -290,12 +290,12 @@ export const imgbbService = {
     if (!response.ok) throw new Error("The Worker health check failed. Check the deployment and allowed website origins.");
     const data = await response.json() as {
       ok?: boolean;
-      providers?: { imgbb?: boolean; freeimage?: boolean };
+      providers?: { imgbb?: boolean; imagekit?: boolean };
       firebaseProjectConfigured?: boolean;
     };
     return {
       ok: data.ok === true,
-      providers: { imgbb: data.providers?.imgbb === true, freeimage: data.providers?.freeimage === true },
+      providers: { imgbb: data.providers?.imgbb === true, imagekit: data.providers?.imagekit === true },
       firebaseProjectConfigured: data.firebaseProjectConfigured === true,
     };
   },

@@ -188,7 +188,7 @@ export function ImageUploadField({
           {uploadSummary.missingProvider ? (
             <>
               <p>
-                Uploaded to {uploadSummary.primaryProvider === 'imgbb' ? 'ImgBB' : 'Freeimage.host'}, but {uploadSummary.missingProvider === 'imgbb' ? 'ImgBB' : 'Freeimage.host'} did not finish. The image is saved; its backup is not ready yet.
+                Uploaded to {uploadSummary.primaryProvider === 'imgbb' ? 'ImgBB' : 'ImageKit'}, but {uploadSummary.missingProvider === 'imgbb' ? 'ImgBB' : 'ImageKit'} did not finish. The image is saved; its backup is not ready yet.
               </p>
               <button type="button" onClick={() => void retryBackup()} disabled={retryingBackup || busy} className="mt-2 inline-flex min-h-8 items-center justify-center gap-2 rounded-lg border border-line px-3 py-1.5 font-medium text-content transition-colors hover:border-accent hover:text-accent disabled:opacity-50">
                 {retryingBackup ? <Loader2 size={14} className="animate-spin" /> : <ImagePlus size={14} />}

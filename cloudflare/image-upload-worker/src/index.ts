@@ -7,7 +7,7 @@ export interface Env {
   FIREBASE_PROJECT_ID: string;
   ALLOWED_ORIGINS: string;
   IMGBB_API_KEY: string;
-  FREEIMAGE_API_KEY: string;
+  IMAGEKIT_PRIVATE_KEY: string;
 
   // Username sign-in (/auth/login). All three are Worker secrets.
   FIREBASE_WEB_API_KEY?: string;
@@ -22,7 +22,7 @@ export interface Env {
   LOGIN_LIMITER_IP?: RateLimiter;
 }
 
-type Provider = "imgbb" | "freeimage";
+type Provider = "imgbb" | "imagekit";
 type Purpose = "admin" | "request";
 const DEFAULT_MAX_FILE_SIZE_MB = 10;
 const MIN_MAX_FILE_SIZE_MB = 1;
@@ -270,133 +270,33 @@ async function uploadToImgBB(file: File, env: Env): Promise<ProviderResult> {
   }
 }
 
-async function uploadToFreeimage(
-  file: File,
-  env: Env,
-): Promise<ProviderResult> {
-  if (!env.FREEIMAGE_API_KEY)
-    return {
-      ok: false,
-      error: "Freeimage.host API key is not configured in Cloudflare.",
-    };
-
+async function uploadToImageKit(file: File, env: Env): Promise<ProviderResult> {
+  if (!env.IMAGEKIT_PRIVATE_KEY) return { ok: false, error: "ImageKit private API key is not configured in Cloudflare." };
   try {
-    // Freeimage.host API v1: local files must be sent as multipart POST.
     const form = new FormData();
-    form.append("key", env.FREEIMAGE_API_KEY);
-    form.append("action", "upload");
-    form.append("source", file, file.name || "upload");
-    form.append("format", "json");
-
-    // Do not silently follow a website/security redirect: it can turn an API
-    // JSON response into the provider's HTML homepage or challenge page.
-    const response = await fetch("https://freeimage.host/api/1/upload", {
+    form.append("file", file, file.name || "upload");
+    form.append("fileName", file.name || "upload");
+    form.append("useUniqueFileName", "true");
+    const response = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
       method: "POST",
-      headers: { accept: "application/json" },
+      headers: { authorization: "Basic " + btoa(env.IMAGEKIT_PRIVATE_KEY + ":") },
       body: form,
-      redirect: "manual",
       signal: AbortSignal.timeout(45_000),
     });
-
-    const contentType = response.headers.get("content-type") || "unknown";
-    const location = response.headers.get("location");
-    const responseText = await response.text();
-
-    // A redirect from an API endpoint is not a successful JSON upload.
-    if (response.status >= 300 && response.status < 400) {
-      return {
-        ok: false,
-        error:
-          `Freeimage.host API redirected the upload (HTTP ${response.status}, content-type: ${contentType})` +
-          (location ? `, location: ${location.slice(0, 250)}` : "."),
-      };
+    const payload = (await response.json().catch(() => null)) as {
+      url?: string; fileId?: string; message?: string; help?: string;
+    } | null;
+    if (!response.ok || !payload?.url) {
+      const detail = payload?.message || payload?.help;
+      return { ok: false, error: `ImageKit upload failed (HTTP ${response.status})` + (detail ? `: ${detail.slice(0, 180)}` : ".") };
     }
-
-    let payload: {
-      status_code?: number;
-      success?: { code?: number; message?: string };
-      image?: { url?: string; id_encoded?: string };
-      error?: { message?: string };
-    } | null = null;
-    try {
-      payload = JSON.parse(responseText);
-    } catch {
-      payload = null;
-    }
-
-    if (!response.ok) {
-      const detail =
-        payload?.error?.message ||
-        payload?.success?.message ||
-        responseText.replace(/\s+/g, " ").slice(0, 180);
-      return {
-        ok: false,
-        error:
-          `Freeimage.host API returned HTTP ${response.status} (content-type: ${contentType})` +
-          (detail ? `: ${detail}` : "."),
-      };
-    }
-
-    if (!payload) {
-      return {
-        ok: false,
-        error:
-          `Freeimage.host returned non-JSON content (HTTP ${response.status}, content-type: ${contentType})` +
-          (location ? `, location: ${location.slice(0, 250)}` : "") +
-          `: ${responseText.replace(/\s+/g, " ").slice(0, 180)}`,
-      };
-    }
-
-    const rawUrl = payload.image?.url;
-    if (
-      payload.status_code !== 200 ||
-      payload.success?.code !== 200 ||
-      !rawUrl
-    ) {
-      return {
-        ok: false,
-        error:
-          payload.error?.message ||
-          payload.success?.message ||
-          "Freeimage.host did not return a successful image upload.",
-      };
-    }
-
-    // The API documentation examples may return HTTP URLs. Accept only
-    // Freeimage.host image URLs and normalize them to HTTPS.
     let imageUrl: URL;
-    try {
-      imageUrl = new URL(rawUrl);
-    } catch {
-      return { ok: false, error: "Freeimage.host returned an invalid image URL." };
-    }
-    const host = imageUrl.hostname.toLowerCase();
-    if (
-      (imageUrl.protocol !== "http:" && imageUrl.protocol !== "https:") ||
-      !(host === "freeimage.host" || host.endsWith(".freeimage.host"))
-    ) {
-      return {
-        ok: false,
-        error: "Freeimage.host returned an unexpected image URL host.",
-      };
-    }
-    imageUrl.protocol = "https:";
-
-    return {
-      ok: true,
-      url: imageUrl.toString(),
-      idEncoded: payload.image?.id_encoded,
-    };
+    try { imageUrl = new URL(payload.url); }
+    catch { return { ok: false, error: "ImageKit returned an invalid image URL." }; }
+    if (imageUrl.protocol !== "https:") return { ok: false, error: "ImageKit returned a non-HTTPS image URL." };
+    return { ok: true, url: imageUrl.toString(), id: payload.fileId };
   } catch (error) {
-    return {
-      ok: false,
-      error:
-        error instanceof Error
-          ? error.name === "TimeoutError"
-            ? "Freeimage.host upload timed out after 45 seconds."
-            : error.message
-          : "Freeimage.host upload failed.",
-    };
+    return { ok: false, error: error instanceof Error ? error.name === "TimeoutError" ? "ImageKit upload timed out after 45 seconds." : error.message : "ImageKit upload failed." };
   }
 }
 
@@ -407,7 +307,7 @@ async function uploadProvider(
 ): Promise<ProviderResult> {
   return provider === "imgbb"
     ? uploadToImgBB(file, env)
-    : uploadToFreeimage(file, env);
+    : uploadToImageKit(file, env);
 }
 
 const USERNAME_PATTERN = /^[a-z0-9_-]{3,30}$/;
@@ -656,7 +556,7 @@ export default {
           ),
           providers: {
             imgbb: Boolean(env.IMGBB_API_KEY),
-            freeimage: Boolean(env.FREEIMAGE_API_KEY),
+            imagekit: Boolean(env.IMAGEKIT_PRIVATE_KEY),
           },
           usernameSignIn: Boolean(
             env.FIREBASE_WEB_API_KEY && env.RESOLVER_EMAIL && env.RESOLVER_PASSWORD,
@@ -748,7 +648,7 @@ export default {
       const onlyProvider = form.get("onlyProvider");
       if (
         purpose === "admin" &&
-        (onlyProvider === "imgbb" || onlyProvider === "freeimage")
+        (onlyProvider === "imgbb" || onlyProvider === "imagekit")
       ) {
         const uploaded = await uploadProvider(onlyProvider, file, env);
         if (!uploaded.ok || !uploaded.url)
@@ -802,7 +702,7 @@ export default {
             backup: null,
             providers: {
               imgbb: { ok: true, url: uploaded.url },
-              freeimage: { ok: false, skipped: true },
+              imagekit: { ok: false, skipped: true },
             },
             partialSuccess: false,
             missingProvider: null,
@@ -813,12 +713,12 @@ export default {
       }
 
       const preferred =
-        form.get("preferredProvider") === "freeimage" ? "freeimage" : "imgbb";
-      const [imgbb, freeimage] = await Promise.all([
+        form.get("preferredProvider") === "imagekit" ? "imagekit" : "imgbb";
+      const [imgbb, imagekit] = await Promise.all([
         uploadToImgBB(file, env),
-        uploadToFreeimage(file, env),
+        uploadToImageKit(file, env),
       ]);
-      const results: Record<Provider, ProviderResult> = { imgbb, freeimage };
+      const results: Record<Provider, ProviderResult> = { imgbb, imagekit };
       const available = (Object.keys(results) as Provider[]).filter(
         (provider) => results[provider].ok && results[provider].url,
       );
@@ -839,7 +739,7 @@ export default {
       const missingProvider = backupProvider
         ? null
         : primaryProvider === "imgbb"
-          ? "freeimage"
+          ? "imagekit"
           : "imgbb";
       return json(
         {

@@ -39,6 +39,6 @@ namespace_id = "1104"
   period = 60
 
 # Secrets (set with `wrangler secret put <NAME>`, never in this file):
-#   IMGBB_API_KEY, FREEIMAGE_API_KEY            image hosts
+#   IMGBB_API_KEY, IMAGEKIT_PRIVATE_KEY            image hosts
 #   FIREBASE_WEB_API_KEY                        the web API key from your Firebase config
 #   RESOLVER_EMAIL, RESOLVER_PASSWORD           the Firebase account listed in resolvers/{uid}
