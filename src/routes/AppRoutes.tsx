@@ -52,6 +52,7 @@ const AdminRequestStatus = lazy(() => import('../pages/Admin/RequestStatusSettin
 const AdminTestimonialsList = lazy(() => import('../pages/Admin/TestimonialsList'));
 const AdminTestimonialForm = lazy(() => import('../pages/Admin/TestimonialForm'));
 const AdminProjectReviews = lazy(() => import('../pages/Admin/ProjectReviews'));
+const AdminSchoolModelReviews = lazy(() => import('../pages/Admin/SchoolModelReviews'));
 const AdminBlogList = lazy(() => import('../pages/Admin/BlogList'));
 const AdminBlogForm = lazy(() => import('../pages/Admin/BlogForm'));
 
@@ -116,6 +117,7 @@ export function AppRoutes() {
             <Route path="meetings" element={<AdminMeetingRequests />} />
             <Route path="meetings/:id" element={<AdminMeetingDetail />} />
             <Route path="reviews" element={<AdminProjectReviews />} />
+            <Route path="school-model-reviews" element={<AdminSchoolModelReviews />} />
             <Route path="testimonials" element={<AdminTestimonialsList />} />
             <Route path="testimonials/new" element={<AdminTestimonialForm />} />
             <Route path="testimonials/:id/edit" element={<AdminTestimonialForm />} />
