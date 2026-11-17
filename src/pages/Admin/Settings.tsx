@@ -20,6 +20,7 @@ import { Field } from "../../components/forms/Field";
 import { TextInput } from "../../components/forms/Inputs";
 
 import { ImageHostingSettings } from "./ImageHostingSettings";
+import { UsernameSignInSettings } from "./UsernameSignInSettings";
 import { emailNotificationService } from "../../services/emailNotificationService";
 import { themeService, DEFAULT_THEME } from "../../services/themeService";
 import { useTheme } from "../../hooks/useTheme";
@@ -580,6 +581,7 @@ export default function Settings() {
           {[
             ["#identity-settings", "Website & social"],
             ["#image-hosting", "Image uploads"],
+            ["#username-sign-in", "Username sign-in"],
             ["#email-notifications", "Email alerts"],
             ["#account-security", "Account security"],
             ["#appearance-settings", "Appearance"],
@@ -598,6 +600,7 @@ export default function Settings() {
           ============================================================ */}
 
       <ImageHostingSettings />
+      <UsernameSignInSettings />
 
       {/* ============================================================
           EMAIL NOTIFICATIONS
