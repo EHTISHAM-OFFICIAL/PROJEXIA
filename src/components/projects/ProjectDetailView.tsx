@@ -11,6 +11,7 @@ import { ComponentList } from '../detail/ComponentList';
 import { buildNavGroups, numberSections } from '../detail/sections';
 import { SectionHeading } from '../detail/SectionHeading';
 import { ProjectGallery } from './ProjectGallery';
+import { ProjectReviewsSection } from './ProjectReviewsSection';
 import { ProjectGrid } from './ProjectGrid';
 import { BulletList, CaseStudySection, InlineText, Prose } from './CaseStudySection';
 import { DIFFICULTY_LABEL, STATUS_LABEL, STATUS_TONE } from '../../constants/projectOptions';
@@ -53,6 +54,7 @@ export function ProjectDetailView({ project, related }: { project: Project; rela
     { id: 'project-gallery', present: hasGallery },
     { id: 'demo-video', present: Boolean(video) },
     { id: 'specifications', present: hasSpecs },
+    { id: 'customer-reviews', present: true },
   ]);
 
   const groups = buildNavGroups([
@@ -88,6 +90,7 @@ export function ProjectDetailView({ project, related }: { project: Project; rela
       ],
     },
     { label: 'Specifications', sections: [{ id: 'specifications', present: hasSpecs }] },
+    { label: 'Reviews', sections: [{ id: 'customer-reviews', present: true }] },
   ]);
 
   const secondaryLinks = [
@@ -222,6 +225,10 @@ export function ProjectDetailView({ project, related }: { project: Project; rela
                     value: <InlineText text={spec.value} allowLinks={false} />,
                   }))}
               />
+            </CaseStudySection>
+
+            <CaseStudySection id="customer-reviews" number={numbers['customer-reviews']} title="Customer reviews" empty={false}>
+              <ProjectReviewsSection project={project} />
             </CaseStudySection>
 
             {project.tags.length > 0 && (

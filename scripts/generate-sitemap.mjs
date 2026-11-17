@@ -89,14 +89,19 @@ async function writeSitemap() {
 }
 
 const required = Object.entries(firebaseConfig).filter(([, value]) => !value);
+const isCi = env.CI === 'true';
 
 try {
-  if (!required.length) {
+  // CI uses placeholder Firebase credentials to type-check/build the app.
+  // Do not make the sitemap step depend on a live Firestore project in CI.
+  if (!required.length && !isCi) {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
     await addPublished('projects', '/projects', '0.8');
     await addPublished('schoolModels', '/school-projects', '0.8');
     await addPublished('posts', '/blog', '0.7');
+  } else if (isCi) {
+    console.warn('CI environment detected; generating sitemap with static public URLs only.');
   } else {
     console.warn('Firebase environment variables are not available; generating sitemap with static public URLs only.');
   }

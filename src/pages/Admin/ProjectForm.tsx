@@ -59,6 +59,12 @@ const EMPTY_DRAFT: ProjectDraft = {
   specifications: [],
   estimatedCost: { amount: null, currency: 'PKR', label: null },
   showPriceOnCard: true,
+  soldCount: null,
+  showSoldCount: false,
+  ratingOverrideEnabled: false,
+  ratingOverride: null,
+  reviewCountOverrideEnabled: false,
+  reviewCountOverride: null,
   media: { thumbnailUrl: '', heroImageUrl: null, gallery: [], videoUrl: null },
   externalLinks: { github: null, documentation: null, demo: null },
   seo: { metaTitle: null, metaDescription: null, keywords: [] },
@@ -181,7 +187,7 @@ export default function ProjectForm() {
       return;
     }
     if (!existing.data) return;
-    const { id: _ignored, viewCount: _viewCount, createdAt: _c, updatedAt: _u, ...rest } = existing.data;
+    const { id: _ignored, viewCount: _viewCount, createdAt: _c, updatedAt: _u, reviewStats: _reviewStats, ...rest } = existing.data;
     const storedAmount = Number(rest.estimatedCost?.amount);
     const restoredDraft: ProjectDraft = {
       ...rest,
@@ -193,6 +199,14 @@ export default function ProjectForm() {
         label: typeof rest.estimatedCost?.label === 'string' ? rest.estimatedCost.label : null,
       },
       showPriceOnCard: rest.showPriceOnCard !== false,
+      soldCount: Number.isInteger(rest.soldCount) && Number(rest.soldCount) >= 0 ? Number(rest.soldCount) : null,
+      showSoldCount: rest.showSoldCount === true,
+      ratingOverrideEnabled: rest.ratingOverrideEnabled === true,
+      ratingOverride: typeof rest.ratingOverride === 'number' && Number.isFinite(rest.ratingOverride)
+        ? Math.min(5, Math.max(1, rest.ratingOverride)) : null,
+      reviewCountOverrideEnabled: rest.reviewCountOverrideEnabled === true,
+      reviewCountOverride: Number.isInteger(rest.reviewCountOverride) && Number(rest.reviewCountOverride) >= 0
+        ? Number(rest.reviewCountOverride) : null,
     };
     const dateValue = toDateInputValue(existing.data.completedAt);
     setDraft(restoredDraft);
@@ -851,6 +865,93 @@ export default function ProjectForm() {
               checked={draft.featured}
               onChange={(event) => update('featured', event.target.checked)}
             />
+          </div>
+        </Group>
+
+        <Group id="project-metrics" title="Customer feedback & display metrics">
+          <p className="max-w-2xl text-sm leading-relaxed text-content-secondary">
+            These controls affect only the figures displayed on the public website. Approved customer reviews remain unchanged, and the calculated rating is kept separately from any manual override.
+          </p>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="Sold count" htmlFor="soldCount" hint="Leave blank if you do not want to configure a sold figure.">
+              <TextInput
+                id="soldCount"
+                type="number"
+                min={0}
+                step={1}
+                inputMode="numeric"
+                value={draft.soldCount ?? ''}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  update('soldCount', value === '' ? null : Math.max(0, Math.floor(Number(value))));
+                }}
+              />
+            </Field>
+            <div className="flex items-end">
+              <Checkbox
+                id="showSoldCount"
+                label="Show sold count on the website"
+                description="The count appears only when a value is configured."
+                checked={draft.showSoldCount}
+                onChange={(event) => update('showSoldCount', event.target.checked)}
+              />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-line bg-surface-raised p-4 sm:p-5">
+            <Checkbox
+              id="ratingOverrideEnabled"
+              label="Use a manually controlled rating"
+              description="When enabled, this replaces the calculated rating in public displays. It does not change customer reviews."
+              checked={draft.ratingOverrideEnabled}
+              onChange={(event) => update('ratingOverrideEnabled', event.target.checked)}
+            />
+            {draft.ratingOverrideEnabled && (
+              <div className="mt-4 max-w-xs">
+                <Field label="Displayed rating (1–5)" htmlFor="ratingOverride">
+                  <TextInput
+                    id="ratingOverride"
+                    type="number"
+                    min={1}
+                    max={5}
+                    step={0.1}
+                    value={draft.ratingOverride ?? ''}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      update('ratingOverride', value === '' ? null : Math.min(5, Math.max(1, Number(value))));
+                    }}
+                  />
+                </Field>
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-xl border border-line bg-surface-raised p-4 sm:p-5">
+            <Checkbox
+              id="reviewCountOverrideEnabled"
+              label="Use a manually controlled review count"
+              description="This changes only the displayed count. Actual published review records remain intact."
+              checked={draft.reviewCountOverrideEnabled}
+              onChange={(event) => update('reviewCountOverrideEnabled', event.target.checked)}
+            />
+            {draft.reviewCountOverrideEnabled && (
+              <div className="mt-4 max-w-xs">
+                <Field label="Displayed review count" htmlFor="reviewCountOverride">
+                  <TextInput
+                    id="reviewCountOverride"
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={draft.reviewCountOverride ?? ''}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      update('reviewCountOverride', value === '' ? null : Math.max(0, Math.floor(Number(value))));
+                    }}
+                  />
+                </Field>
+              </div>
+            )}
           </div>
         </Group>
 
