@@ -9,12 +9,13 @@ import { Skeleton } from '../../components/ui/Skeleton';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { Select, TextInput } from '../../components/forms/Inputs';
 import { useAllSchoolModelReviewSubmissions } from '../../hooks/useSchoolModelReviews';
-import { useAllSchoolModels } from '../../hooks/useSchoolModels';
+import { useAsync } from '../../hooks/useAsync';
+import { schoolModelService, type SchoolModel } from '../../services/schoolModelService';
 import { useAuth } from '../../hooks/useAuth';
 import { schoolModelReviewService } from '../../services/schoolModelReviewService';
 import { useToast } from '../../contexts/ToastContext';
 import { toUserMessage } from '../../utils/errors';
-import type { SchoolModelReviewStatus, SchoolModelReviewSubmission } from '../../types/school modelReview';
+import type { SchoolModelReviewStatus, SchoolModelReviewSubmission } from '../../types/schoolModelReview';
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'All reviews' },
