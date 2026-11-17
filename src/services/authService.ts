@@ -1,7 +1,9 @@
 import {
+  GoogleAuthProvider,
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   type User,
 } from 'firebase/auth';
@@ -11,6 +13,12 @@ import { COLLECTIONS, db } from '../firebase/firestore';
 
 export const authService = {
   signIn: (email: string, password: string) => signInWithEmailAndPassword(auth, email, password),
+
+  signInWithGoogle: async () => {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    return signInWithPopup(auth, provider);
+  },
 
   sendPasswordReset: (email: string) => sendPasswordResetEmail(auth, email),
 
