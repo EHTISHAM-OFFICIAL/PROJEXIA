@@ -247,6 +247,23 @@ describe('contactMessages', () => {
 });
 
 describe('settings', () => {
+  it('allows visitors to read the dedicated username sign-in Worker URL but only admins to write it', async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), 'settings', 'usernameSignIn'), {
+        workerUrl: 'https://gateway.example.workers.dev',
+      });
+    });
+    await assertSucceeds(getDoc(doc(anon(), 'settings', 'usernameSignIn')));
+    await assertSucceeds(getDoc(doc(as(ALICE), 'settings', 'usernameSignIn')));
+    await assertFails(setDoc(doc(as(ALICE), 'settings', 'usernameSignIn'), {
+      workerUrl: 'https://attacker.example.workers.dev',
+    }));
+    await assertSucceeds(setDoc(doc(as(ADMIN), 'settings', 'usernameSignIn'), {
+      workerUrl: 'https://gateway.example.workers.dev',
+    }));
+    await assertFails(getDocs(collection(anon(), 'settings')));
+  });
+
   it('exposes the public status-message copy to visitors only', async () => {
     await env.withSecurityRulesDisabled(async (c) => {
       await setDoc(doc(c.firestore(), 'settings', 'requestStatusMessages'), { new: 'Received' });
