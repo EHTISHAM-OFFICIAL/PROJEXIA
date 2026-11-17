@@ -15,5 +15,7 @@ export const COLLECTIONS = {
   projectLibrary: 'projectLibrary',
   collections: 'collections',
   projectReviewSubmissions: 'projectReviewSubmissions',
+  schoolModelReviewSubmissions: 'schoolModelReviewSubmissions',
   projectReviews: 'projectReviews',
+  schoolModelReviews: 'schoolModelReviews',
 } as const;

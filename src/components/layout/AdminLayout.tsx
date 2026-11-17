@@ -49,6 +49,7 @@ const ADMIN_GROUPS = [
       { to: '/admin/request-status', label: 'Request Status', icon: ClipboardList, end: false },
       { to: '/admin/meetings', label: 'Meetings', icon: CalendarDays, end: false },
       { to: '/admin/reviews', label: 'Project Reviews', icon: Star, end: false },
+      { to: '/admin/school-model-reviews', label: 'School Model Reviews', icon: Star, end: false },
     ],
   },
 ];
