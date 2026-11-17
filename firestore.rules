@@ -802,7 +802,7 @@ service cloud.firestore {
       // The deterministic UID prefix also permits the owner to check that a
       // submission does not exist yet, without granting access to other users.
       allow get: if isAdmin()
-        || (isSignedIn() && submissionId.matches('^' + request.auth.uid + '_.*
+        || (isSignedIn() && submissionId.matches('^' + request.auth.uid + '_.*'));
       allow list: if isAdmin();
 
       allow create: if isSignedIn()

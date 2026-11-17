@@ -6,6 +6,8 @@ vi.mock('./ProjectGrid', () => ({ ProjectGrid: () => null }));
 vi.mock('../../services/imgbbService', () => ({
   imgbbService: { getBackupImageUrl: async () => null },
 }));
+// Project review UI has its own Firebase-backed hooks; detail-layout tests mock it.
+vi.mock('./ProjectReviewsSection', () => ({ ProjectReviewsSection: () => null }));
 
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
@@ -50,15 +52,16 @@ function makeModel(overrides: Partial<SchoolModel> = {}): SchoolModel {
 }
 
 describe('ProjectDetailView', () => {
-  it('renders a sparse project without empty sections or jump links to nothing', () => {
+  it('renders a sparse project with the customer reviews section and no unrelated empty sections', () => {
     const html = render(<ProjectDetailView project={makeProject()} related={[]} />);
     expect(html).toContain('Greenhouse Controller');
     expect(html).toContain('Overview');
     expect(html).not.toContain('Project gallery');
     expect(html).not.toContain('Components used');
     expect(html).not.toContain('Related projects');
-    // Only one group means no jump bar at all.
-    expect(html).not.toContain('On this page');
+    expect(html).toContain('Customer reviews');
+    expect(html).toContain('href="#customer-reviews"');
+    expect(html).toContain('On this page');
   });
 
   it('adds a jump link for each section that has content', () => {
@@ -73,7 +76,7 @@ describe('ProjectDetailView', () => {
         related={[]}
       />,
     );
-    for (const id of ['#overview', '#solution', '#results', '#specifications']) expect(html).toContain(`href="${id}"`);
+    for (const id of ['#overview', '#solution', '#results', '#specifications', '#customer-reviews']) expect(html).toContain(`href="${id}"`);
     expect(html).not.toContain('href="#project-gallery"');
   });
 
@@ -186,11 +189,12 @@ describe('section numbering on the pages', () => {
         related={[]}
       />,
     );
-    // overview, solution, results are shown; problem is not.
+    // overview, solution, results and customer reviews are shown; problem is not.
     expect(html).toContain('>01<');
     expect(html).toContain('>02<');
     expect(html).toContain('>03<');
-    expect(html).not.toContain('>04<');
+    expect(html).toContain('>04<');
+    expect(html).not.toContain('>05<');
   });
 
   it('numbers the school model chapters', () => {
