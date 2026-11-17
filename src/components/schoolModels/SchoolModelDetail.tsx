@@ -50,6 +50,7 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
     { id: 'use', present: hasUse },
     { id: 'parts', present: hasParts },
     { id: 'details', present: hasDetails },
+    { id: 'customer-reviews', present: true },
   ]);
 
   const groups = buildNavGroups([
@@ -58,6 +59,7 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
     { label: 'How to use', sections: [{ id: 'use', present: hasUse }] },
     { label: "What's included", sections: [{ id: 'parts', present: hasParts }] },
     { label: 'Details', sections: [{ id: 'details', present: hasDetails }] },
+    { label: 'Reviews', sections: [{ id: 'customer-reviews', present: true }] },
   ]);
 
   const secondary = [
@@ -235,6 +237,10 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
                 )}
               </div>
             </CaseStudySection>
+
+            <CaseStudySection id="customer-reviews" number={numbers['customer-reviews']} title="Customer reviews" empty={false}>
+              <SchoolModelReviewsSection model={model} />
+            </CaseStudySection>
           </div>
 
           <aside className="hidden min-w-0 lg:block">
@@ -264,11 +270,6 @@ export function SchoolModelDetail({ model, related }: { model: SchoolModel; rela
             secondary={{ to: '/contact', label: 'Ask a question first' }}
           />
         </div>
-
-        <section className="mt-16 border-t border-line pt-10 sm:mt-20 sm:pt-14" aria-labelledby="school-model-reviews-heading">
-          <SectionHeading>Customer reviews</SectionHeading>
-          <div className="mt-6"><SchoolModelReviewsSection model={model} /></div>
-        </section>
 
         {related.length > 0 && (
           <section className="mt-16 border-t border-line pt-10 sm:mt-20 sm:pt-14">
