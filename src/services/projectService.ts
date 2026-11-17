@@ -74,6 +74,27 @@ function toProject(snapshot: QueryDocumentSnapshot<DocumentData>): Project {
     showPriceOnCard: data.showPriceOnCard !== false,
     published: data.published ?? false,
     viewCount: data.viewCount ?? 0,
+    reviewStats: {
+      averageRating: typeof data.reviewStats?.averageRating === 'number' && Number.isFinite(data.reviewStats.averageRating)
+        ? data.reviewStats.averageRating : null,
+      reviewCount: Number.isInteger(data.reviewStats?.reviewCount) && data.reviewStats.reviewCount >= 0
+        ? data.reviewStats.reviewCount : 0,
+      distribution: {
+        1: Number.isInteger(data.reviewStats?.distribution?.[1]) ? data.reviewStats.distribution[1] : 0,
+        2: Number.isInteger(data.reviewStats?.distribution?.[2]) ? data.reviewStats.distribution[2] : 0,
+        3: Number.isInteger(data.reviewStats?.distribution?.[3]) ? data.reviewStats.distribution[3] : 0,
+        4: Number.isInteger(data.reviewStats?.distribution?.[4]) ? data.reviewStats.distribution[4] : 0,
+        5: Number.isInteger(data.reviewStats?.distribution?.[5]) ? data.reviewStats.distribution[5] : 0,
+      },
+    },
+    soldCount: Number.isInteger(data.soldCount) && data.soldCount >= 0 ? data.soldCount : null,
+    showSoldCount: data.showSoldCount === true,
+    ratingOverrideEnabled: data.ratingOverrideEnabled === true,
+    ratingOverride: typeof data.ratingOverride === 'number' && Number.isFinite(data.ratingOverride)
+      ? Math.min(5, Math.max(1, data.ratingOverride)) : null,
+    reviewCountOverrideEnabled: data.reviewCountOverrideEnabled === true,
+    reviewCountOverride: Number.isInteger(data.reviewCountOverride) && data.reviewCountOverride >= 0
+      ? data.reviewCountOverride : null,
     createdAt: data.createdAt ?? null,
     updatedAt: data.updatedAt ?? null,
     completedAt: data.completedAt ?? null,
