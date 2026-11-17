@@ -34,7 +34,7 @@ export function UsernameSignInSettings() {
     setError(null);
     try {
       await saveUsernameAuthGatewayUrl(workerUrl);
-      setWorkerUrl(workerUrl.trim().replace(/\\/+$/, ""));
+      setWorkerUrl(workerUrl.trim().replace(/\/+$/, ""));
       setUsingLegacyConfig(false);
       notify({
         title: "Username sign-in settings saved",
