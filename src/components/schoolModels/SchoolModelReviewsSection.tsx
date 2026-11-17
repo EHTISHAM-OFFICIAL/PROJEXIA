@@ -118,7 +118,7 @@ export function SchoolModelReviewsSection({ model }: { model: SchoolModel }) {
     try {
       const uploaded = files.length ? await imgbbService.uploadMany(files) : [];
       await schoolModelReviewService.submit({
-        modelId: model.id,
+        schoolModelId: model.id,
         userId: user.uid,
         username: profile.username,
         isAnonymous: anonymous,
