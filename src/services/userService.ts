@@ -239,8 +239,9 @@ export async function ensureGoogleUserProfile(user: User): Promise<void> {
   const existing = await getDoc(profileRef);
   if (existing.exists()) return;
 
-  const recoveryEmail = user.email?.trim().toLowerCase();
-  if (!recoveryEmail || !emailPattern.test(recoveryEmail)) {
+  const authEmail = user.email?.trim();
+  const recoveryEmail = authEmail?.toLowerCase();
+  if (!authEmail || !recoveryEmail || !emailPattern.test(recoveryEmail)) {
     throw new Error('Google did not provide a usable email address. Check your Google account settings and try again.');
   }
 
@@ -263,7 +264,7 @@ export async function ensureGoogleUserProfile(user: User): Promise<void> {
   });
   batch.set(usernameLookupRef(username), {
     uid: user.uid,
-    authEmail: recoveryEmail,
+    authEmail,
     createdAt: serverTimestamp(),
   });
   await batch.commit();
