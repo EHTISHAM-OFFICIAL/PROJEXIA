@@ -26,7 +26,7 @@ export function SectionHeading({
 
   return (
     <div className={className}>
-      <div className="flex items-center gap-3" aria-hidden="true">
+      <div className="section-trace flex items-center gap-3" aria-hidden="true">
         {number && (
           <span className="font-mono text-[13px] font-semibold tracking-[0.16em] text-accent sm:text-sm">
             {number}

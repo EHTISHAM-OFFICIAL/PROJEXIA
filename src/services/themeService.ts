@@ -18,60 +18,12 @@ const firebaseApp = initializeApp({
 
 const db = getFirestore(firebaseApp);
 import type { SiteTheme } from "../types/theme";
+import { DEFAULT_THEME } from "../constants/themes";
+
+// Re-exported so existing imports keep working.
+export { DEFAULT_THEME };
 
 const THEME_DOC_PATH = "settings/theme";
-
-export const DEFAULT_THEME: SiteTheme = {
-  dark: {
-    bg: "#0A0C10",
-    surface: "#111419",
-    surfaceRaised: "#191D24",
-
-    line: "#2A2E36",
-    lineStrong: "#414650",
-
-    accent: "#E87E36",
-    accentHover: "#F89448",
-    accentSubtle: "rgba(232, 126, 54, 0.14)",
-    accent2: "#F5B452",
-    onAccent: "#0F0C09",
-
-    content: "#F5F6F8",
-    contentSecondary: "#B2B7C1",
-    contentMuted: "#707682",
-
-    stateSuccess: "#27C98B",
-    stateWarning: "#F5AE37",
-    stateDanger: "#F4535C",
-    stateInfo: "#42ADE8",
-  },
-
-  light: {
-    bg: "#F8F7F4",
-    surface: "#FFFFFF",
-    surfaceRaised: "#F4F2EE",
-
-    line: "#E0DDD7",
-    lineStrong: "#C4BFB6",
-
-    accent: "#C65B23",
-    accentHover: "#AB4819",
-    accentSubtle: "rgba(198, 91, 35, 0.10)",
-    accent2: "#B77A2D",
-    onAccent: "#FFFFFF",
-
-    content: "#191B1F",
-    contentSecondary: "#4C5058",
-    contentMuted: "#7C8088",
-
-    stateSuccess: "#149B67",
-    stateWarning: "#CD8415",
-    stateDanger: "#D33641",
-    stateInfo: "#1589C4",
-  },
-
-  updatedAt: null,
-};
 
 function normalizeColors(
   value: unknown,

@@ -309,7 +309,8 @@ export default function Settings() {
   const [themeError, setThemeError] = useState<string | null>(null);
   const [themeSaved, setThemeSaved] = useState(false);
 
-  const [editingTheme, setEditingTheme] = useState<"dark" | "light">(theme);
+  // The editor covers the dark and light colours; Electric is a fixed brand theme.
+  const [editingTheme, setEditingTheme] = useState<"dark" | "light">(theme === "light" ? "light" : "dark");
 
   /* ================================================================
      GLOBAL LOADING
@@ -322,7 +323,7 @@ export default function Settings() {
      ================================================================= */
 
   useEffect(() => {
-    setEditingTheme(theme);
+    setEditingTheme(theme === "light" ? "light" : "dark");
   }, [theme]);
 
   /* ================================================================

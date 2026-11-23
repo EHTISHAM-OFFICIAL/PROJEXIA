@@ -27,3 +27,11 @@ export interface SiteTheme {
   light: ThemeColors;
   updatedAt: unknown | null;
 }
+
+/** Every theme the site can display. `dark` is the default. */
+export const THEME_NAMES = ['dark', 'light', 'electric'] as const;
+export type ThemeName = (typeof THEME_NAMES)[number];
+
+export function isThemeName(value: unknown): value is ThemeName {
+  return typeof value === 'string' && (THEME_NAMES as readonly string[]).includes(value);
+}

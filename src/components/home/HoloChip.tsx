@@ -106,9 +106,19 @@ export function HoloChip({ className }: { className?: string }) {
     let lastChange = performance.now();
     const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
 
+    /**
+     * Tells the stylesheet when this device is struggling, so theme effects
+     * (the Electric charge line and glows) can switch themselves off too.
+     */
+    function publishPerformance(lightest: boolean) {
+      if (lightest) document.documentElement.setAttribute("data-perf", "lite");
+      else document.documentElement.removeAttribute("data-perf");
+    }
+
     function applyLevel() {
       const { quality } = LEVELS[level];
       scene.setQuality(quality);
+      publishPerformance(quality === "lite");
       canvas!.dataset.quality = frozen ? "still" : `${quality}${LEVELS[level].fpsScale < 1 ? "-slow" : ""}`;
       applySize();
     }
@@ -137,6 +147,7 @@ export function HoloChip({ className }: { className?: string }) {
       running = false;
       cancelAnimationFrame(frame);
       canvas!.dataset.quality = "still";
+      publishPerformance(true);
       draw(0);
     }
 

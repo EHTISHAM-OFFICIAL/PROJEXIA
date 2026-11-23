@@ -157,9 +157,9 @@ export function Navbar() {
               </li>
             ))}
           </ul>
-          <div className="mt-3 flex min-h-12 items-center justify-between rounded-lg border border-line px-3 py-2.5">
+          <div className="mt-3 flex min-h-12 items-center justify-between gap-3 rounded-lg border border-line px-3 py-2.5">
             <span className="text-sm text-content-secondary">Theme</span>
-            <ThemeToggle />
+            <ThemeToggle variant="segmented" />
           </div>
           <div className="mt-3 grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
             {user ? (
